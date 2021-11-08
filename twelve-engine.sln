@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workspace", "Workspace", "{
 		todo.txt = todo.txt
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{3011F088-EB04-438A-9014-1D539CFD9163}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TwelveEngine\TwelveEngine.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
@@ -70,6 +72,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7049D8D0-4EF9-4D9C-A731-10CE09DE4451} = {3011F088-EB04-438A-9014-1D539CFD9163}
+		{ACFBF054-13A9-423D-A02C-EC04F48BAB64} = {3011F088-EB04-438A-9014-1D539CFD9163}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8D402DC-B34B-4D03-9F18-84DA46695DB2}

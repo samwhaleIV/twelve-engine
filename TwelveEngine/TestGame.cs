@@ -16,6 +16,8 @@ namespace TwelveEngine {
         protected override void Initialize() {
             Window.AllowUserResizing = true;
             Window.AllowAltF4 = true;
+
+            JSEngine.RunTest();
             Window.Title = Runtime.TestString;
 
             base.Initialize();
