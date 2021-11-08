@@ -14,7 +14,10 @@ namespace TwelveEngine {
         }
 
         protected override void Initialize() {
-            // TODO: Add your initialization logic here
+            Window.AllowUserResizing = true;
+            Window.AllowAltF4 = true;
+            Window.Title = Runtime.TestString;
+
             base.Initialize();
         }
 
@@ -25,24 +28,45 @@ namespace TwelveEngine {
             testTexture = Content.Load<Texture2D>("hello-world");
         }
 
-        private bool backButtonIsPressed() {
+        private bool BackButtonIsPressed() {
             return GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed;
         }
-        private bool escapeKeyIsPressed() {
+        private bool EscapeKeyIsPressed() {
             return Keyboard.GetState().IsKeyDown(Keys.Escape);
         }
 
         protected override void Update(GameTime gameTime) {
-            if(backButtonIsPressed() || escapeKeyIsPressed()) Exit();
+            if(BackButtonIsPressed() || EscapeKeyIsPressed()) Exit();
 
             base.Update(gameTime);
         }
 
+        private Viewport GetViewport() {
+            return GraphicsDevice.Viewport;
+        }
+        private Vector2 GetScreenCenter() {
+            var viewport = GetViewport();
+            Vector2 screenCenter = new Vector2(viewport.Width / 2,viewport.Height / 2);
+            return screenCenter;
+        }
+
+        private void DrawCentered(SpriteBatch spriteBatch,Texture2D texture,Vector2 origin) {
+            Vector2 destination = new Vector2(
+                origin.X - texture.Width / 2,
+                origin.Y - texture.Height / 2
+            );
+            spriteBatch.Draw(texture,destination,Color.White);
+        }
+
         protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.LightGray);
+
+            var screenCenter = GetScreenCenter();
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(testTexture,Vector2.Zero,Color.White);
+
+            DrawCentered(_spriteBatch,testTexture,screenCenter);
+            
             _spriteBatch.End();
 
             base.Draw(gameTime);

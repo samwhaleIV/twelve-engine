@@ -1,0 +1,10 @@
+-Add root Game class that manages basic Window instantiation methods
+    -Black boxing strategy
+    -Manage Game class interfaces for state
+        -Implement stack system for Game state interfaces
+    -Input management
+-Implement raw (System.IO + internal classes) texture 2D decoder (might by iffy getting cross platform file system working right)
+    -Implement text writer
+        -Implement hard coded text schema
+-Static helper methods for graphics handling
+-Experiment with implementing V8 onto .NET Core (lmao)

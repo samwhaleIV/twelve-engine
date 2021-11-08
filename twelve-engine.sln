@@ -9,6 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwelveDesktop", "TwelveDesk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwelveUWP", "TwelveUWP\TwelveUWP.csproj", "{ACFBF054-13A9-423D-A02C-EC04F48BAB64}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workspace", "Workspace", "{8E475C8B-33A7-4344-A8D5-564B8099AB4A}"
+	ProjectSection(SolutionItems) = preProject
+		todo.txt = todo.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TwelveEngine\TwelveEngine.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
