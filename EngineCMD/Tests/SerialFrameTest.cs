@@ -61,7 +61,7 @@ namespace EngineCMD.Tests {
             public void Import(SerialFrame frame) {
                 frame.GetSerializable("Name",Name);
                 frame.GetSerializable("Hair",Hair);
-                Weight = (float)frame.GetDouble("Weight");
+                Weight = frame.GetFloat("Weight");
                 TailCount = frame.GetLong("TailCount");
             }
         }

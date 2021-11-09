@@ -50,6 +50,9 @@ namespace TwelveEngine {
         public double GetDouble(string property) {
             return (double)dictionary[getAddress(property)];
         }
+        public float GetFloat(string property) {
+            return (float)(double)dictionary[getAddress(property)];
+        }
         public long GetLong(string property) {
             return (long)dictionary[getAddress(property)];
         }
