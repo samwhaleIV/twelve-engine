@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Diagnostics;
 using Microsoft.ClearScript;
 using Microsoft.ClearScript.JavaScript;
 using Microsoft.ClearScript.V8;
@@ -16,7 +17,7 @@ namespace TwelveEngine {
             var script = engine.CompileDocument("test-script.js",ModuleCategory.Standard);
 
             var result = engine.Evaluate(script);
-            Runtime.Log($"JSEngine Test Result: {result}");
+            Debug.Write($"JSEngine Test Result: {result}");
         }
     }
 }
