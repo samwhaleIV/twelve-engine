@@ -68,7 +68,7 @@ namespace EngineCMD {
 
         }
         private static void Main(string[] args) {
-            RunTests(TestsList,true);
+            RunTests(TestsList,SUPPRESS_NON_ERRORS);
         }
     }
 }

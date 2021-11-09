@@ -35,7 +35,7 @@ namespace TwelveEngine {
             propertyAddress.Pop();
             return target;
         }
-        public void Set(string property,float value) {
+        public void Set(string property,double value) {
             dictionary[getAddress(property)] = value;
         }
         public void Set(string property,long value) {
@@ -47,8 +47,8 @@ namespace TwelveEngine {
         public void Set(string property,bool value) {
             dictionary[getAddress(property)] = value;
         }
-        public float GetFloat(string property) {
-            return (float)dictionary[getAddress(property)];
+        public double GetDouble(string property) {
+            return (double)dictionary[getAddress(property)];
         }
         public long GetLong(string property) {
             return (long)dictionary[getAddress(property)];

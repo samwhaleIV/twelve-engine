@@ -50,15 +50,18 @@ namespace EngineCMD.Tests {
             public long TailCount { get; set; } = 1;
             public Hair Hair { get; set; } = new Hair();
             public Name Name { get; } = new Name();
+            public float Weight { get; set; } = 479.34f;
             public void Export(SerialFrame frame) {
                 frame.Set("Name",Name);
                 frame.Set("Hair",Hair);
                 frame.Set("TailCount",TailCount);
+                frame.Set("Weight",Weight);
             }
 
             public void Import(SerialFrame frame) {
                 frame.GetSerializable("Name",Name);
                 frame.GetSerializable("Hair",Hair);
+                Weight = (float)frame.GetDouble("Weight");
                 TailCount = frame.GetLong("TailCount");
             }
         }
