@@ -51,11 +51,14 @@ namespace EngineCMD.Tests {
             public Hair Hair { get; set; } = new Hair();
             public Name Name { get; } = new Name();
             public float Weight { get; set; } = 479.34f;
+
+            public bool IsAlive { get; set; } = true;
             public void Export(SerialFrame frame) {
                 frame.Set("Name",Name);
                 frame.Set("Hair",Hair);
                 frame.Set("TailCount",TailCount);
                 frame.Set("Weight",Weight);
+                frame.Set("IsAlive",IsAlive);
             }
 
             public void Import(SerialFrame frame) {
@@ -63,6 +66,7 @@ namespace EngineCMD.Tests {
                 frame.GetSerializable("Hair",Hair);
                 Weight = frame.GetFloat("Weight");
                 TailCount = frame.GetLong("TailCount");
+                IsAlive = frame.GetBool("IsAlive");
             }
         }
 
@@ -74,6 +78,8 @@ namespace EngineCMD.Tests {
             dog.Hair.Type = "Weird";
             dog.Hair.Color.Value = "Red";
             dog.TailCount = 2;
+            dog.IsAlive = false;
+            dog.Weight = float.PositiveInfinity;
 
             var serialFrame = new SerialFrame();
             dog.Export(serialFrame);

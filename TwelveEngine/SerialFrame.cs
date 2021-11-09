@@ -36,6 +36,9 @@ namespace TwelveEngine {
             return target;
         }
         public void Set(string property,double value) {
+            if(double.IsNaN(value) || double.IsInfinity(value)) {
+                value = 0;
+            }
             dictionary[getAddress(property)] = value;
         }
         public void Set(string property,long value) {
@@ -48,10 +51,12 @@ namespace TwelveEngine {
             dictionary[getAddress(property)] = value;
         }
         public double GetDouble(string property) {
-            return (double)dictionary[getAddress(property)];
+            object value = dictionary[getAddress(property)];
+            if(!(value is double)) value = 0d;
+            return (double)value;
         }
         public float GetFloat(string property) {
-            return (float)(double)dictionary[getAddress(property)];
+            return (float)GetDouble(property);
         }
         public long GetLong(string property) {
             return (long)dictionary[getAddress(property)];
