@@ -131,6 +131,9 @@ namespace EngineCMD.Tests {
             dog.Export(serialFrame);
             var json = serialFrame.Export();
 
+            serialFrame.Set("Numbers",new int[] { 5,6,2,3,1 });
+            var result = serialFrame.GetIntArray("Numbers");
+
             var copySerialFrame = new SerialFrame(json);
             var cloneDog = new Dog();
             cloneDog.Import(copySerialFrame);

@@ -50,7 +50,6 @@ namespace TwelveEngine {
         private void updateBaseAddress() {
             baseAddress = getBaseAddress();
         }
-
         private void addAddressSegment(string property) {
             propertyAddress.Push(property);
             updateBaseAddress();
@@ -119,31 +118,26 @@ namespace TwelveEngine {
             dictionary[getAddress(property)] = (double)value;
         }
 
+        private void set<T>(string property,T[] value) {
+            dictionary[getAddress(property)] = JArray.FromObject(value);
+        }
         public void Set(string property,double[] value) {
-            dictionary[getAddress(property)] = value;
+            set(property,value);
         }
         public void Set(string property,int[] value) {
-            long[] longArray = new long[value.Length];
-            for(int i = 0;i < longArray.Length;i++) {
-                longArray[i] = value[i];
-            }
-            dictionary[getAddress(property)] = longArray;
+            set(property,value);
         }
         public void Set(string property,string[] value) {
-            dictionary[getAddress(property)] = value;
+            set(property,value);
         }
         public void Set(string property,long[] value) {
-            dictionary[getAddress(property)] = value;
+            set(property,value);
         }
         public void Set(string property,float[] value) {
-            double[] doubleArray = new double[value.Length];
-            for(int i = 0;i < doubleArray.Length;i++) {
-                doubleArray[i] = value[i];
-            }
-            dictionary[getAddress(property)] = doubleArray;
+            set(property,value);
         }
         public void Set(string property,bool[] value) {
-            dictionary[getAddress(property)] = value;
+            set(property,value);
         }
 
         public double GetDouble(string property) {
@@ -191,14 +185,12 @@ namespace TwelveEngine {
 
         private void setArray2D<T>(string property,T[,] value) {
             int xLength = value.GetLength(0);
-            int yLength = value.GetLength(1);
-
             T[] flatArray = new T[value.Length];
             for(int i = 0;i<flatArray.Length;i++) {
                 flatArray[i] = value[i % xLength,i / xLength];
             }
             dictionary[getAddress(SIZE_PREFIX + property)] = xLength;
-            dictionary[getAddress(property)] = flatArray;
+            dictionary[getAddress(property)] = JArray.FromObject(flatArray);
         }
         public void Set(string property,bool[,] value) {
             setArray2D(property,value);
