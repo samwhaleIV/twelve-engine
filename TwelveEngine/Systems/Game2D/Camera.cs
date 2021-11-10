@@ -59,9 +59,9 @@ namespace TwelveEngine {
         }
 
         public void Import(SerialFrame frame) {
-            X = (float)frame.GetDouble("X");
-            Y = (float)frame.GetDouble("Y");
-            Scale = (float)frame.GetDouble("Scale");
+            X = frame.GetFloat("X");
+            Y = frame.GetFloat("Y");
+            Scale = frame.GetFloat("Scale");
             horizontalEdgePadding = frame.GetBool("horizontalEdgePadding");
             verticalEdgePadding = frame.GetBool("verticalEdgePadding");
         }

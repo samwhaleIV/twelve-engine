@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace TwelveEngine {
@@ -10,27 +9,24 @@ namespace TwelveEngine {
     }
     public sealed class SerialFrame {
 
-        const char ADDRESS_DELIMITER = '.';
-        const string ARRAY_PROPERTY_SUFFIX = "#";
+        internal const char ADDRESS_DELIMITER = '.';
+        internal const char ARRAY_PROPERTY_SUFFIX = '#';
 
-        const string X_DIMENSION = ARRAY_PROPERTY_SUFFIX + "X";
-        const string Y_DIMENSION = ARRAY_PROPERTY_SUFFIX + "Y";
+        private const char SIZE_PREFIX = '~';
 
         private readonly Dictionary<string,object> dictionary;
         public SerialFrame() {
             dictionary = new Dictionary<string,object>();
         }
         public SerialFrame(string json) {
-            dictionary = JsonConvert.DeserializeObject<Dictionary<string,object>>(json);
-            /* TODO Expand nested JSON to addressed table */
+            dictionary = JsonSmasher.Unsmash(json);
         }
 
         public void Clear() {
             dictionary.Clear();
         }
         public string Export() {
-            /* TODO Convert addressed table to nested JSON */
-            return JsonConvert.SerializeObject(dictionary);
+            return JsonSmasher.Smash(dictionary);
         }
 
         private Stack<string> propertyAddress = new Stack<string>();
@@ -77,7 +73,7 @@ namespace TwelveEngine {
             return target;
         }
         public void Set(string property,ISerializable[] value) {
-            Set(property,value.Length);
+            Set(SIZE_PREFIX + property,value.Length);
             for(int i = 0;i < value.Length;i++) {
                 addAddressSegment($"{property}{ARRAY_PROPERTY_SUFFIX}{i}");
                 value[i].Export(this);
@@ -85,7 +81,7 @@ namespace TwelveEngine {
             }
         }
         public T[] GetArray<T>(string property) where T : ISerializable, new() {
-            int arrayLength = GetInt(property);
+            int arrayLength = GetInt(SIZE_PREFIX + property);
             T[] array = new T[arrayLength];
             for(int i = 0;i < arrayLength;i++) {
                 T newObject = new T();
@@ -201,10 +197,8 @@ namespace TwelveEngine {
             for(int i = 0;i<flatArray.Length;i++) {
                 flatArray[i] = value[i % xLength,i / xLength];
             }
-            string address = getAddress(property);
-            dictionary[address + X_DIMENSION] = xLength;
-            dictionary[address + Y_DIMENSION] = yLength;
-            dictionary[address] = flatArray;
+            dictionary[getAddress(SIZE_PREFIX + property)] = xLength;
+            dictionary[getAddress(property)] = flatArray;
         }
         public void Set(string property,bool[,] value) {
             setArray2D(property,value);
@@ -228,9 +222,11 @@ namespace TwelveEngine {
         private T[,] getArray2D<T>(string property) {
             T[] flatArray = getArray<T>(property);
 
-            string address = getAddress(property);
-            int xLength = (int)(long)dictionary[address + X_DIMENSION]; /* Type down cast */
-            int yLength = (int)(long)dictionary[address + Y_DIMENSION];
+            int xLength = (int)(long)dictionary[getAddress(SIZE_PREFIX + property)]; /* Type down cast */
+            if(xLength == 0) {
+                return new T[0,0]; /* Fail safe */
+            }
+            int yLength = flatArray.Length / xLength;
 
             if(flatArray.Length != xLength * yLength) {
                 return new T[xLength,yLength]; /* Fail safe */

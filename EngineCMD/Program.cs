@@ -38,7 +38,7 @@ namespace EngineCMD {
                 testCount++;
                 WriteColoredText($"{testCount}. {test}",ConsoleColor.White,ConsoleColor.Black,false);
                 Console.Write(" ");
-                try {
+                //try {
                     var testResult = test.GetResult();
                     if(testResult.Passed) {
                         passingCount++;
@@ -55,9 +55,9 @@ namespace EngineCMD {
                     } else {
                         WriteColoredText(testResult.Text,ERROR_COLOR);
                     }
-                } catch(Exception error) {
-                    WriteColoredText(error.Message,ERROR_COLOR);
-                }
+                //} catch(Exception error) {
+                //    WriteColoredText(error.Message,ERROR_COLOR);
+                //}
             }
 
             Console.WriteLine();
