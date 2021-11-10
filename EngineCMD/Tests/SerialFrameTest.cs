@@ -124,6 +124,8 @@ namespace EngineCMD.Tests {
             dog.Dogs = new Dog[] {
                 new Dog(), new Dog(), new Dog(), new Dog()
             };
+            dog.Dogs[0].Dogs = new Dog[] { new Dog() };
+            dog.Dogs[0].Dogs[0].Name.First = "Sally";
 
             var serialFrame = new SerialFrame();
             dog.Export(serialFrame);

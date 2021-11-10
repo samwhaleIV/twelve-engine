@@ -77,10 +77,9 @@ namespace TwelveEngine {
             return target;
         }
         public void Set(string property,ISerializable[] value) {
-            string address = getAddress(property);
             Set(property,value.Length);
             for(int i = 0;i < value.Length;i++) {
-                addAddressSegment($"{address}{ARRAY_PROPERTY_SUFFIX}{i}");
+                addAddressSegment($"{property}{ARRAY_PROPERTY_SUFFIX}{i}");
                 value[i].Export(this);
                 popAddressSegment();
             }
@@ -88,13 +87,12 @@ namespace TwelveEngine {
         public T[] GetArray<T>(string property) where T : ISerializable, new() {
             int arrayLength = GetInt(property);
             T[] array = new T[arrayLength];
-            string address = getAddress(property);
             for(int i = 0;i < arrayLength;i++) {
-                addAddressSegment($"{address}{ARRAY_PROPERTY_SUFFIX}{i}");
                 T newObject = new T();
+                addAddressSegment($"{property}{ARRAY_PROPERTY_SUFFIX}{i}");
                 newObject.Import(this);
-                array[i] = newObject;
                 popAddressSegment();
+                array[i] = newObject;
             }
             return array;
         }
