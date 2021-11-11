@@ -24,9 +24,9 @@ namespace TwelveEngine {
             this.grid2D = grid2D;
 
             colorLookup = new Texture2D[] {
-                getColorTexture(Color.DarkRed),
-                getColorTexture(Color.DarkBlue),
-                getColorTexture(Color.DarkOrange)
+                getColorTexture(Color.DimGray),
+                getColorTexture(Color.DarkGray),
+                getColorTexture(Color.Coral)
             };
             textureOrigin = new Rectangle(0,0,1,1);
 

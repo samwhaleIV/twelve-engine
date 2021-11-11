@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\RenderStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\ITileRenderer.cs" />

@@ -29,6 +29,10 @@ namespace TwelveEngine {
         }
 
         private void setGameState(GameState gameState) {
+            if(!initialized) {
+                pendingGameState = gameState;
+                return;
+            }
             if(!hasNullState()) {
                 this.gameState.Unload();
             }
@@ -58,7 +62,10 @@ namespace TwelveEngine {
             }
         }
 
+        private bool initialized = false;
+
         protected override void Initialize() {
+            initialized = true;
             Window.AllowUserResizing = true;
             Window.AllowAltF4 = true;
             base.Initialize();

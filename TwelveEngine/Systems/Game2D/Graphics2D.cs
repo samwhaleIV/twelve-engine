@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine {
@@ -21,10 +20,6 @@ namespace TwelveEngine {
             var viewport = GetViewport(game);
             Vector2 screenCenter = new Vector2(viewport.Width / 2,viewport.Height / 2);
             return screenCenter;
-        }
-        public static Rectangle GetDestination(float x,float y,float tileSize) {
-            int size = (int)tileSize;
-            return new Rectangle((int)Math.Floor(x),(int)Math.Floor(y),size,size);
         }
     }
 }

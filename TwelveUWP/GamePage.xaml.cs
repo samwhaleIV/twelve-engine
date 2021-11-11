@@ -5,14 +5,16 @@ using MonoGame.Framework;
 
 namespace TwelveUWP {
     public sealed partial class GamePage:Page {
-        internal readonly GameManager _game;
+        private readonly GameManager game;
         public GamePage() {
             this.InitializeComponent();
 
             var launchArguments = string.Empty;
 
             var window = Window.Current.CoreWindow;
-            _game = XamlGame<GameManager>.Create(launchArguments,window,swapChainPanel);
+            game = XamlGame<GameManager>.Create(launchArguments,window,swapChainPanel);
+
+            TwelveEngine.Program.ConfigStartGame(game);
         }
     }
 }
