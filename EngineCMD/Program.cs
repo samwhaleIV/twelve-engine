@@ -38,26 +38,22 @@ namespace EngineCMD {
                 testCount++;
                 WriteColoredText($"{testCount}. {test}",ConsoleColor.White,ConsoleColor.Black,false);
                 Console.Write(" ");
-                //try {
-                    var testResult = test.GetResult();
-                    if(testResult.Passed) {
-                        passingCount++;
-                    }
-                    if(string.IsNullOrEmpty(testResult.Text)) {
+                var testResult = test.GetResult();
+                if(testResult.Passed) {
+                    passingCount++;
+                }
+                if(string.IsNullOrEmpty(testResult.Text)) {
+                    continue;
+                }
+                if(testResult.Passed) {
+                    if(suppressNonErrors) {
+                        Console.WriteLine("Passed.");
                         continue;
                     }
-                    if(testResult.Passed) {
-                        if(suppressNonErrors) {
-                            Console.WriteLine("Passed.");
-                            continue;
-                        }
-                        Console.WriteLine(testResult.Text);
-                    } else {
-                        WriteColoredText(testResult.Text,ERROR_COLOR);
-                    }
-                //} catch(Exception error) {
-                //    WriteColoredText(error.Message,ERROR_COLOR);
-                //}
+                    Console.WriteLine(testResult.Text);
+                } else {
+                    WriteColoredText(testResult.Text,ERROR_COLOR);
+                }
             }
 
             Console.WriteLine();

@@ -1,16 +1,61 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine {
     public sealed class GameManager:Game {
-        private readonly GraphicsDeviceManager graphics;
+
+        private GameState pendingGameState = null;
+        private GraphicsDeviceManager graphicsDeviceManager;
         private SpriteBatch spriteBatch;
 
-        public GameManager() {
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+        private void initialize() {
+            graphicsDeviceManager = new GraphicsDeviceManager(this);
+            Content.RootDirectory = Constants.ContentRootDirectory;
             IsMouseVisible = true;
+        }
+
+        public GameManager() {
+            initialize();
+        }
+
+        public GameManager(GameState gameState) {
+            initialize();
+            pendingGameState = gameState;
+        }
+
+        private GameState gameState = null;
+        private bool hasNullState() {
+            return gameState == null;
+        }
+
+        private void setGameState(GameState gameState) {
+            if(!hasNullState()) {
+                this.gameState.Unload();
+            }
+            this.gameState = gameState;
+            if(hasNullState()) {
+                return;
+            }
+            gameState.Load(this);
+        }
+        public GameState GameState {
+            get {
+                return this.gameState;
+            }
+            set {
+                setGameState(value);
+            }
+        }
+
+        public GraphicsDeviceManager GraphicsDeviceManager {
+            get {
+                return this.graphicsDeviceManager;
+            }
+        }
+        public SpriteBatch SpriteBatch {
+            get {
+                return this.spriteBatch;
+            }
         }
 
         protected override void Initialize() {
@@ -19,34 +64,27 @@ namespace TwelveEngine {
             base.Initialize();
         }
 
-        Texture2D testTexture;
-
         protected override void LoadContent() {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            testTexture = Content.Load<Texture2D>("hello-world");
-        }
-
-        private bool BackButtonIsPressed() {
-            return GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed;
-        }
-        private bool EscapeKeyIsPressed() {
-            return Keyboard.GetState().IsKeyDown(Keys.Escape);
+            if(pendingGameState == null) {
+                return;
+            }
+            setGameState(pendingGameState);
+            pendingGameState = null;
         }
 
         protected override void Update(GameTime gameTime) {
-            if(BackButtonIsPressed() || EscapeKeyIsPressed()) Exit();
-
-            base.Update(gameTime);
+            if(hasNullState()) {
+                return;
+            }
+            this.gameState.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.LightGray);
-
-            spriteBatch.Begin();
-            Graphics.DrawCentered(spriteBatch,testTexture,this);
-            spriteBatch.End();
-
-            base.Draw(gameTime);
+            if(hasNullState()) {
+                return;
+            }
+            this.gameState.Draw(gameTime);
         }
     }
 }

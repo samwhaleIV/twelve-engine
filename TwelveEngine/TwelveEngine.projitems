@@ -9,18 +9,21 @@
     <Import_RootNamespace>TwelveEngine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\RenderStack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\ITileRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\TestTileRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\GameState\GameManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Graphics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Graphics2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Grid2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\GameState\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Serial\JsonSmasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Serial\SerialFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\JS\JSEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Systems\Game2D\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Systems\GameState\" />
     <Folder Include="$(MSBuildThisFileDirectory)Systems\JS\" />
     <Folder Include="$(MSBuildThisFileDirectory)Systems\Serial\" />
   </ItemGroup>

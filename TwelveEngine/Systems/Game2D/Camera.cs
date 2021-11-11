@@ -1,69 +1,44 @@
-﻿using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
-
-namespace TwelveEngine {
+﻿namespace TwelveEngine {
     public class Camera:ISerializable {
-        public Vector2 position;
-        public float X {
-            get {
-                return position.X;
-            }
-            set {
-                position.X = value;
-            }
-        }
-        public float Y {
-            get {
-                return position.Y;
-            }
-            set {
-                position.Y = value;
-            }
-        }
+        public float X { get; set; } = 0;
+        public float Y { get; set; } = 0;
+
+        public float XOffset { get; set; } = 0.5f;
+        public float YOffset { get; set; } = 0.5f;
+
         public float Scale { get; set; } = 1;
 
-        private bool horizontalEdgePadding = true;
-        private bool verticalEdgePadding = true;
-        public bool HorizontalEdgePadding {
-            get {
-                return horizontalEdgePadding;
-            }
-            set {
-                horizontalEdgePadding = value;
-            }
-        }
-        public bool VerticalEdgePadding {
-            get {
-                return verticalEdgePadding;
-            }
-            set {
-                horizontalEdgePadding = value;
-            }
-        }
+        public bool HorizontalEdgePadding { get; set; } = false;
+        public bool VerticalEdgePadding { get; set; } = false;
+
         public bool EdgePadding {
             get {
-                return horizontalEdgePadding || verticalEdgePadding;
+                return HorizontalEdgePadding || VerticalEdgePadding;
             }
             set {
-                horizontalEdgePadding = value;
-                verticalEdgePadding = value;
+                HorizontalEdgePadding = value;
+                VerticalEdgePadding = value;
             }
         }
 
         public void Export(SerialFrame frame) {
             frame.Set("X",X);
             frame.Set("Y",Y);
+            frame.Set("XOffset",XOffset);
+            frame.Set("YOffset",YOffset);
             frame.Set("Scale",Scale);
-            frame.Set("horizontalEdgePadding",horizontalEdgePadding);
-            frame.Set("verticalEdgePadding",verticalEdgePadding);
+            frame.Set("HorizontalEdgePadding",HorizontalEdgePadding);
+            frame.Set("VerticalEdgePadding",VerticalEdgePadding);
         }
 
         public void Import(SerialFrame frame) {
             X = frame.GetFloat("X");
             Y = frame.GetFloat("Y");
+            XOffset = frame.GetFloat("XOffset");
+            YOffset = frame.GetFloat("YOffset");
             Scale = frame.GetFloat("Scale");
-            horizontalEdgePadding = frame.GetBool("horizontalEdgePadding");
-            verticalEdgePadding = frame.GetBool("verticalEdgePadding");
+            HorizontalEdgePadding = frame.GetBool("HorizontalEdgePadding");
+            VerticalEdgePadding = frame.GetBool("VerticalEdgePadding");
         }
     }
 }
