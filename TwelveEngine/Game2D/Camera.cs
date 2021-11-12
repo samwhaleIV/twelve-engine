@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine {
+﻿namespace TwelveEngine.Game2D {
     public class Camera:ISerializable {
         public float X { get; set; } = 0;
         public float Y { get; set; } = 0;

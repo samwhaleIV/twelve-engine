@@ -10,24 +10,32 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DefaultEntitiesList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TheRedBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IRenderable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IUpdateable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\RenderStack.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\ITileRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\TestTileRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\TrackedGrid.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\GameState\GameManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Graphics2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Grid2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\GameState\GameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Serial\JsonSmasher.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\Serial\SerialFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Systems\JS\JSEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\PanZoom.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\RenderStack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\ITileRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\TestTileRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\TrackedGrid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState\GameManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Graphics2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Grid2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState\GameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\JsonSmasher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JS\JSEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Systems\JS\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Systems\Serial\" />
+    <Folder Include="$(MSBuildThisFileDirectory)JS\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />

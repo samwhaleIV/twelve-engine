@@ -3,7 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Serial {
     internal static class JsonSmasher {
 
         private enum AddressSegmentType {

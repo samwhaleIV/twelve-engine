@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Game2D {
     public class TestTileRenderer:ITileRenderer<int> {
 
         private const int SIZE = 32;

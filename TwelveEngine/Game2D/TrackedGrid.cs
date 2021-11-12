@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Game2D {
     public class TrackedGrid<T> {
 
         private int width;

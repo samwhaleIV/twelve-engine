@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TwelveEngine.Systems.Game2D {
+namespace TwelveEngine.Game2D {
     class RenderStack {
     }
 }

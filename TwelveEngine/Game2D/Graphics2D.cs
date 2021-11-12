@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TwelveEngine {
-    public static class Graphics2D {
+namespace TwelveEngine.Game2D {
+    public static class Graphics {
         public static void DrawCentered(SpriteBatch spriteBatch,Texture2D texture,Vector2 origin) {
             Vector2 destination = new Vector2(
                 origin.X - texture.Width / 2,

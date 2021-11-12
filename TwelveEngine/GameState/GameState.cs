@@ -3,6 +3,8 @@
 namespace TwelveEngine {
     public abstract class GameState:ISerializable {
 
+        internal GameManager Game = null;
+
         internal abstract void Load(GameManager game);
         internal abstract void Unload();
 

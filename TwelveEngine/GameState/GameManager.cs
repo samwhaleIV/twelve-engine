@@ -34,12 +34,14 @@ namespace TwelveEngine {
                 return;
             }
             if(!hasNullState()) {
+                this.gameState.Game = null;
                 this.gameState.Unload();
             }
             this.gameState = gameState;
             if(hasNullState()) {
                 return;
             }
+            gameState.Game = this;
             gameState.Load(this);
         }
         public GameState GameState {

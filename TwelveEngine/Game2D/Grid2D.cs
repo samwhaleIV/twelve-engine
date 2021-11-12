@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Game2D {
     public class Grid2D<T>:GameState where T:struct {
 
         private GameManager game;
@@ -121,6 +120,8 @@ namespace TwelveEngine {
             pendingTileRenderer = tileRenderer;
         }
 
+        public Action OnLoad { get; set; } = null;
+
         internal override void Load(GameManager game) {
             this.game = game;
             if(pendingTileRenderer == null) {
@@ -128,26 +129,44 @@ namespace TwelveEngine {
             }
             setTileRenderer(pendingTileRenderer);
             pendingTileRenderer = null;
+
+            this.entityManager = new EntityManager(this);
+            entityManager.UpdateListChanged = updateUpdateables;
+            entityManager.RenderListChanged = updateRenderables;
+
+            if(OnLoad != null) {
+                OnLoad();
+                OnLoad = null;
+            }
         }
 
         internal override void Unload() {
             if(hasTileRenderer()) tileRenderer.Unload();
             if(hasTileBuffer()) tileBuffer.Dispose();
             if(hasGrid()) unloadGrid();
+            entityManager.Unload();
         }
 
-        private bool kDown = false;
+        private EntityManager entityManager = null;
+        public EntityManager EntityManager => entityManager;
+
+        public void AddEntity(Entity entity) {
+            EntityManager.AddEntity(entity);
+        }
+
+        private IUpdateable[] updateables = new IUpdateable[0];
+        private IRenderable[] renderables = new IRenderable[0];
+
+        private void updateUpdateables(IUpdateable[] updateables) {
+            this.updateables = updateables;
+        }
+        private void updateRenderables(IRenderable[] renderables) {
+            this.renderables = renderables;
+        }
+
         internal override void Update(GameTime gameTime) {
-            KeyboardState state = Keyboard.GetState();
-            if(state.IsKeyDown(Keys.K) && !kDown) {
-                kDown = true;
-                var frame = new SerialFrame();
-                this.Export(frame);
-                var output = frame.Export();
-                System.Diagnostics.Debug.WriteLine(output);
-            }
-            if(state.IsKeyUp(Keys.K)) {
-                kDown = false;
+            for(var i = 0;i<updateables.Length;i++) {
+                updateables[i].Update(gameTime);
             }
         }
 
@@ -215,7 +234,7 @@ namespace TwelveEngine {
         }
         public (float x,float y) GetCoordinate(int screenX,int screenY) {
             /* Don't call this during rendering! (For performance) */
-            var viewport = Graphics2D.GetViewport(game);
+            var viewport = Graphics.GetViewport(game);
             var screenSpace = getScreenSpace(viewport);
             float x = (float)screenX / viewport.Width * screenSpace.Width;
             float y = (float)screenY / viewport.Height * screenSpace.Height;
@@ -250,19 +269,26 @@ namespace TwelveEngine {
             game.SpriteBatch.Draw(tileBuffer,destination,source,Color.White,0,Vector2.Zero,SpriteEffects.None,1f);
         }
 
+        private void renderEntities(GameTime gameTime) {
+            for(var i = 0;i < renderables.Length;i++) {
+                renderables[i].Render(gameTime);
+            }
+        }
+
         internal override void Draw(GameTime gameTime) {
             game.GraphicsDevice.Clear(Color.Black);
 
             if(!hasTileBuffer()) return;
 
-            Viewport viewport = Graphics2D.GetViewport(game);
+            Viewport viewport = Graphics.GetViewport(game);
             ScreenSpace screenSpace = getScreenSpace(viewport);
             Rectangle source = getScreenSpaceRectangle(screenSpace);
 
             if(hasTileRenderer()) updateTileBuffer();
 
-            game.SpriteBatch.Begin();
+            game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
             renderTileBuffer(viewport.Bounds,source);
+            renderEntities(gameTime);
             game.SpriteBatch.End();
         }
 
@@ -270,6 +296,7 @@ namespace TwelveEngine {
             frame.Set("Camera",Camera);
             frame.Set("TileSize",TileSize);
             frame.SetArray2D("GridData",Grid.Data);
+            entityManager.Export(frame);
         }
 
         public override void Import(SerialFrame frame) {
@@ -278,6 +305,7 @@ namespace TwelveEngine {
             T[,] gridData = frame.GetArray2D<T>("GridData");
             var grid = new TrackedGrid<T>(gridData);
             setGrid(grid);
+            entityManager.Import(frame);
         }
     }
 }

@@ -4,8 +4,8 @@ using Microsoft.ClearScript;
 using Microsoft.ClearScript.JavaScript;
 using Microsoft.ClearScript.V8;
 
-namespace TwelveEngine {
-    public static class JSEngine {
+namespace TwelveEngine.JS {
+    public static class Engine {
 
         private static readonly V8ScriptEngine engine = new V8ScriptEngine();
         public static void RunTest() {
