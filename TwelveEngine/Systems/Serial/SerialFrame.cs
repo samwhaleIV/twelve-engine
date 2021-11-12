@@ -32,7 +32,8 @@ namespace TwelveEngine {
         private Stack<string> propertyAddress = new Stack<string>();
         private string baseAddress = null;
         private string getAddress(string property) {
-            if(baseAddress == null) return property;
+            if(baseAddress == null)
+                return property;
             return $"{baseAddress}{ADDRESS_DELIMITER}{property}";
         }
         private string getBaseAddress() {
@@ -142,7 +143,8 @@ namespace TwelveEngine {
 
         public double GetDouble(string property) {
             object value = dictionary[getAddress(property)];
-            if(!(value is double)) value = 0d;
+            if(!(value is double))
+                value = 0d;
             return (double)value;
         }
         public int GetInt(string property) {
@@ -181,12 +183,12 @@ namespace TwelveEngine {
         }
         public double[] GetDoubleArray(string property) {
             return getArray<double>(property);
-        }        
+        }
 
         private void setArray2D<T>(string property,T[,] value) {
             int xLength = value.GetLength(0);
             T[] flatArray = new T[value.Length];
-            for(int i = 0;i<flatArray.Length;i++) {
+            for(int i = 0;i < flatArray.Length;i++) {
                 flatArray[i] = value[i % xLength,i / xLength];
             }
             dictionary[getAddress(SIZE_PREFIX + property)] = xLength;
@@ -225,7 +227,7 @@ namespace TwelveEngine {
             }
 
             T[,] array = new T[xLength,yLength];
-            for(int i = 0;i<flatArray.Length;i++) {
+            for(int i = 0;i < flatArray.Length;i++) {
                 array[i % xLength,i / xLength] = flatArray[i];
             }
             return array;
@@ -270,6 +272,13 @@ namespace TwelveEngine {
         }
         public void GetDoubleArray(string property,double[] target) {
             getArray(property,target);
+        }
+
+        public void SetArray2D<T>(string property,T[,] grid) where T : struct {
+            setArray2D(property,grid);
+        }
+        public T[,] GetArray2D<T>(string property) where T : struct {
+            return getArray2D<T>(property);
         }
     }
 }

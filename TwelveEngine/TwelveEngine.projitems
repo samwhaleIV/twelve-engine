@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\RenderStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\ITileRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\TestTileRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\TrackedGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\GameState\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Graphics2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Systems\Game2D\Grid2D.cs" />

@@ -129,7 +129,7 @@ namespace TwelveEngine {
                 AddressSegment[] address = getAddressSegments(item.Key);
                 parseAddressSegments(address,item.Value,rootObject);
             }
-            return rootObject.ToString();
+            return rootObject.ToString(Formatting.None);
         }
 
         private static void unsmashValue(string key,JToken value,string path,Dictionary<string,object> dictionary) {

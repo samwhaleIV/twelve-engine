@@ -2,56 +2,79 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine {
-    public class Grid2D:GameState {
+    public class Grid2D<T>:GameState where T:struct {
 
-        public static T[,] GetGrid<T>(int width,int height,Func<int,int,T> pattern) {
-            T[,] grid = new T[width,height];
-            for(int x = 0;x < width;x++) {
-                for(int y = 0;y < height;y++) {
-                    grid[x,y] = pattern(x,y);
-                }
-            }
-            return grid;
-        }
-
+        private GameManager game;
         public Camera Camera { get; set; } = new Camera();
 
-        protected int gridWidth = 0;
-        protected int gridHeight = 0;
+        private TrackedGrid<T> grid = null;
+        private bool hasGrid() {
+            return grid != null;
+        }
 
-        private int[,] grid = new int[0,0];
-
-        private ITileRenderer tileRenderer;
-        private GameManager game;
+        private ITileRenderer<T> tileRenderer;
+        private bool hasTileRenderer() {
+            return tileRenderer != null;
+        }
 
         private RenderTarget2D tileBuffer = null;
+        private bool hasTileBuffer() {
+            return tileBuffer != null;
+        }
 
         private bool refreshTileBuffer = false;
         private Stack<Rectangle> tileRefreshAreas = new Stack<Rectangle>();
 
         private void createTileBuffer() {
-            int textureWidth = gridWidth * TileSize;
-            int textureHeight = gridHeight * TileSize;
-            if(tileBuffer != null) {
-                tileBuffer.Dispose();
-            }
-            tileBuffer = new RenderTarget2D(game.GraphicsDevice,textureWidth,textureHeight);
+            refreshTileBuffer = false;
             tileRefreshAreas.Clear();
+
+            if(hasTileBuffer()) {
+                tileBuffer.Dispose();
+                tileBuffer = null;
+            }
+            if(!hasGrid()) {
+                return;
+            }
+
+            int textureWidth = Width * TileSize;
+            int textureHeight = Height * TileSize;
+
+            tileBuffer = new RenderTarget2D(game.GraphicsDevice,textureWidth,textureHeight);
             refreshTileBuffer = true;
         }
 
-        private void setGrid(int[,] grid) {
-            if(grid == null) {
-                grid = new int[0,0];
-            }
+        public TrackedGrid<T> CreateGrid(int width,int height) {
+            var trackedGrid = new TrackedGrid<T>(width,height);
+            setGrid(trackedGrid);
+            return trackedGrid;
+        }
+
+        private void gridValueChanged(Rectangle rectangle) {
+            tileRefreshAreas.Push(rectangle);
+        }
+        private void gridInvalidated() {
+            refreshTileBuffer = true;
+        }
+
+        private void unloadGrid() {
+            grid.Invalidated = null;
+            grid.ValueChanged = null;
+        }
+        private void setGrid(TrackedGrid<T> grid) {
+            if(hasGrid()) unloadGrid();
+
             this.grid = grid;
-            this.gridWidth = grid.GetLength(0);
-            this.gridHeight = grid.GetLength(1);
+
+            grid.Invalidated = gridInvalidated;
+            grid.ValueChanged = gridValueChanged;
+
             createTileBuffer();
         }
-        public int[,] Grid {
+        public TrackedGrid<T> Grid {
             get {
                 return grid;
             }
@@ -59,42 +82,32 @@ namespace TwelveEngine {
                 setGrid(value);
             }
         }
-        public int Width {
-            get {
-                return gridWidth;
-            }
-        }
-        public int Height {
-            get {
-                return gridHeight;
-            }
-        }
+
+        public int Width => grid.Width;
+        public int Height => grid.Height;
 
         public int TileSize { get; set; } = Constants.DefaultTileSize;
 
-        private void setTileRenderer(ITileRenderer tileRenderer) {
+        private void setTileRenderer(ITileRenderer<T> tileRenderer) {
             if(hasTileRenderer()) {
                 tileRenderer.Unload();
             }
             this.tileRenderer = tileRenderer;
             if(!hasTileRenderer()) {
-                if(tileBuffer == null) {
+                refreshTileBuffer = false;
+                tileRefreshAreas.Clear();
+                if(!hasTileBuffer()) {
                     return;
                 }
                 tileBuffer.Dispose();
                 tileBuffer = null;
-                refreshTileBuffer = false;
-                tileRefreshAreas.Clear();
-                return;
+                return; 
             }
             tileRenderer.Load(game,this);
             createTileBuffer();
         }
 
-        private bool hasTileRenderer() {
-            return tileRenderer != null;
-        }
-        public ITileRenderer TileRenderer {
+        public ITileRenderer<T> TileRenderer {
             get {
                 return tileRenderer;
             }
@@ -103,8 +116,8 @@ namespace TwelveEngine {
             }
         }
 
-        private ITileRenderer pendingTileRenderer = null;
-        public Grid2D(ITileRenderer tileRenderer) {
+        private ITileRenderer<T> pendingTileRenderer = null;
+        public Grid2D(ITileRenderer<T> tileRenderer) {
             pendingTileRenderer = tileRenderer;
         }
 
@@ -118,16 +131,24 @@ namespace TwelveEngine {
         }
 
         internal override void Unload() {
-            if(hasTileRenderer()) {
-                tileRenderer.Unload();
-            }
-            if(tileBuffer != null) {
-                tileBuffer.Dispose();
-            }
+            if(hasTileRenderer()) tileRenderer.Unload();
+            if(hasTileBuffer()) tileBuffer.Dispose();
+            if(hasGrid()) unloadGrid();
         }
 
+        private bool kDown = false;
         internal override void Update(GameTime gameTime) {
-            /* TODO */
+            KeyboardState state = Keyboard.GetState();
+            if(state.IsKeyDown(Keys.K) && !kDown) {
+                kDown = true;
+                var frame = new SerialFrame();
+                this.Export(frame);
+                var output = frame.Export();
+                System.Diagnostics.Debug.WriteLine(output);
+            }
+            if(state.IsKeyUp(Keys.K)) {
+                kDown = false;
+            }
         }
 
         private void renderTiles(Rectangle area) {
@@ -172,16 +193,16 @@ namespace TwelveEngine {
             if(Camera.HorizontalEdgePadding) {
                 if(x < 0) {
                     x = 0;
-                } else if(x + screenWidth >= gridWidth) {
-                    x = gridWidth - screenWidth;
+                } else if(x + screenWidth >= Width) {
+                    x = Width - screenWidth;
                 }
             }
 
             if(Camera.VerticalEdgePadding) {
                 if(y < 0) {
                     y = 0;
-                } else if(y + screenHeight >= gridHeight) {
-                    y = gridHeight - screenHeight;
+                } else if(y + screenHeight >= Height) {
+                    y = Height - screenHeight;
                 }
             }
 
@@ -202,63 +223,61 @@ namespace TwelveEngine {
         }
 
         private void updateTileBuffer() {
-            if(tileBuffer == null) {
-                return;
-            }
-            if(tileBuffer.IsContentLost || refreshTileBuffer) {
-                game.GraphicsDevice.SetRenderTarget(tileBuffer);
-                game.SpriteBatch.Begin();
+            bool redrawAll = tileBuffer.IsContentLost || refreshTileBuffer;
+            bool redrawSome = tileRefreshAreas.Count > 0;
 
-                renderTiles(new Rectangle(0,0,gridWidth,gridHeight));
+            if(!(redrawAll || redrawSome)) return;
 
-                game.SpriteBatch.End();
-                game.GraphicsDevice.SetRenderTarget(null);
+            game.GraphicsDevice.SetRenderTarget(tileBuffer);
+            game.SpriteBatch.Begin();
 
-                refreshTileBuffer = false;
-                tileRefreshAreas.Clear();
-            } else if(tileRefreshAreas.Count > 0) {
+            if(redrawAll) {
+                renderTiles(new Rectangle(0,0,Width,Height));
+            } else {
                 Rectangle area;
-
-                game.GraphicsDevice.SetRenderTarget(tileBuffer);
-                game.SpriteBatch.Begin();
                 while(tileRefreshAreas.TryPeek(out area)) {
                     renderTiles(area);
                     tileRefreshAreas.Pop();
                 }
-
-                game.SpriteBatch.End();
-                game.GraphicsDevice.SetRenderTarget(null);
             }
+
+            game.SpriteBatch.End();
+            game.GraphicsDevice.SetRenderTarget(null);
+            refreshTileBuffer = false;
+        }
+
+        private void renderTileBuffer(Rectangle destination,Rectangle source) {
+            game.SpriteBatch.Draw(tileBuffer,destination,source,Color.White,0,Vector2.Zero,SpriteEffects.None,1f);
         }
 
         internal override void Draw(GameTime gameTime) {
             game.GraphicsDevice.Clear(Color.Black);
 
-            if(!hasTileRenderer()) {
-                return;
-            }
+            if(!hasTileBuffer()) return;
 
             Viewport viewport = Graphics2D.GetViewport(game);
             ScreenSpace screenSpace = getScreenSpace(viewport);
-            Rectangle sourceRectangle = getScreenSpaceRectangle(screenSpace);
+            Rectangle source = getScreenSpaceRectangle(screenSpace);
 
-            updateTileBuffer();
+            if(hasTileRenderer()) updateTileBuffer();
 
             game.SpriteBatch.Begin();
-            game.SpriteBatch.Draw(tileBuffer,viewport.Bounds,sourceRectangle,Color.White,0,Vector2.Zero,SpriteEffects.None,1f);
+            renderTileBuffer(viewport.Bounds,source);
             game.SpriteBatch.End();
         }
 
         public override void Export(SerialFrame frame) {
             frame.Set("Camera",Camera);
-            frame.Set("Grid",Grid);
             frame.Set("TileSize",TileSize);
+            frame.SetArray2D("GridData",Grid.Data);
         }
 
         public override void Import(SerialFrame frame) {
             frame.Get("Camera",Camera);
-            Grid = frame.GetIntArray2D("Grid");
-            frame.Set("TileSize",TileSize);
+            TileSize = frame.GetInt("TileSize");
+            T[,] gridData = frame.GetArray2D<T>("GridData");
+            var grid = new TrackedGrid<T>(gridData);
+            setGrid(grid);
         }
     }
 }

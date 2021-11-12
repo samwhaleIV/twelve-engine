@@ -2,12 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine {
-    public class TestTileRenderer:ITileRenderer {
+    public class TestTileRenderer:ITileRenderer<int> {
 
-        private const int SIZE = 256;
+        private const int SIZE = 32;
 
         private GameManager game;
-        private Grid2D grid2D;
+        private Grid2D<int> grid2D;
 
         private Rectangle textureOrigin;
         Texture2D[] colorLookup;
@@ -18,8 +18,7 @@ namespace TwelveEngine {
             return texture;
         }
 
-
-        public void Load(GameManager game,Grid2D grid2D) {
+        public void Load(GameManager game,Grid2D<int> grid2D) {
             this.game = game;
             this.grid2D = grid2D;
 
@@ -30,14 +29,13 @@ namespace TwelveEngine {
             };
             textureOrigin = new Rectangle(0,0,1,1);
 
-            var grid = Grid2D.GetGrid(SIZE,SIZE,(x,y) => (x + y) % 2 == 0 ? 0 : 1);
+            var grid = this.grid2D.CreateGrid(SIZE,SIZE);
+            grid.Fill((x,y) => (x + y) % 2 == 0 ? 0 : 1);
 
             grid[0,0] = 2;
             grid[0,SIZE - 1] = 2;
             grid[SIZE - 1,SIZE - 1] = 2;
             grid[SIZE - 1,0] = 2;
-
-            this.grid2D.Grid = grid;
         }
 
         public void RenderTile(int value,Rectangle destination) {
