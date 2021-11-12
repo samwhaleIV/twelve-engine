@@ -285,8 +285,8 @@ namespace TwelveEngine.Game2D {
             return new Rectangle(
                 (int)Math.Floor((screenSpace.X + entity.X) * tileSize),
                 (int)Math.Floor((screenSpace.Y + entity.Y) * tileSize),
-                (int)Math.Ceiling(entity.Width * tileSize),
-                (int)Math.Ceiling(entity.Height * tileSize)
+                (int)Math.Floor(entity.Width * tileSize),
+                (int)Math.Floor(entity.Height * tileSize)
             );
         }
 
