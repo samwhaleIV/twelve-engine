@@ -2,12 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D {
-    public class TestTileRenderer:ITileRenderer<int> {
+    public class TestTileRenderer:ITileRenderer {
 
         private const int SIZE = 32;
 
         private GameManager game;
-        private Grid2D<int> grid2D;
+        private Grid2D grid2D;
 
         private Rectangle textureOrigin;
         Texture2D[] colorLookup;
@@ -18,7 +18,7 @@ namespace TwelveEngine.Game2D {
             return texture;
         }
 
-        public void Load(GameManager game,Grid2D<int> grid2D) {
+        public void Load(GameManager game,Grid2D grid2D) {
             this.game = game;
             this.grid2D = grid2D;
 

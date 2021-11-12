@@ -6,9 +6,11 @@ using System.Linq;
 namespace TwelveEngine.Game2D {
     public sealed class EntityManager:ISerializable {
         public GameManager Game { get; set; } = null;
+        public Grid2D Grid { get; set; } = null;
 
-        public EntityManager(GameState owner) {
+        public EntityManager(Grid2D owner) {
             this.Game = owner.Game;
+            this.Grid = owner;
         }
         private Dictionary<long,IRenderable> renderList = new Dictionary<long,IRenderable>();
         private Dictionary<long,IUpdateable> updateList = new Dictionary<long,IUpdateable>();
@@ -190,6 +192,7 @@ namespace TwelveEngine.Game2D {
 
             entity.Owner = this;
             entity.Game = Game;
+            entity.Grid = Grid;
 
             long ID = getNextID();
             entity.ID = ID;
@@ -204,13 +207,16 @@ namespace TwelveEngine.Game2D {
             }
             removeFromLists(entity);
             entity.Unload();
+
             entity.Owner = null;
             entity.Game = null;
+            entity.Grid = null;
         }
 
         public void Unload() {
             clearEntities();
             Game = null;
+            Grid = null;
         }
 
         private void clearEntities() {

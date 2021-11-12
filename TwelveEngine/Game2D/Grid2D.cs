@@ -4,17 +4,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D {
-    public class Grid2D<T>:GameState where T:struct {
+    public class Grid2D:GameState {
 
         private GameManager game;
         public Camera Camera { get; set; } = new Camera();
 
-        private TrackedGrid<T> grid = null;
+        private TrackedGrid grid = null;
         private bool hasGrid() {
             return grid != null;
         }
 
-        private ITileRenderer<T> tileRenderer;
+        private ITileRenderer tileRenderer;
         private bool hasTileRenderer() {
             return tileRenderer != null;
         }
@@ -46,8 +46,8 @@ namespace TwelveEngine.Game2D {
             refreshTileBuffer = true;
         }
 
-        public TrackedGrid<T> CreateGrid(int width,int height) {
-            var trackedGrid = new TrackedGrid<T>(width,height);
+        public TrackedGrid CreateGrid(int width,int height) {
+            var trackedGrid = new TrackedGrid(width,height);
             setGrid(trackedGrid);
             return trackedGrid;
         }
@@ -63,7 +63,7 @@ namespace TwelveEngine.Game2D {
             grid.Invalidated = null;
             grid.ValueChanged = null;
         }
-        private void setGrid(TrackedGrid<T> grid) {
+        private void setGrid(TrackedGrid grid) {
             if(hasGrid()) unloadGrid();
 
             this.grid = grid;
@@ -73,7 +73,7 @@ namespace TwelveEngine.Game2D {
 
             createTileBuffer();
         }
-        public TrackedGrid<T> Grid {
+        public TrackedGrid Grid {
             get {
                 return grid;
             }
@@ -87,7 +87,7 @@ namespace TwelveEngine.Game2D {
 
         public int TileSize { get; set; } = Constants.DefaultTileSize;
 
-        private void setTileRenderer(ITileRenderer<T> tileRenderer) {
+        private void setTileRenderer(ITileRenderer tileRenderer) {
             if(hasTileRenderer()) {
                 tileRenderer.Unload();
             }
@@ -106,7 +106,7 @@ namespace TwelveEngine.Game2D {
             createTileBuffer();
         }
 
-        public ITileRenderer<T> TileRenderer {
+        public ITileRenderer TileRenderer {
             get {
                 return tileRenderer;
             }
@@ -115,8 +115,8 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private ITileRenderer<T> pendingTileRenderer = null;
-        public Grid2D(ITileRenderer<T> tileRenderer) {
+        private ITileRenderer pendingTileRenderer = null;
+        public Grid2D(ITileRenderer tileRenderer) {
             pendingTileRenderer = tileRenderer;
         }
 
@@ -186,6 +186,7 @@ namespace TwelveEngine.Game2D {
             internal float Y;
             internal float Width;
             internal float Height;
+            internal float TileSize;
         }
 
         private Rectangle getScreenSpaceRectangle(ScreenSpace screenSpace) {
@@ -229,11 +230,13 @@ namespace TwelveEngine.Game2D {
                 X = x,
                 Y = y,
                 Width = screenWidth,
-                Height = screenHeight
+                Height = screenHeight,
+                TileSize = tileSize
             };
         }
+
+
         public (float x,float y) GetCoordinate(int screenX,int screenY) {
-            /* Don't call this during rendering! (For performance) */
             var viewport = Graphics.GetViewport(game);
             var screenSpace = getScreenSpace(viewport);
             float x = (float)screenX / viewport.Width * screenSpace.Width;
@@ -275,19 +278,33 @@ namespace TwelveEngine.Game2D {
             }
         }
 
+        private ScreenSpace screenSpace;
+
+        public Rectangle GetDestination(Entity entity) {
+            var tileSize = screenSpace.TileSize;
+            return new Rectangle(
+                (int)Math.Floor((screenSpace.X + entity.X) * tileSize),
+                (int)Math.Floor((screenSpace.Y + entity.Y) * tileSize),
+                (int)Math.Ceiling(entity.Width * tileSize),
+                (int)Math.Ceiling(entity.Height * tileSize)
+            );
+        }
+
         internal override void Draw(GameTime gameTime) {
             game.GraphicsDevice.Clear(Color.Black);
 
-            if(!hasTileBuffer()) return;
-
             Viewport viewport = Graphics.GetViewport(game);
-            ScreenSpace screenSpace = getScreenSpace(viewport);
-            Rectangle source = getScreenSpaceRectangle(screenSpace);
+            screenSpace = getScreenSpace(viewport);
 
-            if(hasTileRenderer()) updateTileBuffer();
+            if(hasTileBuffer() && hasTileRenderer()) {
+                updateTileBuffer();
+            }
 
             game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
-            renderTileBuffer(viewport.Bounds,source);
+            if(hasTileBuffer()) {
+                Rectangle source = getScreenSpaceRectangle(screenSpace);
+                renderTileBuffer(viewport.Bounds,source);
+            }
             renderEntities(gameTime);
             game.SpriteBatch.End();
         }
@@ -302,8 +319,8 @@ namespace TwelveEngine.Game2D {
         public override void Import(SerialFrame frame) {
             frame.Get("Camera",Camera);
             TileSize = frame.GetInt("TileSize");
-            T[,] gridData = frame.GetArray2D<T>("GridData");
-            var grid = new TrackedGrid<T>(gridData);
+            int[,] gridData = frame.GetIntArray2D("GridData");
+            var grid = new TrackedGrid(gridData);
             setGrid(grid);
             entityManager.Import(frame);
         }

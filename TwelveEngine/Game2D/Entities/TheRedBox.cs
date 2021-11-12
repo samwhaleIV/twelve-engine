@@ -1,24 +1,12 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D.Entities {
     class TheRedBox:Entity,IRenderable,IUpdateable  {
 
-        float X { get; set; } = 0;
-        float Y { get; set; } = 0;
-
-        public override void Export(SerialFrame frame) {
-            frame.Set("X",X);
-            frame.Set("Y",Y);
-        }
-
-        public override void Import(SerialFrame frame) {
-            X = frame.GetFloat("X");
-            Y = frame.GetFloat("Y");
-        }
-
         private Texture2D redBoxTexture;
+
+        private Rectangle textureSource = new Rectangle(0,0,1,1);
 
         public override void Load() {
             FactoryID = "TheRedBox";
@@ -27,13 +15,16 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public void Render(GameTime gameTime) {
-            Game.SpriteBatch.Draw(redBoxTexture,new Rectangle(0,0,16,16),Color.White);
+            Game.SpriteBatch.Draw(redBoxTexture,Grid.GetDestination(this),textureSource,Color.White);
         }
 
         public override void Unload() {
             redBoxTexture.Dispose();
         }
 
-        public void Update(GameTime gameTime) {}
+        public void Update(GameTime gameTime) {
+            X = (float)gameTime.TotalGameTime.TotalMilliseconds / 10000f;
+            Y = (float)gameTime.TotalGameTime.TotalMilliseconds / 10000f;
+        }
     }
 }

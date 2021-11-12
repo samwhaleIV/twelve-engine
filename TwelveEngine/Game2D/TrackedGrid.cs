@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game2D {
-    public class TrackedGrid<T> {
+    public class TrackedGrid {
 
         private int width;
         private int height;
@@ -10,24 +10,24 @@ namespace TwelveEngine.Game2D {
         public int Width => width;
         public int Height => height;
 
-        private readonly T[,] data;
+        private readonly int[,] data;
         public TrackedGrid(int width,int height) {
-            data = new T[width,height];
+            data = new int[width,height];
             this.width = width;
             this.height = height;
         }
-        public TrackedGrid(T[,] data) {
+        public TrackedGrid(int[,] data) {
             this.data = data;
             this.width = data.GetLength(0);
             this.height = data.GetLength(1);
         }
 
-        public T[,] Data => data;
+        public int[,] Data => data;
 
         public Action Invalidated { get; set; } = null;
         public Action<Rectangle> ValueChanged { get; set; } = null;
 
-        private void updateGridValue(int x,int y,T value) {
+        private void updateGridValue(int x,int y,int value) {
             if(ValueChanged == null) {
                 return;
             }
@@ -35,12 +35,12 @@ namespace TwelveEngine.Game2D {
             ValueChanged(new Rectangle(x,y,1,1));
         }
 
-        public T this[int x,int y] {
+        public int this[int x,int y] {
             get => data[x,y];
             set => updateGridValue(x,y,value);
         }
 
-        public void Fill(Func<int,int,T> pattern) {
+        public void Fill(Func<int,int,int> pattern) {
             for(int x = 0;x < width;x++) {
                 for(int y = 0;y < height;y++) {
                     data[x,y] = pattern(x,y);

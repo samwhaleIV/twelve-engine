@@ -5,7 +5,7 @@ namespace TwelveEngine {
     public static class Program {
 
         private static GameState GetTestStartState() {
-            var grid = new Grid2D<int>(new TestTileRenderer());
+            var grid = new Grid2D(new TestTileRenderer());
             grid.Camera.Scale = 4;
             grid.Camera.EdgePadding = true;
             grid.Camera.X = 0;
