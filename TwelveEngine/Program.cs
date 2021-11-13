@@ -1,5 +1,9 @@
-﻿using TwelveEngine.Game2D;
+﻿using System;
+using TwelveEngine.Game2D;
 using TwelveEngine.Game2D.Entities;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace TwelveEngine {
     public static class Program {
@@ -12,8 +16,9 @@ namespace TwelveEngine {
             grid.Camera.Y = 0;
 
             grid.OnLoad = () => {
-                var redBox = new TheRedBox();
-                grid.AddEntity(redBox);
+                var frame = new SerialFrame();
+                grid.Export(frame);
+                var json = frame.Export();
             };
 
             return grid;

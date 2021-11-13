@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D.Entities {
-    class TheRedBox:Entity,IRenderable,IUpdateable  {
+    class TheRedBox:Entity,IRenderable  {
 
         private Texture2D redBoxTexture;
 
@@ -20,11 +20,6 @@ namespace TwelveEngine.Game2D.Entities {
 
         public override void Unload() {
             redBoxTexture.Dispose();
-        }
-
-        public void Update(GameTime gameTime) {
-            X = (float)gameTime.TotalGameTime.TotalMilliseconds / 10000f;
-            Y = (float)gameTime.TotalGameTime.TotalMilliseconds / 10000f;
         }
     }
 }

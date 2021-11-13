@@ -1,0 +1,3 @@
+Rules/Corners.tmx
+Rules/Sides.tmx
+Rules/CornerCases.tmx
