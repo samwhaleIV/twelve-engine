@@ -1,0 +1,13 @@
+rules/dev-wall/edges.tmx
+rules/dev-wall/corners.tmx
+rules/dev-wall/caps.tmx
+
+rules/dev-wall/inside-corners.tmx
+rules/dev-wall/inside-nooks.tmx
+
+rules/dev-wall/outside-corners.tmx
+rules/dev-wall/outside-nooks.tmx
+
+rules/dev-wall/shadows.tmx
+rules/dev-wall/shadows-corners.tmx
+rules/dev-wall/shadows-special.tmx
