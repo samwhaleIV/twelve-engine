@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "maps_alpha/level1.tmx",
+    "activeFile": "",
     "expandedProjectPaths": [
     ],
     "exportAsImage.drawTileGrid": false,
@@ -139,35 +139,59 @@
             }
         },
         "maps_alpha/level1.tmx": {
-            "scale": 4,
+            "scale": 5.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 118.25,
-                "y": 135
+                "x": 121,
+                "y": 125.27272727272728
             }
         },
         "maps_alpha/level2.tmx": {
-            "scale": 4,
+            "scale": 3,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 128,
-                "y": 179.75
+                "x": 117.83333333333331,
+                "y": 170.33333333333334
             }
         },
         "maps_alpha/level3.tmx": {
             "scale": 4,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 129,
+                "x": 129.125,
                 "y": 136.5
             }
         },
         "maps_alpha/level4.tmx": {
             "scale": 3,
-            "selectedLayer": 0,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 191.99999999999997,
-                "y": 176
+                "x": 159.5,
+                "y": 177
+            }
+        },
+        "maps_alpha/level5.tmx": {
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 39.833333333333314,
+                "y": 285
+            }
+        },
+        "maps_alpha/level6.tmx": {
+            "scale": 4,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 132.875,
+                "y": 157.25
+            }
+        },
+        "maps_alpha/level7.tmx": {
+            "scale": 3,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 174.5,
+                "y": 167.33333333333334
             }
         },
         "maps_alpha/outside-wall-test.tmx": {
@@ -306,22 +330,21 @@
     "map.tileWidth": 16,
     "map.width": 32,
     "openFiles": [
-        "maps_alpha/level1.tmx"
     ],
     "project": "port-hole.tiled-project",
     "recentFiles": [
+        "maps_alpha/level6.tmx",
+        "porthole-tileset.tsx",
+        "maps_alpha/level5.tmx",
+        "maps_alpha/level4.tmx",
+        "maps_alpha/level1.tmx",
+        "maps_alpha/level2.tmx",
+        "maps_alpha/level3.tmx",
         "maps_alpha/rules/shadows-special.tmx",
         "maps_alpha/rules/outside-bubbles.tmx",
-        "maps_alpha/level1.tmx",
-        "porthole-tileset.tsx",
         "maps_alpha/rules/corners.tmx",
         "maps_alpha/rules/edges.tmx",
-        "maps_alpha/rules/outside-corners.tmx",
-        "maps_alpha/level2.tmx",
-        "maps_alpha/outside-wall-test.tmx",
-        "maps_alpha/rules/inside-corners.tmx",
-        "maps_alpha/rules/inside-nooks.tmx",
-        "maps_alpha/rules/outside-nooks.tmx"
+        "maps_alpha/rules/outside-corners.tmx"
     ],
     "tileset.embedInMap": false,
     "tileset.lastUsedFormat": "tsx",
