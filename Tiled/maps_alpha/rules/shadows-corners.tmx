@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="15" height="2" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="1">
- <tileset firstgid="1" source="../../../porthole-tileset.tsx"/>
+ <tileset firstgid="1" source="../../porthole-tileset.tsx"/>
  <layer id="3" name="regions" width="15" height="2">
   <data encoding="csv">
 1,1,0,1,1,0,1,1,0,1,1,0,1,1,1,
@@ -13,7 +13,7 @@
 33,2,0,2,33,0,2,2,0,2,2,0,0,2,0
 </data>
  </layer>
- <layer id="2" name="output_layer3" width="15" height="2">
+ <layer id="2" name="output_layer2" width="15" height="2">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,97,0,99,0,0,0,100,0,101,0,0,0,102,0
