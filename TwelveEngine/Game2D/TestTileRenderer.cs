@@ -4,10 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game2D {
     public class TestTileRenderer:ITileRenderer {
 
-        private const int SIZE = 32;
+        private readonly TrackedGrid grid;
+
+        public TestTileRenderer(TrackedGrid grid) {
+            this.grid = grid;
+        }
 
         private GameManager game;
-        private Grid2D grid2D;
 
         private Rectangle textureOrigin;
         Texture2D[] colorLookup;
@@ -20,7 +23,6 @@ namespace TwelveEngine.Game2D {
 
         public void Load(GameManager game,Grid2D grid2D) {
             this.game = game;
-            this.grid2D = grid2D;
 
             colorLookup = new Texture2D[] {
                 getColorTexture(Color.DimGray),
@@ -29,13 +31,11 @@ namespace TwelveEngine.Game2D {
             };
             textureOrigin = new Rectangle(0,0,1,1);
 
-            var grid = this.grid2D.CreateGrid(SIZE,SIZE);
             grid.Fill((x,y) => (x + y) % 2 == 0 ? 0 : 1);
-
             grid[0,0] = 2;
-            grid[0,SIZE - 1] = 2;
-            grid[SIZE - 1,SIZE - 1] = 2;
-            grid[SIZE - 1,0] = 2;
+            grid[0,grid.Width - 1] = 2;
+            grid[grid.Width - 1,grid.Height - 1] = 2;
+            grid[grid.Width - 1,0] = 2;
         }
 
         public void RenderTile(int value,Rectangle destination) {

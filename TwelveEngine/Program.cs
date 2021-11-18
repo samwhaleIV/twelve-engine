@@ -9,16 +9,30 @@ namespace TwelveEngine {
     public static class Program {
 
         private static GameState GetTestStartState() {
-            var grid = new Grid2D(new TestTileRenderer());
+            var grid = new Grid2D(LayerModes.SingleLayerBackground);
+
             grid.Camera.Scale = 10;
             grid.Camera.EdgePadding = true;
             grid.Camera.X = 0;
             grid.Camera.Y = 0;
 
             grid.OnLoad = () => {
-                var frame = new SerialFrame();
-                grid.Export(frame);
-                var json = frame.Export();
+                var width = 48;
+                var height = 48;
+
+                grid.Width = width;
+                grid.Height = height;
+
+                var map = new int[width,height];
+                var tileGrid = new TrackedGrid(map);
+                var tileRenderer = new TestTileRenderer(tileGrid);
+                var layer1 = grid.CreateLayer(tileGrid,tileRenderer);
+                grid.SetLayers(new GridLayer[] { layer1 });
+
+                grid.AddEntity(new TheRedBox() {
+                    X = 1,
+                    Y = 1
+                });
             };
 
             return grid;

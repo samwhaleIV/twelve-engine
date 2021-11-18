@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-
-namespace TwelveEngine.Game2D {
+﻿namespace TwelveEngine.Game2D {
     public abstract class Entity:ISerializable {
         public string FactoryID = null;
         public string Name = string.Empty;

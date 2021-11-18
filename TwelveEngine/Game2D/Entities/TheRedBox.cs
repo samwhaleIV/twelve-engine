@@ -15,7 +15,10 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public void Render(GameTime gameTime) {
-            Game.SpriteBatch.Draw(redBoxTexture,Grid.GetDestination(this),textureSource,Color.White);
+            if(Grid.OnScreen(this)) {
+                var destination = Grid.GetDestination(this);
+                Game.SpriteBatch.Draw(redBoxTexture,destination,textureSource,Color.White);
+            }
         }
 
         public override void Unload() {

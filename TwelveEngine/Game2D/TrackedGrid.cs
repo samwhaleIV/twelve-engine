@@ -4,22 +4,19 @@ using Microsoft.Xna.Framework;
 namespace TwelveEngine.Game2D {
     public class TrackedGrid {
 
-        private int width;
-        private int height;
-
-        public int Width => width;
-        public int Height => height;
+        public readonly int Width;
+        public readonly int Height;
 
         private readonly int[,] data;
         public TrackedGrid(int width,int height) {
             data = new int[width,height];
-            this.width = width;
-            this.height = height;
+            Width = width;
+            Height = height;
         }
         public TrackedGrid(int[,] data) {
             this.data = data;
-            this.width = data.GetLength(0);
-            this.height = data.GetLength(1);
+            Width = data.GetLength(0);
+            Height = data.GetLength(1);
         }
 
         public int[,] Data => data;
@@ -41,14 +38,12 @@ namespace TwelveEngine.Game2D {
         }
 
         public void Fill(Func<int,int,int> pattern) {
-            for(int x = 0;x < width;x++) {
-                for(int y = 0;y < height;y++) {
+            for(int x = 0;x < Width;x++) {
+                for(int y = 0;y < Height;y++) {
                     data[x,y] = pattern(x,y);
                 }
             }
-            if(Invalidated != null) {
-                Invalidated();
-            }
+            Invalidated?.Invoke();
         }
     }
 }

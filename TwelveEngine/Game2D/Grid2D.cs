@@ -6,129 +6,77 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game2D {
     public class Grid2D:GameState {
 
+        private readonly int tileSize;
+        public LayerMode LayerMode;
+
+        public Grid2D() {
+            this.tileSize = Constants.DefaultTileSize;
+            this.LayerMode = LayerModes.Default;
+        }
+
+        public Grid2D(int tileSize) {
+            this.tileSize = tileSize;
+            this.LayerMode = LayerModes.Default;
+        }
+
+        public Grid2D(LayerMode layerMode) {
+            this.tileSize = Constants.DefaultTileSize;
+            LayerMode = layerMode;
+        }
+
+        public Grid2D(int tileSize,LayerMode layerMode) {
+            this.tileSize = tileSize;
+            this.LayerMode = layerMode;
+        }
+
+        private readonly List<GridLayer> layers = new List<GridLayer>();
+
+        public GridLayer GetLayer(int index) {
+            return layers[index];
+        }
+        public GridLayer CreateLayer(int[,] data,ITileRenderer tileRenderer) {
+            return CreateLayer(new TrackedGrid(data),tileRenderer);
+        }
+        public GridLayer CreateLayer(TrackedGrid grid,ITileRenderer tileRenderer) {
+            var layer = new GridLayer(this.game,tileRenderer,tileSize) {
+                Grid = grid
+            };
+            return layer;
+        }
+
+        public void ClearLayers() {
+            unloadLayers();
+            this.layers.Clear();
+        }
+
+        public void SetLayers(GridLayer[] layers) {
+            ClearLayers();
+            if(layers.Length > 0) {
+                this.layers.AddRange(layers);
+                loadLayers();
+            }
+        }
+        public void ReplaceLayer(GridLayer layer,int index) {
+            var oldLayer = layers[index];
+            oldLayer.Unload();
+            layers[index] = layer;
+            layer.Load(game,this);
+        }
+        private void loadLayers() {
+            foreach(var layer in layers) {
+                layer.Load(game,this);
+            }
+        }
+
+        public int Width { get; set; } = 0;
+        public int Height { get; set; } = 0;
+
         private GameManager game;
         public Camera Camera { get; set; } = new Camera();
-
-        private TrackedGrid grid = null;
-        private bool hasGrid() {
-            return grid != null;
-        }
-
-        private ITileRenderer tileRenderer;
-        private bool hasTileRenderer() {
-            return tileRenderer != null;
-        }
-
-        private RenderTarget2D tileBuffer = null;
-        private bool hasTileBuffer() {
-            return tileBuffer != null;
-        }
-
-        private bool refreshTileBuffer = false;
-        private Stack<Rectangle> tileRefreshAreas = new Stack<Rectangle>();
-
-        private void createTileBuffer() {
-            refreshTileBuffer = false;
-            tileRefreshAreas.Clear();
-
-            if(hasTileBuffer()) {
-                tileBuffer.Dispose();
-                tileBuffer = null;
-            }
-            if(!hasGrid()) {
-                return;
-            }
-
-            int textureWidth = Width * TileSize;
-            int textureHeight = Height * TileSize;
-
-            tileBuffer = new RenderTarget2D(game.GraphicsDevice,textureWidth,textureHeight);
-            refreshTileBuffer = true;
-        }
-
-        public TrackedGrid CreateGrid(int width,int height) {
-            var trackedGrid = new TrackedGrid(width,height);
-            setGrid(trackedGrid);
-            return trackedGrid;
-        }
-
-        private void gridValueChanged(Rectangle rectangle) {
-            tileRefreshAreas.Push(rectangle);
-        }
-        private void gridInvalidated() {
-            refreshTileBuffer = true;
-        }
-
-        private void unloadGrid() {
-            grid.Invalidated = null;
-            grid.ValueChanged = null;
-        }
-        private void setGrid(TrackedGrid grid) {
-            if(hasGrid()) unloadGrid();
-
-            this.grid = grid;
-
-            grid.Invalidated = gridInvalidated;
-            grid.ValueChanged = gridValueChanged;
-
-            createTileBuffer();
-        }
-        public TrackedGrid Grid {
-            get {
-                return grid;
-            }
-            set {
-                setGrid(value);
-            }
-        }
-
-        public int Width => grid.Width;
-        public int Height => grid.Height;
-
-        public int TileSize { get; set; } = Constants.DefaultTileSize;
-
-        private void setTileRenderer(ITileRenderer tileRenderer) {
-            if(hasTileRenderer()) {
-                tileRenderer.Unload();
-            }
-            this.tileRenderer = tileRenderer;
-            if(!hasTileRenderer()) {
-                refreshTileBuffer = false;
-                tileRefreshAreas.Clear();
-                if(!hasTileBuffer()) {
-                    return;
-                }
-                tileBuffer.Dispose();
-                tileBuffer = null;
-                return; 
-            }
-            tileRenderer.Load(game,this);
-            createTileBuffer();
-        }
-
-        public ITileRenderer TileRenderer {
-            get {
-                return tileRenderer;
-            }
-            set {
-                setTileRenderer(value);
-            }
-        }
-
-        private ITileRenderer pendingTileRenderer = null;
-        public Grid2D(ITileRenderer tileRenderer) {
-            pendingTileRenderer = tileRenderer;
-        }
-
         public Action OnLoad { get; set; } = null;
 
         internal override void Load(GameManager game) {
             this.game = game;
-            if(pendingTileRenderer == null) {
-                return;
-            }
-            setTileRenderer(pendingTileRenderer);
-            pendingTileRenderer = null;
 
             this.entityManager = new EntityManager(this);
             entityManager.UpdateListChanged = updateUpdateables;
@@ -140,10 +88,14 @@ namespace TwelveEngine.Game2D {
             }
         }
 
+        private void unloadLayers() {
+            foreach(var layer in layers) {
+                layer.Unload();
+            }
+        }
+
         internal override void Unload() {
-            if(hasTileRenderer()) tileRenderer.Unload();
-            if(hasTileBuffer()) tileBuffer.Dispose();
-            if(hasGrid()) unloadGrid();
+            unloadLayers();
             entityManager.Unload();
         }
 
@@ -170,36 +122,14 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private void renderTiles(Rectangle area) {
-            int endX = area.X + area.Width;
-            int endY = area.Y + area.Height;
-            for(int x = area.X;x < endX;x++) {
-                for(int y = area.Y;y < endY;y++) {
-                    Rectangle destination = new Rectangle(x * TileSize,y * TileSize,TileSize,TileSize);
-                    tileRenderer.RenderTile(grid[x,y],destination);
-                }
-            }
-        }
-
-        private struct ScreenSpace {
-            internal float X;
-            internal float Y;
-            internal float Width;
-            internal float Height;
-            internal float TileSize;
-        }
-
-        private Rectangle getScreenSpaceRectangle(ScreenSpace screenSpace) {
-            return new Rectangle(
-                (int)Math.Floor(screenSpace.X * TileSize),
-                (int)Math.Floor(screenSpace.Y * TileSize),
-                (int)Math.Floor(screenSpace.Width * TileSize),
-                (int)Math.Floor(screenSpace.Height * TileSize)
-            );
+        private static float zeroMinMax(float value,float width,int gridWidth) {
+            if(value < 0f) return 0f;
+            if(value + width >= gridWidth) return gridWidth - width;
+            return value;
         }
 
         private ScreenSpace getScreenSpace(Viewport viewport) {
-            float tileSize = Camera.Scale * TileSize;
+            float tileSize = Camera.Scale * this.tileSize;
 
             float screenWidth = viewport.Width / tileSize;
             float screenHeight = viewport.Height / tileSize;
@@ -210,31 +140,13 @@ namespace TwelveEngine.Game2D {
             float x = Camera.X - halfScreenWidth + Camera.XOffset;
             float y = Camera.Y - halfScreenHeight + Camera.YOffset;
 
-            if(Camera.HorizontalEdgePadding) {
-                if(x < 0) {
-                    x = 0;
-                } else if(x + screenWidth >= Width) {
-                    x = Width - screenWidth;
-                }
-            }
-
-            if(Camera.VerticalEdgePadding) {
-                if(y < 0) {
-                    y = 0;
-                } else if(y + screenHeight >= Height) {
-                    y = Height - screenHeight;
-                }
-            }
+            if(Camera.HorizontalEdgePadding) x = zeroMinMax(x,screenWidth,Width);
+            if(Camera.VerticalEdgePadding) y = zeroMinMax(y,screenHeight,Height);
 
             return new ScreenSpace() {
-                X = x,
-                Y = y,
-                Width = screenWidth,
-                Height = screenHeight,
-                TileSize = tileSize
+                X = x, Y = y, Width = screenWidth, Height = screenHeight, TileSize = tileSize
             };
         }
-
 
         public (float x,float y) GetCoordinate(int screenX,int screenY) {
             var viewport = Graphics.GetViewport(game);
@@ -244,84 +156,79 @@ namespace TwelveEngine.Game2D {
             return (x + screenSpace.X, y + screenSpace.Y);
         }
 
-        private void updateTileBuffer() {
-            bool redrawAll = tileBuffer.IsContentLost || refreshTileBuffer;
-            bool redrawSome = tileRefreshAreas.Count > 0;
-
-            if(!(redrawAll || redrawSome)) return;
-
-            game.GraphicsDevice.SetRenderTarget(tileBuffer);
-            game.SpriteBatch.Begin();
-
-            if(redrawAll) {
-                renderTiles(new Rectangle(0,0,Width,Height));
-            } else {
-                Rectangle area;
-                while(tileRefreshAreas.TryPeek(out area)) {
-                    renderTiles(area);
-                    tileRefreshAreas.Pop();
-                }
-            }
-
-            game.SpriteBatch.End();
-            game.GraphicsDevice.SetRenderTarget(null);
-            refreshTileBuffer = false;
-        }
-
-        private void renderTileBuffer(Rectangle destination,Rectangle source) {
-            game.SpriteBatch.Draw(tileBuffer,destination,source,Color.White,0,Vector2.Zero,SpriteEffects.None,1f);
-        }
-
         private void renderEntities(GameTime gameTime) {
             for(var i = 0;i < renderables.Length;i++) {
                 renderables[i].Render(gameTime);
             }
         }
 
-        private ScreenSpace screenSpace;
+        private void updateLayers() {
+            foreach(var layer in layers) {
+                layer.UpdateBuffer();
+            }
+        }
+
+        private Rectangle rasterizeScreenSpace(ScreenSpace screenSpace) {
+            return new Rectangle(
+                (int)Math.Floor(screenSpace.X * tileSize),
+                (int)Math.Floor(screenSpace.Y * tileSize),
+                (int)Math.Floor(screenSpace.Width * tileSize),
+                (int)Math.Floor(screenSpace.Height * tileSize)
+            );
+        }
+
+        private void renderLayers(int start,int length) {
+            Rectangle source = rasterizeScreenSpace(screenSpace);
+            for(int i = start;i < length;i++) {
+                layers[i].Render(viewport,source);
+            }
+        }
 
         public Rectangle GetDestination(Entity entity) {
             var tileSize = screenSpace.TileSize;
             return new Rectangle(
-                (int)Math.Floor((screenSpace.X + entity.X) * tileSize),
-                (int)Math.Floor((screenSpace.Y + entity.Y) * tileSize),
-                (int)Math.Floor(entity.Width * tileSize),
-                (int)Math.Floor(entity.Height * tileSize)
+                (int)((screenSpace.X + entity.X) * tileSize),
+                (int)((screenSpace.Y + entity.Y) * tileSize),
+                (int)(entity.Width * tileSize),
+                (int)(entity.Height * tileSize)
+            );
+        }
+        public bool OnScreen(Entity entity) {
+            return !(
+                entity.X + entity.Width <= screenSpace.X ||
+                entity.Y + entity.Height <= screenSpace.Y ||
+                entity.X >= screenSpace.X + screenSpace.Width ||
+                entity.Y >= screenSpace.Y + screenSpace.Height
             );
         }
 
+        private Rectangle viewport;
+        private ScreenSpace screenSpace;
+
         internal override void Draw(GameTime gameTime) {
             game.GraphicsDevice.Clear(Color.Black);
-
             Viewport viewport = Graphics.GetViewport(game);
+            this.viewport = viewport.Bounds;
             screenSpace = getScreenSpace(viewport);
-
-            if(hasTileBuffer() && hasTileRenderer()) {
-                updateTileBuffer();
-            }
-
+            updateLayers();
             game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
-            if(hasTileBuffer()) {
-                Rectangle source = getScreenSpaceRectangle(screenSpace);
-                renderTileBuffer(viewport.Bounds,source);
+            if(LayerMode.Background) {
+                renderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);
             }
             renderEntities(gameTime);
+            if(LayerMode.Foreground) {
+                renderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
+            }
             game.SpriteBatch.End();
         }
 
         public override void Export(SerialFrame frame) {
             frame.Set("Camera",Camera);
-            frame.Set("TileSize",TileSize);
-            frame.SetArray2D("GridData",Grid.Data);
             entityManager.Export(frame);
         }
 
         public override void Import(SerialFrame frame) {
             frame.Get("Camera",Camera);
-            TileSize = frame.GetInt("TileSize");
-            int[,] gridData = frame.GetIntArray2D("GridData");
-            var grid = new TrackedGrid(gridData);
-            setGrid(grid);
             entityManager.Import(frame);
         }
     }
