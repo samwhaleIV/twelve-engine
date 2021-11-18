@@ -106,7 +106,7 @@ namespace TwelveEngine.Game2D {
                 return;
 
             game.GraphicsDevice.SetRenderTarget(tileBuffer);
-            game.SpriteBatch.Begin();
+            game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
 
             if(redrawAll) {
                 renderTiles(new Rectangle(0,0,grid.Width,grid.Height));
@@ -122,10 +122,18 @@ namespace TwelveEngine.Game2D {
             refreshTileBuffer = false;
         }
 
-        public void Render(Rectangle destination,Rectangle source) {
+        public void Render(Rectangle destination,ScreenSpace screenSpace) {
             if(!hasTileBuffer()) {
                 return;
             }
+
+            var source = new Rectangle(
+                (int)(screenSpace.X * tileSize),
+                (int)(screenSpace.Y * tileSize),
+                (int)(screenSpace.Width * tileSize),
+                (int)(screenSpace.Height * tileSize)
+            );
+
             game.SpriteBatch.Draw(tileBuffer,destination,source,Color.White,0,Vector2.Zero,SpriteEffects.None,1f);
         }
 

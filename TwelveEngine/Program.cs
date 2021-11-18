@@ -11,8 +11,8 @@ namespace TwelveEngine {
         private static GameState GetTestStartState() {
             var grid = new Grid2D(LayerModes.SingleLayerBackground);
 
-            grid.Camera.Scale = 10;
-            grid.Camera.EdgePadding = true;
+            grid.Camera.Scale = 8;
+            grid.Camera.EdgePadding = false;
             grid.Camera.X = 0;
             grid.Camera.Y = 0;
 
@@ -33,6 +33,8 @@ namespace TwelveEngine {
                     X = 1,
                     Y = 1
                 });
+
+                grid.UpdateTarget = new PanZoom(grid);
             };
 
             return grid;

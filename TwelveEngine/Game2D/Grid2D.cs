@@ -7,6 +7,8 @@ namespace TwelveEngine.Game2D {
     public class Grid2D:GameState {
 
         private readonly int tileSize;
+        public int TileSize => tileSize;
+
         public LayerMode LayerMode;
 
         public Grid2D() {
@@ -116,10 +118,13 @@ namespace TwelveEngine.Game2D {
             this.renderables = renderables;
         }
 
+        public IUpdateable UpdateTarget { get; set; } = null;
+
         internal override void Update(GameTime gameTime) {
             for(var i = 0;i<updateables.Length;i++) {
                 updateables[i].Update(gameTime);
             }
+            UpdateTarget?.Update(gameTime);
         }
 
         private static float zeroMinMax(float value,float width,int gridWidth) {
@@ -168,27 +173,17 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private Rectangle rasterizeScreenSpace(ScreenSpace screenSpace) {
-            return new Rectangle(
-                (int)Math.Floor(screenSpace.X * tileSize),
-                (int)Math.Floor(screenSpace.Y * tileSize),
-                (int)Math.Floor(screenSpace.Width * tileSize),
-                (int)Math.Floor(screenSpace.Height * tileSize)
-            );
-        }
-
         private void renderLayers(int start,int length) {
-            Rectangle source = rasterizeScreenSpace(screenSpace);
             for(int i = start;i < length;i++) {
-                layers[i].Render(viewport,source);
+                layers[i].Render(viewport,screenSpace);
             }
         }
 
         public Rectangle GetDestination(Entity entity) {
             var tileSize = screenSpace.TileSize;
             return new Rectangle(
-                (int)((screenSpace.X + entity.X) * tileSize),
-                (int)((screenSpace.Y + entity.Y) * tileSize),
+                (int)((screenSpace.X - entity.X) * tileSize),
+                (int)((screenSpace.Y - entity.Y) * tileSize),
                 (int)(entity.Width * tileSize),
                 (int)(entity.Height * tileSize)
             );

@@ -12,11 +12,11 @@ namespace TwelveEngine.Game2D {
             this.Game = owner.Game;
             this.Grid = owner;
         }
-        private Dictionary<long,IRenderable> renderList = new Dictionary<long,IRenderable>();
-        private Dictionary<long,IUpdateable> updateList = new Dictionary<long,IUpdateable>();
-        private Dictionary<long,Entity> entities = new Dictionary<long,Entity>();
+        private readonly Dictionary<long,IRenderable> renderList = new Dictionary<long,IRenderable>();
+        private readonly Dictionary<long,IUpdateable> updateList = new Dictionary<long,IUpdateable>();
+        private readonly Dictionary<long,Entity> entities = new Dictionary<long,Entity>();
 
-        private Dictionary<string,Dictionary<long,Entity>> nameList = new Dictionary<string,Dictionary<long, Entity>>();
+        private readonly Dictionary<string,Dictionary<long,Entity>> nameList = new Dictionary<string,Dictionary<long, Entity>>();
 
         private long IDCounter = 0;
         private long getNextID() {
@@ -141,12 +141,12 @@ namespace TwelveEngine.Game2D {
             bool updateRenderList = false;
             bool updateUpdateList = false;
 
-            if(entity is IRenderable) {
-                renderList[ID] = (IRenderable)entity;
+            if(entity is IRenderable renderable) {
+                renderList[ID] = renderable;
                 updateRenderList = true;
             }
-            if(entity is IUpdateable) {
-                updateList[ID] = (IUpdateable)entity;
+            if(entity is IUpdateable updateable) {
+                updateList[ID] = updateable;
                 updateUpdateList = true;
             }
             entities[ID] = entity;
