@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D {
-    public class Grid2D:GameState {
+    public partial class Grid2D:GameState {
 
         private readonly int tileSize;
         public int TileSize => tileSize;
@@ -31,46 +30,6 @@ namespace TwelveEngine.Game2D {
             this.LayerMode = layerMode;
         }
 
-        private readonly List<GridLayer> layers = new List<GridLayer>();
-
-        public GridLayer GetLayer(int index) {
-            return layers[index];
-        }
-        public GridLayer CreateLayer(int[,] grid,ITileRenderer tileRenderer) {
-            var layer = new GridLayer(tileRenderer) {
-                Data = grid
-            };
-            return layer;
-        }
-        public GridLayer CreateLayer(ITileRenderer tileRenderer) {
-            var layer = new GridLayer(tileRenderer);
-            return layer;
-        }
-
-        public void ClearLayers() {
-            unloadLayers();
-            this.layers.Clear();
-        }
-
-        public void SetLayers(GridLayer[] layers) {
-            ClearLayers();
-            if(layers.Length > 0) {
-                this.layers.AddRange(layers);
-                loadLayers();
-            }
-        }
-        public void ReplaceLayer(GridLayer layer,int index) {
-            var oldLayer = layers[index];
-            oldLayer.Unload();
-            layers[index] = layer;
-            layer.Load(game,this);
-        }
-        private void loadLayers() {
-            foreach(var layer in layers) {
-                layer.Load(game,this);
-            }
-        }
-
         public int Width { get; set; } = 0;
         public int Height { get; set; } = 0;
 
@@ -78,8 +37,83 @@ namespace TwelveEngine.Game2D {
         public Camera Camera { get; set; } = new Camera();
         public Action OnLoad { get; set; } = null;
 
+        private int[][,] layers;
+
+        private static int[,] convertFlatArray(int[] array,int width,int height) {
+            var array2D = new int[width,height];
+
+            for(var x = 0;x<width;x++) {
+                for(var y = 0;y<height;y++) {
+                    array2D[x,y] = array[x + y * width];
+                }
+            }
+
+            return array2D;
+        }
+
+        public void ImportMap(Map map) {
+            var width = map.Width;
+            var height = map.Height;
+
+            var layers = map.Layers;
+            var newLayers = new int[map.Layers.Length][,];
+            for(var i = 0;i<newLayers.Length;i++) {
+                newLayers[i] = convertFlatArray(layers[i],width,height);
+            }
+
+            this.layers = newLayers;
+
+            Width = width;
+            Height = height;
+        }
+
+        public void Fill(int layerIndex,Func<int,int,int> pattern) {
+            var map2D = layers[layerIndex];
+            for(var x = 0;x < Width;x++) {
+                for(var y = 0;y < Height;y++) {
+                    map2D[x,y] = pattern(x,y);
+                }
+            }
+        }
+        public int[,] GetLayer(int index) {
+            return layers[index];
+        }
+
+        private ITileRenderer tileRenderer = null;
+        private ITileRenderer pendingTileRenderer = null;
+
+        private bool hasTileRenderer() {
+            return tileRenderer != null;
+        }
+
+        private void setTileRenderer(ITileRenderer tileRenderer) {
+            if(!loaded) {
+                pendingTileRenderer = tileRenderer;
+                return;
+            }
+        }
+
+        public ITileRenderer TileRenderer {
+            get {
+                if(!hasTileRenderer()) {
+                    return pendingTileRenderer;
+                }
+                return tileRenderer;
+            }
+            set {
+                setTileRenderer(value);
+            }
+        }
+
+        private bool loaded = false;
+
         internal override void Load(GameManager game) {
             this.game = game;
+            if(pendingTileRenderer != null) {
+                tileRenderer = pendingTileRenderer;
+                pendingTileRenderer = null;
+                tileRenderer.Load(game,this);
+            }
 
             this.entityManager = new EntityManager(this);
             entityManager.UpdateListChanged = updateUpdateables;
@@ -89,16 +123,14 @@ namespace TwelveEngine.Game2D {
                 OnLoad();
                 OnLoad = null;
             }
-        }
 
-        private void unloadLayers() {
-            foreach(var layer in layers) {
-                layer.Unload();
-            }
+            loaded = true;
         }
 
         internal override void Unload() {
-            unloadLayers();
+            if(hasTileRenderer()) {
+                tileRenderer.Unload();
+            }
             entityManager.Unload();
         }
 
@@ -223,8 +255,12 @@ namespace TwelveEngine.Game2D {
         }
 
         private void renderLayers(int start,int length) {
-            for(int i = start;i < length;i++) {
-                layers[i].Render(screenSpace);
+            if(!hasTileRenderer()) {
+                return;
+            }
+            int end = start + length;
+            for(int i = start;i<end;i++) {
+                renderTiles(layers[i],screenSpace);
             }
         }
 
@@ -244,12 +280,30 @@ namespace TwelveEngine.Game2D {
 
         public override void Export(SerialFrame frame) {
             frame.Set("Camera",Camera);
+            frame.Set("Width",Width);
+            frame.Set("Height",Height);
             entityManager.Export(frame);
+
+            frame.Set("LayerCount",layers.Length);
+            string layerBase = "Layer-";
+            for(var i = 0;i<layers.Length;i++) {
+                frame.Set(layerBase + i,layers[i]);
+            }
         }
 
         public override void Import(SerialFrame frame) {
             frame.Get("Camera",Camera);
+            Width = frame.GetInt("Width");
+            Height = frame.GetInt("Height");
             entityManager.Import(frame);
+
+            var layerCount = frame.GetInt("LayerCount");
+            string layerBase = "Layer-";
+            var layers = new int[layerCount][,];
+            for(var i = 0;i<layerCount;i++) {
+                layers[i] = frame.GetArray2D<int>(layerBase + i);
+            }
+            this.layers = layers;
         }
     }
 }

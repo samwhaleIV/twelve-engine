@@ -2,44 +2,9 @@
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game2D {
-    public class GridLayer:ISerializable {
+    public partial class Grid2D {
 
-        private readonly ITileRenderer tileRenderer;
-
-        private int[,] gridData;
-        private int width;
-        private int height;
-
-        private void setGrid(int[,] gridData) {
-            this.gridData = gridData;
-            width = gridData.GetLength(0);
-            height = gridData.GetLength(1);
-        }
-
-        public int[,] Data {
-            get {
-                return gridData;
-            }
-            set {
-                setGrid(value);
-            }
-        }
-        public int Width => width;
-        public int Height => height;
-
-        public void Fill(Func<int,int,int> pattern) {
-            for(var x = 0;x<width;x++) {
-                for(var y = 0;y<height;y++) {
-                    gridData[x,y] = pattern(x,y);
-                }
-            }
-        }
-
-        public GridLayer(ITileRenderer tileRenderer) {
-            this.tileRenderer = tileRenderer;
-        }
-
-        public void Render(ScreenSpace screenSpace) {
+        private void renderTiles(int[,] data,ScreenSpace screenSpace) {
             int startX = (int)Math.Floor(screenSpace.X);
             int startY = (int)Math.Floor(screenSpace.Y);
 
@@ -56,11 +21,11 @@ namespace TwelveEngine.Game2D {
 
             xOffset *= tileSize; yOffset *= tileSize;
 
-            renderTiles(startX,startY,horizontalTiles,verticalTiles,xOffset,yOffset,screenSpace.TileSize);
+            drawTiles(data,startX,startY,horizontalTiles,verticalTiles,xOffset,yOffset,screenSpace.TileSize);
         }
 
-        private void renderTiles(
-            int startX,int startY,int width,int height,float renderX,float renderY,float tileSize
+        private void drawTiles(
+            int[,] data, int startX,int startY,int width,int height,float renderX,float renderY,float tileSize
         ) {
             int renderSize = (int)Math.Ceiling(tileSize);
             if(renderSize % 2 == 1) renderSize++;
@@ -75,11 +40,11 @@ namespace TwelveEngine.Game2D {
             }
 
             int endX = startX + width, endY = startY + height;
-            if(endX > this.width) {
-                width -= endX - this.width;
+            if(endX > Width) {
+                width -= endX - Width;
             }
-            if(endY > this.height) {
-                height -= endY - this.height;
+            if(endY > Height) {
+                height -= endY - Height;
             }
 
             for(int x = xOffset;x < width;x++) {
@@ -88,35 +53,9 @@ namespace TwelveEngine.Game2D {
                     int gridY = y + startY;
                     target.X = (int)Math.Floor(renderX + x * tileSize);
                     target.Y = (int)Math.Floor(renderY + y * tileSize);
-                    tileRenderer.RenderTile(gridData[gridX,gridY],target);
+                    tileRenderer.RenderTile(data[gridX,gridY],target);
                 }
             }
-        }
-
-        private bool loaded = false;
-        public bool Loaded => loaded;
-
-        public void Load(GameManager game,Grid2D grid) {
-            if(loaded) {
-                return;
-            }
-            tileRenderer.Load(game,grid);
-            loaded = true;
-        }
-        public void Unload() {
-            if(!loaded) {
-                return;
-            }
-            tileRenderer.Unload();
-            loaded = false;
-        }
-
-        public void Export(SerialFrame frame) {
-            frame.SetArray2D("Data",gridData);
-        }
-
-        public void Import(SerialFrame frame) {
-            setGrid(frame.GetArray2D<int>("Data"));
         }
     }
 }

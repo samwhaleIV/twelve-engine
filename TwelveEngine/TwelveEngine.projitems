@@ -20,12 +20,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\GridLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MapDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\PanZoom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\RenderStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ITileRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\TestTileRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Graphics2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Grid2D.cs" />
@@ -36,7 +37,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)JS\JSEngine.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
     <Folder Include="$(MSBuildThisFileDirectory)JS\" />
   </ItemGroup>
   <ItemGroup>
@@ -48,5 +48,10 @@
     <None Include="$(MSBuildThisFileDirectory)Scripts\test-script.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\map-database.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

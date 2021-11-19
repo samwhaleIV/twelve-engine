@@ -8,7 +8,7 @@ namespace TwelveEngine.Game2D {
     internal sealed class PanZoom:IUpdateable {
 
         private const float MIN_SCALE = 1;
-        private const float MAX_SCALE = 16;
+        private const float MAX_SCALE = 8;
         private const float ZOOM_RATE = 0.1f;
 
         private readonly Grid2D grid;
