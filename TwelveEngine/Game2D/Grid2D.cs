@@ -36,13 +36,14 @@ namespace TwelveEngine.Game2D {
         public GridLayer GetLayer(int index) {
             return layers[index];
         }
-        public GridLayer CreateLayer(int[,] data,ITileRenderer tileRenderer) {
-            return CreateLayer(new TrackedGrid(data),tileRenderer);
-        }
-        public GridLayer CreateLayer(TrackedGrid grid,ITileRenderer tileRenderer) {
-            var layer = new GridLayer(this.game,tileRenderer,tileSize) {
-                Grid = grid
+        public GridLayer CreateLayer(int[,] grid,ITileRenderer tileRenderer) {
+            var layer = new GridLayer(tileRenderer) {
+                Data = grid
             };
+            return layer;
+        }
+        public GridLayer CreateLayer(ITileRenderer tileRenderer) {
+            var layer = new GridLayer(tileRenderer);
             return layer;
         }
 
@@ -118,13 +119,43 @@ namespace TwelveEngine.Game2D {
             this.renderables = renderables;
         }
 
-        public IUpdateable UpdateTarget { get; set; } = null;
+        private PanZoom panZoom = null;
+        private bool hasPanZoom() {
+            return panZoom != null;
+        }
+        public bool PanZoom {
+            get {
+                return hasPanZoom();
+            }
+            set {
+                if(value) {
+                    if(hasPanZoom()) {
+                        return;
+                    }
+                    Camera.EdgePadding = false;
+                    panZoom = new PanZoom(this);
+                } else if(hasPanZoom()) {
+                    panZoom = null;
+                }
+            }
+        }
+
+        private Viewport viewport;
+        private ScreenSpace screenSpace;
+
+        public Viewport Viewport => viewport;
+        public ScreenSpace ScreenSpace => screenSpace;
+
+        public ScreenSpace GetScreenSpace() {
+            return getScreenSpace(viewport);
+        }
 
         internal override void Update(GameTime gameTime) {
+            viewport = Graphics.GetViewport(game);
             for(var i = 0;i<updateables.Length;i++) {
                 updateables[i].Update(gameTime);
             }
-            UpdateTarget?.Update(gameTime);
+            panZoom?.Update(gameTime);
         }
 
         private static float zeroMinMax(float value,float width,int gridWidth) {
@@ -153,12 +184,14 @@ namespace TwelveEngine.Game2D {
             };
         }
 
-        public (float x,float y) GetCoordinate(int screenX,int screenY) {
-            var viewport = Graphics.GetViewport(game);
-            var screenSpace = getScreenSpace(viewport);
+        public (float x, float y) GetCoordinate(ScreenSpace screenSpace,int screenX,int screenY) {
             float x = (float)screenX / viewport.Width * screenSpace.Width;
             float y = (float)screenY / viewport.Height * screenSpace.Height;
             return (x + screenSpace.X, y + screenSpace.Y);
+        }
+
+        public (float x,float y) GetCoordinate(int screenX,int screenY) {
+            return GetCoordinate(screenSpace,screenX,screenY);
         }
 
         private void renderEntities(GameTime gameTime) {
@@ -167,25 +200,13 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private void updateLayers() {
-            foreach(var layer in layers) {
-                layer.UpdateBuffer();
-            }
-        }
-
-        private void renderLayers(int start,int length) {
-            for(int i = start;i < length;i++) {
-                layers[i].Render(viewport,screenSpace);
-            }
-        }
-
         public Rectangle GetDestination(Entity entity) {
             var tileSize = screenSpace.TileSize;
             return new Rectangle(
-                (int)((screenSpace.X - entity.X) * tileSize),
-                (int)((screenSpace.Y - entity.Y) * tileSize),
-                (int)(entity.Width * tileSize),
-                (int)(entity.Height * tileSize)
+                (int)Math.Floor((entity.X - screenSpace.X) * tileSize),
+                (int)Math.Floor((entity.Y - screenSpace.Y) * tileSize),
+                (int)Math.Ceiling(entity.Width * tileSize),
+                (int)Math.Ceiling(entity.Height * tileSize)
             );
         }
         public bool OnScreen(Entity entity) {
@@ -197,15 +218,15 @@ namespace TwelveEngine.Game2D {
             );
         }
 
-        private Rectangle viewport;
-        private ScreenSpace screenSpace;
+        private void renderLayers(int start,int length) {
+            for(int i = start;i < length;i++) {
+                layers[i].Render(screenSpace);
+            }
+        }
 
         internal override void Draw(GameTime gameTime) {
-            game.GraphicsDevice.Clear(Color.Black);
-            Viewport viewport = Graphics.GetViewport(game);
-            this.viewport = viewport.Bounds;
             screenSpace = getScreenSpace(viewport);
-            updateLayers();
+            game.GraphicsDevice.Clear(Color.Black);
             game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
             if(LayerMode.Background) {
                 renderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);

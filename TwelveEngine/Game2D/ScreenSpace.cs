@@ -5,5 +5,8 @@
         public float Width;
         public float Height;
         public float TileSize;
+        public (float x,float y) getCenter() {
+            return (X + Width / 2, Y + Height / 2);
+        }
     }
 }

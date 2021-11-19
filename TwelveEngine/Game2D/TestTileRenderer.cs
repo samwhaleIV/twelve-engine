@@ -4,11 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game2D {
     public class TestTileRenderer:ITileRenderer {
 
-        private readonly TrackedGrid grid;
-
-        public TestTileRenderer(TrackedGrid grid) {
-            this.grid = grid;
-        }
+        public GridLayer grid;
 
         private GameManager game;
 
@@ -32,10 +28,10 @@ namespace TwelveEngine.Game2D {
             textureOrigin = new Rectangle(0,0,1,1);
 
             grid.Fill((x,y) => (x + y) % 2 == 0 ? 0 : 1);
-            grid[0,0] = 2;
-            grid[0,grid.Width - 1] = 2;
-            grid[grid.Width - 1,grid.Height - 1] = 2;
-            grid[grid.Width - 1,0] = 2;
+            grid.Data[0,0] = 2;
+            grid.Data[0,grid.Width - 1] = 2;
+            grid.Data[grid.Width - 1,grid.Height - 1] = 2;
+            grid.Data[grid.Width - 1,0] = 2;
         }
 
         public void RenderTile(int value,Rectangle destination) {

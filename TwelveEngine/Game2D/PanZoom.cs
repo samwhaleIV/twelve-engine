@@ -7,6 +7,10 @@ using Microsoft.Xna.Framework.Input;
 namespace TwelveEngine.Game2D {
     internal sealed class PanZoom:IUpdateable {
 
+        private const float MIN_SCALE = 1;
+        private const float MAX_SCALE = 16;
+        private const float ZOOM_RATE = 0.1f;
+
         private readonly Grid2D grid;
         private readonly Camera camera;
 
@@ -15,55 +19,113 @@ namespace TwelveEngine.Game2D {
             this.camera = grid.Camera;
         }
 
-        private (int mx,int my,float camX,float camY)? startPosition = null;
-        private (int mx, int my, bool pressed) mouseState;
-
-        private void startMouseCapture() {
-            startPosition = (mouseState.mx, mouseState.my,camera.X,camera.Y);
+        private (int x, int y, float cameraX, float cameraY)? panData = null;
+        private void refreshPanData() {
+            panData = (mouseX, mouseY, camera.X, camera.Y);
         }
 
-        private (float x,float y) getCameraPosition() {
-            var differenceX = (startPosition.Value.mx - mouseState.mx) / (camera.Scale * grid.TileSize);
-            var differenceY = (startPosition.Value.my - mouseState.my) / (camera.Scale * grid.TileSize);
+        private void zoom(bool scrollingUp,int x,int y) {
+            var startPosition = grid.GetCoordinate(x,y);
+            var zoomInTarget = startPosition;
 
-            return (startPosition.Value.camX + differenceX,
-                startPosition.Value.camY + differenceY);
+            var worldCenter = grid.ScreenSpace.getCenter();
+
+            (float x, float y) distanceToTarget = (
+                worldCenter.x - zoomInTarget.x,
+                worldCenter.y - zoomInTarget.y
+            );
+
+            float scaleChange = 1 + (scrollingUp ? ZOOM_RATE : -ZOOM_RATE);
+            float startScale = camera.Scale;
+            float newScale = startScale;
+
+            newScale *= scaleChange;
+            if(newScale < MIN_SCALE) {
+                newScale = MIN_SCALE;
+            } else if(newScale > MAX_SCALE) {
+                newScale = MAX_SCALE;
+            }
+            camera.Scale = newScale;
+
+            var newScreenSpace = grid.GetScreenSpace();
+            zoomInTarget = grid.GetCoordinate(newScreenSpace,x,y);
+            worldCenter = newScreenSpace.getCenter();
+
+            (float x, float y) newDistanceToTarget = (
+                worldCenter.x - zoomInTarget.x,
+                worldCenter.y - zoomInTarget.y
+            );
+
+            camera.X += newDistanceToTarget.x - distanceToTarget.x;
+            camera.Y += newDistanceToTarget.y - distanceToTarget.y;
+
+            if(panData.HasValue) {
+                refreshPanData();
+            }
+        }
+        private void pan(int x,int y) {
+            if(!this.panData.HasValue) {
+                return;
+            }
+            var panData = this.panData.Value;
+            int xDifference = panData.x - x;
+            int yDifference = panData.y - y;
+
+            float tileSize = grid.GetScreenSpace().TileSize;
+            camera.X = panData.cameraX + xDifference / tileSize;
+            camera.Y = panData.cameraY + yDifference / tileSize;
+            refreshPanData();
         }
 
-        private void updateCameraPosition() {
-            var (x,y) = getCameraPosition();
-            camera.X = x;
-            camera.Y = y;
+        private void mouseMove() {
+            pan(mouseX,mouseY);
+        }
+        private void mouseDown() {
+            refreshPanData();
+        }
+        private void mouseUp() {
+            panData = null;
+        }
+        private void scrollUp() {
+            zoom(true,mouseX,mouseY);
+        }
+        private void scrollDown() {
+            zoom(false,mouseX,mouseY);
         }
 
-        private void endMouseCapture() {
-            updateCameraPosition();
-            startPosition = null;
-        }
-        private void updateMouseCapture() {
-            updateCameraPosition();
-        }
-
-        private bool capturing => startPosition.HasValue;
-
-        private void updateMouseState() {
-            var mouseState = Mouse.GetState();
-            this.mouseState.mx = mouseState.X;
-            this.mouseState.my = mouseState.Y;
-            this.mouseState.pressed = mouseState.LeftButton == ButtonState.Pressed;
-        }
+        MouseState lastMouseState;
+        bool hasState = false;
+        private bool mouseIsDown = false;
+        int mouseX, mouseY;
 
         public void Update(GameTime gameTime) {
-            updateMouseState();
-            if(mouseState.pressed) {
-                if(capturing) {
-                    updateMouseCapture();
-                } else {
-                    startMouseCapture();
-                }
-            } else if(capturing) {
-                endMouseCapture();
+            var mouseState = Mouse.GetState();
+            if(!hasState) {
+                lastMouseState = mouseState;
+                hasState = true;
             }
+            if(mouseState.LeftButton != lastMouseState.LeftButton) {
+                if(mouseState.LeftButton == ButtonState.Pressed) {
+                    mouseIsDown = true;
+                    mouseDown();
+                } else {
+                    mouseIsDown = false;
+                    mouseUp();
+                }
+            }
+
+            mouseX = mouseState.X;
+            mouseY = mouseState.Y;
+            if(mouseX != lastMouseState.X || mouseY != lastMouseState.Y) {
+                mouseMove();
+            }
+            int scrollDifference = mouseState.ScrollWheelValue - lastMouseState.ScrollWheelValue;
+            if(scrollDifference > 0) {
+                scrollUp();
+            } else if(scrollDifference < 0) {
+                scrollDown();
+            }
+            lastMouseState = mouseState;
         }
     }
 }
