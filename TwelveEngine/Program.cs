@@ -14,7 +14,9 @@ namespace TwelveEngine {
             var grid = new Grid2D(LayerModes.BackgroundForegroundStandard) {
                 TileRenderer = new TilesetRenderer()
             };
-            grid.ImportMap(MapDatabase.GetMap("level1"));
+            var map = MapDatabase.GetMap("level4");
+            grid.ImportMap(map);
+            grid.LayerMode = LayerModes.GetAutomatic(map);
 
             grid.PanZoom = true;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace TwelveDesktop {
     public static class Program {
         [STAThread]

@@ -184,10 +184,10 @@ namespace TwelveEngine.Game2D {
 
         internal override void Update(GameTime gameTime) {
             viewport = Graphics.GetViewport(game);
+            panZoom?.Update(gameTime);
             for(var i = 0;i<updateables.Length;i++) {
                 updateables[i].Update(gameTime);
             }
-            panZoom?.Update(gameTime);
         }
 
         private static float zeroMinMax(float value,float width,int gridWidth) {
@@ -264,18 +264,61 @@ namespace TwelveEngine.Game2D {
             }
         }
 
+        private bool spriteBatchActive = false;
+
+        private void startDeferredSpriteBatch() {
+            game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            spriteBatchActive = true;
+        }
+        private void startBackToFrontSpriteBatch() {
+            game.SpriteBatch.Begin(SpriteSortMode.BackToFront,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            spriteBatchActive = true;
+        }
+        private void endSpriteBatch() {
+            game.SpriteBatch.End();
+            spriteBatchActive = false;
+        }
+        private void tryStartSpriteBatch() {
+            if(spriteBatchActive) {
+                return;
+            }
+            startDeferredSpriteBatch();
+        }
+        private void tryEndSpriteBatch() {
+            if(!spriteBatchActive) {
+                return;
+            }
+            endSpriteBatch();
+        }
+
         internal override void Draw(GameTime gameTime) {
             screenSpace = getScreenSpace(viewport);
             game.GraphicsDevice.Clear(Color.Black);
-            game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            
             if(LayerMode.Background) {
-                renderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);
+                if(LayerMode.BackgroundLength == 2) {
+                    startDeferredSpriteBatch();
+                    renderLayers(LayerMode.BackgroundStart,1);
+                    endSpriteBatch();
+
+                    startBackToFrontSpriteBatch();
+                    renderLayers(LayerMode.BackgroundStart+1,1);
+                    renderEntities(gameTime);
+                    endSpriteBatch();
+                } else {
+                    startDeferredSpriteBatch();
+                    renderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);
+                    renderEntities(gameTime);
+                }
             }
-            renderEntities(gameTime);
+
             if(LayerMode.Foreground) {
+                tryStartSpriteBatch();
                 renderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
+                endSpriteBatch();
             }
-            game.SpriteBatch.End();
+
+            tryEndSpriteBatch();
         }
 
         public override void Export(SerialFrame frame) {

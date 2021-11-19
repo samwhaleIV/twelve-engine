@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace TwelveEngine.Game2D {
     class TilesetRenderer:ITileRenderer {
@@ -32,7 +33,11 @@ namespace TwelveEngine.Game2D {
             source.Y = (value / tilesetColumns) * tileSize;
             source.Width = tileSize;
             source.Height = tileSize;
-            game.SpriteBatch.Draw(tileset,destination,source,Color.White);
+
+            var viewportHeight = game.GraphicsDevice.Viewport.Height;
+            float depth = 1 - Math.Max(destination.Y / (float)viewportHeight,0);
+
+            game.SpriteBatch.Draw(tileset,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
         }
     }
 }

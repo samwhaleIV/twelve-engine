@@ -181,7 +181,8 @@ namespace TwelveEngine.Game2D.Entities {
             source.Width = tileSize;
             source.Height = tileSize;
 
-            Game.SpriteBatch.Draw(playerTexure,destination,source,Color.White);
+            var depth = 1 - Math.Max(destination.Y / (float)Grid.Viewport.Height,0);
+            Game.SpriteBatch.Draw(playerTexure,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
         }
     }
 }

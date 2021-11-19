@@ -28,6 +28,8 @@ namespace TwelveEngine {
             return gameState == null;
         }
 
+        private bool loading = false;
+
         private void setGameState(GameState gameState) {
             if(!initialized) {
                 pendingGameState = gameState;
@@ -41,8 +43,10 @@ namespace TwelveEngine {
             if(hasNullState()) {
                 return;
             }
+            loading = true;
             gameState.Game = this;
             gameState.Load(this);
+            loading = false;
         }
         public GameState GameState {
             get {
@@ -75,14 +79,14 @@ namespace TwelveEngine {
         }
 
         protected override void Update(GameTime gameTime) {
-            if(hasNullState()) {
+            if(loading || hasNullState()) {
                 return;
             }
             this.gameState.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime) {
-            if(hasNullState()) {
+            if(loading || hasNullState()) {
                 return;
             }
             this.gameState.Draw(gameTime);
