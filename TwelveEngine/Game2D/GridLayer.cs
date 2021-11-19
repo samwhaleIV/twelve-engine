@@ -63,6 +63,7 @@ namespace TwelveEngine.Game2D {
             int startX,int startY,int width,int height,float renderX,float renderY,float tileSize
         ) {
             int renderSize = (int)Math.Ceiling(tileSize);
+            if(renderSize % 2 == 1) renderSize++;
             Rectangle target = new Rectangle(0,0,renderSize,renderSize);
 
             int xOffset = 0, yOffset = 0;

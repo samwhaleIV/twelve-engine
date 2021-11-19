@@ -53,16 +53,8 @@ namespace TwelveEngine {
             }
         }
 
-        public GraphicsDeviceManager GraphicsDeviceManager {
-            get {
-                return this.graphicsDeviceManager;
-            }
-        }
-        public SpriteBatch SpriteBatch {
-            get {
-                return this.spriteBatch;
-            }
-        }
+        public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
+        public SpriteBatch SpriteBatch => spriteBatch;
 
         private bool initialized = false;
 

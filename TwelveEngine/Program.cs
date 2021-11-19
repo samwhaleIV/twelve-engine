@@ -12,7 +12,7 @@ namespace TwelveEngine {
             var grid = new Grid2D(LayerModes.SingleLayerBackground);
             grid.PanZoom = true;
 
-            grid.Camera.Scale = 10;
+            grid.Camera.Scale = 8;
             grid.Camera.EdgePadding = false;
             grid.Camera.X = 0;
             grid.Camera.Y = 0;
@@ -34,8 +34,8 @@ namespace TwelveEngine {
                 grid.SetLayers(new GridLayer[] { layer1 });
 
                 grid.AddEntity(new TheRedBox() {
-                    X = 10,
-                    Y = 10
+                    X = 16.33f,
+                    Y = 16.54f
                 });
             };
 

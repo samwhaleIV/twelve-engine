@@ -202,12 +202,16 @@ namespace TwelveEngine.Game2D {
 
         public Rectangle GetDestination(Entity entity) {
             var tileSize = screenSpace.TileSize;
-            return new Rectangle(
-                (int)Math.Floor((entity.X - screenSpace.X) * tileSize),
-                (int)Math.Floor((entity.Y - screenSpace.Y) * tileSize),
-                (int)Math.Ceiling(entity.Width * tileSize),
-                (int)Math.Ceiling(entity.Height * tileSize)
-            );
+
+            Rectangle destination = new Rectangle();
+
+            destination.X = (int)Math.Round((entity.X - screenSpace.X) * tileSize);
+            destination.Y = (int)Math.Round((entity.Y - screenSpace.Y) * tileSize);
+
+            destination.Width = (int)Math.Floor(entity.Width * tileSize);
+            destination.Height = (int)Math.Floor(entity.Height * tileSize);
+
+            return destination;
         }
         public bool OnScreen(Entity entity) {
             return !(
