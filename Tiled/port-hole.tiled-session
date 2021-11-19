@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "maps_alpha/level7.tmx",
+    "activeFile": "maps_alpha/level1.tmx",
     "expandedProjectPaths": [
         "maps_alpha",
         "."
@@ -145,7 +145,7 @@
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 153.125,
-                "y": 163.5
+                "y": 137
             }
         },
         "maps_alpha/level2.tmx": {
@@ -342,13 +342,13 @@
     ],
     "project": "port-hole.tiled-project",
     "recentFiles": [
-        "maps_alpha/level1.tmx",
-        "maps_alpha/level2.tmx",
-        "maps_alpha/level3.tmx",
-        "maps_alpha/level4.tmx",
-        "maps_alpha/level5.tmx",
-        "maps_alpha/level6.tmx",
         "maps_alpha/level7.tmx",
+        "maps_alpha/level6.tmx",
+        "maps_alpha/level5.tmx",
+        "maps_alpha/level4.tmx",
+        "maps_alpha/level3.tmx",
+        "maps_alpha/level2.tmx",
+        "maps_alpha/level1.tmx",
         "porthole-tileset.tsx",
         "maps_alpha/rules/shadows-special.tmx",
         "maps_alpha/rules/outside-bubbles.tmx",

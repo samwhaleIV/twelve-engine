@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultEntitiesList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Direction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TheRedBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityFactory.cs" />
@@ -21,6 +23,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyboardHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MouseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />

@@ -9,8 +9,8 @@
         public long ID = 0;
         public EntityManager Owner = null;
 
-        public virtual void Load() {}
-        public virtual void Unload() {}
+        public abstract void Load();
+        public abstract void Unload();
 
         public float X = 0;
         public float Y = 0;

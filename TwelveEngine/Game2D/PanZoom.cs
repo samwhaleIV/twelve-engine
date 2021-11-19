@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D {
     internal sealed class PanZoom:IUpdateable {
@@ -14,17 +11,29 @@ namespace TwelveEngine.Game2D {
         private readonly Grid2D grid;
         private readonly Camera camera;
 
+        private readonly MouseHandler mouseHandler;
+
         internal PanZoom(Grid2D grid) {
             this.grid = grid;
             this.camera = grid.Camera;
+
+            mouseHandler = new MouseHandler() {
+                MouseMove = pan,
+                Scroll = zoom,
+                MouseDown = refreshPanData,
+                MouseUp = clearPanData
+            };
         }
 
         private (int x, int y, float cameraX, float cameraY)? panData = null;
-        private void refreshPanData() {
-            panData = (mouseX, mouseY, camera.X, camera.Y);
+        private void refreshPanData(int x,int y) {
+            panData = (x, y, camera.X, camera.Y);
+        }
+        private void clearPanData(int x,int y) {
+            panData = null;
         }
 
-        private void zoom(bool scrollingUp,int x,int y) {
+        private void zoom(int x,int y,bool scrollingUp) {
             var startPosition = grid.GetCoordinate(x,y);
             var zoomInTarget = startPosition;
 
@@ -60,7 +69,7 @@ namespace TwelveEngine.Game2D {
             camera.Y += newDistanceToTarget.y - distanceToTarget.y;
 
             if(panData.HasValue) {
-                refreshPanData();
+                refreshPanData(x,y);
             }
         }
         private void pan(int x,int y) {
@@ -74,58 +83,11 @@ namespace TwelveEngine.Game2D {
             float tileSize = grid.GetScreenSpace().TileSize;
             camera.X = panData.cameraX + xDifference / tileSize;
             camera.Y = panData.cameraY + yDifference / tileSize;
-            refreshPanData();
+            refreshPanData(x,y);
         }
-
-        private void mouseMove() {
-            pan(mouseX,mouseY);
-        }
-        private void mouseDown() {
-            refreshPanData();
-        }
-        private void mouseUp() {
-            panData = null;
-        }
-        private void scrollUp() {
-            zoom(true,mouseX,mouseY);
-        }
-        private void scrollDown() {
-            zoom(false,mouseX,mouseY);
-        }
-
-        MouseState lastMouseState;
-        bool hasState = false;
-        private bool mouseIsDown = false;
-        int mouseX, mouseY;
 
         public void Update(GameTime gameTime) {
-            var mouseState = Mouse.GetState();
-            if(!hasState) {
-                lastMouseState = mouseState;
-                hasState = true;
-            }
-            if(mouseState.LeftButton != lastMouseState.LeftButton) {
-                if(mouseState.LeftButton == ButtonState.Pressed) {
-                    mouseIsDown = true;
-                    mouseDown();
-                } else {
-                    mouseIsDown = false;
-                    mouseUp();
-                }
-            }
-
-            mouseX = mouseState.X;
-            mouseY = mouseState.Y;
-            if(mouseX != lastMouseState.X || mouseY != lastMouseState.Y) {
-                mouseMove();
-            }
-            int scrollDifference = mouseState.ScrollWheelValue - lastMouseState.ScrollWheelValue;
-            if(scrollDifference > 0) {
-                scrollUp();
-            } else if(scrollDifference < 0) {
-                scrollDown();
-            }
-            lastMouseState = mouseState;
+            mouseHandler.Update();
         }
     }
 }
