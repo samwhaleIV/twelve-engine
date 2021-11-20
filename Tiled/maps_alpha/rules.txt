@@ -12,3 +12,6 @@ rules/outside-bubble.tmx
 rules/shadows.tmx
 rules/shadows-corners.tmx
 rules/shadows-special.tmx
+
+rules/collision.tmx
+rules/collision-objects.tmx

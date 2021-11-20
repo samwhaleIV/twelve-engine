@@ -33,7 +33,7 @@
         public static readonly LayerMode BackgroundForegroundAlt = new LayerMode() {
             BackgroundStart = 0,
             BackgroundLength = 2,
-            ForegroundStart = 2,
+            ForegroundStart = 3,
             ForegroundLength = 1,
             Background = true,
             Foreground = true
@@ -41,11 +41,11 @@
         public static LayerMode GetAutomatic(Map map) {
             switch(map.Layers.Length) {
                 default:
-                case 1:
-                    return SingleLayerBackground;
                 case 2:
-                    return DoubleLayerBackground;
+                    return SingleLayerBackground;
                 case 3:
+                    return DoubleLayerBackground;
+                case 4:
                     return BackgroundForegroundAlt;
             }
         }

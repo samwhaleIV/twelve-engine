@@ -9,5 +9,6 @@ namespace TwelveEngine {
         public const string MapDatabase = ContentRootDirectory + "/" + "map-database.json";
         public const string Tileset = "Tileset";
         public const string PlayerImage = "Player";
+        public const int CollisionLayerIndex = 2;
     }
 }
