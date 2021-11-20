@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultEntitiesList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\CollisionInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TheRedBox.cs" />
@@ -19,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IUpdateable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Hitbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
@@ -53,8 +55,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Content\map-database.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="$(MSBuildThisFileDirectory)Content\map-database.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

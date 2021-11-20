@@ -10,24 +10,31 @@ namespace TwelveEngine.Game2D {
 
         public LayerMode LayerMode;
 
+        private readonly CollisionInterface collisionInterface;
+        public CollisionInterface CollisionInterface => collisionInterface;
+
         public Grid2D() {
             this.tileSize = Constants.DefaultTileSize;
             this.LayerMode = LayerModes.Default;
+            this.collisionInterface = new CollisionInterface(this);
         }
 
         public Grid2D(int tileSize) {
             this.tileSize = tileSize;
             this.LayerMode = LayerModes.Default;
+            this.collisionInterface = new CollisionInterface(this);
         }
 
         public Grid2D(LayerMode layerMode) {
             this.tileSize = Constants.DefaultTileSize;
             LayerMode = layerMode;
+            this.collisionInterface = new CollisionInterface(this);
         }
 
         public Grid2D(int tileSize,LayerMode layerMode) {
             this.tileSize = tileSize;
             this.LayerMode = layerMode;
+            this.collisionInterface = new CollisionInterface(this);
         }
 
         public int Width { get; set; } = 0;
@@ -247,10 +254,10 @@ namespace TwelveEngine.Game2D {
         }
         public bool OnScreen(Entity entity) {
             return !(
-                entity.X + entity.Width <= screenSpace.X ||
-                entity.Y + entity.Height <= screenSpace.Y ||
-                entity.X >= screenSpace.X + screenSpace.Width ||
-                entity.Y >= screenSpace.Y + screenSpace.Height
+                entity.X + entity.Width < screenSpace.X ||
+                entity.Y + entity.Height < screenSpace.Y ||
+                entity.X > screenSpace.X + screenSpace.Width ||
+                entity.Y > screenSpace.Y + screenSpace.Height
             );
         }
 
