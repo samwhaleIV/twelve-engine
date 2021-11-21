@@ -1,17 +1,3 @@
-rules/edges.tmx
-rules/corners.tmx
-rules/caps.tmx
-
-rules/inside-corners.tmx
-rules/inside-nooks.tmx
-
-rules/outside-corners.tmx
-rules/outside-nooks.tmx
-rules/outside-bubble.tmx
-
-rules/shadows.tmx
-rules/shadows-corners.tmx
-rules/shadows-special.tmx
 
 rules/collision.tmx
 rules/collision-objects.tmx

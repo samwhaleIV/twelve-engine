@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TwelveEngine {
+﻿namespace TwelveEngine {
     public static class Constants {
         public const string ContentRootDirectory = "Content";
         public const int DefaultTileSize = 16;
@@ -11,7 +7,5 @@ namespace TwelveEngine {
         public const string PlayerImage = "Player";
 
         public const int CollisionLayerIndex = 2;
-        public const int SolidCollisionValue = 13;
-        public const int WalkBehindCollisionValue = 14;
     }
 }

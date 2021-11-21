@@ -11,7 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefaultEntitiesList.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\CollisionInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TheRedBox.cs" />
@@ -20,7 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IUpdateable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Hitbox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Hitbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
@@ -30,7 +31,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\PanZoom.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\RenderStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ITileRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Graphics2D.cs" />

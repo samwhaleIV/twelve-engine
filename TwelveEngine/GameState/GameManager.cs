@@ -72,6 +72,7 @@ namespace TwelveEngine {
         }
 
         protected override void LoadContent() {
+            Game2D.CollisionTypes.LoadTypes(Content);
             spriteBatch = new SpriteBatch(GraphicsDevice);
             if(pendingGameState == null) {
                 return;

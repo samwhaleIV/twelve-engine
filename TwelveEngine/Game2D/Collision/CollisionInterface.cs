@@ -23,24 +23,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private Hitbox? getTileHitbox(int value,int x,int y) {
-            switch(value) {
-                case Constants.SolidCollisionValue:
-                    return new Hitbox() {
-                        X = x,
-                        Y = y,
-                        Width = 1,
-                        Height = 1
-                    };
-                case Constants.WalkBehindCollisionValue:
-                    return new Hitbox() {
-                        X = x,
-                        Y = y + WALK_BEHIND_Y,
-                        Width = 1,
-                        Height = WALK_BEHIND_HEIGHT
-                    };
-                default:
-                    return null;
-            }
+            return CollisionTypes.getHitbox(value,x,y);
         }
 
         private List<Hitbox> getSurroundingArea(int[,] layer,Hitbox hitbox) {
