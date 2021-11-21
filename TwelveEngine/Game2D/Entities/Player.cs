@@ -6,26 +6,6 @@ using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D.Entities {
     public sealed class Player:Entity, IUpdateable, IRenderable {
-
-        public Rectangle getDestination(Hitbox hitbox) {
-            var screenSpace = Grid.ScreenSpace;
-            var tileSize = screenSpace.TileSize;
-
-            Rectangle destination = new Rectangle();
-
-            destination.X = (int)Math.Round((hitbox.X - screenSpace.X) * tileSize);
-            destination.Y = (int)Math.Round((hitbox.Y - screenSpace.Y) * tileSize);
-
-            destination.Width = (int)Math.Floor(hitbox.Width * tileSize);
-            destination.Height = (int)Math.Floor(hitbox.Height * tileSize);
-
-            return destination;
-        }
-
-        private void renderHitbox() {
-            Game.SpriteBatch.Draw(hitboxTexture,getDestination(GetHitbox()),Color.White);
-        }
-
         /* Hitbox coordinate system expects a symmetrical, center aligned hitbox! */
 
         private const float VERTICAL_HITBOX_X = 1 / 16f;
@@ -36,13 +16,13 @@ namespace TwelveEngine.Game2D.Entities {
 
         private const float HITBOX_ORIENTATION_OFFSET = HORIZONTAL_HITBOX_X - VERTICAL_HITBOX_X;
 
-        private double tilesPerSecond = 2.5;
-        private double animationFrameTime = 300;
+        private float maxSpeed = 2.5f;
+        private const float animationFrameTime = 300;
 
-        private double blinkRate = 2900;
-        private double blinkDuration = 200;
+        private const float blinkRate = 2900;
+        private const float blinkDuration = 200;
 
-        private double frameJumpStart = 0.5;
+        private const float frameJumpStart = 0.5f;
 
         public Hitbox GetHitbox() {
             // TODO (if it ever is needed) Make hitbox math scalable with width and height properties
@@ -97,10 +77,10 @@ namespace TwelveEngine.Game2D.Entities {
 
         public float Speed {
             get {
-                return (float)tilesPerSecond;
+                return maxSpeed;
             }
             set {
-                tilesPerSecond = value;
+                maxSpeed = value;
             }
         }
 
@@ -234,15 +214,34 @@ namespace TwelveEngine.Game2D.Entities {
             return direction == Direction.Up || direction == Direction.Down;
         }
 
-        private void updateMovement(GameTime gameTime) {
-            if(xDelta == 0 && yDelta == 0) {
-                movingStart = null;
-                return;
+        private TimeSpan? movingStart = null;
+        private TimeSpan? deaccelerationStart = null;
+
+        private const double accelerationTime = 300;
+        private const double deaccelerationTime = 100;
+
+        private float deaccelerationStartValue;
+
+        private float getSpeed(TimeSpan totalTime) {
+            float t;
+            if(movingStart.HasValue) {
+                t = (float)Math.Min((totalTime - movingStart.Value).TotalMilliseconds / accelerationTime,1);
+                return maxSpeed * t;
+            } else if(deaccelerationStart.HasValue) {
+                t = (float)Math.Min((totalTime - deaccelerationStart.Value).TotalMilliseconds / deaccelerationTime,1);
+                return deaccelerationStartValue * (1 - t);
+            } else {
+                return 0f;
             }
-            double delta = gameTime.ElapsedGameTime.TotalSeconds;
-            float distance = (float)(delta * tilesPerSecond);
+        }
 
+        private int deaccelerationDeltaX;
+        private int deaccelerationDeltaY;
 
+        private int lastDeltaX = 0;
+        private int lastDeltaY = 0;
+
+        private void updateDirection() {
             var newDirection = getDirection();
             var oldDirection = direction;
             direction = newDirection;
@@ -257,7 +256,62 @@ namespace TwelveEngine.Game2D.Entities {
                     }
                 }
             }
+        }
 
+        private void processAccelerationTiming(TimeSpan totalTime) {
+            if(xDelta == 0 && yDelta == 0) {
+                movingRenderStart = null;
+                if(deaccelerationStart.HasValue) {
+                    var timeDifference = deaccelerationStart.Value - totalTime;
+                    if(timeDifference.TotalMilliseconds >= deaccelerationTime) {
+                        deaccelerationStart = null;
+                    }
+                } else if(movingStart.HasValue) {
+                    deaccelerationStartValue = getSpeed(totalTime);
+                    deaccelerationDeltaX = lastDeltaX;
+                    deaccelerationDeltaY = lastDeltaY;
+                    deaccelerationStart = totalTime;
+                    movingStart = null;
+                }
+            } else if(!movingStart.HasValue) {
+                deaccelerationStart = null;
+                movingStart = totalTime;
+            }
+            lastDeltaX = xDelta;
+            lastDeltaY = yDelta;
+        }
+
+        private void handleDeaccelerationDistance(float distance) {
+            var oldXDelta = xDelta;
+            var oldYDelta = yDelta;
+
+            xDelta = deaccelerationDeltaX;
+            yDelta = deaccelerationDeltaY;
+
+            updateDirection();
+            handleDeltas(distance);
+
+            xDelta = oldXDelta;
+            yDelta = oldYDelta;
+        }
+
+        private void updateMovement(GameTime gameTime) {
+            TimeSpan totalTime = gameTime.TotalGameTime;
+
+            processAccelerationTiming(totalTime);
+
+            float speed = getSpeed(totalTime);
+            if(speed <= 0.0) return;
+
+            double delta = gameTime.ElapsedGameTime.TotalSeconds;
+            float distance = (float)(delta * speed);
+
+            if(!movingStart.HasValue) {
+                handleDeaccelerationDistance(distance);
+                return;
+            }
+
+            updateDirection();
             handleDeltas(distance);
         }
 
@@ -291,7 +345,7 @@ namespace TwelveEngine.Game2D.Entities {
             }
         }
 
-        private TimeSpan? movingStart;
+        private TimeSpan? movingRenderStart;
 
         private int getRenderRow(GameTime gameTime) {
 
@@ -301,11 +355,11 @@ namespace TwelveEngine.Game2D.Entities {
 
             var now = gameTime.TotalGameTime;
 
-            if(!movingStart.HasValue) {
-                movingStart = now - TimeSpan.FromMilliseconds(animationFrameTime * frameJumpStart);
+            if(!movingRenderStart.HasValue) {
+                movingRenderStart = now - TimeSpan.FromMilliseconds(animationFrameTime * frameJumpStart);
             }
 
-            var timeDifference = now - movingStart.Value;
+            var timeDifference = now - movingRenderStart.Value;
             var frame = (int)Math.Floor(timeDifference.TotalMilliseconds / animationFrameTime) % animationRows;
 
             return isBlinking(gameTime) ? frame + animationRows : frame;
@@ -329,8 +383,6 @@ namespace TwelveEngine.Game2D.Entities {
 
             var depth = 1 - Math.Max(destination.Y / (float)Grid.Viewport.Height,0);
             Game.SpriteBatch.Draw(playerTexure,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
-
-            //renderHitbox();
         }
     }
 }
