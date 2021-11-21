@@ -211,13 +211,13 @@ namespace TwelveEngine.Game2D.Entities {
             }
         }
         private void updateMovement(GameTime gameTime) {
-            System.Diagnostics.Debug.WriteLine($"X {X} Y {Y}");
             if(xDelta == 0 && yDelta == 0) {
                 movingStart = null;
                 return;
             }
             double delta = gameTime.ElapsedGameTime.TotalSeconds;
             float distance = (float)(delta * tilesPerSecond);
+
             if(xDelta != 0) {
                 if(xDelta < 0) {
                     setDirection(Direction.Left);
@@ -309,7 +309,7 @@ namespace TwelveEngine.Game2D.Entities {
             var depth = 1 - Math.Max(destination.Y / (float)Grid.Viewport.Height,0);
             Game.SpriteBatch.Draw(playerTexure,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
 
-            //renderHitbox();
+            renderHitbox();
         }
     }
 }

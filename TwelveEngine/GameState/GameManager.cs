@@ -12,6 +12,8 @@ namespace TwelveEngine {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = Constants.ContentRootDirectory;
             IsMouseVisible = true;
+            graphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
+            IsFixedTimeStep = false;
         }
 
         public GameManager() {
