@@ -142,26 +142,26 @@
             }
         },
         "maps_alpha/level1.tmx": {
-            "scale": 4,
+            "scale": 5.5,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 106.375,
-                "y": 152
+                "x": 120.72727272727273,
+                "y": 121.63636363636364
             }
         },
         "maps_alpha/level2.tmx": {
-            "scale": 3,
+            "scale": 4,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 128.16666666666663,
-                "y": 176
+                "x": 114,
+                "y": 211.25
             }
         },
         "maps_alpha/level3.tmx": {
             "scale": 4,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 136.125,
+                "x": 136.25,
                 "y": 136
             }
         },
@@ -169,15 +169,15 @@
             "scale": 3,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 192.16666666666663,
-                "y": 176
+                "x": 149.66666666666663,
+                "y": 201.66666666666663
             }
         },
         "maps_alpha/level5.tmx": {
             "scale": 3,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 80.16666666666666,
+                "x": 80.33333333333334,
                 "y": 232
             }
         },
@@ -185,16 +185,16 @@
             "scale": 4,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 144.125,
+                "x": 144.25,
                 "y": 152
             }
         },
         "maps_alpha/level7.tmx": {
-            "scale": 3,
+            "scale": 4,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 176.16666666666663,
-                "y": 168
+                "x": 163.5,
+                "y": 190.5
             }
         },
         "maps_alpha/outside-wall-test.tmx": {
@@ -217,8 +217,8 @@
             "scale": 5.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 94.81818181818183,
-                "y": 105.09090909090911
+                "x": 256,
+                "y": 256
             }
         },
         "maps_alpha/rules/collision-spawner.tmx": {
@@ -233,7 +233,7 @@
             "scale": 3,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 33.5,
+                "x": 33.66666666666666,
                 "y": 163.66666666666663
             }
         },

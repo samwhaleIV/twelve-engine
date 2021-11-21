@@ -76,7 +76,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="10" name="collision" width="22" height="21">
+ <layer id="10" name="collision" width="22" height="21" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,17,17,17,17,17,17,17,0,0,0,0,0,0,0,0,0,0,0,
