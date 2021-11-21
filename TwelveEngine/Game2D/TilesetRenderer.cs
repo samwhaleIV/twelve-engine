@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace TwelveEngine.Game2D {
     class TilesetRenderer:ITileRenderer {
@@ -22,7 +22,8 @@ namespace TwelveEngine.Game2D {
         }
 
         public void Unload() {
-            tileset.Dispose();
+            this.game = null;
+            this.grid = null;
         }
 
         private Rectangle getTextureSource(int value) {

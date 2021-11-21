@@ -4,9 +4,6 @@ using System.Collections.Generic;
 namespace TwelveEngine.Game2D {
     public sealed class CollisionInterface {
 
-        private const float WALK_BEHIND_HEIGHT = 4 / 16f;
-        private const float WALK_BEHIND_Y = 10 / 16f;
-
         private readonly Grid2D grid;
         public CollisionInterface(Grid2D grid) {
             this.grid = grid;

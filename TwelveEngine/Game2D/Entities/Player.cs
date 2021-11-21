@@ -244,16 +244,19 @@ namespace TwelveEngine.Game2D.Entities {
 
 
             var newDirection = getDirection();
-            if(newDirection != direction && isHorizontal(direction) && isVertical(newDirection)) {
-                float difference = HITBOX_ORIENTATION_OFFSET;
-                if(direction == Direction.Right) {
-                    this.X -= difference;
-                } else {
-                    this.X += difference;
-                }
-
-            }
+            var oldDirection = direction;
             direction = newDirection;
+
+            if(newDirection != oldDirection && isHorizontal(oldDirection) && isVertical(newDirection)) {
+                var hitbox = GetHitbox();
+                if(Grid.CollisionInterface.Collides(hitbox).Count > 0) {
+                    if(oldDirection == Direction.Right) {
+                        this.X -= HITBOX_ORIENTATION_OFFSET;
+                    } else {
+                        this.X += HITBOX_ORIENTATION_OFFSET;
+                    }
+                }
+            }
 
             handleDeltas(distance);
         }

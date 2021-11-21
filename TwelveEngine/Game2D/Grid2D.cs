@@ -269,10 +269,10 @@ namespace TwelveEngine.Game2D {
         }
         public bool OnScreen(Entity entity) {
             return !(
-                entity.X + entity.Width < screenSpace.X ||
-                entity.Y + entity.Height < screenSpace.Y ||
-                entity.X > screenSpace.X + screenSpace.Width ||
-                entity.Y > screenSpace.Y + screenSpace.Height
+                entity.X + entity.Width <= screenSpace.X ||
+                entity.Y + entity.Height <= screenSpace.Y ||
+                entity.X >= screenSpace.X + screenSpace.Width ||
+                entity.Y >= screenSpace.Y + screenSpace.Height
             );
         }
 
