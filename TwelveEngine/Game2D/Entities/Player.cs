@@ -26,19 +26,39 @@ namespace TwelveEngine.Game2D.Entities {
             Game.SpriteBatch.Draw(hitboxTexture,getDestination(GetHitbox()),Color.White);
         }
 
-        private const float HITBOX_X = 1 / 16f;
-        private const float HITBOX_WIDTH = 14 / 16f;
-        private const float HITBOX_HEIGHT = 1;
-        private const float HITBOX_Y = 0;
+        /* Hitbox coordinate system expects a symmetrical, center aligned hitbox! */
 
-        // TODO (if it ever is needed) Make hitbox math scalable with width and height properties
+        private const float VERTICAL_HITBOX_X = 1 / 16f;
+        private const float VERTICAL_HITBOX_WIDTH = 14 / 16f;
+
+        private const float HORIZONTAL_HITBOX_X = 2 / 16f;
+        private const float HORIZONTAL_HITBOX_WIDTH = 12 / 16f;
+
+        private const float HITBOX_ORIENTATION_OFFSET = HORIZONTAL_HITBOX_X - VERTICAL_HITBOX_X;
+
+        private double tilesPerSecond = 2.5;
+        private double animationFrameTime = 300;
+
+        private double blinkRate = 2900;
+        private double blinkDuration = 200;
+
+        private double frameJumpStart = 0.5;
 
         public Hitbox GetHitbox() {
+            // TODO (if it ever is needed) Make hitbox math scalable with width and height properties
             var hitbox = new Hitbox();
-            hitbox.X = X + HITBOX_X;
-            hitbox.Y = Y + HITBOX_Y;
-            hitbox.Width = HITBOX_WIDTH;
-            hitbox.Height = HITBOX_HEIGHT;
+
+            hitbox.Y = Y;
+            hitbox.Height = 1;
+
+            if(direction == Direction.Down || direction == Direction.Up) {
+                hitbox.X = X + VERTICAL_HITBOX_X;
+                hitbox.Width = VERTICAL_HITBOX_WIDTH;
+            } else {
+                hitbox.X = X + HORIZONTAL_HITBOX_X;
+                hitbox.Width = HORIZONTAL_HITBOX_WIDTH;
+            }
+
             return hitbox;
         }
 
@@ -75,14 +95,6 @@ namespace TwelveEngine.Game2D.Entities {
             hitboxTexture.Dispose();
         }
 
-        private double tilesPerSecond = 2.5;
-        private double animationFrameTime = 300;
-
-        private double blinkRate = 2900;
-        private double blinkDuration = 200;
-
-        private double frameJumpStart = 0.5;
-
         public float Speed {
             get {
                 return (float)tilesPerSecond;
@@ -112,61 +124,45 @@ namespace TwelveEngine.Game2D.Entities {
             }
         }
 
-        private Direction? pendingDirection = null;
-        private void setDirection(Direction newDirection) {
-            pendingDirection = newDirection;
+        private float getLeftLimit(Hitbox self,Hitbox target) {
+            return target.X + target.Width - (self.X - this.X);
         }
-        private void finalizeDirection() {
-            if(!pendingDirection.HasValue) {
-                return;
-            }
-            var newDirection = pendingDirection.Value;
-            if(newDirection != direction) {
-                movingStart = null;
-                direction = newDirection;
-            }
-            pendingDirection = null;
+        private float getUpLimit(Hitbox self,Hitbox target) {
+            return target.Y + target.Height - (self.Y - this.Y);
+        }
+        private float getRightLimit(Hitbox self,Hitbox target) {
+            return target.X - self.Width - (self.X - this.X);
+        }
+        private float getDownLimit(Hitbox self,Hitbox target) {
+            return target.Y - self.Height - (self.Y - this.Y);
         }
 
-        private float getLeftLimit(Hitbox target) {
-            return target.X + target.Width - HITBOX_X;
-        }
-        private float getUpLimit(Hitbox target) {
-            return target.Y + target.Height - HITBOX_Y;
-        }
-        private float getRightLimit(Hitbox target) {
-            return target.X - HITBOX_WIDTH - HITBOX_X;
-        }
-        private float getDownLimit(Hitbox target) {
-            return target.Y - HITBOX_HEIGHT - HITBOX_Y;
-        }
-
-        private bool resolveLeftCollision(Hitbox target) {
-            if(Y == getUpLimit(target) || Y == getDownLimit(target)) {
+        private bool leftCollision(Hitbox self,Hitbox target) {
+            if(Y == getUpLimit(self,target) || Y == getDownLimit(self,target)) {
                 return false;
             }
-            X = getLeftLimit(target);
+            X = getLeftLimit(self,target);
             return true;
         }
-        private bool resolveUpCollision(Hitbox target) {
-            if(X == getLeftLimit(target) || X == getRightLimit(target)) {
+        private bool upCollision(Hitbox self,Hitbox target) {
+            if(X == getLeftLimit(self,target) || X == getRightLimit(self,target)) {
                 return false;
             }
-            Y = getUpLimit(target);
+            Y = getUpLimit(self,target);
             return true;
         }
-        private bool resolveRightCollision(Hitbox target) {
-            if(Y == getUpLimit(target) || Y == getDownLimit(target)) {
+        private bool rightCollision(Hitbox self,Hitbox target) {
+            if(Y == getUpLimit(self,target) || Y == getDownLimit(self,target)) {
                 return false;
             }
-            X = getRightLimit(target);
+            X = getRightLimit(self,target);
             return true;
         }
-        private bool resolveDownCollision(Hitbox target) {
-            if(X == getLeftLimit(target) || X == getRightLimit(target)) {
+        private bool downCollision(Hitbox self,Hitbox target) {
+            if(X == getLeftLimit(self,target) || X == getRightLimit(self,target)) {
                 return false;
             }
-            Y = getDownLimit(target);
+            Y = getDownLimit(self,target);
             return true;
         }
 
@@ -179,37 +175,65 @@ namespace TwelveEngine.Game2D.Entities {
                 case Direction.Right: this.X += distance; break;
             }
 
-            Hitbox hitbox = GetHitbox();
+            Hitbox self = GetHitbox();
 
-            var collisionData = Grid.CollisionInterface.Collides(hitbox);
+            var collisionData = Grid.CollisionInterface.Collides(self);
             if(collisionData.Count == 0) {
                 return;
             }
-            foreach(var target in collisionData) {
+            foreach(var target in collisionData) { /* Switch case should be inverted with loop */
                 switch(direction) {
-                    case Direction.Down:
-                        if(resolveDownCollision(target)) {
-                            return;
-                        }
-                        break;
-                    case Direction.Up:
-                        if(resolveUpCollision(target)) {
-                            return;
-                        }
-                        break;
-                    case Direction.Left:
-                        if(resolveLeftCollision(target)) {
-                            return;
-                        }
-                        break;
-                    case Direction.Right:
-                        if(resolveRightCollision(target)) {
-                            return;
-                        }
-                        break;
+                    case Direction.Down: if(downCollision(self,target)) return; break;
+                    case Direction.Up: if(upCollision(self,target)) return; break;
+                    case Direction.Left: if(leftCollision(self,target)) return; break;
+                    case Direction.Right: if(rightCollision(self,target)) return; break;
                 }
             }
         }
+
+        private Direction getDirection() {
+            Direction direction = this.direction;
+            if(xDelta != 0) {
+                if(xDelta < 0) {
+                    direction = Direction.Left;
+                } else {
+                    direction = Direction.Right;
+                }
+            }
+            if(yDelta != 0) {
+                if(yDelta < 0) {
+                    direction = Direction.Up;
+                } else {
+                    direction = Direction.Down;
+                }
+            }
+            return direction;
+        }
+
+        private void handleDeltas(float distance) {
+            if(xDelta != 0) {
+                if(xDelta < 0) {
+                    move(Direction.Left,distance);
+                } else {
+                    move(Direction.Right,distance);
+                }
+            }
+            if(yDelta != 0) {
+                if(yDelta < 0) {
+                    move(Direction.Up,distance);
+                } else {
+                    move(Direction.Down,distance);
+                }
+            }
+        }
+
+        private bool isHorizontal(Direction direction) {
+            return direction == Direction.Left || direction == Direction.Right;
+        }
+        private bool isVertical(Direction direction) {
+            return direction == Direction.Up || direction == Direction.Down;
+        }
+
         private void updateMovement(GameTime gameTime) {
             if(xDelta == 0 && yDelta == 0) {
                 movingStart = null;
@@ -218,33 +242,27 @@ namespace TwelveEngine.Game2D.Entities {
             double delta = gameTime.ElapsedGameTime.TotalSeconds;
             float distance = (float)(delta * tilesPerSecond);
 
-            if(xDelta != 0) {
-                if(xDelta < 0) {
-                    setDirection(Direction.Left);
-                    move(Direction.Left,distance);
+
+            var newDirection = getDirection();
+            if(newDirection != direction && isHorizontal(direction) && isVertical(newDirection)) {
+                float difference = HITBOX_ORIENTATION_OFFSET;
+                if(direction == Direction.Right) {
+                    this.X -= difference;
                 } else {
-                    setDirection(Direction.Right);
-                    move(Direction.Right,distance);
+                    this.X += difference;
                 }
+
             }
-            if(yDelta != 0) {
-                if(yDelta < 0) {
-                    setDirection(Direction.Up);
-                    move(Direction.Up,distance);
-                } else {
-                    setDirection(Direction.Down);
-                    move(Direction.Down,distance);
-                }
-            }
-            finalizeDirection();
+            direction = newDirection;
+
+            handleDeltas(distance);
         }
 
         public void Update(GameTime gameTime) {
             keyboardHandler.Update();
             updateMovement(gameTime);
             var camera = Grid.Camera;
-            camera.X = this.X;
-            camera.Y = this.Y;
+            camera.X = this.X; camera.Y = this.Y;
         }
 
         private int getRenderColumn() {
@@ -309,7 +327,7 @@ namespace TwelveEngine.Game2D.Entities {
             var depth = 1 - Math.Max(destination.Y / (float)Grid.Viewport.Height,0);
             Game.SpriteBatch.Draw(playerTexure,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
 
-            renderHitbox();
+            //renderHitbox();
         }
     }
 }

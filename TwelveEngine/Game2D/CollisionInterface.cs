@@ -15,11 +15,11 @@ namespace TwelveEngine.Game2D {
         private const int MATRIX_SIZE = 9;
 
         private int[,] surroundingMatrix = new int[MATRIX_SIZE,2] {
-            {-1,-1},{0,-1},{1,-1},{-1,0},{1,0},{-1,1},{0,1},{1,1},{0,0}
+            {0,0},{0,-1},{0,1},{-1,0},{1,0},{-1,-1},{1,-1},{-1,1},{1,1}
         };
 
         private bool inRange(int x, int y) {
-            return !(x < 0 || y < 0 || x >= grid.Width || y >= grid.Height);
+            return x >= 0 && y >= 0 && x < grid.Width && y < grid.Height;
         }
 
         private Hitbox? getTileHitbox(int value,int x,int y) {
@@ -44,8 +44,8 @@ namespace TwelveEngine.Game2D {
         }
 
         private List<Hitbox> getSurroundingArea(int[,] layer,Hitbox hitbox) {
-            var centerX = (int)Math.Floor(hitbox.X);
-            var centerY = (int)Math.Floor(hitbox.Y);
+            var centerX = (int)Math.Floor(hitbox.X + hitbox.Width / 2);
+            var centerY = (int)Math.Floor(hitbox.Y + hitbox.Height / 2);
 
             var hitboxes = new List<Hitbox>();
 

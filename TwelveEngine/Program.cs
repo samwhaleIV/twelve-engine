@@ -10,6 +10,8 @@ namespace TwelveEngine {
 
         private static GameState GetTestStartState() {
 
+            bool showCollisionLayer = true;
+
             MapDatabase.LoadMaps();
             var grid = new Grid2D(LayerModes.BackgroundForegroundStandard) {
                 TileRenderer = new TilesetRenderer()
@@ -17,6 +19,9 @@ namespace TwelveEngine {
             var map = MapDatabase.GetMap("level4");
             grid.ImportMap(map);
             grid.LayerMode = LayerModes.GetAutomatic(map);
+            if(showCollisionLayer) {
+                grid.LayerMode.BackgroundLength += 1;
+            }
 
             grid.PanZoom = true;
 
