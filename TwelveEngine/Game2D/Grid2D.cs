@@ -179,18 +179,16 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private Viewport viewport;
         private ScreenSpace screenSpace;
 
-        public Viewport Viewport => viewport;
+        public Viewport Viewport => game.GraphicsDevice.Viewport;
         public ScreenSpace ScreenSpace => screenSpace;
 
         public ScreenSpace GetScreenSpace() {
-            return getScreenSpace(viewport);
+            return getScreenSpace(Viewport);
         }
 
         internal override void Update(GameTime gameTime) {
-            viewport = Graphics.GetViewport(game);
             panZoom?.Update(gameTime);
             for(var i = 0;i<updateables.Length;i++) {
                 updateables[i].Update(gameTime);
@@ -232,6 +230,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public (float x, float y) GetCoordinate(ScreenSpace screenSpace,int screenX,int screenY) {
+            var viewport = Viewport;
             float x = (float)screenX / viewport.Width * screenSpace.Width;
             float y = (float)screenY / viewport.Height * screenSpace.Height;
             return (x + screenSpace.X, y + screenSpace.Y);
@@ -376,7 +375,7 @@ namespace TwelveEngine.Game2D {
         }
 
         internal override void Draw(GameTime gameTime) {
-            screenSpace = getScreenSpace(viewport);
+            screenSpace = getScreenSpace(Game.GraphicsDevice.Viewport);
             game.GraphicsDevice.Clear(Color.Black);
             
             if(LayerMode.Background) {

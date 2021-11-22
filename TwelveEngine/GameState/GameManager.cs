@@ -65,7 +65,11 @@ namespace TwelveEngine {
         }
 
         private readonly AutomationAgent automationAgent = new AutomationAgent();
-        public AutomationAgent AutomationAgent => automationAgent;
+
+        public int Frame => automationAgent.Frame;
+        public bool RecordingActive => automationAgent.RecordingActive;
+        public bool PlaybackActive => automationAgent.PlaybackActive;
+        public string PlaybackFile => automationAgent.PlaybackFile;
 
         public KeyboardState KeyboardState => automationAgent.GetKeyboardState();
         public MouseState MouseState => automationAgent.GetMouseState();
@@ -98,7 +102,7 @@ namespace TwelveEngine {
 
         private bool recordingKeyPressed = false;
         private void handleRecording(KeyboardState keyboardState) {
-            var keyActive = keyboardState.IsKeyDown(Constants.RecordingKey);
+            bool keyActive = keyboardState.IsKeyDown(Constants.RecordingKey);
             if(!keyActive) {
                 recordingKeyPressed = false;
                 return;
@@ -142,7 +146,7 @@ namespace TwelveEngine {
 
         private bool playbackKeyPressed = false;
         private void handlePlayback(KeyboardState keyboardState) {
-            var keyActive = keyboardState.IsKeyDown(Constants.PlaybackKey);
+            bool keyActive = keyboardState.IsKeyDown(Constants.PlaybackKey);
             if(!keyActive) {
                 playbackKeyPressed = false;
                 return;
@@ -167,23 +171,127 @@ namespace TwelveEngine {
             }
         }
 
-        private GameTime gameTimeMask;
-        protected override void Update(GameTime gameTime) {
-            if(!gameIsReady()) return;
+        private bool pauseKeyDown = false;
+        private bool advanceKeyDown = false;
+        private void handlePauseControls(KeyboardState keyboardState) {
+            bool pauseKey = keyboardState.IsKeyDown(Constants.PauseGame);
+            bool advanceKey = keyboardState.IsKeyDown(Constants.AdvanceFrame);
 
-            var trueState = Keyboard.GetState();
-            handleRecording(trueState);
-            handlePlayback(trueState);
+            if(!pauseKey) {
+                pauseKeyDown = false;
+            } else if(!pauseKeyDown) {
+                pauseKeyDown = true;
+                TogglePaused();
+            }
 
+            if(!advanceKey) {
+                advanceKeyDown = false;
+            } else if(!advanceKeyDown) {
+                advanceKeyDown = true;
+                if(gamePaused && !shouldAdvanceFrame) {
+                    shouldAdvanceFrame = true;
+                    Debug.WriteLine($"Advancing to frame {automationAgent.Frame + 1}");
+                }
+            }
+        }
+
+        private GameTime pauseTimeMask;
+
+        private bool gamePaused = false; /* Value must start as false */
+        public bool Paused {
+            get {
+                return gamePaused;
+            }
+            set {
+                if(gamePaused == value) {
+                    return;
+                }
+                if(!gamePaused) {
+                    var mask = new GameTime();
+                    mask.ElapsedGameTime = lastElapsedTime;
+                    mask.TotalGameTime = lastTotalTime;
+                    pauseTimeMask = mask;
+                    Debug.WriteLine($"Game paused (Frame {Frame}).");
+                } else {
+                    pauseTimeMask = null;
+                    Debug.WriteLine($"Game unpaused.");
+                }
+                gamePaused = value;
+            }
+        }
+        public void Pause() {
+            Paused = true;
+        }
+        public void Unpause() {
+            Paused = false;
+        }
+        public void TogglePaused() {
+            Paused = !Paused;
+        }
+
+        private bool shouldAdvanceFrame = false;
+
+        private int framesToSkip = 0;
+
+
+        private void updateGame(GameTime gameTime) {
             automationAgent.StartFrame();
             gameTimeMask = automationAgent.GetGameTime(gameTime);
             this.gameState.Update(gameTimeMask);
             automationAgent.EndFrame();
+            if(framesToSkip > 0) {
+                var count = framesToSkip;
+                framesToSkip = 0;
+                for(var i = 0;i < count;i++) {
+                    updateGame(null); /* Automation agent supplies a game time when playback is active */
+                }
+                Debug.WriteLine($"Skipped {count} frame(s).");
+            }
         }
 
-        protected override void Draw(GameTime _) {
+        public void SkipFrames(int count) {
+            if(!automationAgent.PlaybackActive) { /* Confused? See above. */
+                return;
+            }
+            framesToSkip = count;
+        }
+
+        private GameTime gameTimeMask;
+        protected override void Update(GameTime gameTime) {
+            if(!gameIsReady()) {
+                return;
+            }
+
+            var trueState = Keyboard.GetState();
+            handleRecording(trueState);
+            handlePlayback(trueState);
+            handlePauseControls(trueState);
+
+            if(gamePaused) {
+                if(!shouldAdvanceFrame) {
+                    return;
+                }
+                updateGame(gameTime);
+                shouldAdvanceFrame = false;
+                return;
+            }
+            updateGame(gameTime);
+        }
+
+        private TimeSpan lastElapsedTime;
+        private TimeSpan lastTotalTime;
+
+        protected override void Draw(GameTime gameTime) {
             if(!gameIsReady()) return;
-            this.gameState.Draw(gameTimeMask);
+
+            if(!gamePaused || automationAgent.PlaybackActive) {
+                this.gameState.Draw(gameTimeMask);
+            } else {
+                this.gameState.Draw(pauseTimeMask);
+            }
+
+            lastElapsedTime = gameTime.ElapsedGameTime;
+            lastTotalTime = gameTime.TotalGameTime;
         }
     }
 }

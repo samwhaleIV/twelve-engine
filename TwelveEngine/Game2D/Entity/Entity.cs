@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine.Game2D {
-    public abstract class Entity:ISerializable {
+    public class Entity:ISerializable {
         public string FactoryID = null;
         public string Name = string.Empty;
 
@@ -9,13 +9,13 @@
         public long ID = 0;
         public EntityManager Owner = null;
 
-        public abstract void Load();
-        public abstract void Unload();
-
         public float X = 0;
         public float Y = 0;
         public float Width = 1;
         public float Height = 1;
+
+        public virtual void Load() { }
+        public virtual void Unload() { }
 
         public virtual void Export(SerialFrame frame) {
             frame.Set("X",X);

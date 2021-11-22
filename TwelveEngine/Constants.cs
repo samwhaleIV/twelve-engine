@@ -13,6 +13,9 @@ namespace TwelveEngine {
         public const Keys RecordingKey = Keys.F3;
         public const Keys PlaybackKey = Keys.F4;
 
+        public const Keys PauseGame = Keys.F5;
+        public const Keys AdvanceFrame = Keys.F6;
+
         public const string PlaybackFileExtension = "input";
         public const string PlaybackFolder = "playback";
 

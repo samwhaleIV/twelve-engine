@@ -13,11 +13,8 @@ namespace TwelveEngine.Game2D {
         public static void DrawCentered(SpriteBatch spriteBatch,Texture2D texture,Game game) {
             DrawCentered(spriteBatch,texture,GetScreenCenter(game));
         }
-        public static Viewport GetViewport(Game game) {
-            return game.GraphicsDevice.Viewport;
-        }
         public static Vector2 GetScreenCenter(Game game) {
-            var viewport = GetViewport(game);
+            var viewport = game.GraphicsDevice.Viewport;
             Vector2 screenCenter = new Vector2(viewport.Width / 2,viewport.Height / 2);
             return screenCenter;
         }

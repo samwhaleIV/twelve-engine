@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D.Entities {
@@ -121,28 +122,44 @@ namespace TwelveEngine.Game2D.Entities {
             if(Y == getUpLimit(self,target) || Y == getDownLimit(self,target)) {
                 return false;
             }
-            X = getLeftLimit(self,target);
+            if(self.X < target.X) {
+                X = getRightLimit(self,target);
+            } else {
+                X = getLeftLimit(self,target);
+            }
             return true;
         }
         private bool upCollision(Hitbox self,Hitbox target) {
             if(X == getLeftLimit(self,target) || X == getRightLimit(self,target)) {
                 return false;
             }
-            Y = getUpLimit(self,target);
+            if(self.Y < target.Y) {
+                Y = getDownLimit(self,target);
+            } else {
+                Y = getUpLimit(self,target);
+            }
             return true;
         }
         private bool rightCollision(Hitbox self,Hitbox target) {
             if(Y == getUpLimit(self,target) || Y == getDownLimit(self,target)) {
                 return false;
             }
-            X = getRightLimit(self,target);
+            if(self.X > target.X) {
+                X = getLeftLimit(self,target);
+            } else {
+                X = getRightLimit(self,target);
+            }
             return true;
         }
         private bool downCollision(Hitbox self,Hitbox target) {
             if(X == getLeftLimit(self,target) || X == getRightLimit(self,target)) {
                 return false;
             }
-            Y = getDownLimit(self,target);
+            if(self.Y > target.Y) {
+                Y = getUpLimit(self,target);
+            } else {
+                Y = getDownLimit(self,target);
+            }
             return true;
         }
 
@@ -241,20 +258,55 @@ namespace TwelveEngine.Game2D.Entities {
         private int lastDeltaX = 0;
         private int lastDeltaY = 0;
 
+        private void handleAutomaticOffset(Direction oldDirection) {
+            Hitbox hitbox = GetHitbox();
+
+            List<Hitbox> collisionResult = Grid.CollisionInterface.Collides(hitbox);
+
+            var hadCollision = false;
+            foreach(var target in collisionResult) {
+                if(
+                    (hitbox.Y > target.Y && Y == getUpLimit(hitbox,target)) ||
+                    (hitbox.Y < target.Y && Y == getDownLimit(hitbox,target))
+                ) {
+                    continue;
+                }
+                hadCollision = true;
+                break;
+            }
+
+            if(!hadCollision) {
+                return;
+            }
+            if(oldDirection == Direction.Right) {
+                this.X -= HITBOX_ORIENTATION_OFFSET;
+            } else {
+                this.X += HITBOX_ORIENTATION_OFFSET;
+            }
+
+            hitbox = GetHitbox();
+
+            collisionResult = Grid.CollisionInterface.Collides(hitbox);
+            if(collisionResult.Count <= 0) {
+                return;
+            }
+
+            var firstHit = collisionResult[0];
+
+            if(oldDirection == Direction.Right) {
+                leftCollision(hitbox,firstHit);
+            } else {
+                rightCollision(hitbox,firstHit);
+            }
+        }
+
         private void updateDirection() {
             var newDirection = getDirection();
             var oldDirection = direction;
             direction = newDirection;
 
             if(newDirection != oldDirection && isHorizontal(oldDirection) && isVertical(newDirection)) {
-                var hitbox = GetHitbox();
-                if(Grid.CollisionInterface.Collides(hitbox).Count > 0) {
-                    if(oldDirection == Direction.Right) {
-                        this.X -= HITBOX_ORIENTATION_OFFSET;
-                    } else {
-                        this.X += HITBOX_ORIENTATION_OFFSET;
-                    }
-                }
+                handleAutomaticOffset(oldDirection);
             }
         }
 

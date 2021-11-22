@@ -31,10 +31,12 @@ namespace TwelveEngine {
             grid.Camera.Y = 0;
 
             grid.OnLoad = () => {
-                grid.AddEntity(new Player() {
+                var player = new Player() {
                     X = 7.5f,
                     Y = 4.5f
-                });
+                };
+                grid.AddEntity(player);
+                grid.AddEntity(new PlayerDebugger(player));
             };
 
             return grid;

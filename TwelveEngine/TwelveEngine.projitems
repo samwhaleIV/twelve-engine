@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\PlayerDebugger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TheRedBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityFactory.cs" />

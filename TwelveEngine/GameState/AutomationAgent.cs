@@ -8,12 +8,13 @@ using System.Diagnostics;
 
 namespace TwelveEngine {
 
-    public sealed class AutomationAgent {
+    internal sealed class AutomationAgent {
 
         private bool recording = false;
         private bool playback = false;
 
         private int frameNumber = 0;
+        internal int Frame => frameNumber;
 
         private Queue<InputFrame> outputBuffer = null;
         private InputFrame[] playbackFrames = null;
@@ -21,17 +22,17 @@ namespace TwelveEngine {
         private InputFrame recordingFrame = new InputFrame();
         private InputFrame playbackFrame = new InputFrame();
 
-        public bool RecordingActive => recording;
-        public bool PlaybackActive => playback;
+        internal bool RecordingActive => recording;
+        internal bool PlaybackActive => playback;
 
-        public void StartRecording() {
+        internal void StartRecording() {
             if(recording) {
                 throw new Exception("Cannot start recording, recording is already happening!");
             }
             outputBuffer = new Queue<InputFrame>();
             recording = true;
         }
-        public void StopRecording(string path) {
+        internal void StopRecording(string path) {
             if(!recording) {
                 throw new Exception("Cannot stop recording, we never started!");
             }
@@ -48,28 +49,33 @@ namespace TwelveEngine {
             recording = false;
         }
 
-        public void StartPlayback(string path) {
+        private string playbackFile = null;
+        internal string PlaybackFile => playbackFile;
+
+        internal void StartPlayback(string path) {
             if(playback) {
                 throw new Exception("Cannot start playback, playback is already active!");
             }
             var lines = File.ReadAllLines(path);
             playbackFrames = new InputFrame[lines.Length];
 
-            for(var i = 0;i<playbackFrames.Length;i++) {
+            for(var i = 0;i < playbackFrames.Length;i++) {
                 playbackFrames[i] = new InputFrame(new SerialInputFrame(lines[i]));
             }
             frameNumber = 0;
             proxyGameTime = new GameTime();
+            playbackFile = path;
             playback = true;
         }
 
-        public void StopPlayback() {
+        internal void StopPlayback() {
             if(!playback) {
                 throw new Exception("Cannot stop playback, playback is not active!");
             }
             playbackFrames = null;
             playback = false;
             proxyGameTime = null;
+            playbackFile = null;
         }
 
         internal KeyboardState GetKeyboardState() {
@@ -98,19 +104,20 @@ namespace TwelveEngine {
         }
 
         internal void StartFrame() {
-            frameNumber += 1;
             if(playback) {
-                if(frameNumber >= playbackFrames.Length) {
-                    StopPlayback();
-                    Debug.WriteLine("Playback stopped automatically.");
-                } else {
-                    playbackFrame = playbackFrames[frameNumber-1];
-                }
+                playbackFrame = playbackFrames[frameNumber];
+                frameNumber += 1;
+            } else {
+                frameNumber += 1;
             }
         }
 
         internal void EndFrame() {
             if(recording) outputBuffer.Enqueue(recordingFrame);
+            if(playback && frameNumber >= playbackFrames.Length) {
+                StopPlayback();
+                Debug.WriteLine("Playback stopped automatically.");
+            }
         }
 
         private GameTime proxyGameTime = null;
@@ -118,7 +125,7 @@ namespace TwelveEngine {
         internal GameTime GetGameTime(GameTime gameTime) {
             if(playback) {
                 gameTime = proxyGameTime;
-                var frame = playbackFrames[frameNumber];
+                var frame = playbackFrame;
                 gameTime.ElapsedGameTime = frame.elapsedTime;
                 gameTime.TotalGameTime = frame.totalTime;
             }
