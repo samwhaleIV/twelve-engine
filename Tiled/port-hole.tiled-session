@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "maps_alpha/level6.tmx",
+    "activeFile": "maps_alpha/level4.tmx",
     "expandedProjectPaths": [
         "maps_alpha/rules",
         ".",
@@ -161,16 +161,16 @@
             "scale": 4,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 136.25,
+                "x": 136,
                 "y": 136
             }
         },
         "maps_alpha/level4.tmx": {
-            "scale": 3,
+            "scale": 4,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 149.66666666666663,
-                "y": 201.66666666666663
+                "x": 146.5,
+                "y": 131
             }
         },
         "maps_alpha/level5.tmx": {
@@ -233,8 +233,8 @@
             "scale": 3,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 33.66666666666666,
-                "y": 163.66666666666663
+                "x": 128,
+                "y": 128
             }
         },
         "maps_alpha/rules/corners.tmx": {
@@ -380,12 +380,12 @@
         "maps_alpha/level1.tmx",
         "maps_alpha/level2.tmx",
         "maps_alpha/level3.tmx",
-        "maps_alpha/level4.tmx",
-        "maps_alpha/level5.tmx",
         "maps_alpha/rules/collision-objects.tmx",
         "maps_alpha/rules/collision.tmx",
         "maps_alpha/level7.tmx",
         "maps_alpha/level6.tmx",
+        "maps_alpha/level5.tmx",
+        "maps_alpha/level4.tmx",
         "maps_alpha/rules/collision-spawner.tmx",
         "porthole-tileset.tsx",
         "maps_alpha/rules/shadows-special.tmx"

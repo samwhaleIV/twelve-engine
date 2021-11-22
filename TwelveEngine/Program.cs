@@ -10,13 +10,13 @@ namespace TwelveEngine {
 
         private static GameState GetTestStartState() {
 
-            bool showCollisionLayer = false;
+            bool showCollisionLayer = true;
 
             MapDatabase.LoadMaps();
             var grid = new Grid2D(LayerModes.BackgroundForegroundStandard) {
                 TileRenderer = new TilesetRenderer()
             };
-            var map = MapDatabase.GetMap("level6");
+            var map = MapDatabase.GetMap("level4");
             grid.ImportMap(map);
             grid.LayerMode = LayerModes.GetAutomatic(map);
             if(showCollisionLayer) {

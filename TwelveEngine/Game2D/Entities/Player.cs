@@ -316,7 +316,7 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public void Update(GameTime gameTime) {
-            keyboardHandler.Update();
+            keyboardHandler.Update(this.Game);
             updateMovement(gameTime);
             var camera = Grid.Camera;
             camera.X = this.X; camera.Y = this.Y;

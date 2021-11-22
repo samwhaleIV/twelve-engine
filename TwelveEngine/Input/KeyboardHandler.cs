@@ -19,8 +19,8 @@ namespace TwelveEngine.Input {
             KeyUp?.Invoke(key);
         }
 
-        public void Update() {
-            var keyboardState = Keyboard.GetState();
+        public void Update(GameManager gameManager) {
+            var keyboardState = gameManager.KeyboardState;
             var keys = keyboardState.GetPressedKeys();
 
             foreach(var key in keys) {

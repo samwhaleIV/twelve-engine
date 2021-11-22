@@ -31,8 +31,8 @@ namespace TwelveEngine.Input {
         public int Y => mouseY;
         public bool Capturing => mouseIsDown;
 
-        public void Update() {
-            var mouseState = Mouse.GetState();
+        public void Update(GameManager gameManager) {
+            var mouseState = gameManager.MouseState;
             if(!hasState) {
                 lastMouseState = mouseState;
                 hasState = true;

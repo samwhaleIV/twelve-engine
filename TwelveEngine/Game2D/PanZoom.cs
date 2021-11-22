@@ -87,7 +87,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public void Update(GameTime gameTime) {
-            mouseHandler.Update();
+            mouseHandler.Update(grid.Game);
         }
     }
 }

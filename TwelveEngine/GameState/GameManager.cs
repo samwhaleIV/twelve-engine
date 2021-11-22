@@ -1,5 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace TwelveEngine {
     public sealed class GameManager:Game {
@@ -59,6 +64,12 @@ namespace TwelveEngine {
             }
         }
 
+        private readonly AutomationAgent automationAgent = new AutomationAgent();
+        public AutomationAgent AutomationAgent => automationAgent;
+
+        public KeyboardState KeyboardState => automationAgent.GetKeyboardState();
+        public MouseState MouseState => automationAgent.GetMouseState();
+
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
         public SpriteBatch SpriteBatch => spriteBatch;
 
@@ -81,18 +92,98 @@ namespace TwelveEngine {
             pendingGameState = null;
         }
 
-        protected override void Update(GameTime gameTime) {
-            if(loading || hasNullState()) {
-                return;
-            }
-            this.gameState.Update(gameTime);
+        private bool gameIsReady() {
+            return !(loading || hasNullState());
         }
 
-        protected override void Draw(GameTime gameTime) {
-            if(loading || hasNullState()) {
+        private bool recordingKeyPressed = false;
+        private void handleRecording(KeyboardState keyboardState) {
+            var keyActive = keyboardState.IsKeyDown(Constants.RecordingKey);
+            if(!keyActive) {
+                recordingKeyPressed = false;
                 return;
             }
-            this.gameState.Draw(gameTime);
+            if(recordingKeyPressed) return;
+            recordingKeyPressed = true;
+
+            if(!automationAgent.PlaybackActive) {
+                if(automationAgent.RecordingActive) {
+                    var folder = Constants.PlaybackFolder;
+                    var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExtension}";
+                    if(!Directory.Exists(folder)) {
+                        Directory.CreateDirectory(folder);
+                    }
+                    automationAgent.StopRecording(path);
+                    Debug.WriteLine($"Recording saved to '{path}'.");
+                } else {
+                    automationAgent.StartRecording();
+                    Debug.WriteLine("Recording started...");
+                }
+            }
+        }
+
+        private string getPlaybackFile() {
+            var preferredFile = Constants.PreferredPlaybackFile;
+            if(!string.IsNullOrWhiteSpace(preferredFile)) {
+                return preferredFile;
+            }
+
+            var defaultFile = Constants.DefaultPlaybackFile;
+            if(File.Exists(defaultFile)) {
+                return defaultFile;
+            }
+
+            var file = Directory.EnumerateFiles(
+                Directory.GetCurrentDirectory(),$"{Constants.PlaybackFolder}\\*.{Constants.PlaybackFileExtension}"
+            ).OrderByDescending(name => name).FirstOrDefault();
+            
+            return file;
+        }
+
+        private bool playbackKeyPressed = false;
+        private void handlePlayback(KeyboardState keyboardState) {
+            var keyActive = keyboardState.IsKeyDown(Constants.PlaybackKey);
+            if(!keyActive) {
+                playbackKeyPressed = false;
+                return;
+            }
+            if(playbackKeyPressed) return;
+            playbackKeyPressed = true;
+
+            if(!automationAgent.RecordingActive) {
+                if(automationAgent.PlaybackActive) {
+                    automationAgent.StopPlayback();
+                    Debug.WriteLine("Playback stopped manually (more frames exist). Warning: Time skipping may have caused instability.");
+                } else {
+                    var file = getPlaybackFile();
+                    if(string.IsNullOrWhiteSpace(file)) {
+                        Debug.WriteLine("No recent playback file found.");
+                        return;
+                    }
+                    var playbackFile = getPlaybackFile();
+                    automationAgent.StartPlayback(playbackFile);
+                    Debug.WriteLine($"Playing input file '{playbackFile}'.");
+                }
+            }
+        }
+
+        private GameTime gameTimeMask;
+        protected override void Update(GameTime gameTime) {
+            if(!gameIsReady()) return;
+
+            var trueState = Keyboard.GetState();
+            handleRecording(trueState);
+            handlePlayback(trueState);
+
+            automationAgent.StartFrame();
+            gameTimeMask = automationAgent.GetGameTime(gameTime);
+            this.gameState.Update(gameTimeMask);
+            automationAgent.EndFrame();
+        }
+
+        protected override void Draw(GameTime _) {
+            if(!gameIsReady()) return;
+            this.gameState.Draw(gameTimeMask);
         }
     }
 }
