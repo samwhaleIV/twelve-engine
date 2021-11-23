@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game2D.Entities {
     public sealed class PlayerDebugger:Entity, IUpdateable {

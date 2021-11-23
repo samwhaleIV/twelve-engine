@@ -1,15 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace TwelveEngine {
     internal struct SerialInputFrame {
-
-        /* Todo write ints and long to byte array instead of string array */
-
-        private const char SEPERATOR = ',';
-        internal int[] pressedKeys;
 
         internal long totalTime;
         internal long elapsedTime;
@@ -20,18 +14,20 @@ namespace TwelveEngine {
         internal int scrollX;
         internal int scrollY;
 
-        internal int xButton1;
-        internal int xButton2;
+        internal byte xButton1;
+        internal byte xButton2;
 
-        internal int leftButton;
-        internal int rightButton;
-        internal int middleButton;
+        internal byte leftButton;
+        internal byte middleButton;
+        internal byte rightButton;
+
+        internal byte[] pressedKeys;
 
         internal SerialInputFrame(InputFrame frame) {
             Keys[] keysState = frame.keyboardState.GetPressedKeys();
-            pressedKeys = new int[keysState.Length];
+            pressedKeys = new byte[keysState.Length];
             for(var i = 0;i < pressedKeys.Length;i++) {
-                pressedKeys[i] = (int)keysState[i];
+                pressedKeys[i] = (byte)keysState[i];
             }
             totalTime = frame.totalTime.Ticks;
             elapsedTime = frame.elapsedTime.Ticks;
@@ -41,84 +37,101 @@ namespace TwelveEngine {
             mouseX = mouse.X;
             mouseY = mouse.Y;
 
-            scrollY = mouse.ScrollWheelValue;
             scrollX = mouse.HorizontalScrollWheelValue;
+            scrollY = mouse.ScrollWheelValue;
 
-            leftButton = (int)mouse.LeftButton;
-            rightButton = (int)mouse.RightButton;
+            xButton1 = (byte)mouse.XButton1;
+            xButton2 = (byte)mouse.XButton2;
 
-            middleButton = (int)mouse.MiddleButton;
-
-            xButton1 = (int)mouse.XButton1;
-            xButton2 = (int)mouse.XButton2;
+            leftButton = (byte)mouse.LeftButton;
+            middleButton = (byte)mouse.MiddleButton;
+            rightButton = (byte)mouse.RightButton;
         }
 
-        private static void addInt(StringBuilder builder,int value) {
-            builder.Append(value);
-            builder.Append(SEPERATOR);
+        private static short intToShort(int value) {
+            return (short)Math.Max(short.MinValue,Math.Min(short.MaxValue,value));
         }
-        private static void addLong(StringBuilder builder,long value) {
-            builder.Append(value);
-            builder.Append(SEPERATOR);
+        private static int longToInt(long value) {
+            return (int)Math.Max(int.MinValue,Math.Min(int.MaxValue,value));
         }
 
-        private static long readLong(Queue<string> queue) {
-            return long.Parse(queue.Dequeue());
+        private bool mouseDataEqual(SerialInputFrame frame) {
+            /* Sorted by frequency */
+            return this.mouseX == frame.mouseX &&
+                   this.mouseY == frame.mouseY &&
+                   this.leftButton == frame.leftButton &&
+                   this.scrollY == frame.scrollY &&
+                   this.rightButton == frame.rightButton &&
+                   this.middleButton == frame.middleButton &&
+                   this.scrollX == frame.scrollX &&
+                   this.xButton1 == frame.xButton1 &&
+                   this.xButton2 == frame.xButton2;
         }
-        private static int readInt(Queue<string> queue) {
-            return int.Parse(queue.Dequeue());
-        }
 
-        internal void Export(StringBuilder builder) {
-            addLong(builder,elapsedTime);
-            addLong(builder,totalTime);
+        internal void Export(BinaryWriter writer,SerialInputFrame lastFrame) {
+            writer.Write(longToInt(elapsedTime));
 
-            addInt(builder,mouseX);
-            addInt(builder,mouseY);
-
-            addInt(builder,scrollX);
-            addInt(builder,scrollY);
-
-            addInt(builder,xButton1);
-            addInt(builder,xButton2);
-
-            addInt(builder,leftButton);
-            addInt(builder,middleButton);
-            addInt(builder,rightButton);
-
-            if(pressedKeys.Length > 0) {
-                builder.Append(string.Join(SEPERATOR,pressedKeys));
+            if(mouseDataEqual(lastFrame)) {
+                writer.Write((byte)1);
             } else {
-                builder.Remove(builder.Length - 1,1);
+                writer.Write((byte)0);
+                writer.Write(intToShort(mouseX));
+                writer.Write(intToShort(mouseY));
+
+                writer.Write(intToShort(scrollX));
+                writer.Write(intToShort(scrollY));
+
+                writer.Write(xButton1);
+                writer.Write(xButton2);
+
+                writer.Write(leftButton);
+                writer.Write(middleButton);
+                writer.Write(rightButton);
             }
 
-            builder.Append(Environment.NewLine);
+            var keyCount = pressedKeys.Length;
+            writer.Write((byte)keyCount);
+            for(var i = 0;i < keyCount;i++) {
+                writer.Write(pressedKeys[i]);
+            }
         }
-        internal SerialInputFrame(string data) {
-            var values = new Queue<string>(data.Split(SEPERATOR));
-            elapsedTime = readLong(values);
-            totalTime = readLong(values);
+        internal SerialInputFrame(ref long totalTime,SerialInputFrame lastFrame,BinaryReader reader) {
+            elapsedTime = reader.ReadInt32();
+            totalTime += elapsedTime;
+            this.totalTime = totalTime;
 
-            mouseX = readInt(values);
-            mouseY = readInt(values);
+            var mouseDataEqual = reader.ReadByte();
+            if(mouseDataEqual == 1) {
+                mouseX = lastFrame.mouseX;
+                mouseY = lastFrame.mouseY;
+                scrollX = lastFrame.scrollX;
+                scrollY = lastFrame.scrollY;
 
-            scrollX = readInt(values);
-            scrollY = readInt(values);
+                xButton1 = lastFrame.xButton1;
+                xButton2 = lastFrame.xButton2;
 
-            xButton1 = readInt(values);
-            xButton2 = readInt(values);
+                leftButton = lastFrame.leftButton;
+                middleButton = lastFrame.middleButton;
+                rightButton = lastFrame.rightButton;
+            } else {
+                mouseX = reader.ReadInt16();
+                mouseY = reader.ReadInt16();
+                scrollX = reader.ReadInt16();
+                scrollY = reader.ReadInt16();
 
-            leftButton = readInt(values);
-            middleButton = readInt(values);
-            rightButton = readInt(values);
+                xButton1 = reader.ReadByte();
+                xButton2 = reader.ReadByte();
 
-            var keys = new Queue<int>();
-            string value;
-            while(values.TryDequeue(out value)) {
-                keys.Enqueue(int.Parse(value));
+                leftButton = reader.ReadByte();
+                middleButton = reader.ReadByte();
+                rightButton = reader.ReadByte();
             }
 
-            pressedKeys = keys.ToArray();
+            var keyCount = (int)reader.ReadByte();
+            pressedKeys = new byte[keyCount];
+            for(var i = 0;i < keyCount;i++) {
+                pressedKeys[i] = reader.ReadByte();
+            }
         }
     }
 }

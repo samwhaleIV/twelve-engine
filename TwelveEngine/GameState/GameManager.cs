@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TwelveEngine {
     public sealed class GameManager:Game {
@@ -100,6 +101,23 @@ namespace TwelveEngine {
             return !(loading || hasNullState());
         }
 
+        private void stopRecording() {
+            var folder = Constants.PlaybackFolder;
+            var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExtension}";
+            if(!Directory.Exists(folder)) {
+                Directory.CreateDirectory(folder);
+            }
+            Debug.WriteLine("Stopped recording.");
+            Task.Run(async () => {
+                await automationAgent.StopRecording(path);
+                Debug.WriteLine($"Recording saved to '{path}'.");
+            });
+        }
+        private void startRecording() {
+            automationAgent.StartRecording();
+            Debug.WriteLine("Recording started...");
+        }
+
         private bool recordingKeyPressed = false;
         private void handleRecording(KeyboardState keyboardState) {
             bool keyActive = keyboardState.IsKeyDown(Constants.RecordingKey);
@@ -112,16 +130,9 @@ namespace TwelveEngine {
 
             if(!automationAgent.PlaybackActive) {
                 if(automationAgent.RecordingActive) {
-                    var folder = Constants.PlaybackFolder;
-                    var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExtension}";
-                    if(!Directory.Exists(folder)) {
-                        Directory.CreateDirectory(folder);
-                    }
-                    automationAgent.StopRecording(path);
-                    Debug.WriteLine($"Recording saved to '{path}'.");
+                    stopRecording();
                 } else {
-                    automationAgent.StartRecording();
-                    Debug.WriteLine("Recording started...");
+                    startRecording();
                 }
             }
         }
@@ -140,8 +151,30 @@ namespace TwelveEngine {
             var file = Directory.EnumerateFiles(
                 Directory.GetCurrentDirectory(),$"{Constants.PlaybackFolder}\\*.{Constants.PlaybackFileExtension}"
             ).OrderByDescending(name => name).FirstOrDefault();
-            
+
             return file;
+        }
+
+        private void startPlayback() {
+            var file = getPlaybackFile();
+            if(string.IsNullOrWhiteSpace(file)) {
+                Debug.WriteLine("No recent playback file found.");
+                return;
+            }
+            var playbackFile = getPlaybackFile();
+            Debug.WriteLine("Loading playback file...");
+            Task.Run(async () => {
+                await automationAgent.StartPlayback(playbackFile);
+                Debug.WriteLine($"Playing input file '{playbackFile}'.");
+            });
+        }
+        private void stopPlayback() {
+            automationAgent.StopPlayback();
+            Debug.WriteLine("Playback stopped manually (more frames exist). Warning: Time skipping may have caused instability.");
+        }
+
+        private void playbackAlreadyActive() {
+            Debug.WriteLine("Playback loading. Please wait.");
         }
 
         private bool playbackKeyPressed = false;
@@ -155,20 +188,21 @@ namespace TwelveEngine {
             playbackKeyPressed = true;
 
             if(!automationAgent.RecordingActive) {
+                if(automationAgent.PlaybackLoading) {
+                    playbackAlreadyActive();
+                    return;
+                }
                 if(automationAgent.PlaybackActive) {
-                    automationAgent.StopPlayback();
-                    Debug.WriteLine("Playback stopped manually (more frames exist). Warning: Time skipping may have caused instability.");
+                    stopPlayback();
                 } else {
-                    var file = getPlaybackFile();
-                    if(string.IsNullOrWhiteSpace(file)) {
-                        Debug.WriteLine("No recent playback file found.");
-                        return;
-                    }
-                    var playbackFile = getPlaybackFile();
-                    automationAgent.StartPlayback(playbackFile);
-                    Debug.WriteLine($"Playing input file '{playbackFile}'.");
+                    startPlayback();
                 }
             }
+        }
+
+        private void advanceFrame() {
+            shouldAdvanceFrame = true;
+            Debug.WriteLine($"Advancing to frame {automationAgent.Frame + 1}");
         }
 
         private bool pauseKeyDown = false;
@@ -189,8 +223,7 @@ namespace TwelveEngine {
             } else if(!advanceKeyDown) {
                 advanceKeyDown = true;
                 if(gamePaused && !shouldAdvanceFrame) {
-                    shouldAdvanceFrame = true;
-                    Debug.WriteLine($"Advancing to frame {automationAgent.Frame + 1}");
+                    advanceFrame();
                 }
             }
         }
@@ -211,6 +244,7 @@ namespace TwelveEngine {
                     mask.ElapsedGameTime = lastElapsedTime;
                     mask.TotalGameTime = lastTotalTime;
                     pauseTimeMask = mask;
+                    
                     Debug.WriteLine($"Game paused (Frame {Frame}).");
                 } else {
                     pauseTimeMask = null;
@@ -232,7 +266,6 @@ namespace TwelveEngine {
         private bool shouldAdvanceFrame = false;
 
         private int framesToSkip = 0;
-
 
         private void updateGame(GameTime gameTime) {
             automationAgent.StartFrame();

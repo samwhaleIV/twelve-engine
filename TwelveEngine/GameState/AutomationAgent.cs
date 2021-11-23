@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Diagnostics;
+using System.IO.Compression;
+using System.Threading.Tasks;
 
 namespace TwelveEngine {
 
@@ -32,40 +34,128 @@ namespace TwelveEngine {
             outputBuffer = new Queue<InputFrame>();
             recording = true;
         }
-        internal void StopRecording(string path) {
+        internal async Task StopRecording(string path) {
             if(!recording) {
                 throw new Exception("Cannot stop recording, we never started!");
             }
 
-            var stringBuilder = new StringBuilder();
-
-            InputFrame frame;
-            while(outputBuffer.TryDequeue(out frame)) {
-                new SerialInputFrame(frame).Export(stringBuilder);
-            }
-
+            InputFrame[] frames = outputBuffer.ToArray();
+            outputBuffer.Clear();
             outputBuffer = null;
-            File.WriteAllText(path,stringBuilder.ToString());
             recording = false;
+
+            await writePlaybackFrames(path,frames);
         }
 
         private string playbackFile = null;
         internal string PlaybackFile => playbackFile;
 
-        internal void StartPlayback(string path) {
+        private static InputFrame[] readFileData(BinaryReader reader) {
+            var frameCount = reader.ReadInt32();
+
+            InputFrame[] frames = new InputFrame[frameCount];
+            if(frameCount <= 0) {
+                return frames;
+            }
+            long totalTime = reader.ReadInt64();
+
+            SerialInputFrame lastFrame = new SerialInputFrame();
+            for(var i = 0;i < frameCount;i++) {
+                var serialFrame = new SerialInputFrame(ref totalTime,lastFrame,reader);
+                frames[i] = new InputFrame(serialFrame);
+                lastFrame = serialFrame;
+            }
+            return frames;
+        }
+
+        private static void writeFileData(BinaryWriter writer,InputFrame[] frames) {
+            var frameCount = frames.Length;
+
+            writer.Write(frameCount);
+
+            if(frameCount <= 0) {
+                return;
+            }
+
+            var firstFrame = frames[0];
+            writer.Write((firstFrame.totalTime - firstFrame.elapsedTime).Ticks);
+
+            SerialInputFrame lastFrame = new SerialInputFrame();
+
+            for(var i = 0;i < frameCount;i++) {
+                var newFrame = new SerialInputFrame(frames[i]);
+                newFrame.Export(writer,lastFrame);
+                lastFrame = newFrame;
+            }
+        }
+
+        private static async Task<InputFrame[]> readPlaybackFrames(string path) {
+            InputFrame[] frames = null;
+
+            byte[] fileData;
+            using(var stream = new MemoryStream()) {
+                using(var fileStream = File.Open(path,FileMode.Open,FileAccess.Read,FileShare.Read)) {
+                    await fileStream.CopyToAsync(stream);
+                }
+                fileData = stream.ToArray();
+            }
+
+            using(var stream = new MemoryStream()) {
+                using(var compressStream = new MemoryStream(fileData)) {
+                    using(var deflateStream = new DeflateStream(compressStream,CompressionMode.Decompress)) {
+                        await deflateStream.CopyToAsync(stream);
+                    }
+                }
+                using(var reader = new BinaryReader(stream,Encoding.Default,false)) {
+                    stream.Seek(0,SeekOrigin.Begin);
+                    frames = await Task.Run(() => readFileData(reader));
+                }
+            }
+
+            if(frames == null) {
+                frames = new InputFrame[0];
+            }
+            return frames;
+        }
+
+        private static async Task writePlaybackFrames(string path,InputFrame[] frames) {
+            byte[] fileData;
+            using(var stream = new MemoryStream()) {
+                using(var writer = new BinaryWriter(stream,Encoding.Default,true)) {
+                    await Task.Run(() => writeFileData(writer,frames));
+                }
+                fileData = stream.ToArray();
+            }
+
+            using(var stream = new MemoryStream()) {
+                using(var compressor = new DeflateStream(stream,CompressionMode.Compress)) {
+                    await compressor.WriteAsync(fileData,0,fileData.Length);
+                }
+                fileData = stream.ToArray();
+            }
+
+            using(var stream = File.Open(path,FileMode.Create,FileAccess.Write,FileShare.None)) {
+                await stream.WriteAsync(fileData,0,fileData.Length);
+            }
+        }
+
+        internal bool playbackLoading = false;
+        public bool PlaybackLoading => playbackLoading;
+
+        internal async Task StartPlayback(string path) {
+            if(playbackLoading) {
+                return;
+            }
             if(playback) {
                 throw new Exception("Cannot start playback, playback is already active!");
             }
-            var lines = File.ReadAllLines(path);
-            playbackFrames = new InputFrame[lines.Length];
-
-            for(var i = 0;i < playbackFrames.Length;i++) {
-                playbackFrames[i] = new InputFrame(new SerialInputFrame(lines[i]));
-            }
+            playbackLoading = true;
+            playbackFrames = await readPlaybackFrames(path);
             frameNumber = 0;
             proxyGameTime = new GameTime();
             playbackFile = path;
             playback = true;
+            playbackLoading = false;
         }
 
         internal void StopPlayback() {
