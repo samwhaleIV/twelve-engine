@@ -7,7 +7,7 @@ namespace TwelveEngine {
 
         private const int RENDER_SIZE = 60;
         private const int SPACE = 4;
-        private const double ADVANCE_FRAME_TIMEOUT = 100;
+        private const double ADVANCE_FRAME_TIMEOUT = 250;
 
         private bool loading => gameManager.Loading || automationAgent.PlaybackLoading;
         private bool paused => gameManager.Paused;
@@ -19,11 +19,11 @@ namespace TwelveEngine {
         };
 
         private enum Symbol {
-            Record, Play, Pause, Load, Advance
+            Record, Play, Pause, Load, Advance, AdvanceMany
         };
 
         private (int x, int y)[] symbolSources = {
-            (1,1),(17,1),(1,17),(17,17),(33,1)
+            (1,1),(17,1),(1,17),(17,17),(33,1),(49,1)
         };
 
         private Rectangle getSymbolSource(Symbol symbol) {
@@ -76,7 +76,14 @@ namespace TwelveEngine {
         }
 
         private TimeSpan? lastFrameAdvance;
+        private bool smallAdvance = true;
+
         public void AdvanceFrame(GameTime gameTime) {
+            smallAdvance = true;
+            lastFrameAdvance = gameTime.TotalGameTime;
+        }
+        public void AdvanceFramesMany(GameTime gameTime) {
+            smallAdvance = false;
             lastFrameAdvance = gameTime.TotalGameTime;
         }
 
@@ -103,7 +110,7 @@ namespace TwelveEngine {
             if(lastFrameAdvance.HasValue) {
                 var timeDifference = gameTime.TotalGameTime - lastFrameAdvance.Value;
                 if(timeDifference.TotalMilliseconds < ADVANCE_FRAME_TIMEOUT) {
-                    drawSymbol(ref x,Symbol.Advance);
+                    drawSymbol(ref x,smallAdvance ? Symbol.Advance : Symbol.AdvanceMany);
                 }
             }
 

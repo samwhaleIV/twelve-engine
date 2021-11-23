@@ -22,5 +22,11 @@ namespace TwelveEngine {
         public const string DefaultPlaybackFile = "default." + PlaybackFileExtension;
 
         public const string PreferredPlaybackFile = null;
+
+        public const int ShiftFastForwardFrames = 30;
+
+        public const int PlayerAccel = 300;
+        public const int PlayerDeaccel = 300;
+        public const float DefaultPlayerSpeed = 2.5f;
     }
 }

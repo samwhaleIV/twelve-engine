@@ -168,6 +168,16 @@ namespace TwelveEngine {
             playbackFile = null;
         }
 
+        public int? PlaybackFrameCount {
+            get {
+                if(playbackFrames == null) {
+                    return null;
+                } else {
+                    return playbackFrames.Length;
+                }
+            }
+        }
+
         internal KeyboardState GetKeyboardState() {
             KeyboardState state;
             if(playback) {

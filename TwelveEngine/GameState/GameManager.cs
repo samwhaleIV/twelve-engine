@@ -166,6 +166,9 @@ namespace TwelveEngine {
             var playbackFile = getPlaybackFile();
             Task.Run(async () => {
                 await automationAgent.StartPlayback(playbackFile);
+                if(gamePaused) {
+                    gameTimeMask = automationAgent.GetGameTime(null);
+                }
                 Debug.WriteLine($"Playing input file '{playbackFile}'");
             });
         }
@@ -218,7 +221,11 @@ namespace TwelveEngine {
                 advanceKeyDown = false;
             } else if(!advanceKeyDown) {
                 advanceKeyDown = true;
-                if(gamePaused && !shouldAdvanceFrame) {
+                if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
+                    shouldAdvanceFrame = false;
+                    framesToSkip = Constants.ShiftFastForwardFrames;
+                    vcrDisplay.AdvanceFramesMany(gameTime);
+                } else if(gamePaused && !shouldAdvanceFrame) {
                     advanceFrame(gameTime);
                 }
             }
@@ -260,18 +267,35 @@ namespace TwelveEngine {
 
         private int framesToSkip = 0;
 
+        private bool fastForwarding = false;
+        private void fastForward() {
+            if(fastForwarding) return;
+            fastForwarding = true;
+            var count = framesToSkip;
+            framesToSkip = 0;
+
+            var limit = automationAgent.Frame + count;
+            var playbackFrameCount = automationAgent.PlaybackFrameCount;
+
+            if(playbackFrameCount.HasValue) {
+                limit = Math.Min(playbackFrameCount.Value,limit);
+            }
+
+            for(var i = automationAgent.Frame;i<limit;i++) {
+                updateGame(null); /* Automation agent supplies a game time when playback is active */
+            }
+
+            fastForwarding = false;
+        }
+
         private void updateGame(GameTime gameTime) {
             automationAgent.StartFrame();
             gameTimeMask = automationAgent.GetGameTime(gameTime);
             this.gameState.Update(gameTimeMask);
             automationAgent.EndFrame();
+
             if(framesToSkip > 0) {
-                var count = framesToSkip;
-                framesToSkip = 0;
-                for(var i = 0;i < count;i++) {
-                    updateGame(null); /* Automation agent supplies a game time when playback is active */
-                }
-                Debug.WriteLine($"Fast forward {count} frames of playback");
+                fastForward();
             }
         }
 
@@ -295,6 +319,9 @@ namespace TwelveEngine {
 
             if(gamePaused) {
                 if(!shouldAdvanceFrame) {
+                    if(framesToSkip > 0) {
+                        fastForward();
+                    }
                     return;
                 }
                 updateGame(gameTime);

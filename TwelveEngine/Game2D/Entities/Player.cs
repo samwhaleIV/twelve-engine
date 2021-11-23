@@ -17,7 +17,7 @@ namespace TwelveEngine.Game2D.Entities {
 
         private const float HITBOX_ORIENTATION_OFFSET = HORIZONTAL_HITBOX_X - VERTICAL_HITBOX_X;
 
-        private float maxSpeed = 2.5f;
+        private float maxSpeed = Constants.DefaultPlayerSpeed;
         private const float animationFrameTime = 300;
 
         private const float blinkRate = 2900;
@@ -234,18 +234,15 @@ namespace TwelveEngine.Game2D.Entities {
         private TimeSpan? movingStart = null;
         private TimeSpan? deaccelerationStart = null;
 
-        private const double accelerationTime = 300;
-        private const double deaccelerationTime = 100;
-
         private float deaccelerationStartValue;
 
         private float getSpeed(TimeSpan totalTime) {
             float t;
             if(movingStart.HasValue) {
-                t = (float)Math.Min((totalTime - movingStart.Value).TotalMilliseconds / accelerationTime,1);
+                t = (float)Math.Min((totalTime - movingStart.Value).TotalMilliseconds / Constants.PlayerAccel,1);
                 return maxSpeed * t;
             } else if(deaccelerationStart.HasValue) {
-                t = (float)Math.Min((totalTime - deaccelerationStart.Value).TotalMilliseconds / deaccelerationTime,1);
+                t = (float)Math.Min((totalTime - deaccelerationStart.Value).TotalMilliseconds / Constants.PlayerDeaccel,1);
                 return deaccelerationStartValue * (1 - t);
             } else {
                 return 0f;
@@ -315,7 +312,7 @@ namespace TwelveEngine.Game2D.Entities {
                 movingRenderStart = null;
                 if(deaccelerationStart.HasValue) {
                     var timeDifference = deaccelerationStart.Value - totalTime;
-                    if(timeDifference.TotalMilliseconds >= deaccelerationTime) {
+                    if(timeDifference.TotalMilliseconds >= Constants.PlayerDeaccel) {
                         deaccelerationStart = null;
                     }
                 } else if(movingStart.HasValue) {
