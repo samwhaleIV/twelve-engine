@@ -139,7 +139,7 @@ namespace TwelveEngine {
             }
         }
 
-        internal bool playbackLoading = false;
+        private bool playbackLoading = false;
         public bool PlaybackLoading => playbackLoading;
 
         internal async Task StartPlayback(string path) {

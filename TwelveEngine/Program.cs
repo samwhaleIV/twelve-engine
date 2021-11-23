@@ -36,7 +36,6 @@ namespace TwelveEngine {
                     Y = 4.5f
                 };
                 grid.AddEntity(player);
-                grid.AddEntity(new PlayerDebugger(player));
             };
 
             return grid;
