@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D {
     public partial class Grid2D:GameState {
@@ -12,6 +14,7 @@ namespace TwelveEngine.Game2D {
 
         private readonly CollisionInterface collisionInterface;
         public CollisionInterface CollisionInterface => collisionInterface;
+
 
         public Grid2D() {
             this.tileSize = Constants.DefaultTileSize;
@@ -114,13 +117,37 @@ namespace TwelveEngine.Game2D {
 
         private bool loaded = false;
 
+        private string savedState = null;
+        private void saveState() { /* This could be made async, but the game could change
+                                    * during the saving process, creating an unstable save state */
+            var frame = new SerialFrame();
+            this.Export(frame);
+            savedState = frame.Export();
+        }
+        private void loadState() {
+            if(string.IsNullOrEmpty(savedState)) {
+                return;
+            }
+            var frame = new SerialFrame(savedState);
+            this.Import(frame);
+        }
+        private void keyDown(object source,Keys key) {
+            if(key == Constants.SaveState) {
+                saveState();
+            } else if(key == Constants.LoadState) {
+                loadState();
+            }
+        }
+
         internal override void Load(GameManager game) {
+            base.Load(game);
             this.game = game;
             if(pendingTileRenderer != null) {
                 tileRenderer = pendingTileRenderer;
                 pendingTileRenderer = null;
                 tileRenderer.Load(game,this);
             }
+            this.KeyDown += keyDown;
 
             this.entityManager = new EntityManager(this);
             entityManager.UpdateListChanged = updateUpdateables;
@@ -189,6 +216,7 @@ namespace TwelveEngine.Game2D {
         }
 
         internal override void Update(GameTime gameTime) {
+            base.Update(gameTime);
             panZoom?.Update(gameTime);
             for(var i = 0;i<updateables.Length;i++) {
                 updateables[i].Update(gameTime);
@@ -408,20 +436,39 @@ namespace TwelveEngine.Game2D {
             frame.Set("Camera",Camera);
             frame.Set("Width",Width);
             frame.Set("Height",Height);
-            entityManager.Export(frame);
+
+            frame.Set("LayerBackground",LayerMode.Background);
+            frame.Set("LayerForeground",LayerMode.Foreground);
+            frame.Set("BackgroundStart",LayerMode.BackgroundStart);
+            frame.Set("ForegroundStart",LayerMode.ForegroundStart);
+            frame.Set("ForegroundLength",LayerMode.ForegroundLength);
+            frame.Set("BackgroundLength",LayerMode.BackgroundLength);
+
+            frame.Set("PanZoom",PanZoom);
 
             frame.Set("LayerCount",layers.Length);
             string layerBase = "Layer-";
             for(var i = 0;i<layers.Length;i++) {
                 frame.Set(layerBase + i,layers[i]);
             }
+
+            entityManager.Export(frame);
         }
 
         public override void Import(SerialFrame frame) {
             frame.Get("Camera",Camera);
             Width = frame.GetInt("Width");
             Height = frame.GetInt("Height");
-            entityManager.Import(frame);
+
+            var layerMode = new LayerMode();
+            layerMode.Background = frame.GetBool("LayerBackground");
+            layerMode.Foreground = frame.GetBool("LayerForeground");
+            layerMode.BackgroundStart = frame.GetInt("BackgroundStart");
+            layerMode.ForegroundStart = frame.GetInt("ForegroundStart");
+            layerMode.ForegroundLength = frame.GetInt("ForegroundLength");
+            layerMode.BackgroundLength = frame.GetInt("BackgroundLength");
+
+            PanZoom = frame.GetBool("PanZoom");
 
             var layerCount = frame.GetInt("LayerCount");
             string layerBase = "Layer-";
@@ -430,6 +477,9 @@ namespace TwelveEngine.Game2D {
                 layers[i] = frame.GetArray2D<int>(layerBase + i);
             }
             this.layers = layers;
+            this.LayerMode = layerMode;
+
+            entityManager.Import(frame);
         }
     }
 }

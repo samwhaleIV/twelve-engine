@@ -3,11 +3,19 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D.Entities {
     public sealed class Player:Entity, IUpdateable, IRenderable {
         /* Hitbox coordinate system expects a symmetrical, center aligned hitbox! */
+
+        public override void Import(SerialFrame frame) {
+            base.Import(frame);
+            this.direction = (Direction)frame.GetInt("Direction");
+        }
+        public override void Export(SerialFrame frame) {
+            base.Export(frame);
+            frame.Set("Direction",(int)direction);
+        }
 
         private const float VERTICAL_HITBOX_X = 1 / 16f;
         private const float VERTICAL_HITBOX_WIDTH = 14 / 16f;
@@ -43,14 +51,6 @@ namespace TwelveEngine.Game2D.Entities {
             return hitbox;
         }
 
-        private readonly KeyboardHandler keyboardHandler;
-        public Player() {
-            keyboardHandler = new KeyboardHandler() {
-                KeyDown = KeyDown,
-                KeyUp = KeyUp
-            };
-        }
-
         private Direction direction = Direction.Down;
         public Direction Direcetion {
             get {
@@ -64,16 +64,15 @@ namespace TwelveEngine.Game2D.Entities {
         private Texture2D playerTexure;
         private int animationRows = 4;
 
-        private Texture2D hitboxTexture;
-
         public override void Load() {
+            FactoryID = "Player";
             playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
-            hitboxTexture = new Texture2D(Game.GraphicsDevice,1,1);
-            hitboxTexture.SetData(new Color[]{ Color.Red });
+            Grid.KeyUp += keyUp;
+            Grid.KeyDown += keyDown;
         }
         public override void Unload() {
-            playerTexure.Dispose();
-            hitboxTexture.Dispose();
+            Grid.KeyUp -= keyUp;
+            Grid.KeyDown -= keyDown;
         }
 
         public float Speed {
@@ -88,7 +87,7 @@ namespace TwelveEngine.Game2D.Entities {
         private int xDelta = 0;
         private int yDelta = 0;
 
-        private void KeyDown(Keys key) {
+        private void keyDown(object source,Keys key) {
             switch(key) {
                 case Keys.W: yDelta--; break;
                 case Keys.S: yDelta++; break;
@@ -96,7 +95,7 @@ namespace TwelveEngine.Game2D.Entities {
                 case Keys.D: xDelta++; break;
             }
         }
-        private void KeyUp(Keys key) {
+        private void keyUp(object source,Keys key) {
             switch(key) {
                 case Keys.W: yDelta++; break;
                 case Keys.S: yDelta--; break;
@@ -365,7 +364,6 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public void Update(GameTime gameTime) {
-            keyboardHandler.Update(this.Game);
             updateMovement(gameTime);
             var camera = Grid.Camera;
             camera.X = this.X; camera.Y = this.Y;

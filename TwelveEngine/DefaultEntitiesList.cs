@@ -9,8 +9,8 @@ namespace TwelveEngine {
         private static List<(string, Func<Entity>)> GetList() {
             return new List<(string, Func<Entity> generator)>() {
 
-                ("TheRedBox",()=>new TheRedBox())
-
+                ("TheRedBox",()=>new TheRedBox()),
+                ("Player",()=>new Player())
 
             };
         }

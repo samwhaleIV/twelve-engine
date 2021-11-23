@@ -16,6 +16,9 @@ namespace TwelveEngine {
         public const Keys PauseGame = Keys.F5;
         public const Keys AdvanceFrame = Keys.F6;
 
+        public const Keys SaveState = Keys.F1;
+        public const Keys LoadState = Keys.F2;
+
         public const string PlaybackFileExtension = "input";
         public const string PlaybackFolder = "playback";
 
@@ -26,7 +29,7 @@ namespace TwelveEngine {
         public const int ShiftFastForwardFrames = 30;
 
         public const int PlayerAccel = 300;
-        public const int PlayerDeaccel = 300;
+        public const int PlayerDeaccel = 150;
         public const float DefaultPlayerSpeed = 2.5f;
     }
 }

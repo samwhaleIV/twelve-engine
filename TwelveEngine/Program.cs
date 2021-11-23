@@ -36,6 +36,11 @@ namespace TwelveEngine {
                     Y = 4.5f
                 };
                 grid.AddEntity(player);
+                Task.Run(async () => {
+                    var frame = new SerialFrame();
+                    grid.Export(frame);
+                    await Task.Delay(5000);
+                });
             };
 
             return grid;
