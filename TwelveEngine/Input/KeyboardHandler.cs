@@ -3,24 +3,16 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Input {
-    internal sealed class KeyboardHandler {
+    public sealed class KeyboardHandler {
 
-        public Action<Keys> KeyDown { get; set; }
-        public Action<Keys> KeyUp { get; set; }
+        public event Action<Keys> KeyDown;
+        public event Action<Keys> KeyUp;
 
         private HashSet<Keys> pressedKeys = new HashSet<Keys>();
         private HashSet<Keys> keyBuffer = new HashSet<Keys>();
         private HashSet<Keys> swapAddress = null;
 
-        private void keyDown(Keys key) {
-            KeyDown?.Invoke(key);
-        }
-        private void keyUp(Keys key) {
-            KeyUp?.Invoke(key);
-        }
-
-        public void Update(GameManager gameManager) {
-            var keyboardState = gameManager.KeyboardState;
+        public void Update(KeyboardState keyboardState) {
             var keys = keyboardState.GetPressedKeys();
 
             foreach(var key in keys) {
@@ -29,12 +21,12 @@ namespace TwelveEngine.Input {
                     pressedKeys.Remove(key);
                 } else {
                     keyBuffer.Add(key);
-                    keyDown(key);
+                    KeyDown?.Invoke(key);
                 }
             }
 
             foreach(var key in pressedKeys) {
-                keyUp(key);
+                KeyUp?.Invoke(key);
             }
             pressedKeys.Clear();
 

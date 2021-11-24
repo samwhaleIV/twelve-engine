@@ -64,15 +64,18 @@ namespace TwelveEngine.Game2D.Entities {
         private Texture2D playerTexure;
         private int animationRows = 4;
 
+        private void keyHandler(KeyboardState ks) {
+            xDelta = 0;
+            yDelta = 0;
+            if(Game.IsKeyDown(KeyBind.Up,ks)) yDelta--;
+            if(Game.IsKeyDown(KeyBind.Down,ks)) yDelta++;
+            if(Game.IsKeyDown(KeyBind.Left,ks)) xDelta--;
+            if(Game.IsKeyDown(KeyBind.Right,ks)) xDelta++;
+        }
+
         public override void Load() {
             FactoryID = "Player";
             playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
-            Grid.KeyUp += keyUp;
-            Grid.KeyDown += keyDown;
-        }
-        public override void Unload() {
-            Grid.KeyUp -= keyUp;
-            Grid.KeyDown -= keyDown;
         }
 
         public float Speed {
@@ -86,23 +89,6 @@ namespace TwelveEngine.Game2D.Entities {
 
         private int xDelta = 0;
         private int yDelta = 0;
-
-        private void keyDown(object source,Keys key) {
-            switch(key) {
-                case Keys.W: yDelta--; break;
-                case Keys.S: yDelta++; break;
-                case Keys.A: xDelta--; break;
-                case Keys.D: xDelta++; break;
-            }
-        }
-        private void keyUp(object source,Keys key) {
-            switch(key) {
-                case Keys.W: yDelta++; break;
-                case Keys.S: yDelta--; break;
-                case Keys.A: xDelta++; break;
-                case Keys.D: xDelta--; break;
-            }
-        }
 
         private float getLeftLimit(Hitbox self,Hitbox target) {
             return target.X + target.Width - (self.X - this.X);
@@ -364,6 +350,7 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public void Update(GameTime gameTime) {
+            keyHandler(Game.KeyboardState);
             updateMovement(gameTime);
             var camera = Grid.Camera;
             camera.X = this.X; camera.Y = this.Y;

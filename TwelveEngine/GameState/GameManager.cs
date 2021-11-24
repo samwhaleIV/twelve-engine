@@ -1,74 +1,38 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using TwelveEngine.Automation;
+using TwelveEngine.Input;
 
 namespace TwelveEngine {
     public sealed class GameManager:Game {
 
-        private GameState pendingGameState = null;
-        private GraphicsDeviceManager graphicsDeviceManager;
-        private SpriteBatch spriteBatch;
-
-        private VCRDisplay vcrDisplay;
-
-        private void initialize() {
-            graphicsDeviceManager = new GraphicsDeviceManager(this);
-            Content.RootDirectory = Constants.ContentRootDirectory;
-            IsMouseVisible = true;
-            graphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
-            IsFixedTimeStep = false;
-            vcrDisplay = new VCRDisplay(this,automationAgent);
-        }
-
-        public GameManager() {
-            initialize();
-        }
-
-        public GameManager(GameState gameState) {
-            initialize();
-            pendingGameState = gameState;
-        }
-
         private GameState gameState = null;
-        private bool hasNullState() {
-            return gameState == null;
-        }
+        private GameState pendingGameState = null;
 
+        private bool initialized = false;
         private bool loading = false;
         public bool Loading => loading;
 
-        private void setGameState(GameState gameState) {
-            if(!initialized) {
-                pendingGameState = gameState;
-                return;
-            }
-            if(!hasNullState()) {
-                this.gameState.Game = null;
-                this.gameState.Unload();
-            }
-            this.gameState = gameState;
-            if(hasNullState()) {
-                return;
-            }
-            loading = true;
-            gameState.Game = this;
-            gameState.Load(this);
-            loading = false;
-        }
-        public GameState GameState {
-            get {
-                return this.gameState;
-            }
-            set {
-                setGameState(value);
-            }
-        }
+        public KeyboardState KeyboardState => automationAgent.GetKeyboardState();
+        public MouseState MouseState => automationAgent.GetMouseState();
 
+        private GraphicsDeviceManager graphicsDeviceManager;
+        public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
+
+        private SpriteBatch spriteBatch;
+        public SpriteBatch SpriteBatch => spriteBatch;
+
+        private bool fastForwarding = false;
+        private bool shouldAdvanceFrame = false;
+        private int framesToSkip = 0;
+
+        private TimeSpan lastElapsedTime, lastTotalTime;
+
+        private VCRDisplay vcrDisplay;
         private readonly AutomationAgent automationAgent = new AutomationAgent();
 
         public int Frame => automationAgent.Frame;
@@ -76,168 +40,22 @@ namespace TwelveEngine {
         public bool PlaybackActive => automationAgent.PlaybackActive;
         public string PlaybackFile => automationAgent.PlaybackFile;
 
-        public KeyboardState KeyboardState => automationAgent.GetKeyboardState();
-        public MouseState MouseState => automationAgent.GetMouseState();
-
-        public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
-        public SpriteBatch SpriteBatch => spriteBatch;
-
-        private bool initialized = false;
-
-        protected override void Initialize() {
-            initialized = true;
-            Window.AllowUserResizing = true;
-            Window.AllowAltF4 = true;
-            base.Initialize();
-        }
-
-        protected override void LoadContent() {
-            Game2D.CollisionTypes.LoadTypes(Content);
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            vcrDisplay.Load();
-            if(pendingGameState == null) {
-                return;
-            }
-            setGameState(pendingGameState);
-            pendingGameState = null;
-        }
-
-        private bool gameIsReady() {
-            return !(loading || hasNullState());
-        }
-
-        private void stopRecording() {
-            var folder = Constants.PlaybackFolder;
-            var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExtension}";
-            if(!Directory.Exists(folder)) {
-                Directory.CreateDirectory(folder);
-            }
-            Task.Run(async () => {
-                await automationAgent.StopRecording(path);
-                Debug.WriteLine($"Recording saved to '{path}'.");
-            });
-        }
-        private void startRecording() {
-            automationAgent.StartRecording();
-        }
-
-        private bool recordingKeyPressed = false;
-        private void handleRecording(KeyboardState keyboardState) {
-            bool keyActive = keyboardState.IsKeyDown(Constants.RecordingKey);
-            if(!keyActive) {
-                recordingKeyPressed = false;
-                return;
-            }
-            if(recordingKeyPressed) return;
-            recordingKeyPressed = true;
-
-            if(!automationAgent.PlaybackActive) {
-                if(automationAgent.RecordingActive) {
-                    stopRecording();
-                } else {
-                    startRecording();
-                }
-            }
-        }
-
-        private string getPlaybackFile() {
-            var preferredFile = Constants.PreferredPlaybackFile;
-            if(!string.IsNullOrWhiteSpace(preferredFile)) {
-                return preferredFile;
-            }
-
-            var defaultFile = Constants.DefaultPlaybackFile;
-            if(File.Exists(defaultFile)) {
-                return defaultFile;
-            }
-
-            var file = Directory.EnumerateFiles(
-                Directory.GetCurrentDirectory(),$"{Constants.PlaybackFolder}\\*.{Constants.PlaybackFileExtension}"
-            ).OrderByDescending(name => name).FirstOrDefault();
-
-            return file;
-        }
-
-        private void startPlayback() {
-            var file = getPlaybackFile();
-            if(string.IsNullOrWhiteSpace(file)) {
-                return;
-            }
-            var playbackFile = getPlaybackFile();
-            Task.Run(async () => {
-                await automationAgent.StartPlayback(playbackFile);
-                if(gamePaused) {
-                    gameTimeMask = automationAgent.GetGameTime(null);
-                }
-                Debug.WriteLine($"Playing input file '{playbackFile}'");
-            });
-        }
-        private void stopPlayback() {
-            automationAgent.StopPlayback();
-        }
-
-        private bool playbackKeyPressed = false;
-        private void handlePlayback(KeyboardState keyboardState) {
-            bool keyActive = keyboardState.IsKeyDown(Constants.PlaybackKey);
-            if(!keyActive) {
-                playbackKeyPressed = false;
-                return;
-            }
-            if(playbackKeyPressed) return;
-            playbackKeyPressed = true;
-
-            if(!automationAgent.RecordingActive) {
-                if(automationAgent.PlaybackLoading) {
-                    return;
-                }
-                if(automationAgent.PlaybackActive) {
-                    stopPlayback();
-                } else {
-                    startPlayback();
-                }
-            }
-        }
-
-        private void advanceFrame(GameTime gameTime) {
-            shouldAdvanceFrame = true;
-            vcrDisplay.AdvanceFrame(gameTime);
-            Debug.WriteLine($"Advanced to frame {automationAgent.Frame + 1}");
-        }
-
-        private bool pauseKeyDown = false;
-        private bool advanceKeyDown = false;
-        private void handlePauseControls(GameTime gameTime,KeyboardState keyboardState) {
-            bool pauseKey = keyboardState.IsKeyDown(Constants.PauseGame);
-            bool advanceKey = keyboardState.IsKeyDown(Constants.AdvanceFrame);
-
-            if(!pauseKey) {
-                pauseKeyDown = false;
-            } else if(!pauseKeyDown) {
-                pauseKeyDown = true;
-                TogglePaused();
-            }
-
-            if(!advanceKey) {
-                advanceKeyDown = false;
-            } else if(!advanceKeyDown) {
-                advanceKeyDown = true;
-                if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
-                    shouldAdvanceFrame = false;
-                    framesToSkip = Constants.ShiftFastForwardFrames;
-                    vcrDisplay.AdvanceFramesMany(gameTime);
-                } else if(gamePaused && !shouldAdvanceFrame) {
-                    advanceFrame(gameTime);
-                }
-            }
-        }
-
-        private GameTime pauseTimeMask;
+        private GameTime gameTimeMask; /* Active during no pause or pause during playback */
+        private GameTime pauseTimeMask; /* Actice during pause without playback */
 
         private bool gamePaused = false; /* Value must start as false */
+
+        private readonly KeyboardHandler keyboardHandler = new KeyboardHandler();
+        public KeyboardHandler KeyboardHandler => keyboardHandler;
+
+        private KeyBinds keyBinds = new KeyBinds();
+        public KeyBinds KeyBinds => keyBinds;
+
+        public bool IsKeyDown(KeyBind type,KeyboardState keyboardState) => keyboardState.IsKeyDown(keyBinds.Get(type));
+        public bool IsKeyDown(KeyBind type) => IsKeyDown(type,automationAgent.GetKeyboardState());
+
         public bool Paused {
-            get {
-                return gamePaused;
-            }
+            get => gamePaused;
             set {
                 if(gamePaused == value) {
                     return;
@@ -253,21 +71,177 @@ namespace TwelveEngine {
                 gamePaused = value;
             }
         }
-        public void Pause() {
-            Paused = true;
-        }
-        public void Unpause() {
-            Paused = false;
-        }
-        public void TogglePaused() {
-            Paused = !Paused;
+
+        public void TogglePaused() => Paused = !gamePaused;
+
+        private KeyWatcherSet keyWatcherSet;
+
+        private void initialize() {
+            graphicsDeviceManager = new GraphicsDeviceManager(this);
+            Content.RootDirectory = Constants.ContentRootDirectory;
+            IsMouseVisible = true;
+            graphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
+            IsFixedTimeStep = false;
+            vcrDisplay = new VCRDisplay(this,automationAgent);
+
+            keyWatcherSet = new KeyWatcherSet(
+                new KeyWatcher(Constants.PlaybackKey,togglePlayback),
+                new KeyWatcher(Constants.RecordingKey,toggleRecording),
+                new KeyWatcher(Constants.AdvanceFrame,advanceFrame),
+                new KeyWatcher(Constants.PauseGame,TogglePaused),
+                new KeyWatcher(Constants.SaveState,saveSerialState),
+                new KeyWatcher(Constants.LoadState,loadSerialState)
+            );
         }
 
-        private bool shouldAdvanceFrame = false;
+        public GameManager() => initialize();
 
-        private int framesToSkip = 0;
+        public GameManager(GameState gameState) {
+            initialize();
+            pendingGameState = gameState;
+        }
 
-        private bool fastForwarding = false;
+        private string savedState = null;
+        private void saveSerialState() { /* This could be made async, but the game could change
+                                    * during the saving process, creating an unstable save state */
+            if(!hasGameState()) {
+                return;
+            }
+            var frame = new SerialFrame();
+            gameState.Export(frame);
+            savedState = frame.Export();
+        }
+        private void loadSerialState() {
+            if(!hasGameState() || string.IsNullOrEmpty(savedState)) {
+                return;
+            }
+            var frame = new SerialFrame(savedState);
+            gameState.Import(frame);
+        }
+
+        private bool hasGameState() => gameState != null;
+
+        private void unloadGameState() {
+            if(!hasGameState()) {
+                return;
+            }
+            var oldGameState = this.gameState;
+            oldGameState.Unload();
+            oldGameState.Game = null;
+        }
+
+        private void loadGameState(GameState gameState) {
+            unloadGameState();
+            if(gameState == null) {
+                return;
+            }
+            gameState.Game = this;
+            gameState.Load();
+            this.gameState = gameState;
+        }
+
+        public async void SetGameState(GameState gameState) {
+            if(!initialized) {
+                pendingGameState = gameState;
+                return;
+            }
+            if(loading) {
+                return;
+            }
+            loading = true;
+            await Task.WhenAll(
+                Task.Run(() => loadGameState(gameState)),
+                Task.Delay(Constants.MinimumLoadTime)
+            );
+            loading = false;
+        }
+
+        protected override void Initialize() {
+            initialized = true;
+            Window.AllowUserResizing = true;
+            Window.AllowAltF4 = true;
+            base.Initialize();
+        }
+
+        protected override void LoadContent() {
+            Game2D.CollisionTypes.LoadTypes(Content);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            vcrDisplay.Load();
+            if(pendingGameState == null) {
+                return;
+            }
+            SetGameState(pendingGameState);
+            pendingGameState = null;
+        }
+
+        private bool gameIsReady() => !loading && hasGameState();
+
+        private void stopRecording() {
+            Task.Run(async () => {
+                var path = IO.PrepareOutputPath();
+                await automationAgent.StopRecording(path);
+                Debug.WriteLine($"Recording saved to '{path}'.");
+            });
+        }
+
+        private void toggleRecording() {
+            if(!automationAgent.PlaybackActive) {
+                if(automationAgent.RecordingActive) {
+                    stopRecording();
+                } else {
+                    automationAgent.StartRecording();
+                }
+            }
+        }
+
+        private void startPlayback() {
+            var file = IO.GetPlaybackFile();
+            if(string.IsNullOrWhiteSpace(file)) {
+                return;
+            }
+            Task.Run(async () => {
+                await automationAgent.StartPlayback(file);
+                if(gamePaused) {
+                    gameTimeMask = automationAgent.GetGameTime(null);
+                }
+                Debug.WriteLine($"Playing input file '{file}'");
+            });
+        }
+
+        private void togglePlayback() {
+            if(!automationAgent.RecordingActive) {
+                if(automationAgent.PlaybackLoading) {
+                    return;
+                }
+                if(automationAgent.PlaybackActive) {
+                    automationAgent.StopPlayback();
+                } else {
+                    startPlayback();
+                }
+            }
+        }
+
+        private void advanceFrame(KeyboardState keyboardState,GameTime gameTime) {
+            if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
+                shouldAdvanceFrame = false;
+                framesToSkip = Constants.ShiftFastForwardFrames;
+                vcrDisplay.AdvanceFramesMany(gameTime);
+            } else if(gamePaused && !shouldAdvanceFrame) {
+                shouldAdvanceFrame = true;
+                vcrDisplay.AdvanceFrame(gameTime);
+                Debug.WriteLine($"Advanced to frame {automationAgent.Frame + 1}");
+            }
+        }
+
+        private void updateGame(GameTime gameTime) {
+            automationAgent.StartUpdate();
+            gameTimeMask = automationAgent.GetGameTime(gameTime);
+            keyboardHandler.Update(automationAgent.GetKeyboardState());
+            this.gameState.Update(gameTimeMask);
+            automationAgent.EndUpdate();
+            if(framesToSkip > 0) fastForward();
+        }
+
         private void fastForward() {
             if(fastForwarding) return;
             fastForwarding = true;
@@ -281,41 +255,25 @@ namespace TwelveEngine {
                 limit = Math.Min(playbackFrameCount.Value,limit);
             }
 
-            for(var i = automationAgent.Frame;i<limit;i++) {
+            for(var i = automationAgent.Frame;i < limit;i++) {
                 updateGame(null); /* Automation agent supplies a game time when playback is active */
             }
 
             fastForwarding = false;
         }
 
-        private void updateGame(GameTime gameTime) {
-            automationAgent.StartFrame();
-            gameTimeMask = automationAgent.GetGameTime(gameTime);
-            this.gameState.Update(gameTimeMask);
-            automationAgent.EndFrame();
-
-            if(framesToSkip > 0) {
-                fastForward();
-            }
-        }
-
-        public void SkipFrames(int count) {
+        public void FastForward(int count) {
             if(!automationAgent.PlaybackActive) { /* Confused? See above. */
                 return;
             }
             framesToSkip = count;
         }
 
-        private GameTime gameTimeMask;
         protected override void Update(GameTime gameTime) {
             if(!gameIsReady()) {
                 return;
             }
-
-            var trueState = Keyboard.GetState();
-            handleRecording(trueState);
-            handlePlayback(trueState);
-            handlePauseControls(gameTime,trueState);
+            keyWatcherSet.Process(Keyboard.GetState(),gameTime);
 
             if(gamePaused) {
                 if(!shouldAdvanceFrame) {
@@ -331,19 +289,10 @@ namespace TwelveEngine {
             updateGame(gameTime);
         }
 
-        private TimeSpan lastElapsedTime;
-        private TimeSpan lastTotalTime;
-
-        private void renderVCR(GameTime gameTime) {
-            SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
-            vcrDisplay.Render(gameTime);
-            SpriteBatch.End();
-        }
-
         protected override void Draw(GameTime gameTime) {
             if(!gameIsReady()) {
                 GraphicsDevice.Clear(Color.Black);
-                renderVCR(gameTime);
+                vcrDisplay.Render(gameTime);
                 return;
             }
 
@@ -356,7 +305,7 @@ namespace TwelveEngine {
             lastElapsedTime = gameTime.ElapsedGameTime;
             lastTotalTime = gameTime.TotalGameTime;
 
-            renderVCR(gameTime);
+            vcrDisplay.Render(gameTime);
         }
     }
 }

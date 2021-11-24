@@ -1,11 +1,14 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D {
     public partial class Grid2D:GameState {
+
+        public int Width { get; set; } = 0;
+        public int Height { get; set; } = 0;
+
+        public Camera Camera { get; set; } = new Camera();
 
         private readonly int tileSize;
         public int TileSize => tileSize;
@@ -15,6 +18,29 @@ namespace TwelveEngine.Game2D {
         private readonly CollisionInterface collisionInterface;
         public CollisionInterface CollisionInterface => collisionInterface;
 
+        private EntityManager entityManager = null;
+        public EntityManager EntityManager => entityManager;
+        public void AddEntity(Entity entity) => EntityManager.AddEntity(entity);
+
+        private IUpdateable[] updateables = new IUpdateable[0];
+        private IRenderable[] renderables = new IRenderable[0];
+
+        private void updateUpdateables(IUpdateable[] updateables) => this.updateables = updateables;
+        private void updateRenderables(IRenderable[] renderables) => this.renderables = renderables;
+
+        private int[][,] layers;
+        private ITileRenderer tileRenderer = null;
+        private ITileRenderer pendingTileRenderer = null;
+
+        private bool loaded = false;
+
+        private PanZoom panZoom = null;
+
+        private ScreenSpace screenSpace;
+        public Viewport Viewport => Game.GraphicsDevice.Viewport;
+        public ScreenSpace ScreenSpace => screenSpace;
+
+        private bool spriteBatchActive = false;
 
         public Grid2D() {
             this.tileSize = Constants.DefaultTileSize;
@@ -30,7 +56,7 @@ namespace TwelveEngine.Game2D {
 
         public Grid2D(LayerMode layerMode) {
             this.tileSize = Constants.DefaultTileSize;
-            LayerMode = layerMode;
+            this.LayerMode = layerMode;
             this.collisionInterface = new CollisionInterface(this);
         }
 
@@ -39,15 +65,6 @@ namespace TwelveEngine.Game2D {
             this.LayerMode = layerMode;
             this.collisionInterface = new CollisionInterface(this);
         }
-
-        public int Width { get; set; } = 0;
-        public int Height { get; set; } = 0;
-
-        private GameManager game;
-        public Camera Camera { get; set; } = new Camera();
-        public Action OnLoad { get; set; } = null;
-
-        private int[][,] layers;
 
         private static int[,] convertFlatArray(int[] array,int width,int height) {
             var array2D = new int[width,height];
@@ -89,9 +106,6 @@ namespace TwelveEngine.Game2D {
             return layers[index];
         }
 
-        private ITileRenderer tileRenderer = null;
-        private ITileRenderer pendingTileRenderer = null;
-
         private bool hasTileRenderer() {
             return tileRenderer != null;
         }
@@ -115,84 +129,36 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private bool loaded = false;
-
-        private string savedState = null;
-        private void saveState() { /* This could be made async, but the game could change
-                                    * during the saving process, creating an unstable save state */
-            var frame = new SerialFrame();
-            this.Export(frame);
-            savedState = frame.Export();
-        }
-        private void loadState() {
-            if(string.IsNullOrEmpty(savedState)) {
-                return;
-            }
-            var frame = new SerialFrame(savedState);
-            this.Import(frame);
-        }
-        private void keyDown(object source,Keys key) {
-            if(key == Constants.SaveState) {
-                saveState();
-            } else if(key == Constants.LoadState) {
-                loadState();
-            }
+        private void loadEntityManager() {
+            this.entityManager = new EntityManager(this) {
+                RenderListChanged = updateRenderables,
+                UpdateListChanged = updateUpdateables
+            };
         }
 
-        internal override void Load(GameManager game) {
-            base.Load(game);
-            this.game = game;
+        internal override void Load() {
+            loadEntityManager();
             if(pendingTileRenderer != null) {
                 tileRenderer = pendingTileRenderer;
                 pendingTileRenderer = null;
-                tileRenderer.Load(game,this);
+                tileRenderer.Load(Game,this);
             }
-            this.KeyDown += keyDown;
-
-            this.entityManager = new EntityManager(this);
-            entityManager.UpdateListChanged = updateUpdateables;
-            entityManager.RenderListChanged = updateRenderables;
-
-            if(OnLoad != null) {
-                OnLoad();
-                OnLoad = null;
-            }
-
+            base.Load(); /* For future reference, base.Load() of GameState puts
+                          * execution order responsibility on the dervived class */
             loaded = true;
         }
 
         internal override void Unload() {
+            base.Unload();
             if(hasTileRenderer()) {
                 tileRenderer.Unload();
             }
             entityManager.Unload();
         }
 
-        private EntityManager entityManager = null;
-        public EntityManager EntityManager => entityManager;
-
-        public void AddEntity(Entity entity) {
-            EntityManager.AddEntity(entity);
-        }
-
-        private IUpdateable[] updateables = new IUpdateable[0];
-        private IRenderable[] renderables = new IRenderable[0];
-
-        private void updateUpdateables(IUpdateable[] updateables) {
-            this.updateables = updateables;
-        }
-        private void updateRenderables(IRenderable[] renderables) {
-            this.renderables = renderables;
-        }
-
-        private PanZoom panZoom = null;
-        private bool hasPanZoom() {
-            return panZoom != null;
-        }
+        private bool hasPanZoom() => panZoom != null;
         public bool PanZoom {
-            get {
-                return hasPanZoom();
-            }
+            get => hasPanZoom();
             set {
                 if(value) {
                     if(hasPanZoom()) {
@@ -206,17 +172,9 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private ScreenSpace screenSpace;
-
-        public Viewport Viewport => game.GraphicsDevice.Viewport;
-        public ScreenSpace ScreenSpace => screenSpace;
-
-        public ScreenSpace GetScreenSpace() {
-            return getScreenSpace(Viewport);
-        }
+        public ScreenSpace GetScreenSpace() => getScreenSpace(Viewport);
 
         internal override void Update(GameTime gameTime) {
-            base.Update(gameTime);
             panZoom?.Update(gameTime);
             for(var i = 0;i<updateables.Length;i++) {
                 updateables[i].Update(gameTime);
@@ -375,18 +333,16 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private bool spriteBatchActive = false;
-
         private void startDeferredSpriteBatch() {
-            game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            Game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
             spriteBatchActive = true;
         }
         private void startBackToFrontSpriteBatch() {
-            game.SpriteBatch.Begin(SpriteSortMode.BackToFront,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            Game.SpriteBatch.Begin(SpriteSortMode.BackToFront,BlendState.NonPremultiplied,SamplerState.PointClamp);
             spriteBatchActive = true;
         }
         private void endSpriteBatch() {
-            game.SpriteBatch.End();
+            Game.SpriteBatch.End();
             spriteBatchActive = false;
         }
         private void tryStartSpriteBatch() {
@@ -404,7 +360,7 @@ namespace TwelveEngine.Game2D {
 
         internal override void Draw(GameTime gameTime) {
             screenSpace = getScreenSpace(Game.GraphicsDevice.Viewport);
-            game.GraphicsDevice.Clear(Color.Black);
+            Game.GraphicsDevice.Clear(Color.Black);
             
             if(LayerMode.Background) {
                 if(LayerMode.BackgroundLength == 2) {

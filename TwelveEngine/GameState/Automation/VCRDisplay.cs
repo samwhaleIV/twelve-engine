@@ -2,15 +2,15 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Automation {
     internal sealed class VCRDisplay {
 
         private const int RENDER_SIZE = 60;
         private const int SPACE = 4;
         private const double ADVANCE_FRAME_TIMEOUT = 250;
 
-        private bool loading => gameManager.Loading || automationAgent.PlaybackLoading;
-        private bool paused => gameManager.Paused;
+        private bool Loading => gameManager.Loading || automationAgent.PlaybackLoading;
+        private bool Paused => gameManager.Paused;
 
         private enum Mode {
             None,
@@ -36,16 +36,14 @@ namespace TwelveEngine {
             return source;
         }
 
-        private Mode mode {
-            get {
-                if(gameManager.PlaybackActive) {
-                    return Mode.Playback;
-                }
-                if(gameManager.RecordingActive) {
-                    return Mode.Recording;
-                }
-                return Mode.None;
+        private Mode getMode() {
+            if(gameManager.PlaybackActive) {
+                return Mode.Playback;
             }
+            if(gameManager.RecordingActive) {
+                return Mode.Recording;
+            }
+            return Mode.None;
         }
 
         private readonly AutomationAgent automationAgent;
@@ -88,11 +86,25 @@ namespace TwelveEngine {
         }
 
         internal void Render(GameTime gameTime) {
-            var mode = this.mode;
+            var mode = getMode();
 
             int x = SPACE;
 
-            if(mode != Mode.None) {
+            bool paused = Paused;
+            bool loading = Loading;
+
+            bool hasMode = mode != Mode.None;
+
+            bool hasFrameAdvance = lastFrameAdvance.HasValue;
+
+            bool willDraw = hasMode || paused || loading || hasFrameAdvance;
+
+            if(!willDraw) {
+                return;
+            }
+            spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+
+            if(hasMode) {
                 if(mode == Mode.Playback) {
                     drawSymbol(ref x,Symbol.Play);
                 } else {
@@ -113,6 +125,8 @@ namespace TwelveEngine {
                     drawSymbol(ref x,smallAdvance ? Symbol.Advance : Symbol.AdvanceMany);
                 }
             }
+
+            spriteBatch.End();
 
         }
     }

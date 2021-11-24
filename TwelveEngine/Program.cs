@@ -1,14 +1,10 @@
-﻿using System;
-using TwelveEngine.Game2D;
+﻿using TwelveEngine.Game2D;
 using TwelveEngine.Game2D.Entities;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace TwelveEngine {
     public static class Program {
 
-        private static GameState GetTestStartState() {
+        public static GameState GetTestStartState() {
 
             bool showCollisionLayer = true;
 
@@ -30,17 +26,12 @@ namespace TwelveEngine {
             grid.Camera.X = 0;
             grid.Camera.Y = 0;
 
-            grid.OnLoad = () => {
+            grid.OnLoad += () => {
                 var player = new Player() {
                     X = 7.5f,
                     Y = 4.5f
                 };
                 grid.AddEntity(player);
-                Task.Run(async () => {
-                    var frame = new SerialFrame();
-                    grid.Export(frame);
-                    await Task.Delay(5000);
-                });
             };
 
             return grid;
@@ -52,7 +43,7 @@ namespace TwelveEngine {
             return new GameManager(startState);
         }
         public static void ConfigStartGame(GameManager game) {
-            game.GameState = GetTestStartState();
+            game.SetGameState(GetTestStartState());
         }
     }
 }

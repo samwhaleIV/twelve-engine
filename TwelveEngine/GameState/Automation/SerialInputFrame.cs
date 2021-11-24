@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Automation {
     internal struct SerialInputFrame {
 
         internal long totalTime;

@@ -2,6 +2,8 @@
 
 namespace TwelveEngine {
     public static class Constants {
+        public const int MinimumLoadTime = 1000;
+
         public const string ContentRootDirectory = "Content";
         public const int DefaultTileSize = 16;
 

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System.Text;
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Threading.Tasks;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Automation {
 
     internal sealed class AutomationAgent {
 
@@ -21,11 +18,18 @@ namespace TwelveEngine {
         private Queue<InputFrame> outputBuffer = null;
         private InputFrame[] playbackFrames = null;
 
-        private InputFrame recordingFrame = new InputFrame();
-        private InputFrame playbackFrame = new InputFrame();
+        private InputFrame recordingFrame;
+        private InputFrame playbackFrame;
+
+        private string playbackFile = null;
+        private bool playbackLoading = false;
 
         internal bool RecordingActive => recording;
+        internal string PlaybackFile => playbackFile;
         internal bool PlaybackActive => playback;
+        internal bool PlaybackLoading => playbackLoading;
+
+        private GameTime proxyGameTime = null;
 
         internal void StartRecording() {
             if(recording) {
@@ -44,103 +48,8 @@ namespace TwelveEngine {
             outputBuffer = null;
             recording = false;
 
-            await writePlaybackFrames(path,frames);
+            await IO.WritePlaybackFrames(path,frames);
         }
-
-        private string playbackFile = null;
-        internal string PlaybackFile => playbackFile;
-
-        private static InputFrame[] readFileData(BinaryReader reader) {
-            var frameCount = reader.ReadInt32();
-
-            InputFrame[] frames = new InputFrame[frameCount];
-            if(frameCount <= 0) {
-                return frames;
-            }
-            long totalTime = reader.ReadInt64();
-
-            SerialInputFrame lastFrame = new SerialInputFrame();
-            for(var i = 0;i < frameCount;i++) {
-                var serialFrame = new SerialInputFrame(ref totalTime,lastFrame,reader);
-                frames[i] = new InputFrame(serialFrame);
-                lastFrame = serialFrame;
-            }
-            return frames;
-        }
-
-        private static void writeFileData(BinaryWriter writer,InputFrame[] frames) {
-            var frameCount = frames.Length;
-
-            writer.Write(frameCount);
-
-            if(frameCount <= 0) {
-                return;
-            }
-
-            var firstFrame = frames[0];
-            writer.Write((firstFrame.totalTime - firstFrame.elapsedTime).Ticks);
-
-            SerialInputFrame lastFrame = new SerialInputFrame();
-
-            for(var i = 0;i < frameCount;i++) {
-                var newFrame = new SerialInputFrame(frames[i]);
-                newFrame.Export(writer,lastFrame);
-                lastFrame = newFrame;
-            }
-        }
-
-        private static async Task<InputFrame[]> readPlaybackFrames(string path) {
-            InputFrame[] frames = null;
-
-            byte[] fileData;
-            using(var stream = new MemoryStream()) {
-                using(var fileStream = File.Open(path,FileMode.Open,FileAccess.Read,FileShare.Read)) {
-                    await fileStream.CopyToAsync(stream);
-                }
-                fileData = stream.ToArray();
-            }
-
-            using(var stream = new MemoryStream()) {
-                using(var compressStream = new MemoryStream(fileData)) {
-                    using(var deflateStream = new DeflateStream(compressStream,CompressionMode.Decompress)) {
-                        await deflateStream.CopyToAsync(stream);
-                    }
-                }
-                using(var reader = new BinaryReader(stream,Encoding.Default,false)) {
-                    stream.Seek(0,SeekOrigin.Begin);
-                    frames = await Task.Run(() => readFileData(reader));
-                }
-            }
-
-            if(frames == null) {
-                frames = new InputFrame[0];
-            }
-            return frames;
-        }
-
-        private static async Task writePlaybackFrames(string path,InputFrame[] frames) {
-            byte[] fileData;
-            using(var stream = new MemoryStream()) {
-                using(var writer = new BinaryWriter(stream,Encoding.Default,true)) {
-                    await Task.Run(() => writeFileData(writer,frames));
-                }
-                fileData = stream.ToArray();
-            }
-
-            using(var stream = new MemoryStream()) {
-                using(var compressor = new DeflateStream(stream,CompressionMode.Compress)) {
-                    await compressor.WriteAsync(fileData,0,fileData.Length);
-                }
-                fileData = stream.ToArray();
-            }
-
-            using(var stream = File.Open(path,FileMode.Create,FileAccess.Write,FileShare.None)) {
-                await stream.WriteAsync(fileData,0,fileData.Length);
-            }
-        }
-
-        private bool playbackLoading = false;
-        public bool PlaybackLoading => playbackLoading;
 
         internal async Task StartPlayback(string path) {
             if(playbackLoading) {
@@ -150,7 +59,7 @@ namespace TwelveEngine {
                 throw new Exception("Cannot start playback, playback is already active!");
             }
             playbackLoading = true;
-            playbackFrames = await readPlaybackFrames(path);
+            playbackFrames = await IO.ReadPlaybackFrames(path);
             frameNumber = 0;
             proxyGameTime = new GameTime();
             playbackFile = path;
@@ -203,7 +112,7 @@ namespace TwelveEngine {
             return state;
         }
 
-        internal void StartFrame() {
+        internal void StartUpdate() {
             if(playback) {
                 playbackFrame = playbackFrames[frameNumber];
                 frameNumber += 1;
@@ -212,15 +121,13 @@ namespace TwelveEngine {
             }
         }
 
-        internal void EndFrame() {
+        internal void EndUpdate() {
             if(recording) outputBuffer.Enqueue(recordingFrame);
             if(playback && frameNumber >= playbackFrames.Length) {
                 StopPlayback();
                 Debug.WriteLine("Playback stopped automatically.");
             }
         }
-
-        private GameTime proxyGameTime = null;
 
         internal GameTime GetGameTime(GameTime gameTime) {
             if(playback) {

@@ -26,11 +26,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameState\AutomationAgent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameState\InputFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameState\SerialInputFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameState\VCRDisplay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\AutomationAgent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\AutomationIO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\InputFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\SerialInputFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\VCRDisplay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyboardHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyWatcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyWatcherSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\MouseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
@@ -47,6 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)JS\JSEngine.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)GameState\Automation\" />
     <Folder Include="$(MSBuildThisFileDirectory)JS\" />
   </ItemGroup>
   <ItemGroup>
