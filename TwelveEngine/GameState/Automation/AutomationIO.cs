@@ -33,9 +33,7 @@ namespace TwelveEngine.Automation {
                 return;
             }
 
-
             SerialInputFrame lastFrame = new SerialInputFrame();
-
             for(var i = 0;i < frameCount;i++) {
                 var newFrame = new SerialInputFrame(frames[i]);
                 newFrame.Export(writer,lastFrame);
