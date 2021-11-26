@@ -50,15 +50,9 @@ namespace TwelveEngine {
             totalTimeLocked = false;
             shouldResetTime = true;
         }
-        internal void SetPlaybackTime(TimeSpan elapsedTime,TimeSpan totalTime) {
+        internal void SetPlaybackTime(TimeSpan elapsedTime) {
             this.ElapsedGameTime = elapsedTime;
-            if(Constants.RecompileAutomationTiming) {
-                this.TotalGameTime += elapsedTime;
-            } else {
-#pragma warning disable CS0162
-                this.TotalGameTime = totalTime;
-#pragma warning restore CS0162
-            }
+            this.TotalGameTime += elapsedTime;
         }
         internal void AddSimframe(TimeSpan simTime) {
             this.ElapsedGameTime = simTime;

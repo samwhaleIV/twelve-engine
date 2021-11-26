@@ -14,11 +14,10 @@ namespace TwelveEngine.Automation {
             if(frameCount <= 0) {
                 return frames;
             }
-            long totalTime = reader.ReadInt64();
 
             SerialInputFrame lastFrame = new SerialInputFrame();
             for(var i = 0;i < frameCount;i++) {
-                var serialFrame = new SerialInputFrame(ref totalTime,lastFrame,reader);
+                var serialFrame = new SerialInputFrame(lastFrame,reader);
                 frames[i] = new InputFrame(serialFrame);
                 lastFrame = serialFrame;
             }
@@ -34,8 +33,6 @@ namespace TwelveEngine.Automation {
                 return;
             }
 
-            var firstFrame = frames[0];
-            writer.Write((firstFrame.totalTime - firstFrame.elapsedTime).Ticks);
 
             SerialInputFrame lastFrame = new SerialInputFrame();
 

@@ -10,7 +10,6 @@ namespace TwelveEngine.Automation {
                 keysState[i] = (Keys)pressedKeys[i];
             }
             keyboardState = new KeyboardState(keysState);
-            totalTime = TimeSpan.FromTicks(frame.totalTime);
             elapsedTime = TimeSpan.FromTicks(frame.elapsedTime);
 
             mouseState = new MouseState(
@@ -26,7 +25,6 @@ namespace TwelveEngine.Automation {
             );
         }
 
-        internal TimeSpan totalTime;
         internal TimeSpan elapsedTime;
         
         internal KeyboardState keyboardState;

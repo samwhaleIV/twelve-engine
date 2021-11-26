@@ -241,8 +241,7 @@ namespace TwelveEngine {
             proxyGameTime.Update(trueGameTime);
             automationAgent.StartUpdate();
             if(automationAgent.PlaybackActive) {
-                var frameTime = automationAgent.GetFrameTime();
-                proxyGameTime.SetPlaybackTime(frameTime.elapsedTime,frameTime.totalTime);
+                proxyGameTime.SetPlaybackTime(automationAgent.GetFrameTime());
             }
             if(automationAgent.RecordingActive) {
                 automationAgent.UpdateRecordingFrame(trueGameTime);

@@ -5,7 +5,6 @@ using System.IO;
 namespace TwelveEngine.Automation {
     internal struct SerialInputFrame {
 
-        internal long totalTime;
         internal long elapsedTime;
 
         internal int mouseX;
@@ -29,7 +28,6 @@ namespace TwelveEngine.Automation {
             for(var i = 0;i < pressedKeys.Length;i++) {
                 pressedKeys[i] = (byte)keysState[i];
             }
-            totalTime = frame.totalTime.Ticks;
             elapsedTime = frame.elapsedTime.Ticks;
 
             var mouse = frame.mouseState;
@@ -95,10 +93,8 @@ namespace TwelveEngine.Automation {
                 writer.Write(pressedKeys[i]);
             }
         }
-        internal SerialInputFrame(ref long totalTime,SerialInputFrame lastFrame,BinaryReader reader) {
+        internal SerialInputFrame(SerialInputFrame lastFrame,BinaryReader reader) {
             elapsedTime = reader.ReadInt32();
-            totalTime += elapsedTime;
-            this.totalTime = totalTime;
 
             var mouseDataEqual = reader.ReadByte();
             if(mouseDataEqual == 1) {

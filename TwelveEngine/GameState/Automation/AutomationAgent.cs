@@ -128,12 +128,9 @@ namespace TwelveEngine.Automation {
             }
         }
 
-        internal (TimeSpan elapsedTime,TimeSpan totalTime) GetFrameTime() {
-            return (playbackFrame.elapsedTime, playbackFrame.totalTime);
-        }
+        internal TimeSpan GetFrameTime() => playbackFrame.elapsedTime;
         internal void UpdateRecordingFrame(GameTime gameTime) {
             recordingFrame.elapsedTime = gameTime.ElapsedGameTime;
-            recordingFrame.totalTime = gameTime.TotalGameTime;
         }
 
     }
