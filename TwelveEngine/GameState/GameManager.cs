@@ -30,8 +30,6 @@ namespace TwelveEngine {
         private bool shouldAdvanceFrame = false;
         private int framesToSkip = 0;
 
-        private TimeSpan lastElapsedTime, lastTotalTime;
-
         private VCRDisplay vcrDisplay;
         private readonly AutomationAgent automationAgent = new AutomationAgent();
 
@@ -39,9 +37,6 @@ namespace TwelveEngine {
         public bool RecordingActive => automationAgent.RecordingActive;
         public bool PlaybackActive => automationAgent.PlaybackActive;
         public string PlaybackFile => automationAgent.PlaybackFile;
-
-        private GameTime gameTimeMask; /* Active during no pause or pause during playback */
-        private GameTime pauseTimeMask; /* Actice during pause without playback */
 
         private bool gamePaused = false; /* Value must start as false */
 
@@ -54,6 +49,11 @@ namespace TwelveEngine {
         public bool IsKeyDown(KeyBind type,KeyboardState keyboardState) => keyboardState.IsKeyDown(keyBinds.Get(type));
         public bool IsKeyDown(KeyBind type) => IsKeyDown(type,automationAgent.GetKeyboardState());
 
+        private DateTime pauseTimeStart;
+        private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
+
+        private SpriteFont spriteFont;
+
         public bool Paused {
             get => gamePaused;
             set {
@@ -61,12 +61,11 @@ namespace TwelveEngine {
                     return;
                 }
                 if(!gamePaused) {
-                    var mask = new GameTime();
-                    mask.ElapsedGameTime = lastElapsedTime;
-                    mask.TotalGameTime = lastTotalTime;
-                    pauseTimeMask = mask;
+                    pauseTimeStart = DateTime.Now;
+                    proxyGameTime.Freeze();
                 } else {
-                    pauseTimeMask = null;
+                    proxyGameTime.AddPauseTime(DateTime.Now - pauseTimeStart);
+                    proxyGameTime.Unfreeze();
                 }
                 gamePaused = value;
             }
@@ -83,6 +82,7 @@ namespace TwelveEngine {
             graphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
             vcrDisplay = new VCRDisplay(this,automationAgent);
+            automationAgent.PlaybackStopped += proxyGameTime.UnlockTime;
 
             keyWatcherSet = new KeyWatcherSet(
                 new KeyWatcher(Constants.PlaybackKey,togglePlayback),
@@ -149,10 +149,12 @@ namespace TwelveEngine {
                 return;
             }
             loading = true;
+            var startTime = DateTime.Now;
             await Task.WhenAll(
                 Task.Run(() => loadGameState(gameState)),
                 Task.Delay(Constants.MinimumLoadTime)
             );
+            proxyGameTime.AddPauseTime(DateTime.Now - startTime);
             loading = false;
         }
 
@@ -166,6 +168,7 @@ namespace TwelveEngine {
         protected override void LoadContent() {
             Game2D.CollisionTypes.LoadTypes(Content);
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteFont = Content.Load<SpriteFont>("default-font");
             vcrDisplay.Load();
             if(pendingGameState == null) {
                 return;
@@ -201,9 +204,6 @@ namespace TwelveEngine {
             }
             Task.Run(async () => {
                 await automationAgent.StartPlayback(file);
-                if(gamePaused) {
-                    gameTimeMask = automationAgent.GetGameTime(null);
-                }
                 Debug.WriteLine($"Playing input file '{file}'");
             });
         }
@@ -217,6 +217,7 @@ namespace TwelveEngine {
                     automationAgent.StopPlayback();
                 } else {
                     startPlayback();
+                    proxyGameTime.LockTime();
                 }
             }
         }
@@ -227,19 +228,31 @@ namespace TwelveEngine {
                 framesToSkip = Constants.ShiftFastForwardFrames;
                 vcrDisplay.AdvanceFramesMany(gameTime);
             } else if(gamePaused && !shouldAdvanceFrame) {
+                var simTime = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
+                pauseTimeStart += simTime;
+                proxyGameTime.AddSimframe(simTime);
                 shouldAdvanceFrame = true;
                 vcrDisplay.AdvanceFrame(gameTime);
                 Debug.WriteLine($"Advanced to frame {automationAgent.Frame + 1}");
             }
         }
 
-        private void updateGame(GameTime gameTime) {
+        private void updateGame(GameTime trueGameTime) {
+            proxyGameTime.Update(trueGameTime);
             automationAgent.StartUpdate();
-            gameTimeMask = automationAgent.GetGameTime(gameTime);
+            if(automationAgent.PlaybackActive) {
+                var frameTime = automationAgent.GetFrameTime();
+                proxyGameTime.SetPlaybackTime(frameTime.elapsedTime,frameTime.totalTime);
+            }
+            if(automationAgent.RecordingActive) {
+                automationAgent.UpdateRecordingFrame(trueGameTime);
+            }
             keyboardHandler.Update(automationAgent.GetKeyboardState());
-            this.gameState.Update(gameTimeMask);
+            this.gameState.Update(proxyGameTime);
             automationAgent.EndUpdate();
-            if(framesToSkip > 0) fastForward();
+            if(framesToSkip > 0) {
+                fastForward();
+            }
         }
 
         private void fastForward() {
@@ -274,38 +287,39 @@ namespace TwelveEngine {
                 return;
             }
             keyWatcherSet.Process(Keyboard.GetState(),gameTime);
-
             if(gamePaused) {
-                if(!shouldAdvanceFrame) {
-                    if(framesToSkip > 0) {
-                        fastForward();
-                    }
+                if(shouldAdvanceFrame) {
+                    updateGame(gameTime);
+                    shouldAdvanceFrame = false;
                     return;
                 }
-                updateGame(gameTime);
-                shouldAdvanceFrame = false;
+                if(framesToSkip > 0) {
+                    fastForward();
+                }
                 return;
             }
             updateGame(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime) {
-            if(!gameIsReady()) {
-                GraphicsDevice.Clear(Color.Black);
-                vcrDisplay.Render(gameTime);
-                return;
-            }
+        private void renderGameTime() {
+            var position = new Vector2();
+            position.X = 2;
+            position.Y = GraphicsDevice.Viewport.Height - 21;
+            SpriteBatch.Begin();
+            spriteBatch.DrawString(spriteFont,proxyGameTime.TotalGameTime.ToString(),position,Color.White);
+            spriteBatch.End();
+        }
 
-            if(!gamePaused || automationAgent.PlaybackActive) {
-                this.gameState.Draw(gameTimeMask);
+        protected override void Draw(GameTime trueGameTime) {
+            if(gameIsReady()) {
+                this.gameState.Draw(proxyGameTime);
             } else {
-                this.gameState.Draw(pauseTimeMask);
+                GraphicsDevice.Clear(Color.Black);
             }
-
-            lastElapsedTime = gameTime.ElapsedGameTime;
-            lastTotalTime = gameTime.TotalGameTime;
-
-            vcrDisplay.Render(gameTime);
+            vcrDisplay.Render(trueGameTime);
+#if DEBUG
+            renderGameTime();
+#endif
         }
     }
 }

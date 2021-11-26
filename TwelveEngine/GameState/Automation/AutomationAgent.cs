@@ -8,28 +8,26 @@ using System.Threading.Tasks;
 namespace TwelveEngine.Automation {
 
     internal sealed class AutomationAgent {
-
-        private bool recording = false;
-        private bool playback = false;
-
         private int frameNumber = 0;
         internal int Frame => frameNumber;
+
+        private bool recording = false;
+        internal bool RecordingActive => recording;
+
+        private bool playback = false;
+        internal bool PlaybackActive => playback;
+
+        private string playbackFile = null;
+        internal string PlaybackFile => playbackFile;
+
+        private bool playbackLoading = false;
+        internal bool PlaybackLoading => playbackLoading;
 
         private Queue<InputFrame> outputBuffer = null;
         private InputFrame[] playbackFrames = null;
 
         private InputFrame recordingFrame;
         private InputFrame playbackFrame;
-
-        private string playbackFile = null;
-        private bool playbackLoading = false;
-
-        internal bool RecordingActive => recording;
-        internal string PlaybackFile => playbackFile;
-        internal bool PlaybackActive => playback;
-        internal bool PlaybackLoading => playbackLoading;
-
-        private GameTime proxyGameTime = null;
 
         internal void StartRecording() {
             if(recording) {
@@ -61,11 +59,12 @@ namespace TwelveEngine.Automation {
             playbackLoading = true;
             playbackFrames = await IO.ReadPlaybackFrames(path);
             frameNumber = 0;
-            proxyGameTime = new GameTime();
             playbackFile = path;
             playback = true;
             playbackLoading = false;
         }
+
+        internal event Action PlaybackStopped;
 
         internal void StopPlayback() {
             if(!playback) {
@@ -73,8 +72,8 @@ namespace TwelveEngine.Automation {
             }
             playbackFrames = null;
             playback = false;
-            proxyGameTime = null;
             playbackFile = null;
+            PlaybackStopped?.Invoke();
         }
 
         public int? PlaybackFrameCount {
@@ -129,22 +128,12 @@ namespace TwelveEngine.Automation {
             }
         }
 
-        internal GameTime GetGameTime(GameTime gameTime) {
-            if(playback) {
-                gameTime = proxyGameTime;
-                var frame = playbackFrame;
-                gameTime.ElapsedGameTime = frame.elapsedTime;
-                gameTime.TotalGameTime = frame.totalTime;
-            }
-            if(recording) {
-                recordingFrame.elapsedTime = gameTime.ElapsedGameTime;
-                recordingFrame.totalTime = gameTime.TotalGameTime;
-            }
-
-            if(proxyGameTime != null) {
-                return proxyGameTime;
-            }
-            return gameTime;
+        internal (TimeSpan elapsedTime,TimeSpan totalTime) GetFrameTime() {
+            return (playbackFrame.elapsedTime, playbackFrame.totalTime);
+        }
+        internal void UpdateRecordingFrame(GameTime gameTime) {
+            recordingFrame.elapsedTime = gameTime.ElapsedGameTime;
+            recordingFrame.totalTime = gameTime.TotalGameTime;
         }
 
     }

@@ -2,7 +2,10 @@
 
 namespace TwelveEngine {
     public static class Constants {
-        public const int MinimumLoadTime = 1000;
+        public const int MinimumLoadTime = 500;
+        public const double MaximumFrameDelta = 1000 / 15d;
+        public const double SimFrameTime = 1000 / 60d;
+        public const bool RecompileAutomationTiming = true;
 
         public const string ContentRootDirectory = "Content";
         public const int DefaultTileSize = 16;

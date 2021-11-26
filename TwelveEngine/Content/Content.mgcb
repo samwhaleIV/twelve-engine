@@ -61,3 +61,10 @@
 /processorParam:TextureFormat=Color
 /build:../../Content/vcr.png;vcr.png
 
+#begin default-font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:default-font.spritefont
+

@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\InputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\SerialInputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\VCRDisplay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameState\ProxyGametime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyboardHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyWatcher.cs" />
