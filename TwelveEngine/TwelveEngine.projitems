@@ -16,7 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TheRedBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\RedBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityManager.cs" />
@@ -26,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\InteractionLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tiles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\AutomationAgent.cs" />
@@ -50,7 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GameState\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Levels\AlphaLevels.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\ComponentFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\ComponentFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\Logic\AND.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Component.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\Gate.cs" />
@@ -69,21 +70,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\JsonSmasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JS\JSEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)GameState\Automation\" />
-    <Folder Include="$(MSBuildThisFileDirectory)JS\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
     <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-    <None Include="$(MSBuildThisFileDirectory)Scripts\sample-module.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)Scripts\test-script.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\map-database.json">

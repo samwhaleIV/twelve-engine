@@ -7,7 +7,7 @@ using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D.Entities {
     public sealed class Player:Entity, IUpdateable, IRenderable {
-        /* Hitbox coordinate system expects a symmetrical, center aligned hitbox! */
+        /* Hitbox coordinate system requires a symmetrical, center aligned hitbox! */
 
         private const float VERTICAL_HITBOX_X = 1 / 16f;
         private const float VERTICAL_HITBOX_WIDTH = 14 / 16f;
@@ -26,7 +26,7 @@ namespace TwelveEngine.Game2D.Entities {
         private const float frameJumpStart = 0.5f;
 
         public Hitbox GetHitbox() {
-            // TODO (if it ever is needed) Make hitbox math scalable with width and height properties
+            // If it ever is needed, make hitbox math scalable with width and height properties
             var hitbox = new Hitbox();
 
             hitbox.Y = Y;
@@ -83,16 +83,16 @@ namespace TwelveEngine.Game2D.Entities {
         private int yDelta = 0;
 
         private float getLeftLimit(Hitbox self,Hitbox target) {
-            return target.X + target.Width - (self.X - this.X);
+            return target.X + target.Width - (self.X - X);
         }
         private float getUpLimit(Hitbox self,Hitbox target) {
-            return target.Y + target.Height - (self.Y - this.Y);
+            return target.Y + target.Height - (self.Y - Y);
         }
         private float getRightLimit(Hitbox self,Hitbox target) {
-            return target.X - self.Width - (self.X - this.X);
+            return target.X - self.Width - (self.X - X);
         }
         private float getDownLimit(Hitbox self,Hitbox target) {
-            return target.Y - self.Height - (self.Y - this.Y);
+            return target.Y - self.Height - (self.Y - Y);
         }
 
         private bool leftCollision(Hitbox self,Hitbox target) {

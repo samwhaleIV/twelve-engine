@@ -9,7 +9,7 @@ namespace TwelveEngine.PuzzleGame {
                 TileRenderer = new TilesetRenderer()
             };
 
-            bool showCollisionLayer = false;
+            bool showCollisionLayer = Constants.ShowCollisionLayer;
             if(showCollisionLayer) {
                 grid.LayerMode.BackgroundLength += 1;
             }

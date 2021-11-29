@@ -32,7 +32,9 @@ namespace TwelveEngine.PuzzleGame {
 
         public void Import(SerialFrame frame) {
             for(var i = 0;i<componentCount;i++) {
-                frame.Get(i.ToString(),gameComponents[i]);
+                var component = gameComponents[i];
+                frame.Get(i.ToString(),component);
+                component.SendSignal();
             }
         }
     }

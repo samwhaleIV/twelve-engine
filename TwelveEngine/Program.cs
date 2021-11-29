@@ -6,7 +6,7 @@ namespace TwelveEngine {
 
         public static GameState GetStartState() {
             MapDatabase.LoadMaps();
-            var gameState = LevelFactory.GenerateLevel(AlphaLevels.Level1);
+            var gameState = LevelFactory.GenerateLevel(AlphaLevels.Level2);
             return gameState;
         }
 
