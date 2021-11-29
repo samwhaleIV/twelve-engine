@@ -15,7 +15,7 @@ namespace TwelveEngine.Input {
         public Keys Down = Keys.S;
         public Keys Left = Keys.A;
         public Keys Right = Keys.D;
-        public Keys Interact = Keys.E;
+        public Keys Interact = Keys.Enter;
 
         public KeyBinds() {
             UpdateCache();

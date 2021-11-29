@@ -5,6 +5,7 @@ namespace TwelveEngine {
         public const int MinimumLoadTime = 500;
         public const double MaximumFrameDelta = 1000 / 15d;
         public const double SimFrameTime = 1000 / 60d;
+        public const int RenderScale = 8;
 
         public const string ContentRootDirectory = "Content";
         public const int DefaultTileSize = 16;
@@ -32,8 +33,8 @@ namespace TwelveEngine {
 
         public const int ShiftFastForwardFrames = 30;
 
-        public const int PlayerAccel = 300;
-        public const int PlayerDeaccel = 150;
+        public const int PlayerAccel = 200;
+        public const int PlayerDeaccel = 100;
         public const float DefaultPlayerSpeed = 2.5f;
     }
 }

@@ -52,18 +52,14 @@ namespace TwelveEngine.Game2D {
             return hitboxes;
         }
 
-        private bool collides(Hitbox a,Hitbox b) {
-            return a.X <= b.X + b.Width && a.X + a.Width >= b.X && a.Y <= b.Y + b.Height && a.Height + a.Y >= b.Y;
-        }
-
         public List<Hitbox> Collides(Hitbox source) {
-            int[,] layer = this.grid.GetLayer(Constants.CollisionLayerIndex);
+            int[,] layer = grid.GetLayer(Constants.CollisionLayerIndex);
 
             List<Hitbox> surroundingHitboxes = getSurroundingArea(layer,source);
             var outputList = new List<Hitbox>();
 
             foreach(Hitbox hitbox in surroundingHitboxes) {
-                if(collides(source,hitbox)) {
+                if(source.Collides(hitbox)) {
                     outputList.Add(hitbox);
                 }
             }

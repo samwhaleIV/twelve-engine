@@ -3,11 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "maps_alpha/level4.tmx",
+    "activeFile": "maps_alpha/level1.tmx",
     "expandedProjectPaths": [
+        "maps_alpha",
         "maps_alpha/rules",
-        ".",
-        "maps_alpha"
+        "."
     ],
     "exportAsImage.drawTileGrid": false,
     "exportAsImage.includeBackgroundColor": false,
@@ -142,59 +142,59 @@
             }
         },
         "maps_alpha/level1.tmx": {
-            "scale": 5.5,
-            "selectedLayer": 3,
+            "scale": 4,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 120.72727272727273,
-                "y": 121.63636363636364
+                "x": 137,
+                "y": 106.5
             }
         },
         "maps_alpha/level2.tmx": {
             "scale": 4,
-            "selectedLayer": 3,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 114,
-                "y": 211.25
+                "x": 149.25,
+                "y": 206.25
             }
         },
         "maps_alpha/level3.tmx": {
             "scale": 4,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 136,
-                "y": 136
+                "x": -121.875,
+                "y": 130.75
             }
         },
         "maps_alpha/level4.tmx": {
-            "scale": 4,
+            "scale": 2,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 146.5,
-                "y": 131
+                "x": 190.25,
+                "y": 229
             }
         },
         "maps_alpha/level5.tmx": {
             "scale": 3,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 80.33333333333334,
-                "y": 232
+                "x": 80.49999999999997,
+                "y": 231.33333333333331
             }
         },
         "maps_alpha/level6.tmx": {
             "scale": 4,
-            "selectedLayer": 3,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 144.25,
-                "y": 152
+                "x": 144.625,
+                "y": 152.25
             }
         },
         "maps_alpha/level7.tmx": {
             "scale": 4,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 163.5,
-                "y": 190.5
+                "x": 176,
+                "y": 167.875
             }
         },
         "maps_alpha/outside-wall-test.tmx": {
@@ -218,7 +218,7 @@
             "selectedLayer": 2,
             "viewCenter": {
                 "x": 256,
-                "y": 256
+                "y": 255.9090909090909
             }
         },
         "maps_alpha/rules/collision-spawner.tmx": {
@@ -234,7 +234,7 @@
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 128,
-                "y": 128
+                "y": 127.83333333333334
             }
         },
         "maps_alpha/rules/corners.tmx": {
@@ -377,15 +377,15 @@
     ],
     "project": "port-hole.tiled-project",
     "recentFiles": [
-        "maps_alpha/level1.tmx",
-        "maps_alpha/level2.tmx",
-        "maps_alpha/level3.tmx",
         "maps_alpha/rules/collision-objects.tmx",
         "maps_alpha/rules/collision.tmx",
         "maps_alpha/level7.tmx",
         "maps_alpha/level6.tmx",
         "maps_alpha/level5.tmx",
         "maps_alpha/level4.tmx",
+        "maps_alpha/level3.tmx",
+        "maps_alpha/level2.tmx",
+        "maps_alpha/level1.tmx",
         "maps_alpha/rules/collision-spawner.tmx",
         "porthole-tileset.tsx",
         "maps_alpha/rules/shadows-special.tmx"

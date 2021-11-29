@@ -18,6 +18,12 @@ namespace TwelveEngine.Game2D {
         private readonly CollisionInterface collisionInterface;
         public CollisionInterface CollisionInterface => collisionInterface;
 
+        private InteractionLayer interactionLayer = null;
+        public InteractionLayer InteractionLayer {
+            get => interactionLayer;
+            set => interactionLayer = value;
+        }
+
         private EntityManager entityManager = null;
         public EntityManager EntityManager => entityManager;
         public void AddEntity(Entity entity) => EntityManager.AddEntity(entity);
@@ -43,27 +49,27 @@ namespace TwelveEngine.Game2D {
         private bool spriteBatchActive = false;
 
         public Grid2D() {
-            this.tileSize = Constants.DefaultTileSize;
-            this.LayerMode = LayerModes.Default;
-            this.collisionInterface = new CollisionInterface(this);
+            tileSize = Constants.DefaultTileSize;
+            LayerMode = LayerModes.Default;
+            collisionInterface = new CollisionInterface(this);
         }
 
         public Grid2D(int tileSize) {
             this.tileSize = tileSize;
-            this.LayerMode = LayerModes.Default;
-            this.collisionInterface = new CollisionInterface(this);
+            LayerMode = LayerModes.Default;
+            collisionInterface = new CollisionInterface(this);
         }
 
         public Grid2D(LayerMode layerMode) {
-            this.tileSize = Constants.DefaultTileSize;
-            this.LayerMode = layerMode;
-            this.collisionInterface = new CollisionInterface(this);
+            tileSize = Constants.DefaultTileSize;
+            LayerMode = layerMode;
+            collisionInterface = new CollisionInterface(this);
         }
 
         public Grid2D(int tileSize,LayerMode layerMode) {
             this.tileSize = tileSize;
-            this.LayerMode = layerMode;
-            this.collisionInterface = new CollisionInterface(this);
+            LayerMode = layerMode;
+            collisionInterface = new CollisionInterface(this);
         }
 
         private static int[,] convertFlatArray(int[] array,int width,int height) {

@@ -3,19 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D.Entities {
     public sealed class Player:Entity, IUpdateable, IRenderable {
         /* Hitbox coordinate system expects a symmetrical, center aligned hitbox! */
-
-        public override void Import(SerialFrame frame) {
-            base.Import(frame);
-            this.direction = (Direction)frame.GetInt("Direction");
-        }
-        public override void Export(SerialFrame frame) {
-            base.Export(frame);
-            frame.Set("Direction",(int)direction);
-        }
 
         private const float VERTICAL_HITBOX_X = 1 / 16f;
         private const float VERTICAL_HITBOX_WIDTH = 14 / 16f;
@@ -40,7 +32,7 @@ namespace TwelveEngine.Game2D.Entities {
             hitbox.Y = Y;
             hitbox.Height = 1;
 
-            if(direction == Direction.Down || direction == Direction.Up) {
+            if(Direction == Direction.Down || Direction == Direction.Up) {
                 hitbox.X = X + VERTICAL_HITBOX_X;
                 hitbox.Width = VERTICAL_HITBOX_WIDTH;
             } else {
@@ -49,16 +41,6 @@ namespace TwelveEngine.Game2D.Entities {
             }
 
             return hitbox;
-        }
-
-        private Direction direction = Direction.Down;
-        public Direction Direcetion {
-            get {
-                return direction;
-            }
-            set {
-                direction = value;
-            }
         }
 
         private Texture2D playerTexure;
@@ -73,10 +55,20 @@ namespace TwelveEngine.Game2D.Entities {
             if(Game.IsKeyDown(KeyBind.Right,ks)) xDelta++;
         }
 
+        private KeyWatcher interactionKeyWatcher;
+
+        private void interact() {
+            if(Grid.InteractionLayer == null) {
+                return;
+            }
+            Grid.InteractionLayer.HitTest(this);
+        }
+
         public override void Load() {
             FactoryID = "Player";
             playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
-        }
+            interactionKeyWatcher = new KeyWatcher(Game.KeyBinds.Interact,interact);
+    }
 
         public float Speed {
             get {
@@ -151,10 +143,10 @@ namespace TwelveEngine.Game2D.Entities {
         private void move(Direction direction,float distance) {
 
             switch(direction) {
-                case Direction.Down: this.Y += distance; break;
-                case Direction.Up: this.Y -= distance; break;
-                case Direction.Left: this.X -= distance; break;
-                case Direction.Right: this.X += distance; break;
+                case Direction.Down: Y += distance; break;
+                case Direction.Up: Y -= distance; break;
+                case Direction.Left: X -= distance; break;
+                case Direction.Right: X += distance; break;
             }
 
             Hitbox self = GetHitbox();
@@ -174,7 +166,7 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         private Direction getDirection() {
-            Direction direction = this.direction;
+            Direction direction = Direction;
             if(xDelta != 0) {
                 if(xDelta < 0) {
                     direction = Direction.Left;
@@ -284,8 +276,8 @@ namespace TwelveEngine.Game2D.Entities {
 
         private void updateDirection() {
             var newDirection = getDirection();
-            var oldDirection = direction;
-            direction = newDirection;
+            var oldDirection = Direction;
+            Direction = newDirection;
 
             if(newDirection != oldDirection && isHorizontal(oldDirection) && isVertical(newDirection)) {
                 handleAutomaticOffset(oldDirection);
@@ -350,14 +342,16 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public void Update(GameTime gameTime) {
-            keyHandler(Game.KeyboardState);
+            var ks = Game.KeyboardState;
+            keyHandler(ks);
             updateMovement(gameTime);
+            interactionKeyWatcher.Process(ks,gameTime);
             var camera = Grid.Camera;
-            camera.X = this.X; camera.Y = this.Y;
+            camera.X = X; camera.Y = Y;
         }
 
         private int getRenderColumn() {
-            return (int)direction;
+            return (int)Direction;
         }
 
         private TimeSpan lastBlink;
