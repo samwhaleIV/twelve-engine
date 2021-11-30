@@ -3,16 +3,11 @@
 namespace TwelveEngine.PuzzleGame {
     public sealed class PuzzleBoard:ISerializable {
 
-        private readonly ComponentFactory factory;
-        private readonly WorldInterface[] gameComponents;
-        private readonly int componentCount;
+        private readonly WorldComponent[] gameComponents;
 
-        public PuzzleBoard(Grid2D grid,Level level) {
-            factory = new ComponentFactory(grid.GetLayer(1),grid.GetLayer(2));
-            gameComponents = level.ComponentGenerator(factory);
-            componentCount = gameComponents.Length;
-
+        private void installInteractionLayer(Grid2D grid) {
             var interactionLayer = new InteractionLayer();
+            grid.InteractionLayer = interactionLayer;
 
             foreach(var component in gameComponents) {
                 if(!(component is IInteract)) {
@@ -20,21 +15,36 @@ namespace TwelveEngine.PuzzleGame {
                 }
                 interactionLayer.AddTarget((IInteract)component);
             }
-
-            grid.InteractionLayer = interactionLayer;
         }
 
+        private void installStateHandlers(Grid2D grid) {
+            grid.OnExport += frame => frame.Set("Puzzle",this);
+            grid.OnImport += frame => frame.Get("Puzzle",this);
+        }
+
+        private WorldComponent[] getWorldComponents(Grid2D grid,Level level) {
+            var factory = new ComponentFactory(grid);
+            level.GenerateComponents(factory);
+            return factory.Export();
+        }
+
+        public PuzzleBoard(Grid2D grid,Level level) { 
+            gameComponents = getWorldComponents(grid,level);
+            installInteractionLayer(grid);
+            installStateHandlers(grid);
+        }
+
+        private static string getComponentIndex(int index) => $"Item{index}";
+
         public void Export(SerialFrame frame) {
-            for(var i = 0;i<componentCount;i++) {
-                frame.Set(i.ToString(),gameComponents[i]);
+            for(var i = 0;i<gameComponents.Length;i++) {
+                frame.Set(getComponentIndex(i),gameComponents[i]);
             }
         }
 
         public void Import(SerialFrame frame) {
-            for(var i = 0;i<componentCount;i++) {
-                var component = gameComponents[i];
-                frame.Get(i.ToString(),component);
-                component.SendSignal();
+            for(var i = 0;i<gameComponents.Length;i++) {
+                frame.Get(getComponentIndex(i),gameComponents[i]);
             }
         }
     }

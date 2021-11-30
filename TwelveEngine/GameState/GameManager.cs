@@ -17,7 +17,9 @@ namespace TwelveEngine {
         private bool loading = false;
         public bool Loading => loading;
 
-        public KeyboardState KeyboardState => automationAgent.GetKeyboardState();
+        private KeyboardState keyboardState;
+        public KeyboardState KeyboardState => keyboardState;
+
         public MouseState MouseState => automationAgent.GetMouseState();
 
         private GraphicsDeviceManager graphicsDeviceManager;
@@ -46,8 +48,7 @@ namespace TwelveEngine {
         private KeyBinds keyBinds = new KeyBinds();
         public KeyBinds KeyBinds => keyBinds;
 
-        public bool IsKeyDown(KeyBind type,KeyboardState keyboardState) => keyboardState.IsKeyDown(keyBinds.Get(type));
-        public bool IsKeyDown(KeyBind type) => IsKeyDown(type,automationAgent.GetKeyboardState());
+        public bool IsKeyDown(KeyBind type) => keyboardState.IsKeyDown(keyBinds.Get(type));
 
         private DateTime pauseTimeStart;
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
@@ -101,7 +102,7 @@ namespace TwelveEngine {
             pendingGameState = gameState;
         }
 
-        private string savedState = null;
+        private SerialFrame savedState = null;
         private void saveSerialState() { /* This could be made async, but the game could change
                                     * during the saving process, creating an unstable save state */
             if(!hasGameState()) {
@@ -109,13 +110,13 @@ namespace TwelveEngine {
             }
             var frame = new SerialFrame();
             gameState.Export(frame);
-            savedState = frame.Export();
+            savedState = frame;
         }
         private void loadSerialState() {
-            if(!hasGameState() || string.IsNullOrEmpty(savedState)) {
+            if(!hasGameState() || savedState == null) {
                 return;
             }
-            var frame = new SerialFrame(savedState);
+            var frame = savedState;
             gameState.Import(frame);
         }
 
@@ -246,8 +247,9 @@ namespace TwelveEngine {
             if(automationAgent.RecordingActive) {
                 automationAgent.UpdateRecordingFrame(proxyGameTime);
             }
-            keyboardHandler.Update(automationAgent.GetKeyboardState());
-            this.gameState.Update(proxyGameTime);
+            keyboardState = automationAgent.GetKeyboardState();
+            keyboardHandler.Update(keyboardState);
+            gameState.Update(proxyGameTime);
             automationAgent.EndUpdate();
             if(framesToSkip > 0) {
                 fastForward();

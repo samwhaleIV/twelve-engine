@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Direction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\RedBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity.cs" />
@@ -23,7 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IUpdateable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Hitbox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\InteractionLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\InteractionLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserDirection.cs" />
@@ -60,13 +60,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\Logic\XOR.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserGate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserSplitter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\IInteract.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\IInteract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\LevelFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\SignalState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\PulseButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\Switch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleBoard.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\JsonSmasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />

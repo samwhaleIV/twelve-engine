@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine.Game2D {
+﻿using System.Diagnostics;
+
+namespace TwelveEngine.Game2D {
     public abstract class Entity:ISerializable {
 
         private const float INTERACTION_BOX_SIZE = 0.25f;
@@ -47,8 +49,12 @@
             return hitbox;
         }
 
-        public virtual void Load() {}
-        public virtual void Unload() {}
+        public virtual void Load() {
+            Debug.WriteLine($"Load {FactoryID} entity, ID {ID}");
+        }
+        public virtual void Unload() {
+            Debug.WriteLine($"Unload {FactoryID} entity, ID {ID}");
+        }
 
         public virtual void Export(SerialFrame frame) {
             frame.Set("X",X);

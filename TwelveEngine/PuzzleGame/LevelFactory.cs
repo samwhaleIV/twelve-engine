@@ -23,14 +23,13 @@ namespace TwelveEngine.PuzzleGame {
 
             grid.OnLoad += () => {
                 var player = new Player() {
-                    X = level.PlayerX,
-                    Y = level.PlayerY
+                    X = level.Player.X,
+                    Y = level.Player.Y
                 };
                 grid.AddEntity(player);
             };
 
             var puzzleBoard = new PuzzleBoard(grid,level);
-
             return grid;
         }
     }

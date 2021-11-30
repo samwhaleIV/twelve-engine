@@ -1,14 +1,40 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D.Entities {
     public sealed class Player:Entity, IUpdateable, IRenderable {
-        /* Hitbox coordinate system requires a symmetrical, center aligned hitbox! */
 
+        private const float FRAME_TIME = 300;
+        private const float BLINK_RATE = 2900;
+        private const float BLINK_TIME = 200;
+
+        private const float ANIM_JUMP_START = 0.5f;
+        private const int ANIM_ROWS = 4;
+
+        private float maxSpeed = Constants.DefaultPlayerSpeed;
+
+        private int lastDeltaX = 0, lastDeltaY = 0;
+        private int xDelta = 0, yDelta = 0;
+
+        private TimeSpan lastBlink;
+        private TimeSpan? movingRenderStart = null;
+
+        private TimeSpan? movingStart = null;
+        private TimeSpan? deacelStart = null;
+
+        private int deacelDeltaX;
+        private int deacelDeltaY;
+        private float deacelStartValue;
+
+        private bool shouldInteract = false;
+        private Texture2D playerTexure;
+
+        public event Action PositionChanged;
+
+        /* Notice: Hitbox math expects a symmetrical, entity-center aligned hitbox */
         private const float VERTICAL_HITBOX_X = 1 / 16f;
         private const float VERTICAL_HITBOX_WIDTH = 14 / 16f;
 
@@ -17,16 +43,8 @@ namespace TwelveEngine.Game2D.Entities {
 
         private const float HITBOX_ORIENTATION_OFFSET = HORIZONTAL_HITBOX_X - VERTICAL_HITBOX_X;
 
-        private float maxSpeed = Constants.DefaultPlayerSpeed;
-        private const float animationFrameTime = 300;
-
-        private const float blinkRate = 2900;
-        private const float blinkDuration = 200;
-
-        private const float frameJumpStart = 0.5f;
-
         public Hitbox GetHitbox() {
-            // If it ever is needed, make hitbox math scalable with width and height properties
+            /* Notice: This hitbox does not scale with Entity Width and Height properties */
             var hitbox = new Hitbox();
 
             hitbox.Y = Y;
@@ -43,21 +61,24 @@ namespace TwelveEngine.Game2D.Entities {
             return hitbox;
         }
 
-        private Texture2D playerTexure;
-        private int animationRows = 4;
-
-        private void keyHandler(KeyboardState ks) {
-            xDelta = 0;
-            yDelta = 0;
-            if(Game.IsKeyDown(KeyBind.Up,ks)) yDelta--;
-            if(Game.IsKeyDown(KeyBind.Down,ks)) yDelta++;
-            if(Game.IsKeyDown(KeyBind.Left,ks)) xDelta--;
-            if(Game.IsKeyDown(KeyBind.Right,ks)) xDelta++;
+        private void keyHandler() {
+            xDelta = 0; yDelta = 0;
+            if(Game.IsKeyDown(KeyBind.Up)) {
+                yDelta--;
+            }
+            if(Game.IsKeyDown(KeyBind.Down)) {
+                yDelta++;
+            }
+            if(Game.IsKeyDown(KeyBind.Left)) {
+                xDelta--;
+            }
+            if(Game.IsKeyDown(KeyBind.Right)) {
+                xDelta++;
+            }
         }
 
-        private KeyWatcher interactionKeyWatcher;
-
         private void interact() {
+            shouldInteract = false;
             if(Grid.InteractionLayer == null) {
                 return;
             }
@@ -66,21 +87,26 @@ namespace TwelveEngine.Game2D.Entities {
 
         public override void Load() {
             FactoryID = "Player";
+            base.Load();
             playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
-            interactionKeyWatcher = new KeyWatcher(Game.KeyBinds.Interact,interact);
-    }
+            Game.KeyboardHandler.KeyDown += KeyboardHandler_KeyDown;
+        }
 
-        public float Speed {
-            get {
-                return maxSpeed;
-            }
-            set {
-                maxSpeed = value;
+        private void KeyboardHandler_KeyDown(Keys key) {
+            if(key == Game.KeyBinds.Interact) {
+                shouldInteract = true;
             }
         }
 
-        private int xDelta = 0;
-        private int yDelta = 0;
+        public override void Unload() {
+            base.Unload();
+            Game.KeyboardHandler.KeyDown -= KeyboardHandler_KeyDown;
+        }
+
+        public float Speed {
+            get => maxSpeed;
+            set => maxSpeed = value;
+        }
 
         private float getLeftLimit(Hitbox self,Hitbox target) {
             return target.X + target.Width - (self.X - X);
@@ -208,33 +234,21 @@ namespace TwelveEngine.Game2D.Entities {
             return direction == Direction.Up || direction == Direction.Down;
         }
 
-        private TimeSpan? movingStart = null;
-        private TimeSpan? deaccelerationStart = null;
-
-        private float deaccelerationStartValue;
-
         private float getSpeed(TimeSpan totalTime) {
             float t;
             if(movingStart.HasValue) {
                 t = (float)Math.Min((totalTime - movingStart.Value).TotalMilliseconds / Constants.PlayerAccel,1);
                 return maxSpeed * t;
-            } else if(deaccelerationStart.HasValue) {
-                t = (float)Math.Min((totalTime - deaccelerationStart.Value).TotalMilliseconds / Constants.PlayerDeaccel,1);
-                return deaccelerationStartValue * (1 - t);
+            } else if(deacelStart.HasValue) {
+                t = (float)Math.Min((totalTime - deacelStart.Value).TotalMilliseconds / Constants.PlayerDeaccel,1);
+                return deacelStartValue * (1 - t);
             } else {
                 return 0f;
             }
         }
 
-        private int deaccelerationDeltaX;
-        private int deaccelerationDeltaY;
-
-        private int lastDeltaX = 0;
-        private int lastDeltaY = 0;
-
         private void handleAutomaticOffset(Direction oldDirection) {
             Hitbox hitbox = GetHitbox();
-
             List<Hitbox> collisionResult = Grid.CollisionInterface.Collides(hitbox);
 
             var hadCollision = false;
@@ -253,9 +267,9 @@ namespace TwelveEngine.Game2D.Entities {
                 return;
             }
             if(oldDirection == Direction.Right) {
-                this.X -= HITBOX_ORIENTATION_OFFSET;
+                X -= HITBOX_ORIENTATION_OFFSET;
             } else {
-                this.X += HITBOX_ORIENTATION_OFFSET;
+                X += HITBOX_ORIENTATION_OFFSET;
             }
 
             hitbox = GetHitbox();
@@ -287,20 +301,22 @@ namespace TwelveEngine.Game2D.Entities {
         private void processAccelerationTiming(TimeSpan totalTime) {
             if(xDelta == 0 && yDelta == 0) {
                 movingRenderStart = null;
-                if(deaccelerationStart.HasValue) {
-                    var timeDifference = deaccelerationStart.Value - totalTime;
+                if(deacelStart.HasValue) {
+                    var timeDifference = deacelStart.Value - totalTime;
                     if(timeDifference.TotalMilliseconds >= Constants.PlayerDeaccel) {
-                        deaccelerationStart = null;
+                        deacelStart = null;
                     }
                 } else if(movingStart.HasValue) {
-                    deaccelerationStartValue = getSpeed(totalTime);
-                    deaccelerationDeltaX = lastDeltaX;
-                    deaccelerationDeltaY = lastDeltaY;
-                    deaccelerationStart = totalTime;
+                    deacelStartValue = getSpeed(totalTime);
+
+                    deacelDeltaX = lastDeltaX;
+                    deacelDeltaY = lastDeltaY;
+
+                    deacelStart = totalTime;
                     movingStart = null;
                 }
             } else if(!movingStart.HasValue) {
-                deaccelerationStart = null;
+                deacelStart = null;
                 movingStart = totalTime;
             }
             lastDeltaX = xDelta;
@@ -311,8 +327,8 @@ namespace TwelveEngine.Game2D.Entities {
             var oldXDelta = xDelta;
             var oldYDelta = yDelta;
 
-            xDelta = deaccelerationDeltaX;
-            yDelta = deaccelerationDeltaY;
+            xDelta = deacelDeltaX;
+            yDelta = deacelDeltaY;
 
             updateDirection();
             handleDeltas(distance);
@@ -342,27 +358,30 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public void Update(GameTime gameTime) {
-            var ks = Game.KeyboardState;
-            keyHandler(ks);
+            keyHandler();
+            var startPosition = (X, Y);
             updateMovement(gameTime);
-            interactionKeyWatcher.Process(ks,gameTime);
+            var endPosition = (X, Y);
+            if(startPosition.CompareTo(endPosition) == 0) {
+                PositionChanged?.Invoke();
+            }
+            if(shouldInteract) {
+                interact();
+            }
             var camera = Grid.Camera;
             camera.X = X; camera.Y = Y;
         }
 
-        private int getRenderColumn() {
-            return (int)Direction;
-        }
+        private int getRenderColumn() => (int)Direction;
 
-        private TimeSpan lastBlink;
         private bool isBlinking(GameTime gameTime) {
             var currentTime = gameTime.TotalGameTime;
             var interval = currentTime - lastBlink;
 
             var duration = interval.TotalMilliseconds;
 
-            if(duration > blinkRate) {
-                if(duration > blinkRate + blinkDuration) {
+            if(duration > BLINK_RATE) {
+                if(duration > BLINK_RATE + BLINK_TIME) {
                     lastBlink = currentTime;
                     return false;
                 } else {
@@ -373,24 +392,22 @@ namespace TwelveEngine.Game2D.Entities {
             }
         }
 
-        private TimeSpan? movingRenderStart;
-
         private int getRenderRow(GameTime gameTime) {
 
             if(xDelta == 0 && yDelta == 0) {
-                return isBlinking(gameTime) ? animationRows : 0;
+                return isBlinking(gameTime) ? ANIM_ROWS : 0;
             }
 
             var now = gameTime.TotalGameTime;
 
             if(!movingRenderStart.HasValue) {
-                movingRenderStart = now - TimeSpan.FromMilliseconds(animationFrameTime * frameJumpStart);
+                movingRenderStart = now - TimeSpan.FromMilliseconds(FRAME_TIME * ANIM_JUMP_START);
             }
 
             var timeDifference = now - movingRenderStart.Value;
-            var frame = (int)Math.Floor(timeDifference.TotalMilliseconds / animationFrameTime) % animationRows;
+            var frame = (int)Math.Floor(timeDifference.TotalMilliseconds / FRAME_TIME) % ANIM_ROWS;
 
-            return isBlinking(gameTime) ? frame + animationRows : frame;
+            return isBlinking(gameTime) ? frame + ANIM_ROWS : frame;
         }
 
         public void Render(GameTime gameTime) {

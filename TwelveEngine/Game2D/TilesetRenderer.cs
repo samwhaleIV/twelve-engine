@@ -18,12 +18,12 @@ namespace TwelveEngine.Game2D {
             tileSize = grid2D.TileSize;
             tilesetColumns = tileset.Width / tileSize;
             this.game = game;
-            this.grid = grid2D;
+            grid = grid2D;
         }
 
         public void Unload() {
-            this.game = null;
-            this.grid = null;
+            game = null;
+            grid = null;
         }
 
         private Rectangle getTextureSource(int value) {
@@ -36,8 +36,8 @@ namespace TwelveEngine.Game2D {
         }
 
         public void RenderTile(int value,Rectangle destination) {
-            if(value <= 1) return;
-            var source = getTextureSource(value-1);
+            if(value < 1) return;
+            var source = getTextureSource(value);
 
             var viewportHeight = grid.Viewport.Height;
             float depth = 1 - Math.Max(destination.Y / (float)viewportHeight,0);

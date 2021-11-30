@@ -188,7 +188,7 @@ namespace TwelveEngine {
             for(int i = 0;i < flatArray.Length;i++) {
                 flatArray[i] = value[i % xLength,i / xLength];
             }
-            dictionary[getAddress(SIZE_PREFIX + property)] = xLength;
+            dictionary[getAddress(SIZE_PREFIX + property)] = (long)xLength;
             dictionary[getAddress(property)] = JArray.FromObject(flatArray);
         }
         public void Set(string property,bool[,] value) {

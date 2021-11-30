@@ -9,7 +9,7 @@ namespace TwelveEngine.Game2D {
 
         private const int TILE_SIZE = 16;
 
-        private static readonly Rectangle collisionTileRange = new Rectangle(256,0,112,80);
+        private static readonly Rectangle collisionTileRange = new Rectangle(256,0,256,64);
 
         private static readonly Dictionary<int,CollisionType> types = new Dictionary<int,CollisionType>();
 
@@ -89,7 +89,7 @@ namespace TwelveEngine.Game2D {
                         continue;
                     }
                     var tilesetIndex = (x+xOffset) + (y+yOffset) * tilestColumns;
-                    types[tilesetIndex + 1] = type.Value;
+                    types[tilesetIndex] = type.Value;
                 }
             }
         }

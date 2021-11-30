@@ -2,20 +2,21 @@
 using TwelveEngine.Game2D;
 
 namespace TwelveEngine.PuzzleGame.Components {
-    public class Switch:WorldInterface, IInteract {
+    public class Switch:WorldComponent, IInteract {
         private readonly Point location;
         private readonly bool facingLeft;
 
         public Switch(
 
-            int[,] objectLayer,
-            int[,] collisionLayer,
+            Grid2D grid,
             Point location,
             bool facingLeft
 
-        ) : base(objectLayer,collisionLayer) {
+        ) : base(grid) {
             this.location = location;
             this.facingLeft = facingLeft;
+
+            Serialize = true;
         }
 
         public void Interact(Entity entity) {

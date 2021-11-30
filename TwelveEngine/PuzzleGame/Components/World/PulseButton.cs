@@ -3,7 +3,7 @@ using TwelveEngine.Game2D;
 using System.Threading.Tasks;
 
 namespace TwelveEngine.PuzzleGame.Components {
-    public class PulseButton:WorldInterface,IInteract {
+    public class PulseButton:WorldComponent,IInteract {
         private const int PULSE_TIME = 500;
 
         private readonly Point location;
@@ -11,11 +11,10 @@ namespace TwelveEngine.PuzzleGame.Components {
 
         public PulseButton(
 
-            int[,] objectLayer,
-            int[,] collisionLayer,
+            Grid2D grid,
             Point location, bool positive
 
-        ) : base(objectLayer,collisionLayer) {
+        ) : base(grid) {
             this.location = location;
             this.positive = positive;
         }
@@ -35,10 +34,10 @@ namespace TwelveEngine.PuzzleGame.Components {
         }
 
         public void Interact(Entity entity) {
-            updating = true;
             if(updating) {
                 return;
             }
+            updating = true;
             SignalState = positive ? SignalState.Positive : SignalState.Negative;
             SendSignal();
             endPulse();

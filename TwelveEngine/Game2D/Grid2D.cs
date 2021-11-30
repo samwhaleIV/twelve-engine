@@ -108,13 +108,9 @@ namespace TwelveEngine.Game2D {
                 }
             }
         }
-        public int[,] GetLayer(int index) {
-            return layers[index];
-        }
 
-        private bool hasTileRenderer() {
-            return tileRenderer != null;
-        }
+        public int[,] GetLayer(int index) => layers[index];
+        private bool hasTileRenderer() => tileRenderer != null;
 
         private void setTileRenderer(ITileRenderer tileRenderer) {
             if(!loaded) {
@@ -136,7 +132,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void loadEntityManager() {
-            this.entityManager = new EntityManager(this) {
+            entityManager = new EntityManager(this) {
                 RenderListChanged = updateRenderables,
                 UpdateListChanged = updateUpdateables
             };
@@ -394,6 +390,9 @@ namespace TwelveEngine.Game2D {
             tryEndSpriteBatch();
         }
 
+        public event Action<SerialFrame> OnExport;
+        public event Action<SerialFrame> OnImport;
+
         public override void Export(SerialFrame frame) {
             frame.Set("Camera",Camera);
             frame.Set("Width",Width);
@@ -415,6 +414,8 @@ namespace TwelveEngine.Game2D {
             }
 
             entityManager.Export(frame);
+
+            OnExport?.Invoke(frame);
         }
 
         public override void Import(SerialFrame frame) {
@@ -442,6 +443,8 @@ namespace TwelveEngine.Game2D {
             this.LayerMode = layerMode;
 
             entityManager.Import(frame);
+
+            OnImport?.Invoke(frame);
         }
     }
 }

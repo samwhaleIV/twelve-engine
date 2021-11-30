@@ -15,6 +15,8 @@ namespace TwelveEngine {
         public const string MapDatabase = ContentRootDirectory + "/" + "map-database.json";
         public const string Tileset = "Tileset";
         public const string PlayerImage = "Player";
+
+        public const int ObjectLayerIndex = 1;
         public const int CollisionLayerIndex = 2;
 
         public const Keys RecordingKey = Keys.F3;
