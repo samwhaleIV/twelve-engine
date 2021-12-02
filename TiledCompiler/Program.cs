@@ -33,7 +33,7 @@ namespace TiledCompiler {
         static void offsetTileValues(TiledLayer layer,int amount) {
             var data = layer.data;
             for(var i = 0;i < data.Length;i++) {
-                data[i] = data[i] + amount;
+                data[i] = Math.Max(data[i] + amount,0);
             }
         }
 
