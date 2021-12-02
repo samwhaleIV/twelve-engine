@@ -67,9 +67,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public bool Paused {
-            get {
-                return listChangesPaused;
-            }
+            get => listChangesPaused;
             set {
                 if(value) {
                     PauseListChanges();
@@ -218,33 +216,44 @@ namespace TwelveEngine.Game2D {
             Grid = null;
         }
 
-        private void clearEntities() {
+        private void clearEntities(bool checkForStateLock = false) {
             var entities = this.entities.Values.ToArray();
             for(var i = 0;i < entities.Length;i++) {
-                RemoveEntity(entities[i]);
+                var entity = entities[i];
+                if(checkForStateLock && entity.StateLock) {
+                    continue;
+                }
+                RemoveEntity(entity);
             }
         }
 
         public void Export(SerialFrame frame) {
             var entities = this.entities.Values.ToArray();
 
+            var addressOffset = 0;
             for(var i = 0;i<entities.Length;i++) {
                 var entity = entities[i];
+                if(entity.StateLock) {
+                    addressOffset--;
+                    continue;
+                }
 
-                string addressBase = $"Entity-{i}";
+                string addressBase = $"Entity-{i+addressOffset}";
 
                 frame.Set($"{addressBase}-Name",entity.Name);
                 frame.Set($"{addressBase}-ID",entity.FactoryID);
                 frame.Set(addressBase,entity);
             }
-            frame.Set("EntityCount",entities.Length);
+            frame.Set("EntityCount",entities.Length + addressOffset);
         }
 
         public void Import(SerialFrame frame) {
             bool startedPaused = Paused;
             Paused = true;
 
-            if(IDCounter > 0) clearEntities();
+            if(IDCounter > 0) {
+                clearEntities(checkForStateLock: true);
+            }
 
             long entityCount = frame.GetInt("EntityCount");
 

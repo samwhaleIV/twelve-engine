@@ -10,7 +10,7 @@ namespace TwelveEngine.PuzzleGame.Components {
             this.direction = direction;
         }
 
-        public override void OnChange(SignalState state) {
+        protected override void OnChange() {
             //todo
         }
 

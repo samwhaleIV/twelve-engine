@@ -56,13 +56,14 @@ namespace TwelveEngine.Game2D {
             Debug.WriteLine($"Unload {FactoryID} entity, ID {ID}");
         }
 
+        public bool StateLock { get; set; } = false;
+
         public virtual void Export(SerialFrame frame) {
             frame.Set("X",X);
             frame.Set("Y",Y);
             frame.Set("Width",Width);
             frame.Set("Height",Height);
             frame.Set("Direction",(int)Direction);
-
         }
         public virtual void Import(SerialFrame frame) {
             X = frame.GetFloat("X");

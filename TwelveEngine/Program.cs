@@ -1,12 +1,13 @@
 ﻿using TwelveEngine.PuzzleGame;
-using TwelveEngine.PuzzleGame.Levels;
 
 namespace TwelveEngine {
     public static class Program {
 
         public static GameState GetStartState() {
             MapDatabase.LoadMaps();
-            var gameState = LevelFactory.GenerateLevel(AlphaLevels.Test);
+            var gameState = PuzzleFactory.GenerateState(factory => {
+                return factory.Test();
+            });
             return gameState;
         }
 

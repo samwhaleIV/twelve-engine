@@ -26,6 +26,25 @@
         public const int VerticalLaser = 323;
         public const int CrossLaser = 290;
 
+        public struct CounterTiles {
+            public readonly int[] Small;
+            public readonly int[] Big;
+            public CounterTiles(int[] small,int[] big) {
+                Small = small; Big = big;
+            }
+        }
+
+        public static class Counter {
+            public static readonly CounterTiles Horizontal = new CounterTiles(
+                new int[] { 172,173,204 },
+                new int[] { 169,170,201,202,234 }
+            );
+            public static readonly CounterTiles Vertical = new CounterTiles(
+                new int[] { 205,237,269 },
+                new int[] { 300,301,332,333,364 }
+            );
+        }
+
         public static class Collision {
             public const int HorizontalLaser = 48;
             public const int VerticalLaser = 49;

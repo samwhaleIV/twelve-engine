@@ -17,6 +17,7 @@ namespace TwelveEngine.PuzzleGame.Components {
         ) : base(grid) {
             this.location = location;
             this.positive = positive;
+            ComplexState = true;
         }
 
         public Hitbox GetHitbox() {
@@ -28,7 +29,6 @@ namespace TwelveEngine.PuzzleGame.Components {
 
         private async void endPulse() {
             await Task.Delay(PULSE_TIME);
-            SignalState = SignalState.Neutral;
             SendSignal();
             updating = false;
         }
@@ -40,13 +40,14 @@ namespace TwelveEngine.PuzzleGame.Components {
             updating = true;
             SignalState = positive ? SignalState.Positive : SignalState.Negative;
             SendSignal();
+            SignalState = SignalState.Neutral;
             endPulse();
         }
 
-        public override void OnChange(SignalState state) {
+        protected override void OnChange() {
             int newTile;
 
-            if(state.Value()) {
+            if(SignalState.Value()) {
                 if(positive) {
                     newTile = Tiles.PulsePlusOn;
                 } else {

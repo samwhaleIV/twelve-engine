@@ -2,7 +2,7 @@
 using TwelveEngine.Game2D;
 
 namespace TwelveEngine.PuzzleGame.Components {
-    public class Switch:WorldComponent, IInteract {
+    public sealed class Switch:WorldComponent, IInteract {
         private readonly Point location;
         private readonly bool facingLeft;
 
@@ -15,8 +15,7 @@ namespace TwelveEngine.PuzzleGame.Components {
         ) : base(grid) {
             this.location = location;
             this.facingLeft = facingLeft;
-
-            Serialize = true;
+            ComplexState = true;
         }
 
         public void Interact(Entity entity) {
@@ -29,9 +28,9 @@ namespace TwelveEngine.PuzzleGame.Components {
             return CollisionTypes.getHitbox(CollisionLayer[x,y],x,y).Value;
         }
 
-        public override void OnChange(SignalState state) {
+        protected override void OnChange() {
             int newTile;
-            if(state.Value()) {
+            if(SignalState.Value()) {
                 if(facingLeft) {
                     newTile = Tiles.SwitchLeftOn;
                 } else {
@@ -45,6 +44,10 @@ namespace TwelveEngine.PuzzleGame.Components {
                 }
             }
             ObjectLayer[location.X,location.Y] = newTile;
+        }
+
+        public override void Import(SerialFrame frame) {
+            base.Import(frame);
         }
     }
 }

@@ -136,6 +136,8 @@ namespace TwelveEngine.Game2D {
                 RenderListChanged = updateRenderables,
                 UpdateListChanged = updateUpdateables
             };
+            OnImport += entityManager.Import;
+            OnExport += entityManager.Export;
         }
 
         internal override void Load() {
@@ -413,8 +415,6 @@ namespace TwelveEngine.Game2D {
                 frame.Set(layerBase + i,layers[i]);
             }
 
-            entityManager.Export(frame);
-
             OnExport?.Invoke(frame);
         }
 
@@ -440,9 +440,7 @@ namespace TwelveEngine.Game2D {
                 layers[i] = frame.GetArray2D<int>(layerBase + i);
             }
             this.layers = layers;
-            this.LayerMode = layerMode;
-
-            entityManager.Import(frame);
+            LayerMode = layerMode;
 
             OnImport?.Invoke(frame);
         }

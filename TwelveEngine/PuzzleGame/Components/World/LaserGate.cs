@@ -2,7 +2,7 @@
 using TwelveEngine.Game2D;
 
 namespace TwelveEngine.PuzzleGame.Components {
-    public class LaserGate:WorldComponent {
+    public sealed class LaserGate:WorldComponent {
 
         private readonly int x1; private readonly int y1;
         private readonly int x2; private readonly int y2;
@@ -20,8 +20,8 @@ namespace TwelveEngine.PuzzleGame.Components {
             this.horizontal = horizontal;
         }
 
-        public override void OnChange(SignalState state) {
-            var active = state.Value();
+        protected override void OnChange() {
+            var active = SignalState.Value();
 
             if(horizontal) {
                 updateRecepticlesHorizontal(active);
