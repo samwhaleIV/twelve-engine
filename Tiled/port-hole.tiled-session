@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "maps_alpha/counter-test.tmx",
+    "activeFile": "maps_alpha/counter-test-2.tmx",
     "expandedProjectPaths": [
         ".",
         "maps_alpha"
@@ -141,11 +141,11 @@
             }
         },
         "maps_alpha/counter-test-2.tmx": {
-            "scale": 2.33046875,
+            "scale": 1.5,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 248.23332215890042,
-                "y": 256.17163928930603
+                "x": 194.33333333333331,
+                "y": 269.3333333333333
             }
         },
         "maps_alpha/counter-test.tmx": {
@@ -449,13 +449,15 @@
     "openFiles": [
         "maps_alpha/test.tmx",
         "maps_alpha/template.tmx",
-        "maps_alpha/counter-test.tmx"
+        "maps_alpha/counter-test.tmx",
+        "maps_alpha/counter-test-2.tmx"
     ],
     "project": "port-hole.tiled-project",
     "recentFiles": [
         "maps_alpha/test.tmx",
         "maps_alpha/template.tmx",
         "maps_alpha/counter-test.tmx",
+        "maps_alpha/counter-test-2.tmx",
         "maps_alpha/rules/edges.tmx",
         "maps_alpha/rules/caps.tmx",
         "maps_alpha/rules/collision.tmx",
@@ -463,8 +465,7 @@
         "maps_alpha/rules/corners.tmx",
         "maps_alpha/rules/inside-corners.tmx",
         "maps_alpha/rules/inside-nooks.tmx",
-        "maps_alpha/rules/outside-bubble.tmx",
-        "maps_alpha/rules/outside-corners.tmx"
+        "maps_alpha/rules/outside-bubble.tmx"
     ],
     "tileset.embedInMap": false,
     "tileset.lastUsedFormat": "tsx",

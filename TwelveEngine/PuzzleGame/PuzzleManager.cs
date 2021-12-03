@@ -30,6 +30,7 @@ namespace TwelveEngine.PuzzleGame {
         }
 
         public void Import(SerialFrame frame) {
+            var updateComponents = new List<Component>();
             for(var i = 0;i<components.Length;i++) {
                 var component = components[i];
                 if(component.StateLock) {
@@ -39,9 +40,13 @@ namespace TwelveEngine.PuzzleGame {
                 var oldState = component.SignalState;
                 frame.Get(component);
                 var newState = component.SignalState;
+
                 if(newState != oldState) {
-                    component.SendSignal();
+                    updateComponents.Add(component);
                 }
+            }
+            foreach(var component in updateComponents) {
+                component.SendSignal();
             }
         }
         public void Export(SerialFrame frame) {
