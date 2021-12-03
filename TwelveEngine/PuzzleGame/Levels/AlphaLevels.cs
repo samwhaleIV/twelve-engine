@@ -24,6 +24,17 @@
             };
         }
 
+        public Level CounterTest2() {
+            return new Level() {
+                Player = (6, 5),
+                Map = "maps_alpha/counter-test-2",
+                Components = () => {
+                    OR(MinusButton(2,3),Switch(2,5,false)).Link(SmallCounter(1,6,false)).Link(LaserGate(2,8,5,8));
+                    OR(MinusButton(10,3),Switch(10,5,true)).Link(SmallCounter_Lock(11,6,false)).Link(LaserGate(7,8,10,8));
+                }
+            };  
+        }
+
 
     }
 }

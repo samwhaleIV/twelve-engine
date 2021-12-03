@@ -29,37 +29,30 @@ namespace TwelveEngine.PuzzleGame {
             grid.OnImport += frame => frame.Get("Puzzle",this);
         }
 
-        public void Import(SerialFrame frame) {
-            componentStateIterator(frame,true);
-        }
-        public void Export(SerialFrame frame) {
-            componentStateIterator(frame,false);
-        }
-
         private static string getComponentIndex(int index) => $"p{index}";
 
-        private void componentStateIterator(SerialFrame frame,bool import) {
-            var updateComponents = import ? new List<Component>() : null;
+        public void Import(SerialFrame frame) {
             for(var i = 0;i<components.Length;i++) {
                 var component = components[i];
-                if(import && component.ComplexState) {
-                    updateComponents.Add(component);
+                if(component.StateLock) {
+                    component.StateChanged?.Invoke();
+                    continue;
                 }
+                var oldState = component.SignalState;
+                frame.Get(getComponentIndex(i),component);
+                var newState = component.SignalState;
+                if(newState != oldState) {
+                    component.SendSignal();
+                }
+            }
+        }
+        public void Export(SerialFrame frame) {
+            for(var i = 0;i<components.Length;i++) {
+                var component = components[i];
                 if(component.StateLock) {
                     continue;
                 }
-                var key = getComponentIndex(i);
-                if(import) {
-                    frame.Get(key,component);
-                } else {
-                    frame.Set(key,component);
-                }
-            }
-            if(!import) {
-                return;
-            }
-            foreach(var component in updateComponents) {
-                component.SendSignal();
+                frame.Set(getComponentIndex(i),component);
             }
         }
     }

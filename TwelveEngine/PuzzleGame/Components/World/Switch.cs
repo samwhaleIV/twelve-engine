@@ -7,7 +7,6 @@ namespace TwelveEngine.PuzzleGame.Components {
         private readonly bool facingLeft;
 
         public Switch(
-
             Grid2D grid,
             Point location,
             bool facingLeft
@@ -15,7 +14,6 @@ namespace TwelveEngine.PuzzleGame.Components {
         ) : base(grid) {
             this.location = location;
             this.facingLeft = facingLeft;
-            ComplexState = true;
         }
 
         public void Interact(Entity entity) {

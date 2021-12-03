@@ -17,7 +17,6 @@ namespace TwelveEngine.PuzzleGame.Components {
         ) : base(grid) {
             this.location = location;
             this.positive = positive;
-            ComplexState = true;
         }
 
         public Hitbox GetHitbox() {

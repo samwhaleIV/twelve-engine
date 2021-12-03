@@ -265,75 +265,67 @@ namespace TwelveEngine.Game2D {
             );
         }
 
-        private void renderTiles(int[,] data,ScreenSpace screenSpace) {
-            int startX = (int)Math.Floor(screenSpace.X);
-            int startY = (int)Math.Floor(screenSpace.Y);
-
-            float xOffset = startX - screenSpace.X;
-            float yOffset = startY - screenSpace.Y;
-
+        private void renderTiles(int[,] data,ScreenSpace screenSpace,bool calculateDepth) {
             int tileSize = screenSpace.TileSize;
-
-            int horizontalTiles = (int)Math.Ceiling(screenSpace.Width - xOffset);
-            if(xOffset * -2 > tileSize) {
-                horizontalTiles++;
-            }
-
-            int verticalTiles = (int)Math.Ceiling(screenSpace.Height - yOffset);
-            if(yOffset * -2 > tileSize) {
-                verticalTiles++;
-            }
-
-            int renderX = (int)Math.Round(xOffset * tileSize);
-            int renderY = (int)Math.Round(yOffset * tileSize);
-
-            drawTiles(
-                data,startX,startY,horizontalTiles,verticalTiles,
-                renderX,renderY,tileSize
-            );
-        }
-
-        private void drawTiles(
-            int[,] data,int startX,int startY,int width,int height,
-            int renderX,int renderY,int tileSize
-        ) {
 
             Rectangle target = new Rectangle(0,0,tileSize,tileSize);
 
-            int xOffset = 0, yOffset = 0;
-            if(startX < 0) {
-                xOffset = -startX;
-            }
-            if(startY < 0) {
-                yOffset = -startY;
-            }
+            int startX = (int)Math.Floor(screenSpace.X);
+            int startY = (int)Math.Floor(screenSpace.Y);
 
-            int endX = startX + width, endY = startY + height;
-            if(endX > Width) {
-                width -= endX - Width;
-            }
-            if(endY > Height) {
-                height -= endY - Height;
-            }
+            float renderX = startX - screenSpace.X;
+            float renderY = startY - screenSpace.Y;
 
-            for(int x = xOffset;x < width;x++) {
-                int gridX = x + startX;
-                for(int y = yOffset;y < height;y++) {
-                    int gridY = y + startY;
-                    target.X = renderX + x * tileSize;
-                    target.Y = renderY + y * tileSize;
-                    tileRenderer.RenderTile(data[gridX,gridY],target);
+            int width = (int)Math.Ceiling(screenSpace.Width - renderX);
+            int height = (int)Math.Ceiling(screenSpace.Height - renderY);
+
+            if(renderX * -2 > tileSize) width++;
+            if(renderY * -2 > tileSize) height++;
+
+            int tileX = (int)Math.Round(renderX * tileSize);
+            int tileY = (int)Math.Round(renderY * tileSize);
+
+            int xOffset = 0;
+            int yOffset = 0;
+            if(startX < 0) xOffset = -startX;
+            if(startY < 0) yOffset = -startY;
+
+            int endX = startX + width;
+            int endY = startY + height;
+            if(endX > Width) width -= endX - Width;
+            if(endY > Height) height -= endY - Height;
+
+            if(calculateDepth) {
+                float viewportHeight = Viewport.Height;
+                for(int x = xOffset;x < width;x++) {
+                    int gridX = x + startX;
+                    target.X = tileX + x * tileSize;
+                    for(int y = yOffset;y < height;y++) {
+                        int gridY = y + startY;
+                        target.Y = tileY + y * tileSize;    
+                        tileRenderer.RenderTileDepth(data[gridX,gridY],target,viewportHeight);
+                    }
+                }
+            } else {
+                for(int x = xOffset;x < width;x++) {
+                    int gridX = x + startX;
+                    target.X = tileX + x * tileSize;
+                    for(int y = yOffset;y < height;y++) {
+                        int gridY = y + startY;
+                        target.Y = tileY + y * tileSize;
+                        tileRenderer.RenderTile(data[gridX,gridY],target);
+                    }
                 }
             }
         }
 
-        private void renderLayers(int start,int length) {
+        private void renderLayers(int start,int length,bool calculateDepth) {
             if(!hasTileRenderer()) {
                 return;
             }
             int end = start + length;
             for(int i = start;i<end;i++) {
-                renderTiles(layers[i],screenSpace);
+                renderTiles(layers[i],screenSpace,calculateDepth);
             }
         }
 
@@ -369,23 +361,23 @@ namespace TwelveEngine.Game2D {
             if(LayerMode.Background) {
                 if(LayerMode.BackgroundLength == 2) {
                     startDeferredSpriteBatch();
-                    renderLayers(LayerMode.BackgroundStart,1);
+                    renderLayers(LayerMode.BackgroundStart,1,false);
                     endSpriteBatch();
 
                     startBackToFrontSpriteBatch();
-                    renderLayers(LayerMode.BackgroundStart+1,1);
+                    renderLayers(LayerMode.BackgroundStart+1,1,true);
                     renderEntities(gameTime);
                     endSpriteBatch();
                 } else {
                     startDeferredSpriteBatch();
-                    renderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);
+                    renderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength,false);
                     renderEntities(gameTime);
                 }
             }
 
             if(LayerMode.Foreground) {
                 tryStartSpriteBatch();
-                renderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
+                renderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength,false);
                 endSpriteBatch();
             }
 

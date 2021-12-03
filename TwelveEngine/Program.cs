@@ -6,7 +6,7 @@ namespace TwelveEngine {
         public static GameState GetStartState() {
             MapDatabase.LoadMaps();
             var gameState = PuzzleFactory.GenerateState(factory => {
-                return factory.Test();
+                return factory.CounterTest2();
             });
             return gameState;
         }

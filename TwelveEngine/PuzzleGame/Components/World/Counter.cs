@@ -18,7 +18,6 @@ namespace TwelveEngine.PuzzleGame.Components {
             maxValue = smallType ? MAX_VALUE_SMALL : MAX_VALUE;
             tiles = horizontal ? Tiles.Counter.Horizontal : Tiles.Counter.Vertical;
             this.x = x; this.y = y;
-            ComplexState = true;
         }
 
         private int getDelta() {
@@ -60,10 +59,12 @@ namespace TwelveEngine.PuzzleGame.Components {
         public override void Export(SerialFrame frame) {
             base.Export(frame);
             frame.Set("Value",value);
+            frame.Set("LastInput",(int)oldInputState);
         }
         public override void Import(SerialFrame frame) {
             base.Import(frame);
             value = frame.GetInt("Value");
+            oldInputState = (SignalState)frame.GetInt("LastInput");
             SendSignal();
         }
     }
