@@ -17,24 +17,22 @@ namespace TwelveEngine.Input {
         public Keys Right = Keys.D;
         public Keys Interact = Keys.Enter;
 
-        public KeyBinds() {
-            UpdateCache();
-        }
+        public KeyBinds() => UpdateCache();
 
         public void Export(SerialFrame frame) {
-            frame.Set("Up",(int)Up);
-            frame.Set("Down",(int)Down);
-            frame.Set("Left",(int)Left);
-            frame.Set("Right",(int)Right);
-            frame.Set("Interact",(int)Interact);
+            frame.Set((int)Up);
+            frame.Set((int)Down);
+            frame.Set((int)Left);
+            frame.Set((int)Right);
+            frame.Set((int)Interact);
         }
 
         public void Import(SerialFrame frame) {
-            Up = (Keys)frame.GetInt("Up");
-            Down = (Keys)frame.GetInt("Down");
-            Left = (Keys)frame.GetInt("Left");
-            Right = (Keys)frame.GetInt("Right");
-            Interact = (Keys)frame.GetInt("Interact");
+            Up = (Keys)frame.GetInt();
+            Down = (Keys)frame.GetInt();
+            Left = (Keys)frame.GetInt();
+            Right = (Keys)frame.GetInt();
+            Interact = (Keys)frame.GetInt();
             UpdateCache();
         }
 

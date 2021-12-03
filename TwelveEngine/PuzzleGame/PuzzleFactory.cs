@@ -31,7 +31,7 @@ namespace TwelveEngine.PuzzleGame {
                     X = level.Player.X,
                     Y = level.Player.Y,
                     Name = "Player",
-                    StateLock = true
+                    StateLock = false
                 };
                 grid.AddEntity(player);
                 grid.EntityManager.ResumeListChanges();

@@ -15,7 +15,7 @@ namespace TiledCompiler {
             public int[][] Layers;
         }
 
-        static void mergeBottomTwoLayers(List<TiledLayer> layers) {
+        static void MergeBottomTwoLayers(List<TiledLayer> layers) {
             var layer1 = layers[0];
             var layer2 = layers[1];
 
@@ -30,26 +30,27 @@ namespace TiledCompiler {
             layers.RemoveAt(1);
         }
 
-        static void offsetTileValues(TiledLayer layer,int amount) {
+        static void OffsetTileValues(TiledLayer layer,int amount) {
             var data = layer.data;
             for(var i = 0;i < data.Length;i++) {
                 data[i] = Math.Max(data[i] + amount,0);
             }
         }
 
-        static Map convertMap(TiledMap tiledMap) {
-            var map = new Map();
-            map.Width = tiledMap.Width;
-            map.Height = tiledMap.Height;
+        static Map ConvertMap(TiledMap tiledMap) {
+            var map = new Map {
+                Width = tiledMap.Width,
+                Height = tiledMap.Height
+            };
 
             var inputLayers = new List<TiledLayer>(tiledMap.Layers);
-            mergeBottomTwoLayers(inputLayers);
+            MergeBottomTwoLayers(inputLayers);
 
             int[][] layers = new int[inputLayers.Count][];
 
             for(var i = 0;i<inputLayers.Count;i++) {
                 var layer = inputLayers[i];
-                offsetTileValues(layer,-1);
+                OffsetTileValues(layer,-1);
                 layers[i] = layer.data;
             }
 
@@ -90,7 +91,7 @@ namespace TiledCompiler {
                     continue;
                 }
 
-                maps[folder + "/" + Path.GetFileNameWithoutExtension(file)] = convertMap(map);
+                maps[folder + "/" + Path.GetFileNameWithoutExtension(file)] = ConvertMap(map);
 
                 Console.WriteLine($"Processed '{file}'");
             }

@@ -25,11 +25,9 @@ namespace TwelveEngine.PuzzleGame {
         }
 
         private void installStateHandlers(Grid2D grid) {
-            grid.OnExport += frame => frame.Set("Puzzle",this);
-            grid.OnImport += frame => frame.Get("Puzzle",this);
+            grid.OnExport += frame => frame.Set(this);
+            grid.OnImport += frame => frame.Get(this);
         }
-
-        private static string getComponentIndex(int index) => $"p{index}";
 
         public void Import(SerialFrame frame) {
             for(var i = 0;i<components.Length;i++) {
@@ -39,7 +37,7 @@ namespace TwelveEngine.PuzzleGame {
                     continue;
                 }
                 var oldState = component.SignalState;
-                frame.Get(getComponentIndex(i),component);
+                frame.Get(component);
                 var newState = component.SignalState;
                 if(newState != oldState) {
                     component.SendSignal();
@@ -52,7 +50,7 @@ namespace TwelveEngine.PuzzleGame {
                 if(component.StateLock) {
                     continue;
                 }
-                frame.Set(getComponentIndex(i),component);
+                frame.Set(component);
             }
         }
     }

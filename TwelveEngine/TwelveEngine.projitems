@@ -28,6 +28,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\Counter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\ArrayConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\ExportMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\ImportMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\MetaSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Type.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Value.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tiles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\AutomationAgent.cs" />
@@ -69,7 +75,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\JsonSmasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
   </ItemGroup>
   <ItemGroup>

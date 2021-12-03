@@ -246,13 +246,13 @@ namespace TwelveEngine.Game2D {
         public Rectangle GetDestination(Entity entity) {
             var tileSize = screenSpace.TileSize;
 
-            Rectangle destination = new Rectangle();
+            var destination = new Rectangle {
+                X = (int)Math.Round((entity.X - screenSpace.X) * tileSize),
+                Y = (int)Math.Round((entity.Y - screenSpace.Y) * tileSize),
 
-            destination.X = (int)Math.Round((entity.X - screenSpace.X) * tileSize);
-            destination.Y = (int)Math.Round((entity.Y - screenSpace.Y) * tileSize);
-
-            destination.Width = (int)Math.Floor(entity.Width * tileSize);
-            destination.Height = (int)Math.Floor(entity.Height * tileSize);
+                Width = (int)Math.Floor(entity.Width * tileSize),
+                Height = (int)Math.Floor(entity.Height * tileSize)
+            };
 
             return destination;
         }
@@ -388,51 +388,33 @@ namespace TwelveEngine.Game2D {
         public event Action<SerialFrame> OnImport;
 
         public override void Export(SerialFrame frame) {
-            frame.Set("Camera",Camera);
-            frame.Set("Width",Width);
-            frame.Set("Height",Height);
+            frame.Set(Camera);
+            frame.Set(Width);
+            frame.Set(Height);
+            frame.Set(LayerMode);
+            frame.Set(PanZoom);
+            frame.Set(layers.Length);
 
-            frame.Set("LayerBackground",LayerMode.Background);
-            frame.Set("LayerForeground",LayerMode.Foreground);
-            frame.Set("BackgroundStart",LayerMode.BackgroundStart);
-            frame.Set("ForegroundStart",LayerMode.ForegroundStart);
-            frame.Set("ForegroundLength",LayerMode.ForegroundLength);
-            frame.Set("BackgroundLength",LayerMode.BackgroundLength);
-
-            frame.Set("PanZoom",PanZoom);
-
-            frame.Set("LayerCount",layers.Length);
-            string layerBase = "Layer-";
             for(var i = 0;i<layers.Length;i++) {
-                frame.Set(layerBase + i,layers[i]);
+                frame.Set(layers[i]);
             }
 
             OnExport?.Invoke(frame);
         }
 
         public override void Import(SerialFrame frame) {
-            frame.Get("Camera",Camera);
-            Width = frame.GetInt("Width");
-            Height = frame.GetInt("Height");
+            frame.Get(Camera);
+            Width = frame.GetInt();
+            Height = frame.GetInt();
+            frame.Get(LayerMode);
+            PanZoom = frame.GetBool();
+            var layerCount = frame.GetInt();
 
-            var layerMode = new LayerMode();
-            layerMode.Background = frame.GetBool("LayerBackground");
-            layerMode.Foreground = frame.GetBool("LayerForeground");
-            layerMode.BackgroundStart = frame.GetInt("BackgroundStart");
-            layerMode.ForegroundStart = frame.GetInt("ForegroundStart");
-            layerMode.ForegroundLength = frame.GetInt("ForegroundLength");
-            layerMode.BackgroundLength = frame.GetInt("BackgroundLength");
-
-            PanZoom = frame.GetBool("PanZoom");
-
-            var layerCount = frame.GetInt("LayerCount");
-            string layerBase = "Layer-";
             var layers = new int[layerCount][,];
             for(var i = 0;i<layerCount;i++) {
-                layers[i] = frame.GetArray2D<int>(layerBase + i);
+                layers[i] = frame.GetIntArray2D();
             }
             this.layers = layers;
-            LayerMode = layerMode;
 
             OnImport?.Invoke(frame);
         }

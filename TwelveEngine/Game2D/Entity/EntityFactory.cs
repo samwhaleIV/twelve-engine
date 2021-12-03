@@ -10,7 +10,6 @@ namespace TwelveEngine.Game2D {
         public static Entity GetEntity(string factoryID) {
             var typeGenerator = typeLookup[factoryID];
             Entity entity = typeGenerator();
-            entity.FactoryID = factoryID;
             return entity;
         }
     }

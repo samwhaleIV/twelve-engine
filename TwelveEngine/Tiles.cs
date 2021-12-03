@@ -26,7 +26,7 @@
         public const int VerticalLaser = 323;
         public const int CrossLaser = 290;
 
-        public struct CounterTiles {
+        public readonly struct CounterTiles {
             public readonly int[] Small;
             public readonly int[] Big;
             public CounterTiles(int[] small,int[] big) {

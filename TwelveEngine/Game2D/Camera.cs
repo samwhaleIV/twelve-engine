@@ -22,23 +22,23 @@
         }
 
         public void Export(SerialFrame frame) {
-            frame.Set("X",X);
-            frame.Set("Y",Y);
-            frame.Set("XOffset",XOffset);
-            frame.Set("YOffset",YOffset);
-            frame.Set("Scale",Scale);
-            frame.Set("HorizontalEdgePadding",HorizontalEdgePadding);
-            frame.Set("VerticalEdgePadding",VerticalEdgePadding);
+            frame.Set(X);
+            frame.Set(Y);
+            frame.Set(XOffset);
+            frame.Set(YOffset);
+            frame.Set(Scale);
+            frame.Set(HorizontalEdgePadding);
+            frame.Set(VerticalEdgePadding);
         }
 
         public void Import(SerialFrame frame) {
-            X = frame.GetFloat("X");
-            Y = frame.GetFloat("Y");
-            XOffset = frame.GetFloat("XOffset");
-            YOffset = frame.GetFloat("YOffset");
-            Scale = frame.GetFloat("Scale");
-            HorizontalEdgePadding = frame.GetBool("HorizontalEdgePadding");
-            VerticalEdgePadding = frame.GetBool("VerticalEdgePadding");
+            X = frame.GetFloat();
+            Y = frame.GetFloat();
+            XOffset = frame.GetFloat();
+            YOffset = frame.GetFloat();
+            Scale = frame.GetFloat();
+            HorizontalEdgePadding = frame.GetBool();
+            VerticalEdgePadding = frame.GetBool();
         }
     }
 }

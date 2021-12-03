@@ -59,18 +59,20 @@ namespace TwelveEngine.Game2D {
         public bool StateLock { get; set; } = false;
 
         public virtual void Export(SerialFrame frame) {
-            frame.Set("X",X);
-            frame.Set("Y",Y);
-            frame.Set("Width",Width);
-            frame.Set("Height",Height);
-            frame.Set("Direction",(int)Direction);
+            frame.Set(Name);
+            frame.Set(X);
+            frame.Set(Y);
+            frame.Set(Width);
+            frame.Set(Height);
+            frame.Set((int)Direction);
         }
         public virtual void Import(SerialFrame frame) {
-            X = frame.GetFloat("X");
-            Y = frame.GetFloat("Y");
-            Width = frame.GetFloat("Width");
-            Height = frame.GetFloat("Height");
-            Direction = (Direction)frame.GetInt("Direction");
+            Name = frame.GetString();
+            X = frame.GetFloat();
+            Y = frame.GetFloat();
+            Width = frame.GetFloat();
+            Height = frame.GetFloat();
+            Direction = (Direction)frame.GetInt();
         }
     }
 }

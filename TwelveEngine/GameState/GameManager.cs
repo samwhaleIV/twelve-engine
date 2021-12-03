@@ -117,6 +117,8 @@ namespace TwelveEngine {
                 return;
             }
             var frame = savedState;
+
+            frame.StartReadback();
             gameState.Import(frame);
         }
 
@@ -126,7 +128,7 @@ namespace TwelveEngine {
             if(!hasGameState()) {
                 return;
             }
-            var oldGameState = this.gameState;
+            var oldGameState = gameState;
             oldGameState.Unload();
             oldGameState.Game = null;
         }

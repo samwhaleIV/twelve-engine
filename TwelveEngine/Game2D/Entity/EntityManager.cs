@@ -227,24 +227,19 @@ namespace TwelveEngine.Game2D {
             }
         }
 
+        public Entity[] getSerializableEntities() {
+            return entities.Values.Where(x => !x.StateLock).ToArray();
+        }
+
         public void Export(SerialFrame frame) {
-            var entities = this.entities.Values.ToArray();
-
-            var addressOffset = 0;
-            for(var i = 0;i<entities.Length;i++) {
+            var entities = getSerializableEntities();
+            var entityCount = entities.Length;
+            frame.Set(entityCount);
+            for(var i = 0;i<entityCount;i++) {
                 var entity = entities[i];
-                if(entity.StateLock) {
-                    addressOffset--;
-                    continue;
-                }
-
-                string addressBase = $"Entity-{i+addressOffset}";
-
-                frame.Set($"{addressBase}-Name",entity.Name);
-                frame.Set($"{addressBase}-ID",entity.FactoryID);
-                frame.Set(addressBase,entity);
+                frame.Set(entity.FactoryID);
+                frame.Set(entity);
             }
-            frame.Set("EntityCount",entities.Length + addressOffset);
         }
 
         public void Import(SerialFrame frame) {
@@ -255,19 +250,12 @@ namespace TwelveEngine.Game2D {
                 clearEntities(checkForStateLock: true);
             }
 
-            long entityCount = frame.GetInt("EntityCount");
+            long entityCount = frame.GetInt();
 
             for(var i = 0;i<entityCount;i++) {
-                string addressBase = $"Entity-{i}";
-
-                var name = frame.GetString($"{addressBase}-Name");
-                var factoryID = frame.GetString($"{addressBase}-ID");
+                var factoryID = frame.GetString();
                 var entity = EntityFactory.GetEntity(factoryID);
-
-                entity.Name = name;
-                entity.FactoryID = factoryID;
-                frame.Get(addressBase,entity);
-
+                frame.Get(entity);
                 AddEntity(entity);
             }
 

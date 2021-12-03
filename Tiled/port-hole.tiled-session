@@ -149,11 +149,11 @@
             }
         },
         "maps_alpha/counter-test.tmx": {
-            "scale": 4,
+            "scale": 3,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 175.125,
-                "y": 140.75
+                "x": 200.5,
+                "y": 172.33333333333331
             }
         },
         "maps_alpha/level1.tmx": {
