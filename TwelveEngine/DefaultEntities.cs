@@ -4,7 +4,7 @@ using TwelveEngine.Game2D;
 using TwelveEngine.Game2D.Entities;
 
 namespace TwelveEngine {
-    internal static class DefaultEntitiesList {
+    internal static class DefaultEntities {
 
         private static List<(string, Func<Entity>)> GetList() {
             return new List<(string, Func<Entity> generator)>() {

@@ -12,7 +12,7 @@ namespace TwelveEngine {
         }
 
         public static GameManager GetStartGame() {
-            DefaultEntitiesList.Install();
+            DefaultEntities.Install();
             var startState = GetStartState();
             return new GameManager(startState);
         }
