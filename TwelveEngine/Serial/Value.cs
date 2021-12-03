@@ -5,73 +5,78 @@ using static System.Text.Encoding;
 namespace TwelveEngine.Serial {
     internal readonly struct Value {
 
-        public readonly Type type;
-        public readonly byte[] value;
+        public readonly Type Type;
+        public readonly byte[] Bytes;
+
+        public Value(Type type,byte[] bytes) {
+            Type = type;
+            Bytes = bytes;
+        }
 
         public Value(bool value) {
-            type = Type.Bool;
-            this.value = GetBytes(value);
+            Type = Type.Bool;
+            Bytes = GetBytes(value);
         }
         public Value(byte value) {
-            type = Type.Byte; this.value = GetBytes(value);
+            Type = Type.Byte; Bytes = GetBytes(value);
         }
         public Value(int value) {
-            type = Type.Int;
-            this.value = GetBytes(value);
+            Type = Type.Int;
+            Bytes = GetBytes(value);
         }
         public Value(long value) {
-            type = Type.Long;
-            this.value = GetBytes(value);
+            Type = Type.Long;
+            Bytes = GetBytes(value);
         }
         public Value(float value) {
-            type = Type.Float;
-            this.value = GetBytes(value);
+            Type = Type.Float;
+            Bytes = GetBytes(value);
         }
         public Value(double value) {
-            type = Type.Double;
-            this.value = GetBytes(value);
+            Type = Type.Double;
+            Bytes = GetBytes(value);
         }
 
         public bool Bool() {
-            return type == Type.Bool ? ToBoolean(value,0) : false;
+            return Type == Type.Bool ? ToBoolean(Bytes,0) : false;
         }
         public byte Byte() {
-            return type == Type.Byte? value[0] : byte.MinValue;
+            return Type == Type.Byte? Bytes[0] : byte.MinValue;
         }
         public int Int() {
-            return type == Type.Int ? ToInt32(value,0) : 0;
+            return Type == Type.Int ? ToInt32(Bytes,0) : 0;
         }
         public long Long() {
-            return type == Type.Long ? ToInt64(value,0) : 0L;
+            return Type == Type.Long ? ToInt64(Bytes,0) : 0L;
         }
         public float Float() {
-            return type == Type.Float ? Int32BitsToSingle(ToInt32(value,0)) : 0F;
+            return Type == Type.Float ? Int32BitsToSingle(ToInt32(Bytes,0)) : 0F;
         }
         public double Double() {
-            return type == Type.Double ? Int64BitsToDouble(ToInt64(value,0)) : 0D;
+            return Type == Type.Double ? Int64BitsToDouble(ToInt64(Bytes,0)) : 0D;
         }
 
         public Value(int[] value) {
-            type = Type.IntArray;
-            this.value = ToBytes(value);
+            Type = Type.IntArray;
+            Bytes = ToBytes(value);
         }
         public Value(int[,] value) {
-            type = Type.IntArray2D;
-            this.value = ToBytes(value);
+            Type = Type.IntArray2D;
+            Bytes = ToBytes(value);
         }
         public int[] IntArray() {
-            return type == Type.IntArray ? ToIntArray(value) : null;
+            return Type == Type.IntArray ? ToIntArray(Bytes) : null;
         }
         public int[,] IntArray2D(int width) {
-            return type == Type.IntArray2D ? ToIntArray2D(value,width) : null;
+            return Type == Type.IntArray2D ? ToIntArray2D(Bytes,width) : null;
         }
 
         public Value(string value) {
-            type = Type.String;
-            this.value = UTF8.GetBytes(value);
+            Type = Type.String;
+            Bytes = UTF8.GetBytes(value);
         }
         public string String() {
-            return type == Type.String ? UTF8.GetString(value) : null;
+            return Type == Type.String ? UTF8.GetString(Bytes) : null;
         }
     }
 }
