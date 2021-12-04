@@ -122,7 +122,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public Entity GetEntity(string name) {
-            return nameList[name].Values.First();
+            return nameList[name].Values.FirstOrDefault();
         }
         public Entity[] GetAllEntities(string name) {
             return nameList[name].Values.ToArray();
