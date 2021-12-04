@@ -1,10 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D;
 using System.Threading.Tasks;
+using System;
 
 namespace TwelveEngine.PuzzleGame.Components {
     public class PulseButton:WorldComponent,IInteract {
-        private const int PULSE_TIME = 500;
+        private readonly TimeSpan timeout = TimeSpan.FromMilliseconds(500);
 
         private readonly Point location;
         private readonly bool positive;
@@ -26,8 +27,7 @@ namespace TwelveEngine.PuzzleGame.Components {
 
         private bool updating = false;
 
-        private async void endPulse() {
-            await Task.Delay(PULSE_TIME);
+        private void endPulse() {
             SendSignal();
             updating = false;
         }
@@ -40,7 +40,7 @@ namespace TwelveEngine.PuzzleGame.Components {
             SignalState = positive ? SignalState.Positive : SignalState.Negative;
             SendSignal();
             SignalState = SignalState.Neutral;
-            endPulse();
+            grid.Game.SetTimeout(endPulse,timeout);
         }
 
         protected override void OnChange() {

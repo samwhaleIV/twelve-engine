@@ -58,6 +58,7 @@ namespace TwelveEngine.Automation {
             }
             playbackLoading = true;
             playbackFrames = await IO.ReadPlaybackFrames(path);
+            PlaybackStarted?.Invoke();
             frameNumber = 0;
             playbackFile = path;
             playback = true;
@@ -65,6 +66,7 @@ namespace TwelveEngine.Automation {
         }
 
         internal event Action PlaybackStopped;
+        internal event Action PlaybackStarted;
 
         internal void StopPlayback() {
             if(!playback) {

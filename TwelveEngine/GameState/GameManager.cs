@@ -53,7 +53,12 @@ namespace TwelveEngine {
         private DateTime pauseTimeStart;
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
 
-        private SpriteFont spriteFont;
+        private readonly TimeoutManager timeout = new TimeoutManager();
+        public bool CancelTimeout(int ID) => timeout.Remove(ID);
+
+        public int SetTimeout(Action action,TimeSpan timeout) {
+            return this.timeout.Add(action,timeout,proxyGameTime.TotalGameTime);
+        }
 
         public bool Paused {
             get => gamePaused;
@@ -80,9 +85,13 @@ namespace TwelveEngine {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = Constants.ContentRootDirectory;
             IsMouseVisible = true;
+
             graphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
+
             vcrDisplay = new VCRDisplay(this,automationAgent);
+
+            automationAgent.PlaybackStarted += proxyGameTime.LockTime;
             automationAgent.PlaybackStopped += proxyGameTime.UnlockTime;
 
             keyWatcherSet = new KeyWatcherSet(
@@ -169,7 +178,9 @@ namespace TwelveEngine {
         protected override void LoadContent() {
             Game2D.CollisionTypes.LoadTypes(Content);
             spriteBatch = new SpriteBatch(GraphicsDevice);
+#if DEBUG
             spriteFont = Content.Load<SpriteFont>("default-font");
+#endif
             vcrDisplay.Load();
             if(pendingGameState == null) {
                 return;
@@ -180,12 +191,10 @@ namespace TwelveEngine {
 
         private bool gameIsReady() => !loading && hasGameState();
 
-        private void stopRecording() {
-            Task.Run(async () => {
-                var path = IO.PrepareOutputPath();
-                await automationAgent.StopRecording(path);
-                Debug.WriteLine($"Recording saved to '{path}'.");
-            });
+        private async void stopRecording() {
+            var path = IO.PrepareOutputPath();
+            await automationAgent.StopRecording(path);
+            Debug.WriteLine($"Recording saved to '{path}'.");
         }
 
         private void toggleRecording() {
@@ -198,15 +207,13 @@ namespace TwelveEngine {
             }
         }
 
-        private void startPlayback() {
+        private async void startPlayback() {
             var file = IO.GetPlaybackFile();
             if(string.IsNullOrWhiteSpace(file)) {
                 return;
             }
-            Task.Run(async () => {
-                await automationAgent.StartPlayback(file);
-                Debug.WriteLine($"Playing input file '{file}'");
-            });
+            await automationAgent.StartPlayback(file);
+            Debug.WriteLine($"Playing input file '{file}'");
         }
 
         private void togglePlayback() {
@@ -218,7 +225,6 @@ namespace TwelveEngine {
                     automationAgent.StopPlayback();
                 } else {
                     startPlayback();
-                    proxyGameTime.LockTime();
                 }
             }
         }
@@ -250,6 +256,7 @@ namespace TwelveEngine {
             keyboardState = automationAgent.GetKeyboardState();
             keyboardHandler.Update(keyboardState);
             gameState.Update(proxyGameTime);
+            timeout.Update(proxyGameTime.TotalGameTime);
             automationAgent.EndUpdate();
             if(framesToSkip > 0) {
                 fastForward();
@@ -283,42 +290,74 @@ namespace TwelveEngine {
             framesToSkip = count;
         }
 
+#if DEBUG
+        private SpriteFont spriteFont;
+
+        private static readonly Stopwatch watch = new Stopwatch();
+        private TimeSpan updateTime = TimeSpan.Zero;
+        private TimeSpan renderTime = TimeSpan.Zero;
+
+        private void renderGameTime() {
+            var position = new Vector2();
+            position.X = 4;
+            position.Y = GraphicsDevice.Viewport.Height - 74;
+            SpriteBatch.Begin();
+
+            updateTime.TotalMilliseconds.ToString();
+            spriteBatch.DrawString(spriteFont,$"{string.Format("{0:00:00:00.00}",proxyGameTime.TotalGameTime.TotalSeconds)}",position,Color.White);
+            position.Y += 25;
+            spriteBatch.DrawString(spriteFont,$"Update: {string.Format("{0:0.000}",updateTime.TotalMilliseconds)}ms",position,Color.White);
+            position.Y += 25;
+            spriteBatch.DrawString(spriteFont,$"Render: {string.Format("{0:0.000}",renderTime.TotalMilliseconds)}ms",position,Color.White);
+            spriteBatch.End();
+        }
+#endif
+
         protected override void Update(GameTime gameTime) {
+#if DEBUG
+            watch.Start();
+#endif
             if(!gameIsReady()) {
+#if DEBUG
+                watch.Stop();
+                updateTime = watch.Elapsed;
+                watch.Reset();
+#endif
                 return;
             }
+
             keyWatcherSet.Process(Keyboard.GetState(),gameTime);
             if(gamePaused) {
                 if(shouldAdvanceFrame) {
                     updateGame(gameTime);
                     shouldAdvanceFrame = false;
-                    return;
-                }
-                if(framesToSkip > 0) {
+                } else if(framesToSkip > 0) {
                     fastForward();
                 }
-                return;
+            } else {
+                updateGame(gameTime);
             }
-            updateGame(gameTime);
-        }
-
-        private void renderGameTime() {
-            var position = new Vector2();
-            position.X = 2;
-            position.Y = GraphicsDevice.Viewport.Height - 21;
-            SpriteBatch.Begin();
-            spriteBatch.DrawString(spriteFont,proxyGameTime.TotalGameTime.ToString(),position,Color.White);
-            spriteBatch.End();
+#if DEBUG
+            watch.Stop();
+            updateTime = watch.Elapsed;
+            watch.Reset();
+#endif
         }
 
         protected override void Draw(GameTime trueGameTime) {
+#if DEBUG
+            watch.Start();
+#endif
             if(gameIsReady()) {
-                this.gameState.Draw(proxyGameTime);
+                gameState.Draw(proxyGameTime);
             } else {
                 GraphicsDevice.Clear(Color.Black);
             }
             vcrDisplay.Render(trueGameTime);
 #if DEBUG
+            watch.Stop();
+            renderTime = watch.Elapsed;
+            watch.Reset();
             renderGameTime();
 #endif
         }

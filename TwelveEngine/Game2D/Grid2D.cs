@@ -331,11 +331,11 @@ namespace TwelveEngine.Game2D {
         }
 
         private void startDeferredSpriteBatch() {
-            Game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointWrap);
             spriteBatchActive = true;
         }
         private void startBackToFrontSpriteBatch() {
-            Game.SpriteBatch.Begin(SpriteSortMode.BackToFront,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            Game.SpriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointWrap);
             spriteBatchActive = true;
         }
         private void endSpriteBatch() {
@@ -379,7 +379,6 @@ namespace TwelveEngine.Game2D {
             if(LayerMode.Foreground) {
                 tryStartSpriteBatch();
                 renderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength,false);
-                endSpriteBatch();
             }
 
             tryEndSpriteBatch();

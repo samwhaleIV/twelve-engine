@@ -14,7 +14,7 @@ namespace TwelveEngine {
 
         internal void Update(GameTime gameTime) {
             if(shouldResetTime) {
-                AddPauseTime(gameTime.TotalGameTime - pauseTimeOffset - this.TotalGameTime);
+                AddPauseTime(gameTime.TotalGameTime - pauseTimeOffset - TotalGameTime);
                 shouldResetTime = false;
             }
             if(frozen) {
@@ -24,13 +24,13 @@ namespace TwelveEngine {
             if(elapsedTime > MAX_ELAPSED_TIME) {
                 elapsedTime = MAX_ELAPSED_TIME;
             }
-            this.ElapsedGameTime = elapsedTime;
+            ElapsedGameTime = elapsedTime;
             if(!totalTimeLocked) {
-                this.TotalGameTime = gameTime.TotalGameTime - pauseTimeOffset;
+                TotalGameTime = gameTime.TotalGameTime - pauseTimeOffset;
             }
         }
         internal void Freeze() {
-            this.ElapsedGameTime = TimeSpan.Zero;
+            ElapsedGameTime = TimeSpan.Zero;
             frozen = true;
         }
         internal void Unfreeze() {
@@ -51,12 +51,12 @@ namespace TwelveEngine {
             shouldResetTime = true;
         }
         internal void SetPlaybackTime(TimeSpan elapsedTime) {
-            this.ElapsedGameTime = elapsedTime;
-            this.TotalGameTime += elapsedTime;
+            ElapsedGameTime = elapsedTime;
+            TotalGameTime += elapsedTime;
         }
         internal void AddSimframe(TimeSpan simTime) {
-            this.ElapsedGameTime = simTime;
-            this.TotalGameTime += simTime;
+            ElapsedGameTime = simTime;
+            TotalGameTime += simTime;
         }
     }
 }
