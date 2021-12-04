@@ -22,8 +22,18 @@ namespace TwelveEngine {
         private int idCounter = 0;
         private Set[] list = new Set[0];
 
+        private bool listFrozen = false;
         private void updateList() {
+            if(listFrozen) {
+                return;
+            }
             list = sets.Values.ToArray();
+        }
+        private void pauseListUpdates() {
+            listFrozen = true;
+        }
+        private void resumeListUpdates() {
+            listFrozen = false;
         }
 
         internal int Add(Action action,TimeSpan timeout,TimeSpan currentTime) {
@@ -44,6 +54,8 @@ namespace TwelveEngine {
         }
 
         internal void Update(TimeSpan currentTime) {
+            pauseListUpdates();
+            bool didChange = false;
             for(var i = 0;i<list.Length;i++) {
                 var set = list[i];
                 if(currentTime < set.EndTime) {
@@ -51,6 +63,11 @@ namespace TwelveEngine {
                 }
                 Remove(set.ID);
                 set.Action.Invoke();
+                didChange = true;
+            }
+            resumeListUpdates();
+            if(didChange) {
+                updateList();
             }
         }
     }
