@@ -1,18 +1,13 @@
-﻿using TwelveEngine.PuzzleGame;
+﻿using TwelveEngine.Serial;
 
 namespace TwelveEngine {
-    public static class Program {
-
+    public static partial class Program {
         public static GameState GetStartState() {
             MapDatabase.LoadMaps();
-            var gameState = PuzzleFactory.GenerateState(factory => {
-                return factory.CounterTest2();
-            });
+            var gameState = Main();
             return gameState;
         }
-
         public static GameManager GetStartGame() {
-            DefaultEntities.Install();
             var startState = GetStartState();
             return new GameManager(startState);
         }

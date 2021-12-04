@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DefaultEntities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
@@ -20,19 +19,21 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntityType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IUpdateable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Hitbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\InteractionLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Main.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\Counter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ArrayConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ExportMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ImportMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\MetaSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\TwelveTypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Type.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Value.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tiles.cs" />
@@ -48,7 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyWatcher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyWatcherSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\MouseHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MapDatabase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\MapDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\PanZoom.cs" />

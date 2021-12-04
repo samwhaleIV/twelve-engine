@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game2D.Entities {
     class RedBox:Entity,IRenderable  {
 
-        private Texture2D redBoxTexture;
+        protected override EntityType GetEntityType() => EntityType.RedBox;
 
+        private Texture2D redBoxTexture;
         private Rectangle textureSource = new Rectangle(0,0,1,1);
 
         public override void Load() {
-            Type = EntityType.RedBox;
             redBoxTexture = new Texture2D(Game.GraphicsDevice,1,1);
             redBoxTexture.SetData(new Color[] { Color.Red });
         }

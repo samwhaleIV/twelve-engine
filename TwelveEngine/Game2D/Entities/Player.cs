@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework.Input;
 namespace TwelveEngine.Game2D.Entities {
     public sealed class Player:Entity, IUpdateable, IRenderable {
 
+        protected override EntityType GetEntityType() => EntityType.Player;
+
         private const float FRAME_TIME = 300;
         private const float BLINK_RATE = 2900;
         private const float BLINK_TIME = 200;
@@ -86,7 +88,6 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public override void Load() {
-            Type = EntityType.Player;
             base.Load();
             playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
             Game.KeyboardHandler.KeyDown += KeyboardHandler_KeyDown;

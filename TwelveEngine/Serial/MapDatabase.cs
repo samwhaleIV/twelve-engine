@@ -2,7 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Serial {
     public struct Map {
         public int Width;
         public int Height;

@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine.Game2D {
+﻿using TwelveEngine.Serial;
+
+namespace TwelveEngine.Game2D {
     public struct LayerMode:ISerializable {
         public bool Background;
         public int BackgroundStart;

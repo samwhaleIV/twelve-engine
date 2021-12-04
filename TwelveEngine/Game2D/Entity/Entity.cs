@@ -5,7 +5,17 @@ namespace TwelveEngine.Game2D {
 
         private const float INTERACTION_BOX_SIZE = 0.25f;
 
-        public EntityType Type = EntityType.Undefined;
+        protected abstract EntityType GetEntityType();
+        public EntityType Type => GetEntityType();
+
+        public Entity() {
+            if(EntityFactory.ContainsType(Type)) {
+                return;
+            }
+            var trueType = GetType();
+            EntityFactory.SetType(Type,trueType);
+        }
+
         public string Name = string.Empty;
 
         public GameManager Game;

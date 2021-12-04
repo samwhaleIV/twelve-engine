@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
     public partial class Grid2D:GameState {
