@@ -18,5 +18,11 @@ namespace TwelveEngine.Game2D {
         public static Entity GetEntity(EntityType type) {
             return generators[type].Invoke();
         }
+
+        public static void Install(params (EntityType entityType, Func<Entity> generator)[] types) {
+            foreach(var type in types) {
+                SetType(type.entityType,type.generator);
+            }
+        }
     }
 }
