@@ -5,7 +5,7 @@ namespace TwelveEngine.Game2D {
 
         private const float INTERACTION_BOX_SIZE = 0.25f;
 
-        public string FactoryID = null;
+        public EntityType Type = EntityType.Undefined;
         public string Name = string.Empty;
 
         public GameManager Game;
@@ -50,10 +50,10 @@ namespace TwelveEngine.Game2D {
         }
 
         public virtual void Load() {
-            Debug.WriteLine($"Load {FactoryID} entity, ID {ID}");
+            Debug.WriteLine($"Load {Type} entity, ID {ID}");
         }
         public virtual void Unload() {
-            Debug.WriteLine($"Unload {FactoryID} entity, ID {ID}");
+            Debug.WriteLine($"Unload {Type} entity, ID {ID}");
         }
 
         public bool StateLock { get; set; } = false;

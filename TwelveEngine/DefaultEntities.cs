@@ -6,12 +6,10 @@ using TwelveEngine.Game2D.Entities;
 namespace TwelveEngine {
     internal static class DefaultEntities {
 
-        private static List<(string, Func<Entity>)> GetList() {
-            return new List<(string, Func<Entity> generator)>() {
-
-                ("RedBox",()=>new RedBox()),
-                ("Player",()=>new Player())
-
+        private static List<(EntityType,Func<Entity>)> GetList() {
+            return new List<(EntityType,Func<Entity> generator)>() {
+                (EntityType.RedBox,()=>new RedBox()),
+                (EntityType.Player,()=>new Player())
             };
         }
 

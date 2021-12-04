@@ -86,7 +86,7 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public override void Load() {
-            FactoryID = "Player";
+            Type = EntityType.Player;
             base.Load();
             playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
             Game.KeyboardHandler.KeyDown += KeyboardHandler_KeyDown;

@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IUpdateable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Hitbox.cs" />

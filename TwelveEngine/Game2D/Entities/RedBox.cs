@@ -9,7 +9,7 @@ namespace TwelveEngine.Game2D.Entities {
         private Rectangle textureSource = new Rectangle(0,0,1,1);
 
         public override void Load() {
-            FactoryID = "RedBox";
+            Type = EntityType.RedBox;
             redBoxTexture = new Texture2D(Game.GraphicsDevice,1,1);
             redBoxTexture.SetData(new Color[] { Color.Red });
         }

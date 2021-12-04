@@ -237,7 +237,7 @@ namespace TwelveEngine.Game2D {
             frame.Set(entityCount);
             for(var i = 0;i<entityCount;i++) {
                 var entity = entities[i];
-                frame.Set(entity.FactoryID);
+                frame.Set((int)entity.Type);
                 frame.Set(entity);
             }
         }
@@ -253,8 +253,8 @@ namespace TwelveEngine.Game2D {
             long entityCount = frame.GetInt();
 
             for(var i = 0;i<entityCount;i++) {
-                var factoryID = frame.GetString();
-                var entity = EntityFactory.GetEntity(factoryID);
+                int type = frame.GetInt();
+                var entity = EntityFactory.GetEntity((EntityType)type);
                 frame.Get(entity);
                 AddEntity(entity);
             }
