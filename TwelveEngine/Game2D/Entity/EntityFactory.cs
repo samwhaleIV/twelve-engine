@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
 
 namespace TwelveEngine.Game2D {
-    public static class EntityFactory {
+    public static partial class EntityFactory {
 
-        private static readonly Dictionary<EntityType,ConstructorInfo>
-            typeConstructors = new Dictionary<EntityType,ConstructorInfo>();
+        private static readonly Dictionary<EntityType,Func<Entity>>
+            generators = new Dictionary<EntityType,Func<Entity>>();
 
-        public static void SetType(EntityType entityType,Type type) {
-            typeConstructors[entityType] = type.GetConstructor(new Type[0]);
+        public static void SetType(EntityType entityType,Func<Entity> generator) {
+            generators[entityType] = generator;
         }
 
         public static bool ContainsType(EntityType type) {
-            return typeConstructors.ContainsKey(type);
+            return generators.ContainsKey(type);
         }
 
         public static Entity GetEntity(EntityType type) {
-            return (Entity)typeConstructors[type].Invoke(null);
+            return generators[type].Invoke();
         }
     }
 }

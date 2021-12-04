@@ -8,14 +8,6 @@ namespace TwelveEngine.Game2D {
         protected abstract EntityType GetEntityType();
         public EntityType Type => GetEntityType();
 
-        public Entity() {
-            if(EntityFactory.ContainsType(Type)) {
-                return;
-            }
-            var trueType = GetType();
-            EntityFactory.SetType(Type,trueType);
-        }
-
         public string Name = string.Empty;
 
         public GameManager Game;
@@ -74,7 +66,7 @@ namespace TwelveEngine.Game2D {
             frame.Set(Y);
             frame.Set(Width);
             frame.Set(Height);
-            frame.Set((int)Direction);
+            frame.Set(Direction);
         }
         public virtual void Import(SerialFrame frame) {
             Name = frame.GetString();
@@ -82,7 +74,7 @@ namespace TwelveEngine.Game2D {
             Y = frame.GetFloat();
             Width = frame.GetFloat();
             Height = frame.GetFloat();
-            Direction = (Direction)frame.GetInt();
+            Direction = frame.GetDirection();
         }
     }
 }

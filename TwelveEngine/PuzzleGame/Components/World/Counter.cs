@@ -59,12 +59,12 @@ namespace TwelveEngine.PuzzleGame.Components {
         public override void Export(SerialFrame frame) {
             base.Export(frame);
             frame.Set(value);
-            frame.Set((int)oldInputState);
+            frame.Set(oldInputState);
         }
         public override void Import(SerialFrame frame) {
             base.Import(frame);
             value = frame.GetInt();
-            oldInputState = (SignalState)frame.GetInt();
+            oldInputState = frame.GetSignalState();
             SendSignal();
         }
     }

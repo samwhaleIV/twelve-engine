@@ -34,11 +34,11 @@ namespace TwelveEngine.PuzzleGame {
         }
 
         public virtual void Export(SerialFrame frame) {
-            frame.Set((int)SignalState);
+            frame.Set(SignalState);
         }
 
         public virtual void Import(SerialFrame frame) {
-            SignalState = (SignalState)frame.GetInt();
+            SignalState = frame.GetSignalState();
         }
     }
 }
