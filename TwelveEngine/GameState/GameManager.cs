@@ -102,7 +102,7 @@ namespace TwelveEngine {
             pendingGameState = gameState;
         }
 
-        private SerialFrame savedState = null;
+        private byte[] savedState = null;
         private void saveSerialState() { /* This could be made async, but the game could change
                                     * during the saving process, creating an unstable save state */
             if(!hasGameState()) {
@@ -110,15 +110,13 @@ namespace TwelveEngine {
             }
             var frame = new SerialFrame();
             gameState.Export(frame);
-            savedState = frame;
+            savedState = frame.Export();
         }
         private void loadSerialState() {
             if(!hasGameState() || savedState == null) {
                 return;
             }
-            var frame = savedState;
-
-            frame.StartReadback();
+            var frame = new SerialFrame(savedState);
             gameState.Import(frame);
         }
 

@@ -8,8 +8,12 @@ namespace TwelveEngine {
         private static readonly bool RequiresByteFlip = !IsLittleEndian;
 
         public SerialFrame(byte[] data) {
-            values = new Dictionary<int,Value>();
             int i = 0;
+            subframeCount = readInt(data,i);
+            i += sizeof(int);
+
+            values = new Dictionary<int,Value>();
+
             while(i < data.Length) {
                 int key = readInt(data,i);
                 i += sizeof(int); //Key (int)
@@ -47,8 +51,8 @@ namespace TwelveEngine {
             
             if(RequiresByteFlip) {
                 int end = i + arraySize;
-                for(int i2 = i;i2<end;i+=sizeof(int)) {
-                    swapInt(bytes,i2);
+                for(int i2 = i;i2<end;i2+=sizeof(int)) {
+                    swapInt(data,i2);
                 }
             }
 
@@ -121,26 +125,26 @@ namespace TwelveEngine {
         }
 
         public byte[] Export() {
-
             int dataSize = 0;
+            dataSize += sizeof(int); //Subframe count
+
             foreach(var set in values.Values) {
                 dataSize += sizeof(int); //Key (int)
                 dataSize += sizeof(byte); //Type (byte)
                 var type = set.Type;
                 if(arrayType.Contains(type)) {
                     dataSize += sizeof(int); //Array size in bytes (counted in int)
-                    dataSize += set.Bytes.Length; //Blob
                 } else if(type == Type.String) {
                     dataSize += sizeof(int); //String length in bytes (counted in int)
-                    dataSize += set.Bytes.Length; //Blob
-                } else {
-                    dataSize += set.Bytes.Length; //Blob
                 }
-
+                dataSize += set.Bytes.Length; //Blob
             }
             byte[] data = new byte[dataSize];
 
             var index = 0;
+            writeInt(subframeCount,data,index); //Subframe count
+            index += sizeof(int);
+
 
             foreach(KeyValuePair<int,Value> set in values) {
                 int key = set.Key;
@@ -149,7 +153,9 @@ namespace TwelveEngine {
                 byte[] bytes = value.Bytes;
 
                 writeInt(key,data,index); //Key (int)
-                bytes[index] = (byte)type; //Type (byte)
+                index += sizeof(int);
+
+                data[index] = (byte)type; //Type (byte)
                 index += sizeof(byte);
 
                 if(arrayType.Contains(type)) {
@@ -172,9 +178,9 @@ namespace TwelveEngine {
 
                 bytes.CopyTo(data,index); //Blob
                 if(RequiresByteFlip && endianSensitive.Contains(type)) {
-                    Reverse(bytes,index,bytes.Length);
+                    Reverse(data,index,bytes.Length);
                 }
-                index += data.Length;
+                index += bytes.Length;
             }
 
             return data;

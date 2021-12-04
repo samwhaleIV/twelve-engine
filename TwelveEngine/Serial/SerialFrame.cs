@@ -6,7 +6,7 @@ namespace TwelveEngine {
 
         public SerialFrame() => values = new Dictionary<int,Value>();
 
-        private const int SUBFRAME_STRIDE = 2048;
+        private const int SUBFRAME_STRIDE = 1024;
         private const int MAX_SUBFRAMES = 2^32 / 2 / SUBFRAME_STRIDE;
 
         private readonly Dictionary<int,Value> values;
