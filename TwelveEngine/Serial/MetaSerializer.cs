@@ -87,31 +87,36 @@ namespace TwelveEngine {
         };
 
         private static int readInt(
-            byte[] source,int index
+            byte[] source,int i
         ) {
+            var bytes = new byte[sizeof(int)];
             if(RequiresByteFlip) {
-                swapInt(source,index);
+                bytes[0] = source[i+3];
+                bytes[1] = source[i+2];
+                bytes[2] = source[i+1];
+                bytes[3] = source[i];
+            } else {
+                bytes[0] = source[i];
+                bytes[1] = source[i+1];
+                bytes[2] = source[i+2];
+                bytes[3] = source[i+3];
             }
-            return ToInt32(source,index);
-        }
-
-        private static void swapInt(
-            byte[] source,int index
-        ) {
-            byte buffer = source[index];
-            source[index] = source[index+3];
-            source[index+3] = buffer;
-            buffer = source[index+1];
-            source[index+1] = source[index+2];
-            source[index+2] = buffer;
+            return ToInt32(bytes,i);
         }
 
         private static void writeInt(
-            byte[] value,byte[] destination,int index
+            byte[] value,byte[] destination,int i
         ) {
-            value.CopyTo(destination,index);
             if(RequiresByteFlip) {
-                swapInt(destination,index);
+                destination[i] = value[i+3];
+                destination[i+1] = value[i+2];
+                destination[i+2] = value[i+1];
+                destination[i+3] = value[i+0];
+            } else {
+                destination[i] = value[i];
+                destination[i+1] = value[i+1];
+                destination[i+2] = value[i+2];
+                destination[i+3] = value[i+3];
             }
         }
 
