@@ -79,9 +79,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Grid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\GridItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Positioning.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Sizing.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)GameState\Automation\" />
+    <Folder Include="$(MSBuildThisFileDirectory)UI\Elements\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
