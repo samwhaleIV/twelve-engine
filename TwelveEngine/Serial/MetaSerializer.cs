@@ -5,8 +5,6 @@ using static System.Array;
 
 namespace TwelveEngine {
     public sealed partial class SerialFrame {
-        private static readonly bool RequiresByteFlip = !IsLittleEndian;
-
         private static Dictionary<Type,int> typeSizes = new Dictionary<Type,int>() {
             { Type.Byte, sizeof(byte) },
             { Type.Bool, sizeof(bool) },
@@ -23,12 +21,10 @@ namespace TwelveEngine {
             Type.IntArray, Type.IntArray2D
         };
 
-        public SerialFrame(byte[] data) {
+        private void import(byte[] data) {
             int i = 0;
             subframeCount = readInt(data,i);
-            i += sizeof(int);
-
-            values = new Dictionary<int,Value>();
+            i += sizeof(int); ////Subframe count
 
             while(i < data.Length) {
                 int key = readInt(data,i);
@@ -67,7 +63,7 @@ namespace TwelveEngine {
             return data;
         }
 
-        private static byte[] decodeString(byte[] data,ref int i) {
+        private byte[] decodeString(byte[] data,ref int i) {
             int stringSize = readInt(data,i);
             i += sizeof(int); //String length in bytes (counted in int)
             var bytes = new byte[stringSize];
@@ -78,7 +74,7 @@ namespace TwelveEngine {
             return bytes;
         }
 
-        private static byte[] decodeArray(byte[] data,ref int i) {
+        private byte[] decodeArray(byte[] data,ref int i) {
             int arraySize = readInt(data,i);
             i += sizeof(int); //Array size in bytes (counted in int)
             var bytes = new byte[arraySize];
@@ -86,14 +82,20 @@ namespace TwelveEngine {
             if(!RequiresByteFlip) {
                 Copy(data,i,bytes,0,bytes.Length);
             } else {
-                copyArraySwapped(i,data,bytes);
+                for(int x = 0;x<bytes.Length;x+=sizeof(int)) {
+                    int index = i + x;
+                    bytes[x+3] = data[index];
+                    bytes[x+2] = data[index+1];
+                    bytes[x+1] = data[index+2];
+                    bytes[x] = data[index+3];
+                }
             }
 
             i += bytes.Length; //Blob
             return bytes;
         }
 
-        private static byte[] decodeValue(byte[] data,ref int i,Type type) {
+        private byte[] decodeValue(byte[] data,ref int i,Type type) {
             var dataSize = typeSizes[type];
             var bytes = new byte[dataSize];
 
@@ -107,25 +109,31 @@ namespace TwelveEngine {
             return bytes;
         }
 
-        private static void writeInt(
+        private void writeInt(
             int value,byte[] destination,int index
         ) {
             writeInt(GetBytes(value),destination,index);
         }
 
-        private static void encodeArray(byte[] data,byte[] bytes,ref int i) {
+        private void encodeArray(byte[] data,byte[] bytes,ref int i) {
             writeInt(bytes.Length,data,i); //Array size in bytes (counted in int)
             i += sizeof(int);
 
             if(!RequiresByteFlip) {
                 bytes.CopyTo(data,i); //Blob
             } else {
-                copyArraySwapped(i,data,bytes); //Blob
+                for(int x = 0;x<bytes.Length;x+=sizeof(int)) {
+                    int index = i + x;
+                    data[index] = bytes[x+3];
+                    data[index+1] = bytes[x+2];
+                    data[index+2] = bytes[x+1];
+                    data[index+3] = bytes[x];
+                }
             }
             i += bytes.Length;
         }
 
-        private static void encodeValue(byte[] data,int key,Type type,byte[] bytes, ref int i) {
+        private void encodeValue(byte[] data,int key,Type type,byte[] bytes, ref int i) {
             writeInt(key,data,i); //Key (int)
             i += sizeof(int);
 
@@ -147,6 +155,40 @@ namespace TwelveEngine {
             i += bytes.Length;
         }
 
+        private int readInt(
+            byte[] source,int i
+        ) {
+            var bytes = new byte[sizeof(int)];
+            if(RequiresByteFlip) {
+                bytes[0] = source[i+3];
+                bytes[1] = source[i+2];
+                bytes[2] = source[i+1];
+                bytes[3] = source[i];
+            } else {
+                bytes[0] = source[i];
+                bytes[1] = source[i+1];
+                bytes[2] = source[i+2];
+                bytes[3] = source[i+3];
+            }
+            return ToInt32(bytes,0);
+        }
+
+        private void writeInt(
+            byte[] value,byte[] destination,int i
+        ) {
+            if(RequiresByteFlip) {
+                destination[i] = value[3];
+                destination[i+1] = value[2];
+                destination[i+2] = value[1];
+                destination[i+3] = value[0];
+            } else {
+                destination[i] = value[0];
+                destination[i+1] = value[1];
+                destination[i+2] = value[2];
+                destination[i+3] = value[3];
+            }
+        }
+
         private static int getDataSize(Dictionary<int,Value>.ValueCollection values) {
             int dataSize = 0;
             dataSize += sizeof(int); //Subframe count
@@ -163,50 +205,6 @@ namespace TwelveEngine {
                 dataSize += set.Bytes.Length; //Blob
             }
             return dataSize;
-        }
-
-        private static int readInt(
-            byte[] source,int i
-        ) {
-            var bytes = new byte[sizeof(int)];
-            if(RequiresByteFlip) {
-                bytes[0] = source[i+3];
-                bytes[1] = source[i+2];
-                bytes[2] = source[i+1];
-                bytes[3] = source[i];
-            } else {
-                bytes[0] = source[i];
-                bytes[1] = source[i+1];
-                bytes[2] = source[i+2];
-                bytes[3] = source[i+3];
-            }
-            return ToInt32(bytes,i);
-        }
-
-        private static void writeInt(
-            byte[] value,byte[] destination,int i
-        ) {
-            if(RequiresByteFlip) {
-                destination[i] = value[3];
-                destination[i+1] = value[2];
-                destination[i+2] = value[1];
-                destination[i+3] = value[0];
-            } else {
-                destination[i] = value[0];
-                destination[i+1] = value[1];
-                destination[i+2] = value[2];
-                destination[i+3] = value[3];
-            }
-        }
-
-        private static void copyArraySwapped(int i,byte[] data,byte[] bytes) {
-            for(int x = 0;x<bytes.Length;x+=sizeof(int)) {
-                int index = i + x;
-                data[index] = bytes[x+3];
-                data[index+1] = bytes[x+2];
-                data[index+2] = bytes[x+1];
-                data[index+3] = bytes[x];
-            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿//using EngineCMD.Tests;
+﻿using EngineCMD.Tests;
 using System.Collections.Generic;
 
 namespace EngineCMD {
@@ -7,7 +7,7 @@ namespace EngineCMD {
         const bool SUPPRESS_NON_ERRORS = false;
 
         private static readonly List<ITest> TestsList = new List<ITest>() {
-
+            new SerialFrameMeta()
         };
     }
 }

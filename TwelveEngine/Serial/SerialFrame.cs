@@ -1,17 +1,36 @@
 ﻿using System.Collections.Generic;
 using TwelveEngine.Serial;
+using static System.BitConverter;
 
 namespace TwelveEngine {
     public sealed partial class SerialFrame {
 
-        public SerialFrame() => values = new Dictionary<int,Value>();
+        public SerialFrame() {
+            RequiresByteFlip = !IsLittleEndian;
+        }
+        public SerialFrame(bool flipEndianness) {
+            RequiresByteFlip = flipEndianness;
+        }
+        public SerialFrame(byte[] data) {
+            RequiresByteFlip = !IsLittleEndian;
+            import(data);
+        }
+        public SerialFrame(byte[] data,bool flipEndianness) {
+            RequiresByteFlip = flipEndianness;
+            import(data);
+        }
+        private readonly bool RequiresByteFlip;
 
         private const int SUBFRAME_STRIDE = 1024; /* Subframe "bucket" size */
 
+#if DEBUG
+#pragma warning disable IDE0051
         /* Unused value, simply here for reference purposes */
-        private const int MAX_SUBFRAMES = 2^32 / 2 / SUBFRAME_STRIDE; 
+        private const int MAX_SUBFRAMES = 2^32 / 2 / SUBFRAME_STRIDE;
+#pragma warning restore IDE0051
+#endif
 
-        private readonly Dictionary<int,Value> values;
+        private readonly Dictionary<int,Value> values = new Dictionary<int,Value>();
 
         private int address = 0;
         private int IDPointer = 0;
