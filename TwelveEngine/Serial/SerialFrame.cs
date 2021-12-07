@@ -1,36 +1,27 @@
 ﻿using System.Collections.Generic;
 using TwelveEngine.Serial;
-using static System.BitConverter;
 
 namespace TwelveEngine {
     public sealed partial class SerialFrame {
 
+        private readonly int subframeSize;
+        public int SubframeSize => subframeSize;
+
         public SerialFrame() {
-            RequiresByteFlip = !IsLittleEndian;
+            subframeSize = Constants.SerialSubframeSize;
         }
-        public SerialFrame(bool flipEndianness) {
-            RequiresByteFlip = flipEndianness;
-        }
-        public SerialFrame(byte[] data) {
-            RequiresByteFlip = !IsLittleEndian;
-            import(data);
-        }
-        public SerialFrame(byte[] data,bool flipEndianness) {
-            RequiresByteFlip = flipEndianness;
-            import(data);
-        }
-        private readonly bool RequiresByteFlip;
 
-        private const int SUBFRAME_STRIDE = 1024; /* Subframe "bucket" size */
+        public SerialFrame(int subframeSize) {
+            this.subframeSize = subframeSize;
+        }
 
-#if DEBUG
-#pragma warning disable IDE0051
-        /* Unused value, simply here for reference purposes */
-        private const int MAX_SUBFRAMES = 2^32 / 2 / SUBFRAME_STRIDE;
-#pragma warning restore IDE0051
-#endif
+        internal SerialFrame(int subframeCount,int subframeSize = Constants.SerialSubframeSize) {
+            this.subframeCount = subframeCount;
+            this.subframeSize = subframeSize;
+        }
 
         private readonly Dictionary<int,Value> values = new Dictionary<int,Value>();
+        internal Dictionary<int,Value> Values => values;
 
         private int address = 0;
         private int IDPointer = 0;
@@ -84,7 +75,7 @@ namespace TwelveEngine {
         public void Set(ISerializable serializable) {
             subframeCount += 1;
 
-            var targetBaseAddress = subframeCount * SUBFRAME_STRIDE;
+            var targetBaseAddress = subframeCount * subframeSize;
             set(new Value(targetBaseAddress));
 
             setAddress(targetBaseAddress);

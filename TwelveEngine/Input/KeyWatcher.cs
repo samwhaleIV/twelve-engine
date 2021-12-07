@@ -1,13 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TwelveEngine.Input {
     public sealed class KeyWatcher {
+
         private readonly Keys key;
+        public Keys Key => key;
+
+        private bool isPressed = false;
+        public bool IsPressed => isPressed;
+
         private readonly Action<KeyboardState,GameTime> action;
+
         public KeyWatcher(Keys key,Action<KeyboardState,GameTime> action) {
             this.key = key;
             this.action = action;
@@ -24,9 +29,7 @@ namespace TwelveEngine.Input {
             this.key = key;
             this.action = (keyboardState,gameTime) => action.Invoke(gameTime);
         }
-        public Keys Key => key;
-        private bool isPressed = false;
-        public bool IsPressed => isPressed;
+
         public void Process(KeyboardState keyboardState,GameTime gameTime) {
             if(keyboardState.IsKeyDown(key)) {
                 if(isPressed) return;

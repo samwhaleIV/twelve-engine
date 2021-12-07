@@ -9,6 +9,25 @@ namespace TwelveEngine.Game2D.Entities {
 
         protected override EntityType GetEntityType() => EntityType.Player;
 
+        public Player() {
+            OnLoad += Player_OnLoad;
+            OnUnload += Player_OnUnload;
+        }
+
+        private void Player_OnLoad() {
+            playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
+            Game.KeyboardHandler.KeyDown += KeyboardHandler_KeyDown;
+        }
+        public void Player_OnUnload() {
+            Game.KeyboardHandler.KeyDown -= KeyboardHandler_KeyDown;
+        }
+
+        private void KeyboardHandler_KeyDown(Keys key) {
+            if(key == Game.KeyBinds.Accept) {
+                shouldInteract = true;
+            }
+        }
+
         private const float FRAME_TIME = 300;
         private const float BLINK_RATE = 2900;
         private const float BLINK_TIME = 200;
@@ -27,8 +46,7 @@ namespace TwelveEngine.Game2D.Entities {
         private TimeSpan? movingStart = null;
         private TimeSpan? deacelStart = null;
 
-        private int deacelDeltaX;
-        private int deacelDeltaY;
+        private int deacelDeltaX, deacelDeltaY;
         private float deacelStartValue;
 
         private bool shouldInteract = false;
@@ -85,23 +103,6 @@ namespace TwelveEngine.Game2D.Entities {
                 return;
             }
             Grid.InteractionLayer.HitTest(this);
-        }
-
-        public override void Load() {
-            base.Load();
-            playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
-            Game.KeyboardHandler.KeyDown += KeyboardHandler_KeyDown;
-        }
-
-        private void KeyboardHandler_KeyDown(Keys key) {
-            if(key == Game.KeyBinds.Interact) {
-                shouldInteract = true;
-            }
-        }
-
-        public override void Unload() {
-            base.Unload();
-            Game.KeyboardHandler.KeyDown -= KeyboardHandler_KeyDown;
         }
 
         public float Speed {

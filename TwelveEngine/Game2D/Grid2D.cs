@@ -4,12 +4,37 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
-    public partial class Grid2D:GameState {
+    public sealed class Grid2D:GameState {
 
-        public int Width { get; set; } = 0;
-        public int Height { get; set; } = 0;
+        public Grid2D(int tileSize = Constants.DefaultTileSize,LayerMode? layerMode = null) {
+            this.tileSize = tileSize;
+            LayerMode = layerMode.HasValue ? layerMode.Value : LayerModes.Default;
 
-        public Camera Camera { get; set; } = new Camera();
+            collisionInterface = new CollisionInterface(this);
+
+            OnLoad += Grid2D_OnLoad;
+            OnUnload += Grid2D_OnUnload;
+
+            OnImport += Grid2D_OnImport;
+            OnExport += Grid2D_OnExport;
+        }
+
+        private int width = 0, height = 0;
+
+        public int Width => width;
+        public int Height => height;
+
+        private Camera camera = new Camera();
+
+        public Camera Camera {
+            get => camera;
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                }
+                camera = value;
+            }
+        }
 
         private readonly int tileSize;
         public int TileSize => tileSize;
@@ -49,30 +74,6 @@ namespace TwelveEngine.Game2D {
 
         private bool spriteBatchActive = false;
 
-        public Grid2D() {
-            tileSize = Constants.DefaultTileSize;
-            LayerMode = LayerModes.Default;
-            collisionInterface = new CollisionInterface(this);
-        }
-
-        public Grid2D(int tileSize) {
-            this.tileSize = tileSize;
-            LayerMode = LayerModes.Default;
-            collisionInterface = new CollisionInterface(this);
-        }
-
-        public Grid2D(LayerMode layerMode) {
-            tileSize = Constants.DefaultTileSize;
-            LayerMode = layerMode;
-            collisionInterface = new CollisionInterface(this);
-        }
-
-        public Grid2D(int tileSize,LayerMode layerMode) {
-            this.tileSize = tileSize;
-            LayerMode = layerMode;
-            collisionInterface = new CollisionInterface(this);
-        }
-
         private static int[,] convertFlatArray(int[] array,int width,int height) {
             var array2D = new int[width,height];
 
@@ -97,8 +98,8 @@ namespace TwelveEngine.Game2D {
 
             this.layers = newLayers;
 
-            Width = width;
-            Height = height;
+            this.width = width;
+            this.height = height;
         }
 
         public void Fill(int layerIndex,Func<int,int,int> pattern) {
@@ -133,28 +134,26 @@ namespace TwelveEngine.Game2D {
         }
 
         private void loadEntityManager() {
-            entityManager = new EntityManager(this) {
-                RenderListChanged = updateRenderables,
-                UpdateListChanged = updateUpdateables
-            };
+            entityManager = new EntityManager(this);
+
+            entityManager.OnUpdateListChanged += updateUpdateables;
+            entityManager.OnRenderListChanged += updateRenderables;
+
             OnImport += entityManager.Import;
             OnExport += entityManager.Export;
         }
 
-        internal override void Load() {
+        private void Grid2D_OnLoad() {
             loadEntityManager();
             if(pendingTileRenderer != null) {
                 tileRenderer = pendingTileRenderer;
                 pendingTileRenderer = null;
                 tileRenderer.Load(Game,this);
             }
-            base.Load(); /* For future reference, base.Load() of GameState puts
-                          * execution order responsibility on the dervived class */
             loaded = true;
         }
 
-        internal override void Unload() {
-            base.Unload();
+        private void Grid2D_OnUnload() {
             if(hasTileRenderer()) {
                 tileRenderer.Unload();
             }
@@ -169,7 +168,7 @@ namespace TwelveEngine.Game2D {
                     if(hasPanZoom()) {
                         return;
                     }
-                    Camera.EdgePadding = false;
+                    camera.EdgePadding = false;
                     panZoom = new PanZoom(this);
                 } else if(hasPanZoom()) {
                     panZoom = null;
@@ -180,7 +179,6 @@ namespace TwelveEngine.Game2D {
         public ScreenSpace GetScreenSpace() => getScreenSpace(Viewport);
 
         internal override void Update(GameTime gameTime) {
-            panZoom?.Update(gameTime);
             for(var i = 0;i<updateables.Length;i++) {
                 updateables[i].Update(gameTime);
             }
@@ -193,7 +191,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private int getTileSize() {
-            int tileSize = (int)Math.Round(Camera.Scale * this.tileSize);
+            int tileSize = (int)Math.Round(camera.Scale * this.tileSize);
             if(tileSize % 2 == 1) {
                 tileSize++;
             }
@@ -209,11 +207,11 @@ namespace TwelveEngine.Game2D {
             float halfScreenWidth = screenWidth * 0.5f;
             float halfScreenHeight = screenHeight * 0.5f;
 
-            float x = Camera.X - halfScreenWidth + Camera.XOffset;
-            float y = Camera.Y - halfScreenHeight + Camera.YOffset;
+            float x = camera.X - halfScreenWidth + camera.XOffset;
+            float y = camera.Y - halfScreenHeight + camera.YOffset;
 
-            if(Camera.HorizontalEdgePadding) x = zeroMinMax(x,screenWidth,Width);
-            if(Camera.VerticalEdgePadding) y = zeroMinMax(y,screenHeight,Height);
+            if(camera.HorizontalEdgePadding) x = zeroMinMax(x,screenWidth,Width);
+            if(camera.VerticalEdgePadding) y = zeroMinMax(y,screenHeight,Height);
 
             return new ScreenSpace() {
                 X = x, Y = y, Width = screenWidth, Height = screenHeight, TileSize = tileSize
@@ -384,28 +382,22 @@ namespace TwelveEngine.Game2D {
             tryEndSpriteBatch();
         }
 
-        public event Action<SerialFrame> OnExport;
-        public event Action<SerialFrame> OnImport;
-
-        public override void Export(SerialFrame frame) {
-            frame.Set(Camera);
+        private void Grid2D_OnExport(SerialFrame frame) {
+            frame.Set(camera);
             frame.Set(Width);
             frame.Set(Height);
             frame.Set(LayerMode);
             frame.Set(PanZoom);
             frame.Set(layers.Length);
-
             for(var i = 0;i<layers.Length;i++) {
                 frame.Set(layers[i]);
             }
-
-            OnExport?.Invoke(frame);
         }
 
-        public override void Import(SerialFrame frame) {
-            frame.Get(Camera);
-            Width = frame.GetInt();
-            Height = frame.GetInt();
+        private void Grid2D_OnImport(SerialFrame frame) {
+            frame.Get(camera);
+            width = frame.GetInt();
+            height = frame.GetInt();
             frame.Get(LayerMode);
             PanZoom = frame.GetBool();
             var layerCount = frame.GetInt();
@@ -415,8 +407,6 @@ namespace TwelveEngine.Game2D {
                 layers[i] = frame.GetIntArray2D();
             }
             this.layers = layers;
-
-            OnImport?.Invoke(frame);
         }
     }
 }

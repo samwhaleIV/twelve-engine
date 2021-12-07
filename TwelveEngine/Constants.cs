@@ -2,6 +2,8 @@
 
 namespace TwelveEngine {
     public static class Constants {
+        public const int SerialSubframeSize = 1024;
+
         public const int MinimumLoadTime = 500;
         public const double MaximumFrameDelta = 1000 / 15d;
         public const double SimFrameTime = 1000 / 60d;

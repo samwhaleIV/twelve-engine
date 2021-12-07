@@ -4,7 +4,16 @@ using static System.BitConverter;
 using static System.Array;
 
 namespace TwelveEngine {
-    public sealed partial class SerialFrame {
+    public sealed class MetaSerializer {
+
+        private readonly bool requiresByteFlip;
+        public MetaSerializer() {
+            requiresByteFlip = !IsLittleEndian;
+        }
+        public MetaSerializer(bool flipEndianness) {
+            requiresByteFlip = flipEndianness;
+        }
+
         private static Dictionary<Type,int> typeSizes = new Dictionary<Type,int>() {
             { Type.Byte, sizeof(byte) },
             { Type.Bool, sizeof(bool) },
@@ -21,10 +30,13 @@ namespace TwelveEngine {
             Type.IntArray, Type.IntArray2D
         };
 
-        private void import(byte[] data) {
+        public SerialFrame GetSerialFrame(byte[] data,int subframeSize = Constants.SerialSubframeSize) {
             int i = 0;
-            subframeCount = readInt(data,i);
-            i += sizeof(int); ////Subframe count
+
+            Dictionary<int,Value> values = new Dictionary<int,Value>();
+            int subframeCount = readInt(data,i);
+
+            i += sizeof(int); //Subframe count
 
             while(i < data.Length) {
                 int key = readInt(data,i);
@@ -43,18 +55,21 @@ namespace TwelveEngine {
                 }
                 values[key] = value;
             }
+
+            return new SerialFrame(subframeCount,subframeSize);
         }
 
-        public byte[] Export() {
+        public byte[] Export(SerialFrame frame) {
+            /* 'typedValues' contains a (Type,byte[])[] structure */
+            var typedValues = frame.Values;
 
-            /* 'values' is the dictionary that contains the (Type,byte[]) struct */
-            byte[] data = new byte[getDataSize(values.Values)];
+            byte[] data = new byte[getDataSize(typedValues.Values)];
 
             var i = 0;
-            writeInt(subframeCount,data,i); //Subframe count
+            writeInt(frame.SubframeSize,data,i); //Subframe count
             i += sizeof(int);
 
-            foreach(var set in values) {
+            foreach(var set in typedValues) {
                 Type type = set.Value.Type;
                 byte[] bytes = set.Value.Bytes;
 
@@ -79,7 +94,7 @@ namespace TwelveEngine {
             i += sizeof(int); //Array size in bytes (counted in int)
             var bytes = new byte[arraySize];
        
-            if(!RequiresByteFlip) {
+            if(!requiresByteFlip) {
                 Copy(data,i,bytes,0,bytes.Length);
             } else {
                 for(int x = 0;x<bytes.Length;x+=sizeof(int)) {
@@ -101,7 +116,7 @@ namespace TwelveEngine {
 
             Copy(data,i,bytes,0,dataSize);
 
-            if(RequiresByteFlip && endianSensitive.Contains(type)) {
+            if(requiresByteFlip && endianSensitive.Contains(type)) {
                 Reverse(bytes,0,dataSize);
             }
 
@@ -119,7 +134,7 @@ namespace TwelveEngine {
             writeInt(bytes.Length,data,i); //Array size in bytes (counted in int)
             i += sizeof(int);
 
-            if(!RequiresByteFlip) {
+            if(!requiresByteFlip) {
                 bytes.CopyTo(data,i); //Blob
             } else {
                 for(int x = 0;x<bytes.Length;x+=sizeof(int)) {
@@ -149,7 +164,7 @@ namespace TwelveEngine {
             }
 
             bytes.CopyTo(data,i); //Blob
-            if(RequiresByteFlip && endianSensitive.Contains(type)) {
+            if(requiresByteFlip && endianSensitive.Contains(type)) {
                 Reverse(data,i,bytes.Length);
             }
             i += bytes.Length;
@@ -159,7 +174,7 @@ namespace TwelveEngine {
             byte[] source,int i
         ) {
             var bytes = new byte[sizeof(int)];
-            if(RequiresByteFlip) {
+            if(requiresByteFlip) {
                 bytes[0] = source[i+3];
                 bytes[1] = source[i+2];
                 bytes[2] = source[i+1];
@@ -176,7 +191,7 @@ namespace TwelveEngine {
         private void writeInt(
             byte[] value,byte[] destination,int i
         ) {
-            if(RequiresByteFlip) {
+            if(requiresByteFlip) {
                 destination[i] = value[3];
                 destination[i+1] = value[2];
                 destination[i+2] = value[1];

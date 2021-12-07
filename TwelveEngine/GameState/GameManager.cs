@@ -20,7 +20,8 @@ namespace TwelveEngine {
         private KeyboardState keyboardState;
         public KeyboardState KeyboardState => keyboardState;
 
-        public MouseState MouseState => automationAgent.GetMouseState();
+        private MouseState mouseState;
+        public MouseState MouseState => mouseState;
 
         private GraphicsDeviceManager graphicsDeviceManager;
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
@@ -33,17 +34,20 @@ namespace TwelveEngine {
         private int framesToSkip = 0;
 
         private VCRDisplay vcrDisplay;
-        private readonly AutomationAgent automationAgent = new AutomationAgent();
 
-        public int Frame => automationAgent.Frame;
-        public bool RecordingActive => automationAgent.RecordingActive;
-        public bool PlaybackActive => automationAgent.PlaybackActive;
-        public string PlaybackFile => automationAgent.PlaybackFile;
+        private readonly AutomationAgent automationAgent = new AutomationAgent();
+            public int Frame => automationAgent.Frame;
+            public bool RecordingActive => automationAgent.RecordingActive;
+            public bool PlaybackActive => automationAgent.PlaybackActive;
+            public string PlaybackFile => automationAgent.PlaybackFile;
 
         private bool gamePaused = false; /* Value must start as false */
 
         private readonly KeyboardHandler keyboardHandler = new KeyboardHandler();
         public KeyboardHandler KeyboardHandler => keyboardHandler;
+
+        private readonly MouseHandler mouseHandler = new MouseHandler();
+        public MouseHandler MouseHandler => mouseHandler;
 
         private KeyBinds keyBinds = new KeyBinds();
         public KeyBinds KeyBinds => keyBinds;
@@ -253,10 +257,16 @@ namespace TwelveEngine {
             if(automationAgent.RecordingActive) {
                 automationAgent.UpdateRecordingFrame(proxyGameTime);
             }
+
             keyboardState = automationAgent.GetKeyboardState();
+            mouseState = automationAgent.GetMouseState();
+
             keyboardHandler.Update(keyboardState);
+            mouseHandler.Update(mouseState);
+
             gameState.Update(proxyGameTime);
             timeout.Update(proxyGameTime.TotalGameTime);
+
             automationAgent.EndUpdate();
             if(framesToSkip > 0) {
                 fastForward();

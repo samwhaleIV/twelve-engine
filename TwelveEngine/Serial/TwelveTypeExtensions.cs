@@ -1,5 +1,7 @@
-﻿using TwelveEngine.Game2D;
+﻿using Microsoft.Xna.Framework.Input;
+using TwelveEngine.Game2D;
 using TwelveEngine.PuzzleGame;
+using System.Collections.Generic;
 
 namespace TwelveEngine {
     public sealed partial class SerialFrame {
@@ -11,5 +13,11 @@ namespace TwelveEngine {
 
         public void Set(SignalState signalState) => Set((int)signalState);
         public SignalState GetSignalState() => (SignalState)GetInt();
+
+        public void Set(Keys key) => Set((byte)key);
+        public Keys GetKey() => (Keys)GetByte();
+
+        public void Set(KeyBind bind) => Set((byte)bind);
+        public KeyBind GetBind() => (KeyBind)GetByte();
     }
 }

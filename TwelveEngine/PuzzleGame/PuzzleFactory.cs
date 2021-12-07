@@ -35,7 +35,7 @@ namespace TwelveEngine.PuzzleGame {
         }
         public static GameState GenerateState(Func<ComponentFactory,Level> levelSelector) {
 
-            var grid = new Grid2D(LayerModes.BackgroundForegroundStandard) {
+            var grid = new Grid2D(layerMode: LayerModes.BackgroundForegroundStandard) {
                 TileRenderer = new TilesetRenderer()
             };
 
@@ -55,7 +55,6 @@ namespace TwelveEngine.PuzzleGame {
             grid.LayerMode = LayerModes.GetAutomatic(map);
 
             grid.OnLoad += () => {
-                grid.EntityManager.PauseListChanges();
                 var player = new Player() {
                     X = level.Player.X,
                     Y = level.Player.Y,
@@ -63,7 +62,6 @@ namespace TwelveEngine.PuzzleGame {
                     StateLock = false
                 };
                 grid.AddEntity(player);
-                grid.EntityManager.ResumeListChanges();
             };
 
             level.Components();

@@ -10,6 +10,8 @@ namespace TwelveEngine.Input {
 
         private HashSet<Keys> pressedKeys = new HashSet<Keys>();
         private HashSet<Keys> keyBuffer = new HashSet<Keys>();
+
+        /* Allows keyboard handler to be zero allocation */
         private HashSet<Keys> swapAddress = null;
 
         public void Update(KeyboardState keyboardState) {

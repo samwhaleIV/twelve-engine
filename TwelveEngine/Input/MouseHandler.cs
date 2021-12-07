@@ -2,63 +2,52 @@
 using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Input {
-    internal sealed class MouseHandler {
+    public sealed class MouseHandler {
 
-        public Action<int,int> MouseMove { get; set; }
-        public Action<int,int> MouseDown { get; set; }
-        public Action<int,int> MouseUp { get; set; }
-        public Action<int,int,bool> Scroll { get; set; }
+        public event Action<int,int> OnMouseDown;
+        public event Action<int,int> OnMouseUp;
+        public event Action<int,int> OnMouseMove;
+        public event Action<int,int,bool> OnMouseScroll;
 
-        private void mouseMove() {
-            MouseMove?.Invoke(mouseX,mouseY);
-        }
-        private void mouseDown() {
-            MouseDown?.Invoke(mouseX,mouseY);
-        }
-        private void mouseUp() {
-            MouseUp?.Invoke(mouseX,mouseY);
-        }
-        private void scroll(bool scrollUp) {
-            Scroll?.Invoke(mouseX,mouseY,scrollUp);
-        }
+        private void sendScrollEvent(bool scrollUp) => OnMouseScroll?.Invoke(x,y,scrollUp);
 
-        MouseState lastMouseState;
-        bool hasState = false;
+        private MouseState? lastState;
+
         private bool mouseIsDown = false;
-        int mouseX, mouseY;
-
-        public int X => mouseX;
-        public int Y => mouseY;
         public bool Capturing => mouseIsDown;
 
-        public void Update(GameManager gameManager) {
-            var mouseState = gameManager.MouseState;
-            if(!hasState) {
-                lastMouseState = mouseState;
-                hasState = true;
+        private int x, y;
+        public int X => x; public int Y => y;
+
+        public void Update(MouseState mouseState) {
+            if(!this.lastState.HasValue) {
+                this.lastState = mouseState;
             }
-            if(mouseState.LeftButton != lastMouseState.LeftButton) {
+            var lastState = this.lastState.Value;
+
+            x = mouseState.X; y = mouseState.Y;
+
+            if(x != lastState.X || y != lastState.Y) {
+                OnMouseMove?.Invoke(x,y);
+            }
+
+            if(mouseState.LeftButton != lastState.LeftButton) {
                 if(mouseState.LeftButton == ButtonState.Pressed) {
                     mouseIsDown = true;
-                    mouseDown();
+                    OnMouseDown?.Invoke(x,y);
                 } else {
                     mouseIsDown = false;
-                    mouseUp();
+                    OnMouseUp?.Invoke(x,y);
                 }
             }
 
-            mouseX = mouseState.X;
-            mouseY = mouseState.Y;
-            if(mouseX != lastMouseState.X || mouseY != lastMouseState.Y) {
-                mouseMove();
+            var delta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
+            if(delta > 0) {
+                sendScrollEvent(true);
+            } else if(delta < 0) {
+                sendScrollEvent(false);
             }
-            int scrollDifference = mouseState.ScrollWheelValue - lastMouseState.ScrollWheelValue;
-            if(scrollDifference > 0) {
-                scroll(true);
-            } else if(scrollDifference < 0) {
-                scroll(false);
-            }
-            lastMouseState = mouseState;
+            this.lastState = mouseState;
         }
     }
 }

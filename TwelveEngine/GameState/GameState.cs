@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace TwelveEngine {
     public abstract class GameState:ISerializable {
@@ -8,13 +8,16 @@ namespace TwelveEngine {
         internal event Action OnLoad;
         internal event Action OnUnload;
 
-        internal virtual void Load() => OnLoad?.Invoke();
-        internal virtual void Unload() => OnUnload?.Invoke();
+        internal event Action<SerialFrame> OnExport;
+        internal event Action<SerialFrame> OnImport;
+
+        internal void Load() => OnLoad?.Invoke();
+        internal void Unload() => OnUnload?.Invoke();
+
+        public void Export(SerialFrame frame) => OnExport?.Invoke(frame);
+        public void Import(SerialFrame frame) => OnImport?.Invoke(frame);
 
         internal abstract void Update(GameTime gameTime);
         internal abstract void Draw(GameTime gameTime);
-
-        public abstract void Export(SerialFrame frame);
-        public abstract void Import(SerialFrame frame);
     }
 }

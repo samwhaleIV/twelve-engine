@@ -18,10 +18,11 @@ namespace TwelveEngine.Game2D {
         private readonly Dictionary<string,Entity> namedEntities;
 
         public EntityManager(Grid2D owner) {
-            game = owner.Game;
-            grid = owner;
             entityDictionary = new Dictionary<int,Entity>();
             namedEntities = new Dictionary<string,Entity>();
+
+            game = owner.Game;
+            grid = owner;
         }
 
         private bool updateListQueued = false, renderListQueued = false;
@@ -29,31 +30,28 @@ namespace TwelveEngine.Game2D {
         internal event Action<IRenderable[]> OnRenderListChanged;
         internal event Action<IUpdateable[]> OnUpdateListChanged;
 
+        private IRenderable[] getRenderList() => GetAllOfType<IRenderable>();
+        private IUpdateable[] getUpdateList() => GetAllOfType<IUpdateable>();
+
         private bool listChangesPaused = false;
-        private void pauseListChanges() {
+        public bool Paused => listChangesPaused;
+        
+        public void PauseListChanges() {
+            if(listChangesPaused) {
+                return;
+            }
             listChangesPaused = true;
         }
-
-        private void resumeListChanges() {
+        public void ResumeListChanges() {
+            if(!listChangesPaused) {
+                return;
+            }
             listChangesPaused = false;
             if(renderListQueued) {
                 renderListChanged();
             }
             if(updateListQueued) {
                 updateListChanged();
-            }
-        }
-
-        public bool Paused {
-            get => listChangesPaused;
-            set {
-                if(value == listChangesPaused) {
-                    return;
-                } else if(value) {
-                    pauseListChanges();
-                } else {
-                    resumeListChanges();
-                }
             }
         }
 
@@ -69,19 +67,12 @@ namespace TwelveEngine.Game2D {
         }
         public T[] GetAllOfType<T>() {
             var queue = new Queue<T>();
-            foreach(var entity in namedEntities.Values) {
+            foreach(var entity in entityDictionary.Values) {
                 if(entity is T typeCast) {
                     queue.Enqueue(typeCast);
                 }
             }
             return queue.ToArray();
-        }
-
-        private IRenderable[] getRenderList() {
-            return GetAllOfType<IRenderable>();
-        }
-        private IUpdateable[] getUpdateList() {
-            return GetAllOfType<IUpdateable>();
         }
 
         private void renderListChanged() {
@@ -160,7 +151,7 @@ namespace TwelveEngine.Game2D {
 
         private void clearEntities(bool checkForStateLock = false) {
             bool startedPaused = Paused;
-            Paused = true;
+            PauseListChanges();
             var entities = entityDictionary.Values.ToArray();
             for(var i = 0;i < entities.Length;i++) {
                 var entity = entities[i];
@@ -172,7 +163,7 @@ namespace TwelveEngine.Game2D {
             if(startedPaused) {
                 return;
             }
-            Paused = false;
+            ResumeListChanges();
         }
 
         private Entity[] getSerializableEntities() {
@@ -192,7 +183,7 @@ namespace TwelveEngine.Game2D {
 
         public void Import(SerialFrame frame) {
             bool startedPaused = Paused;
-            Paused = true;
+            PauseListChanges();
 
             if(IDCounter > 0) {
                 clearEntities(checkForStateLock: true);
@@ -210,7 +201,7 @@ namespace TwelveEngine.Game2D {
             if(startedPaused) {
                 return;
             }
-            Paused = false;
+            ResumeListChanges();
         }
     }
 }

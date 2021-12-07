@@ -1,8 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using TwelveEngine.Input;
-
-namespace TwelveEngine.Game2D {
-    internal sealed class PanZoom:IUpdateable {
+﻿namespace TwelveEngine.Game2D {
+    internal sealed class PanZoom {
 
         private const float MIN_SCALE = 1;
         private const float MAX_SCALE = 8;
@@ -11,18 +8,24 @@ namespace TwelveEngine.Game2D {
         private readonly Grid2D grid;
         private readonly Camera camera;
 
-        private readonly MouseHandler mouseHandler;
-
         internal PanZoom(Grid2D grid) {
             this.grid = grid;
-            this.camera = grid.Camera;
+            camera = grid.Camera;
 
-            mouseHandler = new MouseHandler() {
-                MouseMove = pan,
-                Scroll = zoom,
-                MouseDown = refreshPanData,
-                MouseUp = clearPanData
-            };
+            grid.OnUnload += Grid_OnUnload;
+            var mouseHandler = grid.Game.MouseHandler;
+            mouseHandler.OnMouseMove += pan;
+            mouseHandler.OnMouseScroll += zoom;
+            mouseHandler.OnMouseDown += refreshPanData;
+            mouseHandler.OnMouseUp += clearPanData;
+        }
+
+        private void Grid_OnUnload() {
+            var mouseHandler = grid.Game.MouseHandler;
+            mouseHandler.OnMouseMove -= pan;
+            mouseHandler.OnMouseScroll -= zoom;
+            mouseHandler.OnMouseDown -= refreshPanData;
+            mouseHandler.OnMouseUp -= clearPanData;
         }
 
         private (int x, int y, float cameraX, float cameraY)? panData = null;
@@ -84,10 +87,6 @@ namespace TwelveEngine.Game2D {
             camera.X = panData.cameraX + xDifference / tileSize;
             camera.Y = panData.cameraY + yDifference / tileSize;
             refreshPanData(x,y);
-        }
-
-        public void Update(GameTime gameTime) {
-            mouseHandler.Update(grid.Game);
         }
     }
 }

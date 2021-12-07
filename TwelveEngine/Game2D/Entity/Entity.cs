@@ -4,9 +4,7 @@ namespace TwelveEngine.Game2D {
     public abstract class Entity:ISerializable {
 
         protected abstract EntityType GetEntityType();
-        private EntityType entityType;
-        public EntityType Type => entityType;
-        public Entity() => entityType = GetEntityType();
+        public EntityType Type => GetEntityType();
 
         private string name = string.Empty;
 
