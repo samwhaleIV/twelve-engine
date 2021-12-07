@@ -264,7 +264,7 @@ namespace TwelveEngine.Game2D {
             );
         }
 
-        private void renderTiles(int[,] data,ScreenSpace screenSpace,bool calculateDepth) {
+        private void renderTiles(int[,] data,bool calculateDepth) {
             int tileSize = screenSpace.TileSize;
 
             Rectangle target = new Rectangle(0,0,tileSize,tileSize);
@@ -324,16 +324,16 @@ namespace TwelveEngine.Game2D {
             }
             int end = start + length;
             for(int i = start;i<end;i++) {
-                renderTiles(layers[i],screenSpace,calculateDepth);
+                renderTiles(layers[i],calculateDepth);
             }
         }
 
         private void startDeferredSpriteBatch() {
-            Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointWrap);
+            Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             spriteBatchActive = true;
         }
         private void startBackToFrontSpriteBatch() {
-            Game.SpriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointWrap);
+            Game.SpriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointClamp);
             spriteBatchActive = true;
         }
         private void endSpriteBatch() {
