@@ -1,64 +1,83 @@
-﻿using System.Diagnostics;
+﻿using System;
 
 namespace TwelveEngine.Game2D {
     public abstract class Entity:ISerializable {
 
-        private const float INTERACTION_BOX_SIZE = 0.25f;
-
         protected abstract EntityType GetEntityType();
-        public EntityType Type => GetEntityType();
+        private EntityType entityType;
+        public EntityType Type => entityType;
+        public Entity() => entityType = GetEntityType();
 
-        public string Name = string.Empty;
+        private string name = string.Empty;
 
-        public GameManager Game;
-        public Grid2D Grid;
+        internal event Action<Entity,string> OnNameChanged;
 
-        public long ID = 0;
-        public EntityManager Owner = null;
+        private int id = 0;
+        private EntityManager owner = null;
 
-        public float X = 0;
-        public float Y = 0;
-        public float Width = 1;
-        public float Height = 1;
+        private GameManager game;
+        private Grid2D grid;
+
+        public EntityManager Owner {
+            get => owner;
+            internal set => owner = value;
+        }
+        public Grid2D Grid {
+            get => grid;
+            internal set => grid = value;
+        }
+        public GameManager Game {
+            get => game;
+            internal set => game = value;
+        }
+
+        private float x = 0, y = 0, width = 1, height = 1;
 
         private Direction direction = Direction.Down;
+
+        protected event Action OnLoad, OnUnload;
+
+        internal void Load() => OnLoad?.Invoke();
+        internal void Unload() => OnUnload?.Invoke();
+
+        public bool StateLock { get; set; } = false;
+
+        public Hitbox GetInteractionBox() {
+            return Hitbox.GetInteractionArea(this);
+        }
+
+        public float X {
+            get => x;
+            set => x = value;
+        }
+        public float Y {
+            get => y;
+            set => y = value;
+        }
+        public float Width {
+            get => width;
+            set => width = value;
+        }
+        public float Height {
+            get => height;
+            set => height = value;
+        }
+        public string Name {
+            get => name;
+            set {
+                var oldName = name;
+                name = value;
+                OnNameChanged?.Invoke(this,oldName);
+            }
+        }
         public Direction Direction {
             get => direction;
             set => direction = value;
         }
-
-        public Hitbox GetInteractionBox() {
-            var hitbox = new Hitbox() {
-                Width = INTERACTION_BOX_SIZE,
-                Height = INTERACTION_BOX_SIZE
-            };
-            var direction = Direction;
-            if(direction == Direction.Left || direction == Direction.Right) {
-                hitbox.Y = (Y + Height / 2) - hitbox.Height / 2;
-                if(direction == Direction.Left) {
-                    hitbox.X = X - hitbox.Width;
-                } else {
-                    hitbox.X = X + Width;
-                }
-            } else {
-                hitbox.X = (X + Width / 2) - hitbox.Width / 2;
-                if(direction == Direction.Up) {
-                    hitbox.Y = Y - hitbox.Height;
-                } else {
-                    hitbox.Y = Y + Height;
-                }
-            }
-            return hitbox;
+        public int ID {
+            get => id;
+            internal set => id = value;
         }
-
-        public virtual void Load() {
-            Debug.WriteLine($"Load {Type} entity, ID {ID}");
-        }
-        public virtual void Unload() {
-            Debug.WriteLine($"Unload {Type} entity, ID {ID}");
-        }
-
-        public bool StateLock { get; set; } = false;
 
         public virtual void Export(SerialFrame frame) {
             frame.Set(Name);

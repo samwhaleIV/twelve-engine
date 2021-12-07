@@ -7,6 +7,8 @@ namespace TwelveEngine {
         public const double SimFrameTime = 1000 / 60d;
         public const int RenderScale = 8;
 
+        public const float InteractionBoxSize = 0.25f;
+
         public const string ContentRootDirectory = "Content";
         public const int DefaultTileSize = 16;
 

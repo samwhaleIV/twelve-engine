@@ -4,220 +4,164 @@ using System.Linq;
 
 namespace TwelveEngine.Game2D {
     public sealed class EntityManager:ISerializable {
-        public GameManager Game { get; set; } = null;
-        public Grid2D Grid { get; set; } = null;
+
+        private readonly GameManager game;
+        private readonly Grid2D grid;
+
+        public GameManager Game => game;
+        public Grid2D Grid => grid;
+
+        private int IDCounter = 0;
+        private int getNextID() => IDCounter++;
+
+        private readonly Dictionary<int,Entity> entityDictionary;
+        private readonly Dictionary<string,Entity> namedEntities;
 
         public EntityManager(Grid2D owner) {
-            this.Game = owner.Game;
-            this.Grid = owner;
-        }
-        private readonly Dictionary<long,IRenderable> renderList = new Dictionary<long,IRenderable>();
-        private readonly Dictionary<long,IUpdateable> updateList = new Dictionary<long,IUpdateable>();
-        private readonly Dictionary<long,Entity> entities = new Dictionary<long,Entity>();
-
-        private readonly Dictionary<string,Dictionary<long,Entity>> nameList = new Dictionary<string,Dictionary<long, Entity>>();
-
-        private long IDCounter = 0;
-        private long getNextID() {
-            return IDCounter++;
+            game = owner.Game;
+            grid = owner;
+            entityDictionary = new Dictionary<int,Entity>();
+            namedEntities = new Dictionary<string,Entity>();
         }
 
-        private Action<IRenderable[]> renderListChangedAction = null;
-        public Action<IRenderable[]> RenderListChanged {
-            get {
-                return renderListChangedAction;
-            }
-            set {
-                renderListChangedAction = value;
-                renderListChanged();
-            }
-        }
+        private bool updateListQueued = false, renderListQueued = false;
 
-        private Action<IUpdateable[]> updateListChangedAction = null;
-        public Action<IUpdateable[]> UpdateListChanged {
-            get {
-                return updateListChangedAction;
-            }
-            set {
-                updateListChangedAction = value;
-                updateListChanged();
-            }
-        }
+        internal event Action<IRenderable[]> OnRenderListChanged;
+        internal event Action<IUpdateable[]> OnUpdateListChanged;
 
         private bool listChangesPaused = false;
-        private bool needsToSendUpdateList = false;
-        private bool needsToSendRenderList = false;
+        private void pauseListChanges() {
+            listChangesPaused = true;
+        }
 
-        public void ResumeListChanges() {
-            if(!listChangesPaused) {
-                return;
-            }
+        private void resumeListChanges() {
             listChangesPaused = false;
-            if(needsToSendRenderList) {
-                needsToSendRenderList = false;
+            if(renderListQueued) {
                 renderListChanged();
             }
-            if(needsToSendUpdateList) {
-                needsToSendUpdateList = false;
+            if(updateListQueued) {
                 updateListChanged();
             }
-        }
-        public void PauseListChanges() {
-            listChangesPaused = true;
         }
 
         public bool Paused {
             get => listChangesPaused;
             set {
-                if(value) {
-                    PauseListChanges();
+                if(value == listChangesPaused) {
+                    return;
+                } else if(value) {
+                    pauseListChanges();
                 } else {
-                    ResumeListChanges();
+                    resumeListChanges();
                 }
             }
         }
 
+        public Entity Get(string name) {
+            Entity entity;
+            if(namedEntities.TryGetValue(name,out entity)) {
+                return entity;
+            }
+            return null;
+        }
+        public Entity[] GetAll() {
+            return entityDictionary.Values.ToArray();
+        }
+        public T[] GetAllOfType<T>() {
+            var queue = new Queue<T>();
+            foreach(var entity in namedEntities.Values) {
+                if(entity is T typeCast) {
+                    queue.Enqueue(typeCast);
+                }
+            }
+            return queue.ToArray();
+        }
+
+        private IRenderable[] getRenderList() {
+            return GetAllOfType<IRenderable>();
+        }
+        private IUpdateable[] getUpdateList() {
+            return GetAllOfType<IUpdateable>();
+        }
+
         private void renderListChanged() {
             if(listChangesPaused) {
-                needsToSendRenderList = true;
+                renderListQueued = true;
                 return;
             }
-            if(RenderListChanged != null) {
-                RenderListChanged(renderList.Values.ToArray());
-                needsToSendRenderList = false;
-            } else {
-                needsToSendRenderList = true;
-            }
+            OnRenderListChanged?.Invoke(getRenderList());
+            renderListQueued = false;
         }
         private void updateListChanged() {
             if(listChangesPaused) {
-                needsToSendUpdateList = true;
+                updateListQueued = true;
                 return;
             }
-            if(UpdateListChanged != null) {
-                UpdateListChanged(updateList.Values.ToArray());
-                needsToSendUpdateList = false;
-            } else {
-                needsToSendUpdateList = true;
-            }
+            OnUpdateListChanged?.Invoke(getUpdateList());
+            updateListQueued = false;
         }
 
-        private void addToNamedList(Entity entity) {
-            Dictionary<long,Entity> entities;
-            if(nameList.ContainsKey(entity.Name)) {
-                entities = nameList[entity.Name];
-            } else {
-                entities = new Dictionary<long,Entity>();
-                nameList[entity.Name] = entities;
-            }
-            entities[entity.ID] = entity;
-
+        private void Entity_OnNameChanged(Entity source,string oldName) {
+            string newName = source.Name;
+            namedEntities.Remove(oldName);
+            namedEntities.Add(newName,source);
         }
-        private void removeFromNamedList(Entity entity) {
-            var nameGroup = nameList[entity.Name];
-            nameGroup.Remove(entity.ID);
-            if(nameGroup.Keys.Count < 1) {
-                nameList.Remove(entity.Name);
-            }
-        }
-
-        public Entity GetEntity(string name) {
-            return nameList[name].Values.FirstOrDefault();
-        }
-        public Entity[] GetAllEntities(string name) {
-            return nameList[name].Values.ToArray();
-        }
-
         private bool hasName(Entity entity) {
             return string.IsNullOrWhiteSpace(entity.Name);
         }
-
-        private void addToLists(Entity entity) {
-            long ID = entity.ID;
-
-            bool updateRenderList = false;
-            bool updateUpdateList = false;
-
-            if(entity is IRenderable renderable) {
-                renderList[ID] = renderable;
-                updateRenderList = true;
-            }
-            if(entity is IUpdateable updateable) {
-                updateList[ID] = updateable;
-                updateUpdateList = true;
-            }
-            entities[ID] = entity;
-
-            if(hasName(entity)) addToNamedList(entity);
-
-            if(updateRenderList) {
-                renderListChanged();
-            }
-            if(updateUpdateList) {
-                updateListChanged();
-            }
+        private void removeNamedEntity(Entity entity) {
+            namedEntities.Remove(entity.Name);
+        }
+        private void addNamedEntity(Entity entity) {
+            namedEntities.Add(entity.Name,entity);
         }
 
-        private void removeFromLists(Entity entity) {
-            long ID = entity.ID;
+        private void addToLists(Entity entity) {
+            entityDictionary.Add(entity.ID,entity);
+            if(hasName(entity)) addNamedEntity(entity);
+            if(entity is IRenderable) renderListChanged();
+            if(entity is IUpdateable) updateListChanged();
+        }
 
-            bool updateRenderList = false;
-            bool updateUpdateList = false;
-
-            if(entity is IRenderable) {
-                renderList.Remove(ID);
-                updateRenderList = true;
-            }
-            if(entity is IUpdateable) {
-                updateList.Remove(ID);
-                updateUpdateList = true;
-            }
-            entities.Remove(ID);
-            
-            if(hasName(entity)) removeFromNamedList(entity);
-
-            if(updateRenderList) {
-                renderListChanged();
-            }
-            if(updateUpdateList) {
-                updateListChanged();
-            }
+        private void removeFromList(Entity entity) {
+            entityDictionary.Remove(entity.ID);
+            if(hasName(entity)) removeNamedEntity(entity);
+            if(entity is IRenderable) renderListChanged();
+            if(entity is IUpdateable) updateListChanged();
         }
 
         public void AddEntity(Entity entity) {
             if(entity.Owner != null) return;
 
-            entity.Owner = this;
-            entity.Game = Game;
-            entity.Grid = Grid;
+            entity.Owner = this; entity.Game = Game; entity.Grid = Grid;
 
-            long ID = getNextID();
+            var ID = getNextID();
             entity.ID = ID;
 
-            addToLists(entity);
-
-            entity.Load();
+            addToLists(entity); //Stage 1
+            entity.OnNameChanged += Entity_OnNameChanged; //Stage 2
+            entity.Load(); //Stage 3
         }
+
         public void RemoveEntity(Entity entity) {
             if(entity.Owner != this) {
-                throw new ArgumentException("Entity does not belong to this EntityManager!","entity");
+                throw new ArgumentException("Entity does not beint to this EntityManager!","entity");
             }
-            removeFromLists(entity);
-            entity.Unload();
 
-            entity.Owner = null;
-            entity.Game = null;
-            entity.Grid = null;
+            /* Stage 1 and 2 are in reverse order for entity removal */
+            entity.OnNameChanged -= Entity_OnNameChanged; //Stage 1
+            removeFromList(entity); //Stage 2
+            entity.Unload(); //Stage 3
+
+            entity.Owner = null; entity.Game = null; entity.Grid = null;
         }
 
-        public void Unload() {
-            clearEntities();
-            Game = null;
-            Grid = null;
-        }
+        public void Unload() => clearEntities();
 
         private void clearEntities(bool checkForStateLock = false) {
-            var entities = this.entities.Values.ToArray();
+            bool startedPaused = Paused;
+            Paused = true;
+            var entities = entityDictionary.Values.ToArray();
             for(var i = 0;i < entities.Length;i++) {
                 var entity = entities[i];
                 if(checkForStateLock && entity.StateLock) {
@@ -225,10 +169,14 @@ namespace TwelveEngine.Game2D {
                 }
                 RemoveEntity(entity);
             }
+            if(startedPaused) {
+                return;
+            }
+            Paused = false;
         }
 
-        public Entity[] getSerializableEntities() {
-            return entities.Values.Where(x => !x.StateLock).ToArray();
+        private Entity[] getSerializableEntities() {
+            return entityDictionary.Values.Where(x => !x.StateLock).ToArray();
         }
 
         public void Export(SerialFrame frame) {
@@ -250,7 +198,7 @@ namespace TwelveEngine.Game2D {
                 clearEntities(checkForStateLock: true);
             }
 
-            long entityCount = frame.GetInt();
+            int entityCount = frame.GetInt();
 
             for(var i = 0;i<entityCount;i++) {
                 var type = frame.GetEntityType();
