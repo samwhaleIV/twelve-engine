@@ -314,11 +314,11 @@ namespace TwelveEngine {
             SpriteBatch.Begin();
 
             updateTime.TotalMilliseconds.ToString();
-            spriteBatch.DrawString(spriteFont,$"{string.Format("{0:00:00:00.00}",proxyGameTime.TotalGameTime.TotalSeconds)}",position,Color.White);
+            spriteBatch.DrawString(spriteFont,proxyGameTime.TotalGameTime.ToString("hh\\:mm\\:ss\\:ff"),position,Color.White);
             position.Y += 25;
-            spriteBatch.DrawString(spriteFont,$"Update: {string.Format("{0:0.000}",updateTime.TotalMilliseconds)}ms",position,Color.White);
+            spriteBatch.DrawString(spriteFont,$"Update: {string.Format("{0:0.00}",updateTime.TotalMilliseconds)}ms",position,Color.White);
             position.Y += 25;
-            spriteBatch.DrawString(spriteFont,$"Render: {string.Format("{0:0.000}",renderTime.TotalMilliseconds)}ms",position,Color.White);
+            spriteBatch.DrawString(spriteFont,$"Render: {string.Format("{0:0.00}",renderTime.TotalMilliseconds)}ms",position,Color.White);
             spriteBatch.End();
         }
 #endif
