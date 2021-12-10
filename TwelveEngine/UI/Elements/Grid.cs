@@ -33,8 +33,8 @@
 
         private (int Width,int Height) getCellSize() {
             /* TODO: Be corrected to pixel perfection */
-            int width = (int)(Width / (float)columns); 
-            int height = (int)(Height / (float)rows);
+            int width = (int)(ScreenWidth / (float)columns); 
+            int height = (int)(ScreenHeight / (float)rows);
             return (width, height);
         }
     }

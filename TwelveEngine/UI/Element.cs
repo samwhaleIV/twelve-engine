@@ -74,30 +74,30 @@ namespace TwelveEngine.UI {
         }
 
         protected (int X,int Y) GetAbsolutePosition() {
-            return (x + leftPadding, y + topPadding);
+            return (x + paddingLeft, y + paddingTop);
         }
 
         protected virtual (int X,int Y) GetCenteredPosition() {
-            float x = parent.screenX + (parent.screenWidth / 2f) - (width / 2f);
-            float y = parent.screenY + (parent.screenHeight / 2f) - (height / 2f);
-            return ((int)Math.Floor(x), (int)Math.Floor(y));
+            float x = parent.screenX + (parent.screenWidth / 2f) - (screenWidth / 2f);
+            float y = parent.screenY + (parent.screenHeight / 2f) - (screenHeight / 2f);
+            return ((int)Math.Floor(x) + this.x + paddingLeft, (int)Math.Floor(y) + this.y + paddingRight);
         }
 
         protected virtual (int X,int Y) GetRelativePosition() {
-            return (parent.screenX + x + leftPadding, parent.screenY + y + topPadding);
+            return (parent.screenX + x + paddingLeft, parent.screenY + y + paddingTop);
         }
 
         protected virtual (int Width,int Height) GetAbsoluteSize() {
-            return (width - rightPadding - leftPadding, height - bottomPadding - topPadding);
+            return (width - paddingRight - paddingLeft, height - paddingBottom - paddingTop);
         }
 
         protected virtual (int Width,int Height) GetFillSize() {
-            return (parent.screenWidth - rightPadding - leftPadding, parent.screenHeight - bottomPadding - topPadding);
+            return (parent.screenWidth - paddingRight - paddingLeft, parent.screenHeight - paddingBottom - paddingTop);
         }
 
         protected virtual (int Width,int Height) GetBoxFill() {
             int size = parent.screenWidth > parent.screenHeight ? parent.screenHeight : parent.screenWidth;
-            return (size - rightPadding - leftPadding, size - bottomPadding - topPadding);
+            return (size - paddingRight - paddingLeft, size - paddingBottom - paddingTop);
         }
 
         private (int Width, int Height) cacheSize((int Width, int Height) size) {
@@ -141,59 +141,58 @@ namespace TwelveEngine.UI {
             }
         }
 
-        protected int leftPadding = 0, rightPadding = 0,
-                      topPadding = 0, bottomPadding = 0;
+        protected int paddingLeft = 0, paddingRight = 0,
+                      paddingTop = 0, paddingBottom = 0;
 
         public int Padding {
             set {
-                leftPadding = value;
-                rightPadding = value;
-                topPadding = value;
-                bottomPadding = value;
+                paddingLeft = value;
+                paddingRight = value;
+                paddingTop = value;
+                paddingBottom = value;
                 UpdateLayout();
             }
         }
         public int PaddingLeft {
-            get => leftPadding;
+            get => paddingLeft;
             set {
-                if(leftPadding == value) {
+                if(paddingLeft == value) {
                     return;
                 }
-                leftPadding = value;
+                paddingLeft = value;
                 UpdateLayout();
             }
         }
         public int PaddingRight {
-            get => rightPadding;
+            get => paddingRight;
             set {
-                if(rightPadding == value) {
+                if(paddingRight == value) {
                     return;
                 }
-                rightPadding = value;
+                paddingRight = value;
                 UpdateLayout();
             }
         }
         public int PaddingTop {
-            get => topPadding;
+            get => paddingTop;
             set {
-                if(topPadding == value) {
+                if(paddingTop == value) {
                     return;
                 }
-                topPadding = value;
+                paddingTop = value;
                 UpdateLayout();
             }
         }
         public int PaddingBottom {
-            get => bottomPadding;
+            get => paddingBottom;
             set {
-                if(bottomPadding == value) {
+                if(paddingBottom == value) {
                     return;
                 }
-                bottomPadding = value;
+                paddingBottom = value;
                 UpdateLayout();
             }
         }
-
         public Element Parent {
             get => parent;
             set {
@@ -264,5 +263,10 @@ namespace TwelveEngine.UI {
                 UpdateLayout();
             }
         }
+
+        public int ScreenWidth => screenWidth;
+        public int ScreenHeight => screenHeight;
+        public int ScreenX => screenX;
+        public int ScreenY => screenY;
     }
 }
