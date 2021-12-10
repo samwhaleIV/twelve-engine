@@ -6,11 +6,11 @@ namespace TwelveEngine {
 
         private readonly TimeSpan MAX_ELAPSED_TIME = TimeSpan.FromMilliseconds(Constants.MaximumFrameDelta);
 
-        TimeSpan pauseTimeOffset = TimeSpan.Zero;
+        private TimeSpan pauseTimeOffset = TimeSpan.Zero;
 
         private bool frozen = false;
         private bool totalTimeLocked = false;
-        private bool shouldResetTime = false;
+        private bool shouldResetTime = true;
 
         internal void Update(GameTime gameTime) {
             if(shouldResetTime) {

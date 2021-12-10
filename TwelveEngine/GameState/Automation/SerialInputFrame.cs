@@ -55,15 +55,15 @@ namespace TwelveEngine.Automation {
 
         private bool mouseDataEqual(SerialInputFrame frame) {
             /* Sorted by frequency */
-            return this.mouseX == frame.mouseX &&
-                   this.mouseY == frame.mouseY &&
-                   this.leftButton == frame.leftButton &&
-                   this.scrollY == frame.scrollY &&
-                   this.rightButton == frame.rightButton &&
-                   this.middleButton == frame.middleButton &&
-                   this.scrollX == frame.scrollX &&
-                   this.xButton1 == frame.xButton1 &&
-                   this.xButton2 == frame.xButton2;
+            return mouseX == frame.mouseX &&
+                   mouseY == frame.mouseY &&
+                   leftButton == frame.leftButton &&
+                   scrollY == frame.scrollY &&
+                   rightButton == frame.rightButton &&
+                   middleButton == frame.middleButton &&
+                   scrollX == frame.scrollX &&
+                   xButton1 == frame.xButton1 &&
+                   xButton2 == frame.xButton2;
         }
 
         internal void Export(BinaryWriter writer,SerialInputFrame lastFrame) {
