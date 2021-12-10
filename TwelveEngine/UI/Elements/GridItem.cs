@@ -14,13 +14,13 @@
             var cellSize = grid.CellSize;
             var x = grid.X + this.x * cellSize.Width;
             var y = grid.Y + this.y * cellSize.Height;
-            return (x, y);
+            return (x + leftPadding, y + topPadding);
         }
         protected override (int Width,int Height) GetFillSize() {
             var cellSize = grid.CellSize;
             var width = this.width / grid.Columns * cellSize.Width;
             var height = this.height / grid.Rows * cellSize.Height;
-            return (width, height);
+            return (width - rightPadding, height - bottomPadding);
         }
     }
 }
