@@ -5,19 +5,25 @@ namespace TwelveEngine {
     public abstract class GameState:ISerializable {
         internal GameManager Game = null;
 
-        internal event Action OnLoad;
-        internal event Action OnUnload;
+        public event Action OnLoad;
+        public event Action OnUnload;
 
-        internal event Action<SerialFrame> OnExport;
-        internal event Action<SerialFrame> OnImport;
+        protected internal event Action<SerialFrame> OnExport;
+        protected internal event Action<SerialFrame> OnImport;
 
-        internal void Load() => OnLoad?.Invoke();
+        private bool loaded = false;
+        public bool IsLoaded => loaded;
+
+        internal void Load() {
+            OnLoad?.Invoke();
+            loaded = true;
+        }
         internal void Unload() => OnUnload?.Invoke();
 
         public void Export(SerialFrame frame) => OnExport?.Invoke(frame);
         public void Import(SerialFrame frame) => OnImport?.Invoke(frame);
 
-        internal abstract void Update(GameTime gameTime);
-        internal abstract void Draw(GameTime gameTime);
+        public abstract void Update(GameTime gameTime);
+        public abstract void Draw(GameTime gameTime);
     }
 }

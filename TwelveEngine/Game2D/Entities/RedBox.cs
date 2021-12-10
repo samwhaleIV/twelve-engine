@@ -24,10 +24,10 @@ namespace TwelveEngine.Game2D.Entities {
 
 
         public void Render(GameTime gameTime) {
-            if(!Grid.OnScreen(this)) {
+            if(!OnScreen()) {
                 return;
             }
-            var destination = Grid.GetDestination(this);
+            var destination = GetDestination();
             Game.SpriteBatch.Draw(redBoxTexture,destination,textureSource,Color.White);
         }
 

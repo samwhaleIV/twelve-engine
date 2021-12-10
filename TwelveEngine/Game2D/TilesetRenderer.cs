@@ -3,12 +3,26 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D {
-    class TilesetRenderer:ITileRenderer {
+    public sealed class TilesetRenderer:TileRenderer {
+
+        public TilesetRenderer() {
+            OnLoad += TilesetRenderer_OnLoad;
+        }
 
         private Texture2D tileset;
         private SpriteBatch spriteBatch;
+        private Rectangle[] textureSources;
 
-        private Rectangle[] textureSources = new Rectangle[0];
+        private void TilesetRenderer_OnLoad() {
+            tileset = Game.Content.Load<Texture2D>(Constants.Tileset);
+            int tileSize = Grid.TileSize;
+            spriteBatch = Game.SpriteBatch;
+
+            int rows = tileset.Height / tileSize;
+            int columns = tileset.Width / tileSize;
+
+            textureSources = getTextureSources(rows * columns,columns,tileSize);
+        }
 
         private static Rectangle[] getTextureSources(int count,int columns,int size) {
             var sources = new Rectangle[count];
@@ -23,27 +37,55 @@ namespace TwelveEngine.Game2D {
             return sources;
         }
 
-        public void Load(GameManager game,Grid2D grid) {
-            tileset = game.Content.Load<Texture2D>(Constants.Tileset);
-            int tileSize = grid.TileSize;
-            spriteBatch = game.SpriteBatch;
+        public override void RenderTiles(ScreenSpace screenSpace,int[,] data) {
+            int tileSize = screenSpace.TileSize;
 
-            int rows = tileset.Height / tileSize;
-            int columns = tileset.Width / tileSize;
+            int startX = (int)Math.Floor(screenSpace.X);
+            int startY = (int)Math.Floor(screenSpace.Y);
 
-            textureSources = getTextureSources(rows * columns,columns,tileSize);
-        }
+            float renderX = startX - screenSpace.X;
+            float renderY = startY - screenSpace.Y;
 
-        public void Unload() => spriteBatch = null;
+            int width = (int)Math.Ceiling(screenSpace.Width - renderX);
+            int height = (int)Math.Ceiling(screenSpace.Height - renderY);
 
-        public void RenderTile(int value,Rectangle destination) {
-            if(value < 1) return;
-            spriteBatch.Draw(tileset,destination,textureSources[value],Color.White);
-        }
-        public void RenderTileDepth(int value,Rectangle destination,float viewportHeight) {
-            if(value < 1) return;
-            float depth = 1 - Math.Max(destination.Y / viewportHeight,0);
-            spriteBatch.Draw(tileset,destination,textureSources[value],Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
+            if(renderX * -2 > tileSize) width++;
+            if(renderY * -2 > tileSize) height++;
+
+            int tileX = (int)Math.Round(renderX * tileSize);
+            int tileY = (int)Math.Round(renderY * tileSize);
+
+            int xOffset = 0;
+            int yOffset = 0;
+            if(startX < 0) xOffset = -startX;
+            if(startY < 0) yOffset = -startY;
+
+            int endX = startX + width;
+            int endY = startY + height;
+            if(endX > Grid.Width) width -= endX - Grid.Width;
+            if(endY > Grid.Height) height -= endY - Grid.Height;
+
+            var target = new Rectangle(0,0,tileSize,tileSize);
+
+            float depthBase = 1f / Grid.Viewport.Height;
+            int gridX, value, y;
+            float depth;
+
+            for(int x = xOffset;x < width;x++) {
+                gridX = x + startX;
+                target.X = tileX + x * tileSize;
+                for(y = yOffset;y < height;y++) {
+                    value = data[gridX,y + startY];
+                    if(value < 1) continue;
+
+                    target.Y = tileY + y * tileSize;
+
+                    depth = target.Y * depthBase;
+                    if(depth < 0) depth = 0;
+
+                    spriteBatch.Draw(tileset,target,textureSources[value],Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
+                }
+            }
         }
     }
 }

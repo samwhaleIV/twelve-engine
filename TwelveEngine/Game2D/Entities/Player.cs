@@ -414,13 +414,13 @@ namespace TwelveEngine.Game2D.Entities {
 
         public void Render(GameTime gameTime) {
 
-            if(!Grid.OnScreen(this)) {
+            if(!OnScreen()) {
                 return;
             }
 
             var tileSize = Grid.TileSize;
 
-            var destination = Grid.GetDestination(this);
+            var destination = GetDestination();
             var source = new Rectangle();
 
             source.X = getRenderColumn() * tileSize;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace TwelveEngine.Game2D {
     public abstract class Entity:ISerializable {
@@ -42,6 +43,31 @@ namespace TwelveEngine.Game2D {
 
         public Hitbox GetInteractionBox() {
             return Hitbox.GetInteractionArea(this);
+        }
+
+        public Rectangle GetDestination() {
+            var screenSpace = grid.ScreenSpace;
+            var tileSize = screenSpace.TileSize;
+
+            var destination = new Rectangle {
+                X = (int)Math.Round((x - screenSpace.X) * tileSize),
+                Y = (int)Math.Round((y - screenSpace.Y) * tileSize),
+
+                Width = (int)Math.Floor(width * tileSize),
+                Height = (int)Math.Floor(height * tileSize)
+            };
+
+            return destination;
+        }
+
+        public bool OnScreen() {
+            var screenSpace = grid.ScreenSpace;
+            return !(
+                x + width <= screenSpace.X ||
+                y + height <= screenSpace.Y ||
+                x >= screenSpace.X + screenSpace.Width ||
+                y >= screenSpace.Y + screenSpace.Height
+            );
         }
 
         public float X {

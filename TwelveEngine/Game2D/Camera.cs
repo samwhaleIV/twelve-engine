@@ -1,23 +1,57 @@
 ﻿namespace TwelveEngine.Game2D {
     public class Camera:ISerializable {
-        public float X { get; set; } = 0;
-        public float Y { get; set; } = 0;
 
-        public float XOffset { get; set; } = 0.5f;
-        public float YOffset { get; set; } = 0.5f;
+        private float x = 0f;
+        private float y = 0f;
 
-        public float Scale { get; set; } = 1;
+        private float xOffset = 0f;
+        private float yOffset = 0f;
 
-        public bool HorizontalEdgePadding { get; set; } = false;
-        public bool VerticalEdgePadding { get; set; } = false;
+        private float scale = 1f;
+
+        private bool horizontalPadding = false;
+        private bool verticalPadding = false;
+
+        public float X {
+            get => x;
+            set => x = value;
+        }
+        public float Y {
+            get => y;
+            set => y = value;
+        }
+
+        public float XOffset {
+            get => xOffset;
+            set => xOffset = value;
+        }
+
+        public float YOffset {
+            get => yOffset;
+            set => yOffset = value;
+        }
+
+        public float AbsoluteX => x + xOffset;
+        public float AbsoluteY => y + yOffset;
+
+        public float Scale {
+            get => scale;
+            set => scale = value;
+        }
+
+        public bool HorizontalPadding {
+            get => horizontalPadding;
+            set => horizontalPadding = value;
+        }
+        public bool VerticalPadding {
+            get => verticalPadding;
+            set => verticalPadding = value;
+        }
 
         public bool EdgePadding {
-            get {
-                return HorizontalEdgePadding || VerticalEdgePadding;
-            }
             set {
-                HorizontalEdgePadding = value;
-                VerticalEdgePadding = value;
+                horizontalPadding = value;
+                verticalPadding = value;
             }
         }
 
@@ -27,8 +61,8 @@
             frame.Set(XOffset);
             frame.Set(YOffset);
             frame.Set(Scale);
-            frame.Set(HorizontalEdgePadding);
-            frame.Set(VerticalEdgePadding);
+            frame.Set(HorizontalPadding);
+            frame.Set(VerticalPadding);
         }
 
         public void Import(SerialFrame frame) {
@@ -37,8 +71,8 @@
             XOffset = frame.GetFloat();
             YOffset = frame.GetFloat();
             Scale = frame.GetFloat();
-            HorizontalEdgePadding = frame.GetBool();
-            VerticalEdgePadding = frame.GetBool();
+            HorizontalPadding = frame.GetBool();
+            VerticalPadding = frame.GetBool();
         }
     }
 }

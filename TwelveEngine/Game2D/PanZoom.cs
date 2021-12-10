@@ -59,7 +59,7 @@
             }
             camera.Scale = newScale;
 
-            var newScreenSpace = grid.GetScreenSpace();
+            var newScreenSpace = grid.ScreenSpace;
             zoomInTarget = grid.GetCoordinate(newScreenSpace,x,y);
             worldCenter = newScreenSpace.getCenter();
 
