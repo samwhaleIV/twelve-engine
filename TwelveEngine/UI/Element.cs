@@ -7,89 +7,111 @@ namespace TwelveEngine.UI {
         protected Positioning positioning = Positioning.Absolute;
         protected Sizing sizing = Sizing.Absolute;
 
-        protected int width = 0, height = 0;
-        protected int x = 0, y = 0;
+        protected int width = 0, height = 0, x = 0, y = 0;
+        protected int screenWidth = 0, screenHeight = 0, screenX = 0, screenY = 0;
 
         private Element parent = null;
         private bool hasParent() => parent != null;
 
         private readonly List<Element> children = new List<Element>();
+        public Element[] GetChildren() => children.ToArray();
 
-        internal event Action LayoutChanged;
-        private bool layoutChangesEnabled = false;
+        protected event Action LayoutUpdated;
+        private bool layoutUpdatesEnabled = false;
 
-        public void AddChild(Element child) {
+        internal virtual void AddChild(Element child,bool updateLayout = true) {
             children.Add(child);
             child.parent = this;
-            child.FireLayoutChanged();
+            if(!updateLayout) {
+                return;
+            }
+            child.UpdateLayout();
+        }
+
+        public virtual void AddChild(Element child) {
+            AddChild(child,updateLayout: true);
         }
 
         public void RemoveChild(Element child) {
             children.Remove(child);
             child.parent = null;
-            child.FireLayoutChanged();
+            child.UpdateLayout();
         }
 
         private void enableLayoutChanges() {
-            layoutChangesEnabled = true;
+            layoutUpdatesEnabled = true;
             foreach(Element child in children) {
                 child.enableLayoutChanges();
             }
         }
         private void pauseLayoutChanges() {
-            layoutChangesEnabled = false;
+            layoutUpdatesEnabled = false;
             foreach(Element child in children) {
                 child.pauseLayoutChanges();
             }
         }
 
+        public bool LayoutUpdatesEnabled => layoutUpdatesEnabled;
+
         public void StartLayout() {
             enableLayoutChanges();
-            FireLayoutChanged();
+            UpdateLayout();
         }
         public void PauseLayout() {
             pauseLayoutChanges();
         }
 
-        protected void FireLayoutChanged() {
-            if(!layoutChangesEnabled) {
+        protected void UpdateLayout() {
+            if(!layoutUpdatesEnabled) {
                 return;
             }
-            LayoutChanged?.Invoke();
+            cacheSize(getSize());
+            cachePosition(getPosition());
+            LayoutUpdated?.Invoke();
             foreach(Element child in children) {
-                child.FireLayoutChanged();
+                child.UpdateLayout();
             }
         }
 
         protected (int X,int Y) GetAbsolutePosition() {
-            return (x + leftPadding, y - rightPadding);
-        }
-
-        protected virtual (int X,int Y) GetCenteredPosition() {
-            /* TODO: Be corrected to pixel perfection */
-            int x = parent.x + parent.Width / 2 - this.x + width / 2;
-            int y = parent.y + parent.Height / 2 - this.y + height / 2;
             return (x + leftPadding, y + topPadding);
         }
 
+        protected virtual (int X,int Y) GetCenteredPosition() {
+            float x = parent.screenX + (parent.screenWidth / 2f) - (width / 2f);
+            float y = parent.screenY + (parent.screenHeight / 2f) - (height / 2f);
+            return ((int)Math.Floor(x), (int)Math.Floor(y));
+        }
+
         protected virtual (int X,int Y) GetRelativePosition() {
-            return (parent.x + x + leftPadding, parent.y + y + topPadding);
+            return (parent.screenX + x + leftPadding, parent.screenY + y + topPadding);
         }
 
         protected virtual (int Width,int Height) GetAbsoluteSize() {
-            return (width - rightPadding, height - bottomPadding);
+            return (width - rightPadding - leftPadding, height - bottomPadding - topPadding);
         }
 
         protected virtual (int Width,int Height) GetFillSize() {
-            return (parent.Width - rightPadding, parent.Height - bottomPadding);
+            return (parent.screenWidth - rightPadding - leftPadding, parent.screenHeight - bottomPadding - topPadding);
         }
 
         protected virtual (int Width,int Height) GetBoxFill() {
-            int size = parent.Width > parent.Height ? parent.Height : parent.Width;
-            return (size - rightPadding, size - bottomPadding);
+            int size = parent.screenWidth > parent.screenHeight ? parent.screenHeight : parent.screenWidth;
+            return (size - rightPadding - leftPadding, size - bottomPadding - topPadding);
         }
 
-        public (int Width,int Height) GetSize() {
+        private (int Width, int Height) cacheSize((int Width, int Height) size) {
+            screenWidth = size.Width;
+            screenHeight = size.Height;
+            return size;
+        }
+        private (int X,int Y) cachePosition((int X,int Y) position) {
+            screenX = position.X;
+            screenY = position.Y;
+            return position;
+        }
+
+        private (int Width,int Height) getSize() {
             switch(sizing) {
                 case Sizing.Absolute: default:
                     return GetAbsoluteSize();
@@ -102,7 +124,7 @@ namespace TwelveEngine.UI {
             }
         }
 
-        public (int X, int Y) GetPosition() {
+        private (int X, int Y) getPosition() {
             switch(positioning) {
                 case Positioning.Absolute:
                 default: {
@@ -128,47 +150,47 @@ namespace TwelveEngine.UI {
                 rightPadding = value;
                 topPadding = value;
                 bottomPadding = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
-        public int LeftPadding {
+        public int PaddingLeft {
             get => leftPadding;
             set {
                 if(leftPadding == value) {
                     return;
                 }
                 leftPadding = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
-        public int RightPadding {
+        public int PaddingRight {
             get => rightPadding;
             set {
                 if(rightPadding == value) {
                     return;
                 }
                 rightPadding = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
-        public int TopPadding {
+        public int PaddingTop {
             get => topPadding;
             set {
                 if(topPadding == value) {
                     return;
                 }
                 topPadding = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
-        public int BottomPadding {
+        public int PaddingBottom {
             get => bottomPadding;
             set {
                 if(bottomPadding == value) {
                     return;
                 }
                 bottomPadding = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
 
@@ -183,43 +205,43 @@ namespace TwelveEngine.UI {
             }
         }
         public int Width {
-            get => GetSize().Width;
+            get => width;
             set {
                 if(width == value) {
                     return;
                 }
                 width = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
         public int Height {
-            get => GetSize().Height;
+            get => height;
             set {
                 if(height == value) {
                     return;
                 }
                 height = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
         public int X {
-            get => GetPosition().X;
+            get => x;
             set {
                 if(x == value) {
                     return;
                 }
                 x = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
         public int Y {
-            get => GetPosition().Y;
+            get => y;
             set {
                 if(y == value) {
                     return;
                 }
                 y = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
         public Sizing Sizing {
@@ -229,7 +251,7 @@ namespace TwelveEngine.UI {
                     return;
                 }
                 sizing = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
         public Positioning Positioning {
@@ -239,7 +261,7 @@ namespace TwelveEngine.UI {
                     return;
                 }
                 positioning = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
     }

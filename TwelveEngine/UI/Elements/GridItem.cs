@@ -20,7 +20,21 @@
             var cellSize = grid.CellSize;
             var width = this.width / grid.Columns * cellSize.Width;
             var height = this.height / grid.Rows * cellSize.Height;
-            return (width - rightPadding, height - bottomPadding);
+            return (width - rightPadding - leftPadding, height - bottomPadding - topPadding);
+        }
+
+        public override void AddChild(Element child) {
+            AddChild(child,updateLayout: false);
+            var startPaused = child.LayoutUpdatesEnabled;
+            if(!startPaused) {
+                child.PauseLayout();
+            }
+            child.Positioning = Positioning.Relative;
+            child.Sizing = Sizing.Fill;
+            if(!startPaused) {
+                child.StartLayout();
+            }
+            UpdateLayout();
         }
     }
 }

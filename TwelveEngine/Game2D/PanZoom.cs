@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine.Game2D {
+﻿using TwelveEngine.Input;
+
+namespace TwelveEngine.Game2D {
     internal sealed class PanZoom {
 
         private const float MIN_SCALE = 1;
@@ -36,7 +38,7 @@
             panData = null;
         }
 
-        private void zoom(int x,int y,bool scrollingUp) {
+        private void zoom(int x,int y,ScrollDirection direction) {
             var startPosition = grid.GetCoordinate(x,y);
             var zoomInTarget = startPosition;
 
@@ -47,7 +49,7 @@
                 worldCenter.y - zoomInTarget.y
             );
 
-            float scaleChange = 1 + (scrollingUp ? ZOOM_RATE : -ZOOM_RATE);
+            float scaleChange = 1 + (int)direction * ZOOM_RATE;
             float startScale = camera.Scale;
             float newScale = startScale;
 

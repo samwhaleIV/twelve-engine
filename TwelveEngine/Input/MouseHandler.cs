@@ -7,9 +7,11 @@ namespace TwelveEngine.Input {
         public event Action<int,int> OnMouseDown;
         public event Action<int,int> OnMouseUp;
         public event Action<int,int> OnMouseMove;
-        public event Action<int,int,bool> OnMouseScroll;
+        public event Action<int,int,ScrollDirection> OnMouseScroll;
 
-        private void sendScrollEvent(bool scrollUp) => OnMouseScroll?.Invoke(x,y,scrollUp);
+        private void sendScrollEvent(ScrollDirection direction) {
+            OnMouseScroll?.Invoke(x,y,direction);
+        }
 
         private MouseState? lastState;
 
@@ -43,9 +45,9 @@ namespace TwelveEngine.Input {
 
             var delta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
             if(delta > 0) {
-                sendScrollEvent(true);
+                sendScrollEvent(ScrollDirection.Up);
             } else if(delta < 0) {
-                sendScrollEvent(false);
+                sendScrollEvent(ScrollDirection.Down);
             }
             this.lastState = mouseState;
         }

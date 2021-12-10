@@ -1,50 +1,55 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using TwelveEngine.Input;
 
 namespace TwelveEngine.UI.Elements {
     public abstract class RenderElement:Element {
 
-        public RenderElement() {
-            LayoutChanged += updateRenderTarget;
+        private GameManager game;
+        protected GameManager Game => game;
+
+        protected event Action OnLoad;
+        protected event Action OnUnload;
+
+        internal void Load(GameManager game) {
+            this.game = game;
+            OnLoad?.Invoke();
         }
+        internal void Unload() => OnUnload?.Invoke();
+
+        public bool IsInteractable { get; protected set; } = false;
+
+        private bool hovered = false, pressed = false;
+
+        public bool Hovered {
+            get => hovered;
+            internal set => hovered = value;
+        }
+        public bool Pressed {
+            get => pressed;
+            internal set => pressed = value;
+        }
+
+        public event Action OnClick;
+        internal void Click() => OnClick?.Invoke();
+
+        protected event Action<ScrollDirection> OnScroll;
+        internal void Scroll(ScrollDirection direction) => OnScroll?.Invoke(direction);
+
+        public abstract void Render(GameTime gameTime);
+
+        public RenderElement() => LayoutUpdated += updateRenderTarget;
 
         private Rectangle renderArea;
-        private bool focused = false;
-        private bool primed = false;
-
         public Rectangle RenderArea => renderArea;
-        public bool Focused {
-            get => focused;
-            set => focused = value;
-        }
-        public bool Primed {
-            get => primed;
-            set => primed = value;
-        }
 
         private void updateRenderTarget() {
-            var position = GetPosition();
-            var size = GetSize();
             renderArea = new Rectangle() {
-                X = position.X,
-                Y = position.Y,
-                Width = size.Width,
-                Height = size.Height
+                X = screenX,
+                Y = screenY,
+                Width = screenWidth,
+                Height = screenHeight
             };
         }
-
-        public void Render(GameTime gameTime) {
-            OnRender?.Invoke(this,gameTime);
-        }
-        public void Load(GameManager gameManager) {
-            OnLoad?.Invoke(gameManager);
-        }
-        public void Unload() {
-            OnUnload?.Invoke();
-        }
-
-        public event Action<RenderElement,GameTime> OnRender;
-        public event Action<GameManager> OnLoad;
-        public event Action OnUnload;
     }
 }

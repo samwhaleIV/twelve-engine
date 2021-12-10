@@ -5,7 +5,7 @@
         internal (int Width,int Height) CellSize => cellSize;
 
         private void updateCellSize() => cellSize = getCellSize();
-        public Grid() => LayoutChanged += updateCellSize;
+        public Grid() => LayoutUpdated += updateCellSize;
 
         private int rows;
         private int columns;
@@ -17,7 +17,7 @@
                     return;
                 }
                 rows = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
         public int Columns {
@@ -27,7 +27,7 @@
                     return;
                 }
                 columns = value;
-                FireLayoutChanged();
+                UpdateLayout();
             }
         }
 

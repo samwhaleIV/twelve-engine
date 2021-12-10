@@ -27,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\TimeoutManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\ScrollDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Main.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\Counter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserDirection.cs" />
@@ -80,15 +81,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Grid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\GridItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Positioning.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Sizing.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\UIGameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\UIState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)GameState\Automation\" />
-    <Folder Include="$(MSBuildThisFileDirectory)UI\Elements\" />
+    <Folder Include="$(MSBuildThisFileDirectory)GameUI\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
