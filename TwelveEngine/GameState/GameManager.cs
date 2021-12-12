@@ -22,6 +22,9 @@ namespace TwelveEngine {
             automationAgent.PlaybackStarted += proxyGameTime.Freeze;
             automationAgent.PlaybackStopped += proxyGameTime.Unfreeze;
 
+            automationAgent.PlaybackStarted += AutomationAgent_PlaybackStarted;
+            automationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
+
             keyWatcherSet = new KeyWatcherSet(
                 new KeyWatcher(Constants.PlaybackKey,automationAgent.TogglePlayback),
                 new KeyWatcher(Constants.RecordingKey,automationAgent.ToggleRecording),
@@ -32,6 +35,15 @@ namespace TwelveEngine {
                 new KeyWatcher(Constants.SaveState,saveSerialState),
                 new KeyWatcher(Constants.LoadState,loadSerialState)
             );
+        }
+
+        private void AutomationAgent_PlaybackStopped() {
+            IsFixedTimeStep = false;
+        }
+
+        private void AutomationAgent_PlaybackStarted() {
+            TargetElapsedTime = automationAgent.GetAveragePlaybackFrameTime();
+            IsFixedTimeStep = true;
         }
 
         /* Runtime state variables */
@@ -150,7 +162,7 @@ namespace TwelveEngine {
             this.gameState = gameState;
         }
 
-        public void SetGameState(GameState gameState) {
+        public void SetState(GameState gameState) {
             if(!initialized) {
                 pendingGameState = gameState;
                 return;
@@ -179,7 +191,7 @@ namespace TwelveEngine {
             if(pendingGameState == null) {
                 return;
             }
-            SetGameState(pendingGameState);
+            SetState(pendingGameState);
             pendingGameState = null;
         }
 
@@ -190,7 +202,7 @@ namespace TwelveEngine {
                 vcrDisplay.AdvanceFramesMany(gameTime);
             } else if(gamePaused && !shouldAdvanceFrame) {
                 var simTime = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
-                proxyGameTime.AddSimframe(simTime);
+                proxyGameTime.AddSimTime(simTime);
                 shouldAdvanceFrame = true;
                 vcrDisplay.AdvanceFrame(gameTime);
                 Debug.WriteLine($"Advanced to frame {automationAgent.FrameNumber + 1}");
@@ -201,7 +213,7 @@ namespace TwelveEngine {
             proxyGameTime.Update(trueGameTime);
             automationAgent.StartUpdate();
             if(automationAgent.PlaybackActive) {
-                proxyGameTime.SetPlaybackTime(automationAgent.GetFrameTime());
+                proxyGameTime.AddSimTime(automationAgent.GetFrameTime());
             }
             if(automationAgent.RecordingActive) {
                 automationAgent.UpdateRecordingFrame(proxyGameTime);

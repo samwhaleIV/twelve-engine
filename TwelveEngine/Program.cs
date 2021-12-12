@@ -6,11 +6,26 @@ using TwelveEngine.PuzzleGame;
 using TwelveEngine.Serial;
 using TwelveEngine.Game2D;
 
-
 namespace TwelveEngine {
     public static partial class Program {
 
-        public static GameState UITestState() {
+        private static bool loadedPuzzleGameData = false;
+
+        private static void tryLoadPuzzleGameData() {
+            if(loadedPuzzleGameData) {
+                return;
+            }
+            MapDatabase.LoadMaps();
+            EntityFactory.InstallDefault();
+            loadedPuzzleGameData = true;
+        }
+
+        public static GameState GetPuzzleGameTest() {
+            tryLoadPuzzleGameData();
+            return PuzzleFactory.GetLevel("CounterTest2");
+        }
+
+        public static GameState GetUITestState() {
             return UIGameState.Create(UI => {
 
                 Button button = null;
@@ -27,6 +42,8 @@ namespace TwelveEngine {
                     var viewport = UI.Game.GraphicsDevice.Viewport;
                     button.X = random.Next(0,viewport.Width - button.Width);
                     button.Y = random.Next(0,viewport.Height - button.Height);
+
+                    UI.Game.SetState(GetPuzzleGameTest());
                 };
 
                 UI.Root.AddChild(button);
@@ -35,14 +52,11 @@ namespace TwelveEngine {
         }
 
         public static GameState GetStartState() {
-            MapDatabase.LoadMaps();
-            EntityFactory.InstallDefault();
-            var gameState = PuzzleFactory.GetLevel("CounterTest2");
-            return gameState;
+            return GetUITestState();
         }
 
         public static void StartGame(GameManager game) {
-            game.SetGameState(GetStartState());
+            game.SetState(GetStartState());
         }
     }
 }

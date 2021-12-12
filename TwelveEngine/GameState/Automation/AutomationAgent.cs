@@ -64,11 +64,11 @@ namespace TwelveEngine.Automation {
             }
             playbackLoading = true;
             playbackFrames = await IO.ReadPlaybackFrames(path);
-            PlaybackStarted?.Invoke();
             frameNumber = 0;
             playbackFile = path;
             playbackActive = true;
             playbackLoading = false;
+            PlaybackStarted?.Invoke();
             Debug.WriteLine($"Playing input file '{path}'");
         }
 
@@ -150,6 +150,15 @@ namespace TwelveEngine.Automation {
                 StopPlayback();
                 Debug.WriteLine("Playback stopped automatically.");
             }
+        }
+
+        internal TimeSpan GetAveragePlaybackFrameTime() {
+            long ticks = 0;
+            int count = playbackFrames.Length;
+            for(int i = 0;i < count;i++) {
+                ticks += playbackFrames[i].elapsedTime.Ticks;
+            }
+            return TimeSpan.FromTicks((long)Math.Floor((double)ticks / count));
         }
 
         internal TimeSpan GetFrameTime() => playbackFrame.elapsedTime;

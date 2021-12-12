@@ -8,19 +8,20 @@ namespace TwelveEngine {
 
         private TimeSpan pauseTimeOffset = TimeSpan.Zero;
 
-        private bool totalTimeLocked = false, shouldResetTime = false;
+        private bool shouldResetTime = false;
 
         internal void Update(GameTime gameTime) {
             if(shouldResetTime) {
                 AddPauseTime(gameTime.TotalGameTime - pauseTimeOffset - TotalGameTime);
                 shouldResetTime = false;
             }
-            var elapsedTime = gameTime.ElapsedGameTime;
-            if(elapsedTime > MAX_ELAPSED_TIME) {
-                elapsedTime = MAX_ELAPSED_TIME;
-            }
-            ElapsedGameTime = elapsedTime;
-            if(!totalTimeLocked) {
+
+            if(freezeCount == 0) {
+                var elapsedTime = gameTime.ElapsedGameTime;
+                if(elapsedTime > MAX_ELAPSED_TIME) {
+                    elapsedTime = MAX_ELAPSED_TIME;
+                }
+                ElapsedGameTime = elapsedTime;
                 TotalGameTime = gameTime.TotalGameTime - pauseTimeOffset;
             }
         }
@@ -28,23 +29,25 @@ namespace TwelveEngine {
             pauseTimeOffset += pauseTime;
         }
 
+        private int freezeCount = 0;
+
         internal void Freeze() {
-            totalTimeLocked = true;
+            freezeCount += 1;
         }
         internal void Unfreeze() {
-            if(!totalTimeLocked) {
+            if(freezeCount == 0) {
                 return;
             }
-            totalTimeLocked = false;
+            freezeCount -= 1;
+            if(freezeCount != 0) {
+                return;
+            }
             shouldResetTime = true;
         }
-        internal void SetPlaybackTime(TimeSpan elapsedTime) {
+
+        internal void AddSimTime(TimeSpan elapsedTime) {
             ElapsedGameTime = elapsedTime;
             TotalGameTime += elapsedTime;
-        }
-        internal void AddSimframe(TimeSpan simTime) {
-            ElapsedGameTime = simTime;
-            TotalGameTime += simTime;
         }
     }
 }
