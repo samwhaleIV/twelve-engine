@@ -5,7 +5,7 @@ namespace TwelveEngine {
     public abstract class GameState:ISerializable {
         private GameManager game = null;
         public GameManager Game => game;
-        internal void SetGameReference(GameManager game) => this.game = game;
+        internal void SetReferences(GameManager game) => this.game = game;
 
         public event Action OnLoad;
         public event Action OnUnload;

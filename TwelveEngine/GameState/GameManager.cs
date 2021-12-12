@@ -157,7 +157,7 @@ namespace TwelveEngine {
             if(gameState == null) {
                 return;
             }
-            gameState.SetGameReference(this);
+            gameState.SetReferences(this);
             gameState.Load();
             this.gameState = gameState;
         }
