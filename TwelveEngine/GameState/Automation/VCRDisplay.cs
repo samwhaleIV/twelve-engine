@@ -37,10 +37,11 @@ namespace TwelveEngine.Automation {
         }
 
         private Mode getMode() {
-            if(gameManager.PlaybackActive) {
+            var automationAgent = gameManager.AutomationAgent;
+            if(automationAgent.PlaybackActive) {
                 return Mode.Playback;
             }
-            if(gameManager.RecordingActive) {
+            if(automationAgent.RecordingActive) {
                 return Mode.Recording;
             }
             return Mode.None;

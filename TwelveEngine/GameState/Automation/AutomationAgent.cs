@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 
 namespace TwelveEngine.Automation {
 
-    internal sealed class AutomationAgent {
+    public sealed class AutomationAgent {
         private int frameNumber = 0;
-        internal int Frame => frameNumber;
+        public int FrameNumber => frameNumber;
 
         private bool recording = false;
-        internal bool RecordingActive => recording;
+        public bool RecordingActive => recording;
 
-        private bool playback = false;
-        internal bool PlaybackActive => playback;
+        private bool playbackActive = false;
+        public bool PlaybackActive => playbackActive;
 
         private string playbackFile = null;
-        internal string PlaybackFile => playbackFile;
+        public string PlaybackFile => playbackFile;
 
         private bool playbackLoading = false;
-        internal bool PlaybackLoading => playbackLoading;
+        public bool PlaybackLoading => playbackLoading;
 
         private Queue<InputFrame> outputBuffer = null;
         private InputFrame[] playbackFrames = null;
@@ -36,10 +36,11 @@ namespace TwelveEngine.Automation {
             outputBuffer = new Queue<InputFrame>();
             recording = true;
         }
-        internal async Task StopRecording(string path) {
+        internal async Task StopRecording() {
             if(!recording) {
                 throw new Exception("Cannot stop recording, we never started!");
             }
+            var path = IO.PrepareOutputPath();
 
             InputFrame[] frames = outputBuffer.ToArray();
             outputBuffer.Clear();
@@ -47,38 +48,65 @@ namespace TwelveEngine.Automation {
             recording = false;
 
             await IO.WritePlaybackFrames(path,frames);
+            Debug.WriteLine($"Recording saved to '{path}'.");
         }
 
-        internal async Task StartPlayback(string path) {
+        internal async Task StartPlayback() {
             if(playbackLoading) {
                 return;
             }
-            if(playback) {
+            if(playbackActive) {
                 throw new Exception("Cannot start playback, playback is already active!");
+            }
+            var path = IO.GetPlaybackFile();
+            if(string.IsNullOrWhiteSpace(path)) {
+                return;
             }
             playbackLoading = true;
             playbackFrames = await IO.ReadPlaybackFrames(path);
             PlaybackStarted?.Invoke();
             frameNumber = 0;
             playbackFile = path;
-            playback = true;
+            playbackActive = true;
             playbackLoading = false;
+            Debug.WriteLine($"Playing input file '{path}'");
         }
 
-        internal event Action PlaybackStopped;
-        internal event Action PlaybackStarted;
+        internal event Action PlaybackStopped, PlaybackStarted;
 
         internal void StopPlayback() {
-            if(!playback) {
+            if(!playbackActive) {
                 throw new Exception("Cannot stop playback, playback is not active!");
             }
             playbackFrames = null;
-            playback = false;
+            playbackActive = false;
             playbackFile = null;
             PlaybackStopped?.Invoke();
         }
 
-        public int? PlaybackFrameCount {
+        internal async void TogglePlayback() {
+            if(!recording) {
+                if(playbackLoading) {
+                    return;
+                }
+                if(playbackActive) {
+                    StopPlayback();
+                } else {
+                    await StartPlayback();
+                }
+            }
+        }
+        internal async void ToggleRecording() {
+            if(!playbackActive) {
+                if(recording) {
+                    await StopRecording();
+                } else {
+                    StartRecording();
+                }
+            }
+        }
+
+        internal int? PlaybackFrameCount {
             get {
                 if(playbackFrames == null) {
                     return null;
@@ -88,24 +116,18 @@ namespace TwelveEngine.Automation {
             }
         }
 
-        internal KeyboardState GetKeyboardState() {
-            KeyboardState state;
-            if(playback) {
+        internal KeyboardState FilterKeyboardState(KeyboardState state) {
+            if(playbackActive) {
                 state = playbackFrame.keyboardState;
-            } else {
-                state = Keyboard.GetState();
             }
             if(recording) {
                 recordingFrame.keyboardState = state;
             }
             return state;
         }
-        internal MouseState GetMouseState() {
-            MouseState state;
-            if(playback) {
+        internal MouseState FilterMouseState(MouseState state) {
+            if(playbackActive) {
                 state = playbackFrame.mouseState;
-            } else {
-                state = Mouse.GetState();
             }
             if(recording) {
                 recordingFrame.mouseState = state;
@@ -114,7 +136,7 @@ namespace TwelveEngine.Automation {
         }
 
         internal void StartUpdate() {
-            if(playback) {
+            if(playbackActive) {
                 playbackFrame = playbackFrames[frameNumber];
                 frameNumber += 1;
             } else {
@@ -124,7 +146,7 @@ namespace TwelveEngine.Automation {
 
         internal void EndUpdate() {
             if(recording) outputBuffer.Enqueue(recordingFrame);
-            if(playback && frameNumber >= playbackFrames.Length) {
+            if(playbackActive && frameNumber >= playbackFrames.Length) {
                 StopPlayback();
                 Debug.WriteLine("Playback stopped automatically.");
             }

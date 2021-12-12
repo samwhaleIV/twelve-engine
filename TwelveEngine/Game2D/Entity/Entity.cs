@@ -12,23 +12,20 @@ namespace TwelveEngine.Game2D {
         internal event Action<Entity,string> OnNameChanged;
 
         private int id = 0;
-        private EntityManager owner = null;
 
         private GameManager game;
         private Grid2D grid;
 
-        public EntityManager Owner {
-            get => owner;
-            internal set => owner = value;
+        protected GameManager Game => game;
+        protected Grid2D Grid => grid;
+
+        private EntityManager owner;
+        internal EntityManager GetOwner() => owner;
+
+        internal void SetReferences(EntityManager owner,Grid2D grid,GameManager game) {
+            this.owner = owner; this.grid = grid; this.game = game;
         }
-        public Grid2D Grid {
-            get => grid;
-            internal set => grid = value;
-        }
-        public GameManager Game {
-            get => game;
-            internal set => game = value;
-        }
+        internal void ClearReferences() => SetReferences(null,null,null);
 
         private float x = 0, y = 0, width = 1, height = 1;
 

@@ -8,17 +8,12 @@ namespace TwelveEngine {
 
         private TimeSpan pauseTimeOffset = TimeSpan.Zero;
 
-        private bool frozen = false;
-        private bool totalTimeLocked = false;
-        private bool shouldResetTime = true;
+        private bool totalTimeLocked = false, shouldResetTime = false;
 
         internal void Update(GameTime gameTime) {
             if(shouldResetTime) {
                 AddPauseTime(gameTime.TotalGameTime - pauseTimeOffset - TotalGameTime);
                 shouldResetTime = false;
-            }
-            if(frozen) {
-                return;
             }
             var elapsedTime = gameTime.ElapsedGameTime;
             if(elapsedTime > MAX_ELAPSED_TIME) {
@@ -29,21 +24,14 @@ namespace TwelveEngine {
                 TotalGameTime = gameTime.TotalGameTime - pauseTimeOffset;
             }
         }
-        internal void Freeze() {
-            ElapsedGameTime = TimeSpan.Zero;
-            frozen = true;
-        }
-        internal void Unfreeze() {
-            frozen = false;
-        }
         internal void AddPauseTime(TimeSpan pauseTime) {
             pauseTimeOffset += pauseTime;
         }
 
-        internal void LockTime() {
+        internal void Freeze() {
             totalTimeLocked = true;
         }
-        internal void UnlockTime() {
+        internal void Unfreeze() {
             if(!totalTimeLocked) {
                 return;
             }

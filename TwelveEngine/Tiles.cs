@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine {
+﻿using Microsoft.Xna.Framework;
+
+namespace TwelveEngine {
     public static class Tiles {
         public const int LaserLeftOn = 320;
         public const int LaserRightOn = 321;
@@ -25,6 +27,9 @@
         public const int HorizontalLaser = 322;
         public const int VerticalLaser = 323;
         public const int CrossLaser = 290;
+
+        public static readonly Rectangle CollisionArea = new Rectangle(256,0,256,64);
+        public static readonly Color CollisionColor = new Color(128,0,0,128);
 
         public readonly struct CounterTiles {
             public readonly int[] Small;

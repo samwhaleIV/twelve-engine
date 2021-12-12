@@ -8,9 +8,6 @@ namespace TwelveEngine.Game2D {
         private readonly GameManager game;
         private readonly Grid2D grid;
 
-        public GameManager Game => game;
-        public Grid2D Grid => grid;
-
         private int IDCounter = 0;
         private int getNextID() => IDCounter++;
 
@@ -122,9 +119,9 @@ namespace TwelveEngine.Game2D {
         }
 
         public void AddEntity(Entity entity) {
-            if(entity.Owner != null) return;
+            if(entity.GetOwner() != null) return;
 
-            entity.Owner = this; entity.Game = Game; entity.Grid = Grid;
+            entity.SetReferences(this,grid,game);
 
             var ID = getNextID();
             entity.ID = ID;
@@ -135,7 +132,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public void RemoveEntity(Entity entity) {
-            if(entity.Owner != this) {
+            if(entity.GetOwner() != this) {
                 throw new ArgumentException("Entity does not beint to this EntityManager!","entity");
             }
 
@@ -144,7 +141,7 @@ namespace TwelveEngine.Game2D {
             removeFromList(entity); //Stage 2
             entity.Unload(); //Stage 3
 
-            entity.Owner = null; entity.Game = null; entity.Grid = null;
+            entity.ClearReferences();
         }
 
         public void Unload() => clearEntities();

@@ -22,7 +22,7 @@ namespace TwelveEngine.PuzzleGame.Components {
 
         public Hitbox GetHitbox() {
             int x = location.X, y = location.Y;
-            return CollisionTypes.getHitbox(CollisionLayer[x,y],x,y).Value;
+            return Grid.Collision.Types.GetHitbox(CollisionLayer[x,y],x,y).Value;
         }
 
         private bool updating = false;
@@ -40,7 +40,7 @@ namespace TwelveEngine.PuzzleGame.Components {
             SignalState = positive ? SignalState.Positive : SignalState.Negative;
             SendSignal();
             SignalState = SignalState.Neutral;
-            grid.Game.SetTimeout(endPulse,timeout);
+            Grid.Game.SetTimeout(endPulse,timeout);
         }
 
         protected override void OnChange() {

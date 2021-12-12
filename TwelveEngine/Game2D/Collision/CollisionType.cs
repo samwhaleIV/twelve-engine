@@ -1,16 +1,16 @@
 ﻿namespace TwelveEngine.Game2D{
-    public struct CollisionType {
+    public readonly struct CollisionType {
         public CollisionType(
             int x,int y,int width,int height,float tileSize
         ) {
-            this.X = x / tileSize;
-            this.Y = y / tileSize;
-            this.Width = width / tileSize;
-            this.Height = height / tileSize;
+            X = x / tileSize;
+            Y = y / tileSize;
+            Width = width / tileSize;
+            Height = height / tileSize;
         }
-        public float X;
-        public float Y;
-        public float Width;
-        public float Height;
+        public readonly float X;
+        public readonly float Y;
+        public readonly float Width;
+        public readonly float Height;
     }
 }

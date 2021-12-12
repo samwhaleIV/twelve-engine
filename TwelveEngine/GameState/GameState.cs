@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework;
 
 namespace TwelveEngine {
     public abstract class GameState:ISerializable {
-        internal GameManager Game = null;
+        private GameManager game = null;
+        public GameManager Game => game;
+        internal void SetGameReference(GameManager game) => this.game = game;
 
         public event Action OnLoad;
         public event Action OnUnload;

@@ -1,9 +1,11 @@
 ﻿using System;
-using TwelveEngine.Serial;
-using TwelveEngine.Game2D;
 using TwelveEngine.UI;
 using TwelveEngine.UI.Elements;
 using Microsoft.Xna.Framework;
+using TwelveEngine.PuzzleGame;
+using TwelveEngine.Serial;
+using TwelveEngine.Game2D;
+
 
 namespace TwelveEngine {
     public static partial class Program {
@@ -33,18 +35,13 @@ namespace TwelveEngine {
         }
 
         public static GameState GetStartState() {
-            return UITestState();
-
             MapDatabase.LoadMaps();
             EntityFactory.InstallDefault();
-            var gameState = Main();
+            var gameState = PuzzleFactory.GetLevel("CounterTest2");
             return gameState;
         }
-        public static GameManager GetStartGame() {
-            var startState = GetStartState();
-            return new GameManager(startState);
-        }
-        public static void ConfigStartGame(GameManager game) {
+
+        public static void StartGame(GameManager game) {
             game.SetGameState(GetStartState());
         }
     }

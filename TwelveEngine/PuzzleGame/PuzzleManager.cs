@@ -14,7 +14,7 @@ namespace TwelveEngine.PuzzleGame {
 
         private void installInteractionLayer(Grid2D grid) {
             var interactionLayer = new InteractionLayer();
-            grid.InteractionLayer = interactionLayer;
+            grid.Interaction = interactionLayer;
 
             foreach(var component in components) {
                 if(!(component is IInteract)) {

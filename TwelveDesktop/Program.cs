@@ -1,11 +1,13 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using TwelveEngine;
 
 namespace TwelveDesktop {
-    public static class Program {
+    internal static class Program {
         [STAThread]
-        static void Main() {
-            using var game = TwelveEngine.Program.GetStartGame();
+        internal static void Main() {
+            using var game = new GameManager();
+            game.SetGameState(TwelveEngine.Program.GetStartState());
             game.Run(GameRunBehavior.Synchronous);
         }
     }

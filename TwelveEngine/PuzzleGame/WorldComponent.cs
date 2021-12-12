@@ -3,7 +3,8 @@
 namespace TwelveEngine.PuzzleGame {
     public abstract class WorldComponent:Component {
 
-        protected readonly Grid2D grid;
+        private readonly Grid2D grid;
+        protected Grid2D Grid => grid;
 
         protected int[,] ObjectLayer => grid.GetLayer(Constants.ObjectLayerIndex);
         protected int[,] CollisionLayer => grid.GetLayer(Constants.CollisionLayerIndex);

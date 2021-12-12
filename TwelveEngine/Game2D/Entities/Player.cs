@@ -99,10 +99,10 @@ namespace TwelveEngine.Game2D.Entities {
 
         private void interact() {
             shouldInteract = false;
-            if(Grid.InteractionLayer == null) {
+            if(Grid.Interaction == null) {
                 return;
             }
-            Grid.InteractionLayer.HitTest(this);
+            Grid.Interaction.HitTest(this);
         }
 
         public float Speed {
@@ -179,7 +179,7 @@ namespace TwelveEngine.Game2D.Entities {
 
             Hitbox self = GetHitbox();
 
-            var collisionData = Grid.CollisionInterface.Collides(self);
+            var collisionData = Grid.Collision.Collides(self);
             if(collisionData.Count == 0) {
                 return;
             }
@@ -251,7 +251,7 @@ namespace TwelveEngine.Game2D.Entities {
 
         private void handleAutomaticOffset(Direction oldDirection) {
             Hitbox hitbox = GetHitbox();
-            List<Hitbox> collisionResult = Grid.CollisionInterface.Collides(hitbox);
+            List<Hitbox> collisionResult = Grid.Collision.Collides(hitbox);
 
             var hadCollision = false;
             foreach(var target in collisionResult) {
@@ -276,7 +276,7 @@ namespace TwelveEngine.Game2D.Entities {
 
             hitbox = GetHitbox();
 
-            collisionResult = Grid.CollisionInterface.Collides(hitbox);
+            collisionResult = Grid.Collision.Collides(hitbox);
             if(collisionResult.Count <= 0) {
                 return;
             }

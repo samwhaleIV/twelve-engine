@@ -9,6 +9,15 @@ namespace TwelveEngine.Game2D {
             this.grid = grid;
         }
 
+        private CollisionTypes collisionTypes;
+        internal CollisionTypes Types {
+            get => collisionTypes;
+            set => collisionTypes = value;
+        }
+        public Hitbox? GetHitbox(int ID,float x,float y) {
+            return collisionTypes?.GetHitbox(ID,x,y);
+        }
+
         private const int MATRIX_SIZE = 9;
 
         private int[,] surroundingMatrix = new int[MATRIX_SIZE,2] {
@@ -20,7 +29,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private Hitbox? getTileHitbox(int value,int x,int y) {
-            return CollisionTypes.getHitbox(value,x,y);
+            return collisionTypes.GetHitbox(value,x,y);
         }
 
         private List<Hitbox> getSurroundingArea(int[,] layer,Hitbox hitbox) {

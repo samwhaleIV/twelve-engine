@@ -6,11 +6,21 @@ using TwelveEngine.Serial;
 namespace TwelveEngine.Game2D {
     public sealed class Grid2D:GameState {
 
-        public Grid2D(int tileSize = Constants.DefaultTileSize,LayerMode? layerMode = null) {
+        public Grid2D(
+
+            int tileSize = Constants.DefaultTileSize,
+            LayerMode? layerMode = null,
+            CollisionTypes collisionTypes = null
+
+        ) {
             this.tileSize = tileSize;
             LayerMode = layerMode.HasValue ? layerMode.Value : LayerModes.Default;
 
             collisionInterface = new CollisionInterface(this);
+            if(collisionTypes == null) {
+                collisionTypes = new CollisionTypes(tileSize);
+            }
+            collisionInterface.Types = collisionTypes;
 
             OnLoad += Grid2D_OnLoad;
             OnUnload += Grid2D_OnUnload;
@@ -42,10 +52,10 @@ namespace TwelveEngine.Game2D {
         public LayerMode LayerMode;
 
         private readonly CollisionInterface collisionInterface;
-        public CollisionInterface CollisionInterface => collisionInterface;
+        public CollisionInterface Collision => collisionInterface;
 
         private InteractionLayer interactionLayer = null;
-        public InteractionLayer InteractionLayer {
+        public InteractionLayer Interaction {
             get => interactionLayer;
             set => interactionLayer = value;
         }
@@ -142,6 +152,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void Grid2D_OnLoad() {
+            collisionInterface.Types?.LoadTypes(Game.Content);
             loadEntityManager();
             if(pendingTileRenderer != null) {
                 tileRenderer = pendingTileRenderer;
