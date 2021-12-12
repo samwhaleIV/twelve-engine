@@ -55,7 +55,6 @@ namespace TwelveEngine {
 
         /* Loading, automation, and time maniuplation state */
         private bool initialized = false;
-        private bool loading = false;
         private bool fastForwarding = false;
         private bool shouldAdvanceFrame = false;
         private int framesToSkip = 0;
@@ -77,7 +76,6 @@ namespace TwelveEngine {
         private readonly KeyBinds keyBinds = new KeyBinds();
 
         /* Public access */
-        public bool Loading => loading;
         public KeyboardState KeyboardState => keyboardState;
         public MouseState MouseState => mouseState;
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
@@ -121,15 +119,12 @@ namespace TwelveEngine {
         private MouseState getMouseState() {
             return automationAgent.FilterMouseState(Mouse.GetState());
         }
-        private bool hasGameState() {
+        private bool hasState() {
             return gameState != null;
-        }
-        private bool gameIsReady() {
-            return !loading && hasGameState();
         }
 
         private void saveSerialState() {
-            if(!hasGameState()) {
+            if(!hasState()) {
                 return;
             }
             var frame = new SerialFrame();
@@ -137,23 +132,23 @@ namespace TwelveEngine {
             savedState = frame;
         }
         private void loadSerialState() {
-            if(!hasGameState() || savedState == null) {
+            if(!hasState() || savedState == null) {
                 return;
             }
             savedState.StartReadback();
             gameState.Import(savedState);
         }
 
-        private void unloadGameState() {
-            if(!hasGameState()) {
+        private void unloadState() {
+            if(!hasState()) {
                 return;
             }
             var oldGameState = gameState;
             oldGameState.Unload();
         }
 
-        private void loadGameState(GameState gameState) {
-            unloadGameState();
+        private void loadState(GameState gameState) {
+            unloadState();
             if(gameState == null) {
                 return;
             }
@@ -167,14 +162,7 @@ namespace TwelveEngine {
                 pendingGameState = gameState;
                 return;
             }
-            if(loading) {
-                return;
-            }
-            loading = true;
-            proxyGameTime.Freeze();
-            loadGameState(gameState);
-            proxyGameTime.Unfreeze();
-            loading = false;
+            loadState(gameState);
         }
 
         protected override void Initialize() {
@@ -225,8 +213,8 @@ namespace TwelveEngine {
             keyboardHandler.Update(keyboardState);
             mouseHandler.Update(mouseState);
 
-            gameState.Update(proxyGameTime);
             timeout.Update(proxyGameTime.TotalGameTime);
+            gameState.Update(proxyGameTime);
 
             automationAgent.EndUpdate();
             if(framesToSkip > 0) {
@@ -265,7 +253,7 @@ namespace TwelveEngine {
 #if DEBUG
             watch.Start();
 #endif
-            if(!gameIsReady()) {
+            if(!hasState()) {
 #if DEBUG
                 watch.Stop();
                 updateTime = watch.Elapsed;
@@ -296,7 +284,7 @@ namespace TwelveEngine {
 #if DEBUG
             watch.Start();
 #endif
-            if(gameIsReady()) {
+            if(hasState()) {
                 gameState.Draw(proxyGameTime);
             } else {
                 GraphicsDevice.Clear(Color.Black);

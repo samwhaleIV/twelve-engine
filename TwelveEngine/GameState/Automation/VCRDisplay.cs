@@ -9,7 +9,7 @@ namespace TwelveEngine.Automation {
         private const int SPACE = 4;
         private const double ADVANCE_FRAME_TIMEOUT = 250;
 
-        private bool Loading => gameManager.Loading || automationAgent.PlaybackLoading;
+        private bool Loading => automationAgent.PlaybackLoading;
         private bool Paused => gameManager.Paused;
 
         private enum Mode {
