@@ -17,7 +17,7 @@ namespace TwelveEngine.UI.Elements {
         }
         internal void Unload() => OnUnload?.Invoke();
 
-        public bool IsInteractable { get; protected set; } = false;
+        public bool IsInteractable { get; set; } = false;
 
         private bool hovered = false, pressed = false;
 
@@ -38,18 +38,35 @@ namespace TwelveEngine.UI.Elements {
 
         public abstract void Render(GameTime gameTime);
 
-        public RenderElement() => LayoutUpdated += updateRenderTarget;
+        public RenderElement() => LayoutUpdated += updateRenderArea;
 
         private Rectangle renderArea;
         public Rectangle RenderArea => renderArea;
 
-        private void updateRenderTarget() {
-            renderArea = new Rectangle() {
+        private void updateRenderArea() {
+            renderArea = GetRenderArea();
+        }
+
+        protected virtual Rectangle GetRenderArea() {
+            return new Rectangle() {
                 X = screenX,
                 Y = screenY,
                 Width = screenWidth,
                 Height = screenHeight
             };
+        }
+
+        protected Color GetRenderColor() {
+            if(!IsInteractable) {
+                return Color.White;
+            }
+            if(Pressed) {
+                return Color.DarkGray;
+            } else if(Hovered) {
+                return Color.LightGray;
+            } else {
+                return Color.White;
+            }
         }
     }
 }

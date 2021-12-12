@@ -28,16 +28,45 @@ namespace TwelveEngine {
         public static GameState GetUITestState() {
             return UIGameState.Create(UI => {
 
-                Button button = null;
+                Panel button = null;
                 var random = new Random();
 
-                button = new Button(Color.Orange) {
+                var pictureBackground = new Panel(Color.White) {
+                    X = 70,
+                    Y = 10,
+                    Width = 100,
+                    Height = 400,
+                };
+
+                var picture = new Picture("cat-test-picture") {
+                    Padding = 0,
+                    Sizing = Sizing.Fill,
+                    Positioning = Positioning.Relative,
+                    Mode = PictureMode.Cover,
+                    IsInteractable = true,
+                };
+
+                picture.OnClick += () => {
+                    pictureBackground.PauseLayout();
+
+                    int buffer = pictureBackground.Width;
+                    pictureBackground.Width = pictureBackground.Height;
+                    pictureBackground.Height = buffer;
+
+                    pictureBackground.StartLayout();
+                };
+
+                pictureBackground.AddChild(picture);
+
+                button = new Panel(Color.Orange) {
                     X = 10,
                     Y = 10,
-                    Width = 200,
-                    Height = 200,
-                    Positioning = Positioning.Absolute
+                    Width = 50,
+                    Height = 50,
+                    Positioning = Positioning.Absolute,
+                    IsInteractable = true
                 };
+
                 button.OnClick += () => {
                     var viewport = UI.Game.GraphicsDevice.Viewport;
                     button.X = random.Next(0,viewport.Width - button.Width);
@@ -47,7 +76,7 @@ namespace TwelveEngine {
                 };
 
                 UI.Root.AddChild(button);
-
+                UI.Root.AddChild(pictureBackground);
             });
         }
 

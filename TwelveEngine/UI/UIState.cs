@@ -61,22 +61,30 @@ namespace TwelveEngine.UI {
 
         private sealed class RootNode:Element {
 
-            private int lastWidth = 0, lastHeight = 0;
+            private Rectangle area = new Rectangle(0,0,0,0);
 
             public void Update(Viewport viewport) {
-                var equalWidth = viewport.Width == lastWidth;
-                var equalHeight = viewport.Height == lastHeight;
+                var equalWidth = viewport.Width == area.Width;
+                var equalHeight = viewport.Height == area.Height;
 
-                lastWidth = viewport.Width;
-                lastHeight = viewport.Height;
+                var width = viewport.Width;
+                var height = viewport.Height;
+
+                area.Width = width;
+                area.Height = height;
 
                 if(equalWidth && equalHeight) {
                     return;
                 }
 
-                width = lastWidth;
-                height = lastHeight;
+                this.width = width;
+                this.height = height;
+
                 UpdateLayout();
+            }
+
+            public bool ElementOnSurface(RenderElement element) {
+                return element.RenderArea.Intersects(area);  
             }
         }
 
@@ -124,8 +132,11 @@ namespace TwelveEngine.UI {
 
         internal void Draw(GameTime gameTime) {
             game.GraphicsDevice.Clear(Color.Black);
-            game.SpriteBatch.Begin(SpriteSortMode.Immediate);
+            game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
             foreach(var renderable in renderCache) {
+                if(!rootNode.ElementOnSurface(renderable)) {
+                    continue;
+                }
                 renderable.Render(gameTime);
             }
             game.SpriteBatch.End();
