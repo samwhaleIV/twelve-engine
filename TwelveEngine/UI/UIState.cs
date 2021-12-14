@@ -51,8 +51,8 @@ namespace TwelveEngine.UI {
 
         private readonly RootNode rootNode = new RootNode();
 
-        public int Width => rootNode.Width;
-        public int Height => rootNode.Height;
+        public int Width => rootNode.ComputedWidth;
+        public int Height => rootNode.ComputedHeight;
 
         private Viewport viewport => game.GraphicsDevice.Viewport;
 
@@ -65,7 +65,7 @@ namespace TwelveEngine.UI {
             }
 
             public bool ElementOnSurface(RenderElement element) {
-                return element.ScreenArea.Intersects(element.Area);
+                return element.ScreenArea.Intersects(ComputedArea);
             }
         }
 

@@ -55,6 +55,7 @@ namespace TwelveEngine {
                 pictureBackground.AddChild(picture);
 
                 button = new Panel(Color.Orange) {
+                    Anchor = Anchor.BottomRight,
                     Area = new Rectangle(10,10,50,50),
                     IsInteractable = true
                 };

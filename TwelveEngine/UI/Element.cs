@@ -111,15 +111,15 @@ namespace TwelveEngine.UI {
             if(anchor == Anchor.TopLeft || anchor == Anchor.BottomLeft) {
                 return parent.ComputedX + x;
             } else {
-                return parent.ComputedX + parent.ComputedWidth - ComputedWidth - x;
+                return parent.ComputedArea.Right - ComputedWidth - x;
             }
         }
 
         private int verticalAnchor(int y) {
-            if(anchor == Anchor.TopRight || anchor == Anchor.BottomRight) {
+            if(anchor == Anchor.TopRight || anchor == Anchor.TopLeft) {
                 return parent.ComputedY + y;
             } else {
-                return parent.ComputedY + parent.ComputedHeight - ComputedHeight - y;
+                return parent.ComputedArea.Bottom - ComputedHeight - y;
             }
         }
 
@@ -128,7 +128,7 @@ namespace TwelveEngine.UI {
 
         private Point getRelativeSize() {
             var size = GetSize();
-            switch(Sizing) {
+            switch(sizing) {
                 case Sizing.Fill:
                     size = GetFillSize();
                     break;
@@ -158,7 +158,6 @@ namespace TwelveEngine.UI {
 
         private Point getRelativePosition() {
             var position = GetPosition();
-            var positioning = Positioning;
             switch(positioning) {
                 case Positioning.Normal:
                     position.X = horizontalAnchor(position.X);
