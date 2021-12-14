@@ -1,23 +1,31 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace TwelveEngine.UI {
     public class Element {
 
-        protected Positioning positioning = Positioning.Absolute;
-        protected Sizing sizing = Sizing.Absolute;
+        private const int FRACTIONAL_UNITS = int.MaxValue;
 
-        protected int width = 0, height = 0, x = 0, y = 0;
-        protected int screenWidth = 0, screenHeight = 0, screenX = 0, screenY = 0;
+        protected Positioning positioning = Positioning.Normal;
+        protected Sizing sizing = Sizing.Normal;
+
+        private Rectangle area = Rectangle.Empty;
+        private Rectangle computedArea = Rectangle.Empty;
+
+        private Anchor anchor = Anchor.TopLeft;
+        private Padding padding = new Padding();
 
         private Element parent = null;
-        private bool hasParent() => parent != null;
+        public bool HasParent() => parent != null;
 
         private readonly List<Element> children = new List<Element>();
         public Element[] GetChildren() => children.ToArray();
 
-        protected event Action LayoutUpdated;
         private bool layoutUpdatesEnabled = false;
+        public bool LayoutUpdatesEnabled => layoutUpdatesEnabled;
+
+        protected event Action LayoutUpdated;
 
         internal virtual void AddChild(Element child,bool updateLayout = true) {
             children.Add(child);
@@ -51,8 +59,6 @@ namespace TwelveEngine.UI {
             }
         }
 
-        public bool LayoutUpdatesEnabled => layoutUpdatesEnabled;
-
         public void StartLayout() {
             enableLayoutChanges();
             UpdateLayout();
@@ -61,135 +67,239 @@ namespace TwelveEngine.UI {
             pauseLayoutChanges();
         }
 
+        private void cacheSize(Point size) {
+            computedArea.Width = size.X;
+            computedArea.Height = size.Y;
+        }
+        private void cachePosition(Point position) {
+            computedArea.X = position.X;
+            computedArea.Y = position.Y;
+        }
+
         protected void UpdateLayout() {
-            if(!layoutUpdatesEnabled) {
-                return;
-            }
-            cacheSize(getSize());
-            cachePosition(getPosition());
+            if(!layoutUpdatesEnabled) return;
+
+            var size = getSize();
+            size.X -= PaddingLeft + PaddingRight;
+            size.Y -= PaddingTop + PaddingBottom;
+
+            var position = getPosition();
+            position.X += PaddingLeft;
+            position.Y += PaddingTop;
+
+            cacheSize(size);
+            cachePosition(position);
+
             LayoutUpdated?.Invoke();
             foreach(Element child in children) {
                 child.UpdateLayout();
             }
         }
 
-        protected (int X,int Y) GetAbsolutePosition() {
-            return (x + paddingLeft, y + paddingTop);
+        protected virtual Point GetPosition() => area.Location;
+        protected virtual Point GetSize() => area.Size;
+        protected virtual Point GetFillSize() => parent.computedArea.Size;
+        protected virtual Point GetBoxFill() => new Point(Math.Max(parent.ComputedWidth,parent.ComputedHeight));
+
+        private int getFractionalWidth() => (int)Math.Floor(Width / (float)FRACTIONAL_UNITS);
+        private int getFractionalHeight() => (int)Math.Floor(Height / (float)FRACTIONAL_UNITS);
+
+        private int getCenteredX() => (int)Math.Floor(parent.ComputedX + parent.ComputedWidth / 2f - ComputedWidth / 2f);
+        private int getCenteredY() => (int)Math.Floor(parent.ComputedY + parent.ComputedHeight / 2f - ComputedHeight / 2f);
+
+        private int horizontalAnchor(int x) {
+            if(anchor == Anchor.TopLeft || anchor == Anchor.BottomLeft) {
+                return parent.ComputedX + x;
+            } else {
+                return parent.ComputedX + parent.ComputedWidth - ComputedWidth - x;
+            }
         }
 
-        protected virtual (int X,int Y) GetCenteredPosition() {
-            float x = parent.screenX + (parent.screenWidth / 2f) - (screenWidth / 2f);
-            float y = parent.screenY + (parent.screenHeight / 2f) - (screenHeight / 2f);
-            return ((int)Math.Floor(x) + this.x + paddingLeft, (int)Math.Floor(y) + this.y + paddingRight);
+        private int verticalAnchor(int y) {
+            if(anchor == Anchor.TopRight || anchor == Anchor.BottomRight) {
+                return parent.ComputedY + y;
+            } else {
+                return parent.ComputedY + parent.ComputedHeight - ComputedHeight - y;
+            }
         }
 
-        protected virtual (int X,int Y) GetRelativePosition() {
-            return (parent.screenX + x + paddingLeft, parent.screenY + y + paddingTop);
-        }
+        private int getCenteredXOrigin(int x) => (int)Math.Floor(x + ComputedWidth / 2f);
+        private int getCenteredYOrigin(int y) => (int)Math.Floor(y + ComputedHeight / 2f);
 
-        protected virtual (int Width,int Height) GetAbsoluteSize() {
-            return (width - paddingRight - paddingLeft, height - paddingBottom - paddingTop);
-        }
-
-        protected virtual (int Width,int Height) GetFillSize() {
-            return (parent.screenWidth - paddingRight - paddingLeft, parent.screenHeight - paddingBottom - paddingTop);
-        }
-
-        protected virtual (int Width,int Height) GetBoxFill() {
-            int size = parent.screenWidth > parent.screenHeight ? parent.screenHeight : parent.screenWidth;
-            return (size - paddingRight - paddingLeft, size - paddingBottom - paddingTop);
-        }
-
-        private (int Width, int Height) cacheSize((int Width, int Height) size) {
-            screenWidth = size.Width;
-            screenHeight = size.Height;
+        private Point getRelativeSize() {
+            var size = GetSize();
+            switch(Sizing) {
+                case Sizing.Fill:
+                    size = GetFillSize();
+                    break;
+                case Sizing.BoxFill:
+                    size = GetBoxFill();
+                    break;
+                case Sizing.Fractional:
+                    size.X = getFractionalWidth();
+                    size.Y = getFractionalHeight();
+                    break;
+                case Sizing.FractionalX:
+                    size.X = getFractionalWidth();
+                    break;
+                case Sizing.FractionalY:
+                    size.Y = getFractionalHeight();
+                    break;
+            }
             return size;
         }
-        private (int X,int Y) cachePosition((int X,int Y) position) {
-            screenX = position.X;
-            screenY = position.Y;
+
+        private Point getSize() {
+            if(HasParent()) {
+                return getRelativeSize();
+            }
+            return GetSize();
+        }
+
+        private Point getRelativePosition() {
+            var position = GetPosition();
+            var positioning = Positioning;
+            switch(positioning) {
+                case Positioning.Normal:
+                    position.X = horizontalAnchor(position.X);
+                    position.Y = verticalAnchor(position.Y);
+                    break;
+                case Positioning.CenterParent:
+                    position.X = getCenteredX();
+                    position.Y = getCenteredY();
+                    break;
+                case Positioning.CenterParentX: 
+                    position.X = getCenteredX();
+                    position.Y = verticalAnchor(position.Y);
+                    break;
+                case Positioning.CenterParentY:
+                    position.X = horizontalAnchor(position.X);
+                    position.Y = getCenteredY();
+                    break;
+                /* Is the compiler smart enough to expand this into multiple cases? Fuck it, who knows! */
+                case Positioning.Center:
+                case Positioning.CenterX:
+                case Positioning.CenterY:
+                    position.X = horizontalAnchor(position.X);
+                    position.Y = verticalAnchor(position.Y);
+                    if(positioning == Positioning.Center || positioning == Positioning.CenterX) {
+                        position.X = getCenteredXOrigin(position.X);
+                    }
+                    if(positioning == Positioning.Center || positioning == Positioning.CenterY) {
+                        position.Y = getCenteredYOrigin(position.Y);
+                    }
+                    break;
+
+            }
             return position;
         }
 
-        private (int Width,int Height) getSize() {
-            switch(sizing) {
-                case Sizing.Absolute: default:
-                    return GetAbsoluteSize();
-                case Sizing.Fill:
-                    if(!hasParent()) goto default;
-                    return GetFillSize();
-                case Sizing.BoxFill:
-                    if(!hasParent()) goto default;
-                    return GetBoxFill();
-            }
+        private Point getPosition() => HasParent() ? getRelativePosition() : GetPosition();
+
+        private static int getPercentageSize(float size) {
+            return (int)Math.Floor(size / 100f * FRACTIONAL_UNITS);
         }
 
-        private (int X, int Y) getPosition() {
-            switch(positioning) {
-                case Positioning.Absolute:
-                default: {
-                    return GetAbsolutePosition();
+        public void SetSize(Point size) {
+            if(size == area.Size) {
+                return;
+            }
+            area.Size = size;
+            UpdateLayout();
+        }
+    
+        public int ComputedX {
+            get => computedArea.X;
+        }
+        public int ComputedY {
+            get => computedArea.Y;
+        }
+        public int ComputedWidth {
+            get => computedArea.Width;
+        }
+        public int ComputedHeight {
+            get => computedArea.Height;
+        }
+        public Rectangle ComputedArea {
+            get => computedArea;
+        }
+        public Rectangle Area {
+            get => area;
+            set {
+                if(area == value) {
+                    return;
                 }
-                case Positioning.Relative: {
-                    if(!hasParent()) goto default;
-                    return GetRelativePosition();
-                }
-                case Positioning.Centered: {
-                    if(!hasParent()) goto default;
-                    return GetCenteredPosition();
-                }
+                area = value;
+                UpdateLayout();
             }
         }
-
-        protected int paddingLeft = 0, paddingRight = 0,
-                      paddingTop = 0, paddingBottom = 0;
-
+        public float RelativeWidth {
+            get => area.Width / FRACTIONAL_UNITS;
+            set {
+                area.Width = getPercentageSize(value);
+                UpdateLayout();
+            }
+        }
+        public float RelativeHeight {
+            get => area.Height / FRACTIONAL_UNITS;
+            set {
+                area.Height = getPercentageSize(value);
+                UpdateLayout();
+            }
+        }
+        public Anchor Anchor {
+            get => anchor;
+            set {
+                if(anchor == value) {
+                    return;
+                }
+                anchor = value;
+                UpdateLayout();
+            }
+        }
         public int Padding {
             set {
-                paddingLeft = value;
-                paddingRight = value;
-                paddingTop = value;
-                paddingBottom = value;
+                padding = new Padding(value);
                 UpdateLayout();
             }
         }
         public int PaddingLeft {
-            get => paddingLeft;
+            get => padding.Left;
             set {
-                if(paddingLeft == value) {
+                if(padding.Left == value) {
                     return;
                 }
-                paddingLeft = value;
+                padding.Left = value;
                 UpdateLayout();
             }
         }
         public int PaddingRight {
-            get => paddingRight;
+            get => padding.Right;
             set {
-                if(paddingRight == value) {
+                if(padding.Right == value) {
                     return;
                 }
-                paddingRight = value;
+                padding.Right = value;
                 UpdateLayout();
             }
         }
         public int PaddingTop {
-            get => paddingTop;
+            get => padding.Top;
             set {
-                if(paddingTop == value) {
+                if(padding.Top == value) {
                     return;
                 }
-                paddingTop = value;
+                padding.Top = value;
                 UpdateLayout();
             }
         }
         public int PaddingBottom {
-            get => paddingBottom;
+            get => padding.Bottom;
             set {
-                if(paddingBottom == value) {
+                if(padding.Bottom == value) {
                     return;
                 }
-                paddingBottom = value;
+                padding.Bottom = value;
                 UpdateLayout();
             }
         }
@@ -204,42 +314,42 @@ namespace TwelveEngine.UI {
             }
         }
         public int Width {
-            get => width;
+            get => area.Width;
             set {
-                if(width == value) {
+                if(area.Width == value) {
                     return;
                 }
-                width = value;
+                area.Width = value;
                 UpdateLayout();
             }
         }
         public int Height {
-            get => height;
+            get => area.Height;
             set {
-                if(height == value) {
+                if(area.Height == value) {
                     return;
                 }
-                height = value;
+                area.Height = value;
                 UpdateLayout();
             }
         }
         public int X {
-            get => x;
+            get => area.X;
             set {
-                if(x == value) {
+                if(area.X == value) {
                     return;
                 }
-                x = value;
+                area.X = value;
                 UpdateLayout();
             }
         }
         public int Y {
-            get => y;
+            get => area.Y;
             set {
-                if(y == value) {
+                if(area.Y == value) {
                     return;
                 }
-                y = value;
+                area.Y = value;
                 UpdateLayout();
             }
         }
@@ -263,10 +373,5 @@ namespace TwelveEngine.UI {
                 UpdateLayout();
             }
         }
-
-        public int ScreenWidth => screenWidth;
-        public int ScreenHeight => screenHeight;
-        public int ScreenX => screenX;
-        public int ScreenY => screenY;
     }
 }

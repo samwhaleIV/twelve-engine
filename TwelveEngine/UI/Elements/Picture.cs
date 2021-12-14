@@ -44,11 +44,11 @@ namespace TwelveEngine.UI.Elements {
         }
 
         private void renderDefault() {
-            Game.SpriteBatch.Draw(picture,RenderArea,GetRenderColor());
+            Game.SpriteBatch.Draw(picture,ScreenArea,GetRenderColor());
         }
 
         private void renderCovered() {
-            Game.SpriteBatch.Draw(picture,RenderArea,sourceArea,GetRenderColor());
+            Game.SpriteBatch.Draw(picture,ScreenArea,sourceArea,GetRenderColor());
         }
 
         private Rectangle sourceArea;
@@ -71,8 +71,8 @@ namespace TwelveEngine.UI.Elements {
             sourceArea = source;
         }
 
-        protected override Rectangle GetRenderArea() {
-            var area = base.GetRenderArea();
+        protected override Rectangle GetScreenArea() {
+            var area = base.GetScreenArea();
 
             switch(mode) {
                 case PictureMode.Contain:

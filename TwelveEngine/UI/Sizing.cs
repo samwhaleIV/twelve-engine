@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine.UI {
     public enum Sizing {
-        Absolute, Fill, BoxFill
+        Normal, Fractional, FractionalX, FractionalY, Fill, BoxFill
     }
 }

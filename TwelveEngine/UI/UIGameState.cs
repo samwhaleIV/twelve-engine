@@ -34,7 +34,7 @@ namespace TwelveEngine.UI {
                 gameState.State = UI;
                 generateState(UI);
                 UI.Load();
-                UI.Root.StartLayout();
+                UI.StartLayout();
                 UI.UpdateCache();
             };
 

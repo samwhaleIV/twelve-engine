@@ -32,16 +32,12 @@ namespace TwelveEngine {
                 var random = new Random();
 
                 var pictureBackground = new Panel(Color.White) {
-                    X = 70,
-                    Y = 10,
-                    Width = 100,
-                    Height = 400,
+                    Area = new Rectangle(70,10,400,300)
                 };
 
                 var picture = new Picture("cat-test-picture") {
                     Padding = 0,
                     Sizing = Sizing.Fill,
-                    Positioning = Positioning.Relative,
                     Mode = PictureMode.Cover,
                     IsInteractable = true,
                 };
@@ -59,24 +55,19 @@ namespace TwelveEngine {
                 pictureBackground.AddChild(picture);
 
                 button = new Panel(Color.Orange) {
-                    X = 10,
-                    Y = 10,
-                    Width = 50,
-                    Height = 50,
-                    Positioning = Positioning.Absolute,
+                    Area = new Rectangle(10,10,50,50),
                     IsInteractable = true
                 };
 
                 button.OnClick += () => {
-                    var viewport = UI.Game.GraphicsDevice.Viewport;
-                    button.X = random.Next(0,viewport.Width - button.Width);
-                    button.Y = random.Next(0,viewport.Height - button.Height);
+                    button.X = random.Next(0,UI.Width - button.Width);
+                    button.Y = random.Next(0,UI.Height - button.Height);
 
-                    UI.Game.SetState(GetPuzzleGameTest());
+                    //UI.Game.SetState(GetPuzzleGameTest());
                 };
 
-                UI.Root.AddChild(button);
-                UI.Root.AddChild(pictureBackground);
+                UI.AddChild(button);
+                UI.AddChild(pictureBackground);
             });
         }
 

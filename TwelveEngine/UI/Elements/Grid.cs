@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine.UI.Elements {
+﻿using System;
+
+namespace TwelveEngine.UI.Elements {
     public class Grid:Element {
 
         private (int Width, int Height) cellSize = (0,0);
@@ -32,9 +34,8 @@
         }
 
         private (int Width,int Height) getCellSize() {
-            /* TODO: Be corrected to pixel perfection */
-            int width = (int)(ScreenWidth / (float)columns); 
-            int height = (int)(ScreenHeight / (float)rows);
+            int width = (int)Math.Floor(ComputedWidth / (float)columns); 
+            int height = (int)Math.Floor(ComputedHeight / (float)rows);
             return (width, height);
         }
     }

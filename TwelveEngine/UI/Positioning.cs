@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine.UI {
     public enum Positioning {
-        Absolute, Relative, Centered
+        Normal, CenterParent, CenterParentX, CenterParentY, Center, CenterX, CenterY
     }
 }

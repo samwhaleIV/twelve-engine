@@ -22,7 +22,7 @@ namespace TwelveEngine.UI.Elements {
         private void Panel_OnUnload() => texture.Dispose();
 
         public override void Render(GameTime gameTime) {
-            Game.SpriteBatch.Draw(texture,RenderArea,GetRenderColor());
+            Game.SpriteBatch.Draw(texture,ScreenArea,GetRenderColor());
         }
     }
 }

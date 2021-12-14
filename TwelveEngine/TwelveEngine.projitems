@@ -80,11 +80,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Anchor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Grid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\GridItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Picture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Padding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\PictureMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Positioning.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderElement.cs" />

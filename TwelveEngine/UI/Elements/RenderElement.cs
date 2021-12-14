@@ -38,23 +38,13 @@ namespace TwelveEngine.UI.Elements {
 
         public abstract void Render(GameTime gameTime);
 
-        public RenderElement() => LayoutUpdated += updateRenderArea;
+        public RenderElement() => LayoutUpdated += updateScreenArea;
 
-        private Rectangle renderArea;
-        public Rectangle RenderArea => renderArea;
+        private Rectangle screenArea;
+        public Rectangle ScreenArea => screenArea;
 
-        private void updateRenderArea() {
-            renderArea = GetRenderArea();
-        }
-
-        protected virtual Rectangle GetRenderArea() {
-            return new Rectangle() {
-                X = screenX,
-                Y = screenY,
-                Width = screenWidth,
-                Height = screenHeight
-            };
-        }
+        private void updateScreenArea() => screenArea = GetScreenArea();
+        protected virtual Rectangle GetScreenArea() => ComputedArea;
 
         protected Color GetRenderColor() {
             if(!IsInteractable) {

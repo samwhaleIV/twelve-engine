@@ -49,42 +49,23 @@ namespace TwelveEngine.UI {
         public void Load() => OnLoad?.Invoke();
         public void Unload() => OnUnload?.Invoke();
 
-        private readonly RootNode rootNode = new RootNode() {
-            Positioning = Positioning.Absolute,
-            Sizing = Sizing.Absolute,
-            X = 0, Y = 0
-        };
+        private readonly RootNode rootNode = new RootNode();
 
-        public Element Root => rootNode;
+        public int Width => rootNode.Width;
+        public int Height => rootNode.Height;
 
         private Viewport viewport => game.GraphicsDevice.Viewport;
 
+        public void AddChild(Element child) => rootNode.AddChild(child);
+        public void StartLayout() => rootNode.StartLayout();
+
         private sealed class RootNode:Element {
-
-            private Rectangle area = new Rectangle(0,0,0,0);
-
             public void Update(Viewport viewport) {
-                var equalWidth = viewport.Width == area.Width;
-                var equalHeight = viewport.Height == area.Height;
-
-                var width = viewport.Width;
-                var height = viewport.Height;
-
-                area.Width = width;
-                area.Height = height;
-
-                if(equalWidth && equalHeight) {
-                    return;
-                }
-
-                this.width = width;
-                this.height = height;
-
-                UpdateLayout();
+                SetSize(new Point(viewport.Width,viewport.Height));
             }
 
             public bool ElementOnSurface(RenderElement element) {
-                return element.RenderArea.Intersects(area);  
+                return element.ScreenArea.Intersects(element.Area);
             }
         }
 
@@ -149,7 +130,7 @@ namespace TwelveEngine.UI {
 
         private RenderElement FindElement(int x,int y) {
             foreach(var interactable in interactCache) {
-                if(!interactable.RenderArea.Contains(x,y)) {
+                if(!interactable.ScreenArea.Contains(x,y)) {
                     continue;
                 }
                 return interactable;
