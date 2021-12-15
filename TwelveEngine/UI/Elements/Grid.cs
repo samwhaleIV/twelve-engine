@@ -34,8 +34,8 @@ namespace TwelveEngine.UI.Elements {
         }
 
         private (int Width,int Height) getCellSize() {
-            int width = (int)Math.Floor(ComputedWidth / (float)columns); 
-            int height = (int)Math.Floor(ComputedHeight / (float)rows);
+            int width = (int)(ComputedWidth / (float)columns); 
+            int height = (int)(ComputedHeight / (float)rows);
             return (width, height);
         }
     }

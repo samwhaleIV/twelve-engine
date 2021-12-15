@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.UI {
+
+    /* Fundamentally, just a wrapper class */
     public class UIGameState:GameState {
 
         public UIGameState() => OnUnload += UIGameState_OnUnload;
@@ -35,7 +37,7 @@ namespace TwelveEngine.UI {
                 generateState(UI);
                 UI.Load();
                 UI.StartLayout();
-                UI.UpdateCache();
+                UI.UpdateCaches();
             };
 
             return gameState;

@@ -22,8 +22,8 @@ namespace TwelveEngine.UI {
         private readonly List<Element> children = new List<Element>();
         public Element[] GetChildren() => children.ToArray();
 
-        private bool layoutUpdatesEnabled = false;
-        public bool LayoutUpdatesEnabled => layoutUpdatesEnabled;
+        private int layoutFreezes = 1;
+        public bool LayoutUpdatesEnabled => layoutFreezes < 1;
 
         protected event Action LayoutUpdated;
 
@@ -46,25 +46,27 @@ namespace TwelveEngine.UI {
             child.UpdateLayout();
         }
 
-        private void enableLayoutChanges() {
-            layoutUpdatesEnabled = true;
-            foreach(Element child in children) {
-                child.enableLayoutChanges();
+        public void StartLayout(bool force = false) {
+            if(force) {
+                layoutFreezes = 1;
             }
-        }
-        private void pauseLayoutChanges() {
-            layoutUpdatesEnabled = false;
-            foreach(Element child in children) {
-                child.pauseLayoutChanges();
+            if(layoutFreezes == 0) {
+                return;
             }
-        }
-
-        public void StartLayout() {
-            enableLayoutChanges();
+            layoutFreezes -= 1;
+            if(layoutFreezes != 0) {
+                return;
+            }
+            foreach(Element child in children) {
+                child.StartLayout(force);
+            }
             UpdateLayout();
         }
         public void PauseLayout() {
-            pauseLayoutChanges();
+            layoutFreezes++;
+            foreach(Element child in children) {
+                child.PauseLayout();
+            }
         }
 
         private void cacheSize(Point size) {
@@ -77,7 +79,7 @@ namespace TwelveEngine.UI {
         }
 
         protected void UpdateLayout() {
-            if(!layoutUpdatesEnabled) return;
+            if(!LayoutUpdatesEnabled) return;
 
             var size = getSize();
             size.X -= PaddingLeft + PaddingRight;
@@ -258,9 +260,22 @@ namespace TwelveEngine.UI {
         }
         public int Padding {
             set {
+                if(padding.IsBalanced && padding.Value == value) {
+                    return;
+                }
                 padding = new Padding(value);
                 UpdateLayout();
             }
+        }
+        public void SetPadding(Padding padding) {
+            if(this.padding == padding) {
+                return;
+            }
+            this.padding = padding;
+            UpdateLayout();
+        }
+        public Padding GetPadding() {
+            return padding;
         }
         public int PaddingLeft {
             get => padding.Left;
@@ -371,6 +386,13 @@ namespace TwelveEngine.UI {
                 positioning = value;
                 UpdateLayout();
             }
+        }
+        public void SwapOrientation() {
+            PauseLayout();
+            int buffer = Width;
+            Width = Height;
+            Height = buffer;
+            StartLayout();
         }
     }
 }

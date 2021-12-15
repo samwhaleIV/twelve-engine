@@ -36,27 +36,21 @@ namespace TwelveEngine {
                 };
 
                 var picture = new Picture("cat-test-picture") {
-                    Padding = 0,
+                    Padding = 5,
                     Sizing = Sizing.Fill,
                     Mode = PictureMode.Cover,
                     IsInteractable = true,
                 };
 
                 picture.OnClick += () => {
-                    pictureBackground.PauseLayout();
-
-                    int buffer = pictureBackground.Width;
-                    pictureBackground.Width = pictureBackground.Height;
-                    pictureBackground.Height = buffer;
-
-                    pictureBackground.StartLayout();
+                    pictureBackground.SwapOrientation();
                 };
 
                 pictureBackground.AddChild(picture);
 
                 button = new Panel(Color.Orange) {
-                    Anchor = Anchor.BottomRight,
-                    Area = new Rectangle(10,10,50,50),
+                    Anchor = Anchor.TopLeft,
+                    Area = new Rectangle(70,5,400,300),
                     IsInteractable = true
                 };
 
@@ -67,8 +61,8 @@ namespace TwelveEngine {
                     //UI.Game.SetState(GetPuzzleGameTest());
                 };
 
-                UI.AddChild(button);
                 UI.AddChild(pictureBackground);
+                UI.AddChild(button);
             });
         }
 

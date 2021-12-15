@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using TwelveEngine.UI.Elements;
 using TwelveEngine.Input;
 
 namespace TwelveEngine.UI {
     public class UIState {
 
+        /* This is where the magic happens.       
+         * ... Except For System.Linq; Not you. */
+
         private readonly GameManager game;
-        internal GameManager Game => game;
 
         public UIState(GameManager game) {
             this.game = game;
@@ -69,51 +71,76 @@ namespace TwelveEngine.UI {
             }
         }
 
-        private void getUsableElements(
-            Element source,List<RenderElement> renderable,List<RenderElement> interactable = null
+        private RenderElement[] renderCache, interactionCache;
+
+        /* ------------------------------------------------------------------------------------------------------
+           Tightly coupled sorting logic, this matches the rendering state to the input state. Don't fuck with it */
+        private readonly SpriteSortMode sortMode = SpriteSortMode.BackToFront;
+        private RenderElement[] getRenderCache(List<RenderElement> elements) {
+            return elements.OrderBy(element => element.Depth).ToArray();
+        }
+        private RenderElement[] getInteractionCache(List<RenderElement> elements) {
+            /* OrderByDescending is not used in order to preserve the implicit z-indexing of same layer and addChild call orders */
+            return elements.Where(element => element.IsInteractable).Reverse().OrderBy(element => element.Depth).ToArray();
+        }
+        private void calculateDepths(List<RenderElement> elements,float maxDepth) {
+            foreach(RenderElement element in elements) {
+                element.Depth = 1f - element.Depth / maxDepth / 1f;
+            }
+        }
+        /* ------------------------------------------------------------------------------------------------------ */
+
+        private void getAllChildren(
+            Element source,List<RenderElement> elements,int currentDepth,ref int maxDepth
         ) {
+            currentDepth += 1;
+            if(currentDepth > maxDepth) {
+                maxDepth = currentDepth;
+            }
+
             if(source is RenderElement renderElement) {
-                renderable.Add(renderElement);
-                if(interactable != null && renderElement.IsInteractable) {
-                    interactable.Add(renderElement);
-                }
+                elements.Add(renderElement);
+                renderElement.Depth = currentDepth;
             }
+
             foreach(var child in source.GetChildren()) {
-                getUsableElements(child,renderable,interactable);
+                getAllChildren(child,elements,currentDepth,ref maxDepth);
             }
         }
-
-        private RenderElement[] renderCache = new RenderElement[0];
-        private RenderElement[] interactCache = new RenderElement[0];
-
-        public void UpdateCache() {
-            rootNode.StartLayout();
-
-            var renderable = new List<RenderElement>();
-            var interactable = new List<RenderElement>();
-            getUsableElements(rootNode,renderable,interactable);
-
-            renderCache = renderable.ToArray();
-            interactCache = interactable.ToArray();
+        private void getAllChildren(List<RenderElement> elements,out int depth) {
+            int maxDepth = 1;
+            foreach(var child in rootNode.GetChildren()) {
+                getAllChildren(child,elements,-1,ref maxDepth);
+            }
+            depth = Math.Max(maxDepth-1,1);
         }
 
-        private void iterateRenderElements(Action<RenderElement> action) {
+        private (List<RenderElement> elements,int maxDepth) getChildrenAndDepth() {
             var elements = new List<RenderElement>();
-            getUsableElements(rootNode,elements);
-            foreach(var element in elements) {
-                action.Invoke(element);
-            }
+            getAllChildren(elements,out int maxDepth);
+            return (elements,maxDepth);
         }
 
-        private void loadElement(RenderElement element) => element.Load(game);
-        private void unloadElement(RenderElement element) => element.Unload();
+        private List<RenderElement> getChildren() => getChildrenAndDepth().elements;
 
-        private void loadRenderElements() => iterateRenderElements(loadElement);
-        private void unloadRenderElements() => iterateRenderElements(unloadElement);
+        public void UpdateCaches() {
+            (List<RenderElement> elements, int maxDepth) = getChildrenAndDepth();
+            calculateDepths(elements,maxDepth);
+            renderCache = getRenderCache(elements);
+            interactionCache = getInteractionCache(elements);
+        }
+
+        private void loadRenderElements() {
+            foreach(var element in getChildren()) element.Load(game);
+        }
+
+        private void unloadRenderElements() {
+            foreach(var element in getChildren()) element.Unload();
+        }
 
         internal void Draw(GameTime gameTime) {
             game.GraphicsDevice.Clear(Color.Black);
-            game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
+            game.SpriteBatch.Begin(sortMode,null,SamplerState.PointClamp);
             foreach(var renderable in renderCache) {
                 if(!rootNode.ElementOnSurface(renderable)) {
                     continue;
@@ -125,11 +152,10 @@ namespace TwelveEngine.UI {
 
         internal void Update() => rootNode.Update(viewport);
 
-        private RenderElement focusedElement = null;
-        private RenderElement hoverElement = null;
+        private RenderElement focusedElement = null, hoverElement = null;
 
         private RenderElement FindElement(int x,int y) {
-            foreach(var interactable in interactCache) {
+            foreach(var interactable in interactionCache) {
                 if(!interactable.ScreenArea.Contains(x,y)) {
                     continue;
                 }

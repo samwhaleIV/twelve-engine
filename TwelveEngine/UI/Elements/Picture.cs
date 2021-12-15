@@ -5,9 +5,11 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.UI.Elements {
     internal class Picture:RenderElement {
 
-        private readonly string imageName;
+        public Picture(string imageName) => OnLoad += () => picture = GetImage(imageName);
 
+        private Texture2D picture;
         private PictureMode mode = PictureMode.Stretch;
+
         public PictureMode Mode {
             get => mode;
             set {
@@ -19,36 +21,17 @@ namespace TwelveEngine.UI.Elements {
             }
         }
 
-        public Picture(string imageName) {
-            this.imageName = imageName;
-            OnLoad += Picture_OnLoad;
-        }
-
-        private Texture2D picture;
-
-        private void Picture_OnLoad() {
-            picture = Game.Content.Load<Texture2D>(imageName);
-        }
-
-        public override void Render(GameTime gameTime) {
+        public override void Render(GameTime _) {
             switch(mode) {
                 default:
                 case PictureMode.Contain:
                 case PictureMode.Stretch:
-                    renderDefault();
+                    Draw(picture);
                     break;
                 case PictureMode.Cover:
-                    renderCovered();
+                    Draw(picture,sourceArea);
                     break;
             }
-        }
-
-        private void renderDefault() {
-            Game.SpriteBatch.Draw(picture,ScreenArea,GetRenderColor());
-        }
-
-        private void renderCovered() {
-            Game.SpriteBatch.Draw(picture,ScreenArea,sourceArea,GetRenderColor());
         }
 
         private Rectangle sourceArea;
@@ -60,40 +43,43 @@ namespace TwelveEngine.UI.Elements {
             source.Height = picture.Height;
 
             if(area.Width > area.Height) {
-                source.Height = (int)Math.Floor((float)area.Height / area.Width * source.Width);
+                source.Height = (int)((float)area.Height / area.Width * source.Width);
             } else {
-                source.Width = (int)Math.Floor((float)area.Width / area.Height * source.Height);
+                source.Width = (int)((float)area.Width / area.Height * source.Height);
             }
 
-            source.X = (int)Math.Floor(picture.Width / 2f - source.Width / 2f);
-            source.Y = (int)Math.Floor(picture.Height / 2f - source.Height / 2f);
+            source.X = (int)(picture.Width / 2f - source.Width / 2f);
+            source.Y = (int)(picture.Height / 2f - source.Height / 2f);
 
             sourceArea = source;
         }
 
-        protected override Rectangle GetScreenArea() {
-            var area = base.GetScreenArea();
-
-            switch(mode) {
-                case PictureMode.Contain:
-                    break;
-                case PictureMode.Cover:
-                    updateCoveredArea(area);
-                    goto default;
-                default:
-                    return area;
-            }
-
+        private Rectangle calculateContainArea(Rectangle area) {
             float scale = Math.Min(area.Width / (float)picture.Width,area.Height / (float)picture.Height);
 
             float newWidth = picture.Width * scale, newHeight = picture.Height * scale;
 
-            area.X += (int)Math.Floor(area.Width / 2f - newWidth / 2f);
-            area.Y += (int)Math.Floor(area.Height / 2f - newHeight / 2f);
+            area.X += (int)(area.Width / 2f - newWidth / 2f);
+            area.Y += (int)(area.Height / 2f - newHeight / 2f);
 
-            area.Width = (int)Math.Ceiling(newWidth);
-            area.Height = (int)Math.Ceiling(newHeight);
+            area.Width = (int)(newWidth);
+            area.Height = (int)(newHeight);
 
+            return area;
+        }
+
+        protected override Rectangle GetScreenArea() {
+            var area = base.GetScreenArea();
+            switch(mode) {
+                case PictureMode.Contain: {
+                    area = calculateContainArea(area);
+                    break;
+                }
+                case PictureMode.Cover: {
+                    updateCoveredArea(area);
+                    break;
+                }
+            }
             return area;
         }
     }
