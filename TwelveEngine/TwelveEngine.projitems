@@ -80,14 +80,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Anchor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Grid.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\GridItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Picture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\PictureMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Positioning.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\ScrollMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\MouseMoveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Padding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\RenderElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Sizing.cs" />
@@ -97,7 +100,6 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)GameState\Automation\" />
     <Folder Include="$(MSBuildThisFileDirectory)GameUI\" />
-    <Folder Include="$(MSBuildThisFileDirectory)UI\Enum\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />

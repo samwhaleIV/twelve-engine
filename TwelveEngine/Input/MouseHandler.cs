@@ -29,10 +29,6 @@ namespace TwelveEngine.Input {
 
             x = mouseState.X; y = mouseState.Y;
 
-            if(x != lastState.X || y != lastState.Y) {
-                OnMouseMove?.Invoke(x,y);
-            }
-
             if(mouseState.LeftButton != lastState.LeftButton) {
                 if(mouseState.LeftButton == ButtonState.Pressed) {
                     mouseIsDown = true;
@@ -49,6 +45,11 @@ namespace TwelveEngine.Input {
             } else if(delta < 0) {
                 sendScrollEvent(ScrollDirection.Down);
             }
+
+            if(x != lastState.X || y != lastState.Y) {
+                OnMouseMove?.Invoke(x,y);
+            }
+
             this.lastState = mouseState;
         }
     }

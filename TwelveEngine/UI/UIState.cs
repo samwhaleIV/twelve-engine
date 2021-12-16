@@ -59,7 +59,14 @@ namespace TwelveEngine.UI {
         private Viewport viewport => game.GraphicsDevice.Viewport;
 
         public void AddChild(Element child) => rootNode.AddChild(child);
-        public void StartLayout() => rootNode.StartLayout();
+
+        private void startLayoutRecurse(Element element) {
+            element.StartLayout();
+            foreach(var child in element.GetChildren()) {
+                startLayoutRecurse(child);
+            }
+        }
+        public void StartLayout() => startLayoutRecurse(rootNode);
 
         private sealed class RootNode:Element {
             public void Update(Viewport viewport) {
@@ -71,13 +78,16 @@ namespace TwelveEngine.UI {
             }
         }
 
-        private RenderElement[] renderCache, interactionCache;
+        private RenderElement[] renderCache, interactionCache, scrollCache;
 
         /* ------------------------------------------------------------------------------------------------------
            Tightly coupled sorting logic, this matches the rendering state to the input state. Don't fuck with it */
         private readonly SpriteSortMode sortMode = SpriteSortMode.BackToFront;
         private RenderElement[] getRenderCache(List<RenderElement> elements) {
-            return elements.OrderBy(element => element.Depth).ToArray();
+            return elements.OrderByDescending(element => element.Depth).ToArray();
+        }
+        private RenderElement[] getScrollCache(List<RenderElement> elements) {
+            return elements.Where(element => element.IsScrollable).Reverse().OrderBy(element => element.Depth).ToArray();
         }
         private RenderElement[] getInteractionCache(List<RenderElement> elements) {
             /* OrderByDescending is not used in order to preserve the implicit z-indexing of same layer and addChild call orders */
@@ -112,7 +122,7 @@ namespace TwelveEngine.UI {
             foreach(var child in rootNode.GetChildren()) {
                 getAllChildren(child,elements,-1,ref maxDepth);
             }
-            depth = Math.Max(maxDepth-1,1);
+            depth = Math.Max(maxDepth,1);
         }
 
         private (List<RenderElement> elements,int maxDepth) getChildrenAndDepth() {
@@ -128,6 +138,7 @@ namespace TwelveEngine.UI {
             calculateDepths(elements,maxDepth);
             renderCache = getRenderCache(elements);
             interactionCache = getInteractionCache(elements);
+            scrollCache = getScrollCache(elements);
         }
 
         private void loadRenderElements() {
@@ -154,26 +165,18 @@ namespace TwelveEngine.UI {
 
         private RenderElement focusedElement = null, hoverElement = null;
 
-        private RenderElement FindElement(int x,int y) {
-            foreach(var interactable in interactionCache) {
-                if(!interactable.ScreenArea.Contains(x,y)) {
+        private RenderElement FindElement(int x,int y,RenderElement[] cache) {
+            foreach(var element in cache) {
+                if(!element.ScreenArea.Contains(x,y)) {
                     continue;
                 }
-                return interactable;
+                return element;
             }
             return null;
         }
 
-        private void Mouse_OnMouseScroll(int x,int y,ScrollDirection direction) {
-            if(hoverElement == null || hoverElement.Pressed) {
-                return;
-            }
-            hoverElement?.Scroll(direction);
-            refreshHoverElement(x,y);
-        }
-
         private void refreshHoverElement(int x,int y) {
-            var newElement = FindElement(x,y);
+            var newElement = FindElement(x,y,interactionCache);
             var oldElement = hoverElement;
             if(newElement == oldElement) {
                 return;
@@ -187,8 +190,23 @@ namespace TwelveEngine.UI {
             }
         }
 
+        private void Mouse_OnMouseScroll(int x,int y,ScrollDirection direction) {
+            var element = FindElement(x,y,scrollCache);
+            if(element == null) {
+                return;
+            }
+            element.Scroll(direction);
+            refreshHoverElement(x,y);
+        }
+
         private void Mouse_OnMouseMove(int x,int y) {
             refreshHoverElement(x,y);
+            if(hoverElement == null) {
+                return;
+            }
+            var isFocused = hoverElement == focusedElement;
+            var data = new MouseMoveData(x,y,isFocused);
+            hoverElement.MouseMove(data);
         }
 
         private void Mouse_OnMouseUp(int x,int y) {
@@ -201,7 +219,8 @@ namespace TwelveEngine.UI {
             if(hoverElement != element) {
                 return;
             }
-            element.Click();
+
+            element.MouseUp();
             refreshHoverElement(x,y);
         }
 
@@ -211,6 +230,9 @@ namespace TwelveEngine.UI {
             }
             focusedElement = hoverElement;
             hoverElement.Pressed = true;
+
+            hoverElement.MouseDown();
+            refreshHoverElement(x,y);
         }
     }
 }

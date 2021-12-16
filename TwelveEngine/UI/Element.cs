@@ -5,8 +5,6 @@ using System.Collections.Generic;
 namespace TwelveEngine.UI {
     public class Element {
 
-        private const int FRACTIONAL_UNITS = int.MaxValue;
-
         protected Positioning positioning = Positioning.Normal;
         protected Sizing sizing = Sizing.Normal;
 
@@ -40,16 +38,13 @@ namespace TwelveEngine.UI {
             AddChild(child,updateLayout: true);
         }
 
-        public void RemoveChild(Element child) {
+        public virtual void RemoveChild(Element child) {
             children.Remove(child);
             child.parent = null;
             child.UpdateLayout();
         }
 
-        public void StartLayout(bool force = false) {
-            if(force) {
-                layoutFreezes = 1;
-            }
+        public void StartLayout() {
             if(layoutFreezes == 0) {
                 return;
             }
@@ -57,16 +52,10 @@ namespace TwelveEngine.UI {
             if(layoutFreezes != 0) {
                 return;
             }
-            foreach(Element child in children) {
-                child.StartLayout(force);
-            }
             UpdateLayout();
         }
         public void PauseLayout() {
             layoutFreezes++;
-            foreach(Element child in children) {
-                child.PauseLayout();
-            }
         }
 
         private void cacheSize(Point size) {
@@ -103,11 +92,11 @@ namespace TwelveEngine.UI {
         protected virtual Point GetFillSize() => parent.computedArea.Size;
         protected virtual Point GetBoxFill() => new Point(Math.Max(parent.ComputedWidth,parent.ComputedHeight));
 
-        private int getFractionalWidth() => (int)Math.Floor(Width / (float)FRACTIONAL_UNITS);
-        private int getFractionalHeight() => (int)Math.Floor(Height / (float)FRACTIONAL_UNITS);
+        private int getFractionalWidth() => (int)(parent.ComputedWidth * (Width / 100f));
+        private int getFractionalHeight() => (int)(parent.ComputedHeight * (Height / 100f));
 
-        private int getCenteredX() => (int)Math.Floor(parent.ComputedX + parent.ComputedWidth / 2f - ComputedWidth / 2f);
-        private int getCenteredY() => (int)Math.Floor(parent.ComputedY + parent.ComputedHeight / 2f - ComputedHeight / 2f);
+        private int getCenteredX() => (int)(parent.ComputedX + parent.ComputedWidth / 2f - ComputedWidth / 2f);
+        private int getCenteredY() => (int)(parent.ComputedY + parent.ComputedHeight / 2f - ComputedHeight / 2f);
 
         private int horizontalAnchor(int x) {
             if(anchor == Anchor.TopLeft || anchor == Anchor.BottomLeft) {
@@ -125,8 +114,8 @@ namespace TwelveEngine.UI {
             }
         }
 
-        private int getCenteredXOrigin(int x) => (int)Math.Floor(x + ComputedWidth / 2f);
-        private int getCenteredYOrigin(int y) => (int)Math.Floor(y + ComputedHeight / 2f);
+        private int getCenteredXOrigin(int x) => (int)(x + ComputedWidth / 2f);
+        private int getCenteredYOrigin(int y) => (int)(y + ComputedHeight / 2f);
 
         private Point getRelativeSize() {
             var size = GetSize();
@@ -137,14 +126,14 @@ namespace TwelveEngine.UI {
                 case Sizing.BoxFill:
                     size = GetBoxFill();
                     break;
-                case Sizing.Fractional:
+                case Sizing.Percent:
                     size.X = getFractionalWidth();
                     size.Y = getFractionalHeight();
                     break;
-                case Sizing.FractionalX:
+                case Sizing.PercentX:
                     size.X = getFractionalWidth();
                     break;
-                case Sizing.FractionalY:
+                case Sizing.PercentY:
                     size.Y = getFractionalHeight();
                     break;
             }
@@ -197,10 +186,6 @@ namespace TwelveEngine.UI {
 
         private Point getPosition() => HasParent() ? getRelativePosition() : GetPosition();
 
-        private static int getPercentageSize(float size) {
-            return (int)Math.Floor(size / 100f * FRACTIONAL_UNITS);
-        }
-
         public void SetSize(Point size) {
             if(size == area.Size) {
                 return;
@@ -208,7 +193,18 @@ namespace TwelveEngine.UI {
             area.Size = size;
             UpdateLayout();
         }
-    
+
+        internal Element Parent {
+            get => parent;
+            set {
+                if(parent == value) {
+                    return;
+                }
+                parent.RemoveChild(this);
+                value.AddChild(this);
+            }
+        }
+
         public int ComputedX {
             get => computedArea.X;
         }
@@ -231,20 +227,6 @@ namespace TwelveEngine.UI {
                     return;
                 }
                 area = value;
-                UpdateLayout();
-            }
-        }
-        public float RelativeWidth {
-            get => area.Width / FRACTIONAL_UNITS;
-            set {
-                area.Width = getPercentageSize(value);
-                UpdateLayout();
-            }
-        }
-        public float RelativeHeight {
-            get => area.Height / FRACTIONAL_UNITS;
-            set {
-                area.Height = getPercentageSize(value);
                 UpdateLayout();
             }
         }
@@ -315,16 +297,6 @@ namespace TwelveEngine.UI {
                 }
                 padding.Bottom = value;
                 UpdateLayout();
-            }
-        }
-        public Element Parent {
-            get => parent;
-            set {
-                if(parent == value) {
-                    return;
-                }
-                parent.RemoveChild(value);
-                value.AddChild(this);
             }
         }
         public int Width {

@@ -28,41 +28,35 @@ namespace TwelveEngine {
         public static GameState GetUITestState() {
             return UIGameState.Create(UI => {
 
-                Panel button = null;
-                var random = new Random();
+                var width = 400;
+                var panelHeight = 200;
 
-                var pictureBackground = new Panel(Color.White) {
-                    Area = new Rectangle(70,10,400,300)
+                var panels = new Element[100];
+                for(int i = 0;i < panels.Length;i++) {
+                    Color color;
+                    switch(i % 3) {
+                        default: case 0: color = Color.Red; break;
+                        case 1: color = Color.Green; break;
+                        case 2: color = Color.Orange; break;
+                    }
+                    panels[i] = new Panel(color) {
+                        Area = new Rectangle(0,i*panelHeight,width,panelHeight)
+                    };
+                }
+
+                var scrollBox = new ScrollBox() {
+                    Sizing = Sizing.PercentY,
+                    Width = width,
+                    Height = 100,
+                    Positioning = Positioning.CenterParentX,
+                    Anchor = Anchor.TopRight
                 };
 
-                var picture = new Picture("cat-test-picture") {
-                    Padding = 5,
-                    Sizing = Sizing.Fill,
-                    Mode = PictureMode.Cover,
-                    IsInteractable = true,
-                };
-
-                picture.OnClick += () => {
-                    pictureBackground.SwapOrientation();
-                };
-
-                pictureBackground.AddChild(picture);
-
-                button = new Panel(Color.Orange) {
-                    Anchor = Anchor.TopLeft,
-                    Area = new Rectangle(70,5,400,300),
-                    IsInteractable = true
-                };
-
-                button.OnClick += () => {
-                    button.X = random.Next(0,UI.Width - button.Width);
-                    button.Y = random.Next(0,UI.Height - button.Height);
-
-                    //UI.Game.SetState(GetPuzzleGameTest());
-                };
-
-                UI.AddChild(pictureBackground);
-                UI.AddChild(button);
+                foreach(var panel in panels) {
+                    scrollBox.Target.AddChild(panel);
+                }
+               
+                UI.AddChild(scrollBox);
             });
         }
 

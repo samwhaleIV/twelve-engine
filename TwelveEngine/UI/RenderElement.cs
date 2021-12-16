@@ -8,23 +8,23 @@ namespace TwelveEngine.UI {
     public abstract class RenderElement:Element {
 
         public RenderElement() => LayoutUpdated += updateScreenArea;
-
-        private GameManager game;
-
         public abstract void Render(GameTime gameTime);
 
+        private GameManager game;
         private Queue<Texture> disposableTextures = new Queue<Texture>();
-        private float depth = 0;
-
-
-        private bool hovered = false, pressed = false, isInteractable = false;
 
         private Rectangle screenArea;
-        internal Rectangle ScreenArea => screenArea;
+        private float depth = 0;
 
-        public event Action OnLoad, OnUnload, OnClick;
-        protected event Action<ScrollDirection> OnScroll;
+        private bool hovered = false, pressed = false,
+                     isInteractable = false, isScrollable = false;
 
+        protected event Action OnLoad, OnUnload;
+        public event Action OnMouseDown, OnMouseUp;
+
+        public event Action<MouseMoveData> OnMouseMove;
+        public event Action<ScrollDirection> OnScroll;
+        
         internal void Load(GameManager game) {
             this.game = game;
             OnLoad?.Invoke();
@@ -37,7 +37,10 @@ namespace TwelveEngine.UI {
             OnUnload?.Invoke();
         }
 
-        internal void Click() => OnClick?.Invoke();
+        internal void MouseDown() => OnMouseDown?.Invoke();
+        internal void MouseUp() => OnMouseUp?.Invoke();
+        internal void MouseMove(MouseMoveData data) => OnMouseMove?.Invoke(data);
+
         internal void Scroll(ScrollDirection direction) => OnScroll?.Invoke(direction);
 
         private void updateScreenArea() => screenArea = GetScreenArea();
@@ -88,6 +91,10 @@ namespace TwelveEngine.UI {
             game.SpriteBatch.Draw(texture,screenArea,null,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,depth);
         }
 
+        internal Rectangle ScreenArea {
+            get => screenArea;
+        }
+
         internal float Depth {
             get => depth;
             set => depth = value;
@@ -106,6 +113,11 @@ namespace TwelveEngine.UI {
         public bool IsInteractable {
             get => isInteractable;
             set => isInteractable = value;
+        }
+
+        public bool IsScrollable {
+            get => isScrollable;
+            set => isScrollable = value;
         }
     }
 }
