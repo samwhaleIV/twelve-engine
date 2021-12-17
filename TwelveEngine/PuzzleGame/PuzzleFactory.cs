@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using TwelveEngine.Game2D;
 using TwelveEngine.Game2D.Entities;
-using static TwelveEngine.Serial.MapDatabase;
+using TwelveEngine.Serial.Map;
 
 namespace TwelveEngine.PuzzleGame {
     public static class PuzzleFactory {
@@ -33,6 +33,15 @@ namespace TwelveEngine.PuzzleGame {
             
             return GenerateState(factory => (Level)method.Invoke(factory,null));
         }
+
+        private static Map getMap(Level level) {
+            Map? map = MapDatabase.GetMap(level.Map);
+            if(!map.HasValue) {
+                throw new NullReferenceException($"Level map '{level.Map}' does not exist in the map database!");
+            }
+            return map.Value;
+        }
+
         public static GameState GenerateState(Func<ComponentFactory,Level> levelSelector) {
 
             var grid = new Grid2D(layerMode: LayerModes.BackgroundForegroundStandard) {
@@ -50,9 +59,10 @@ namespace TwelveEngine.PuzzleGame {
             grid.PanZoom = false;
             grid.Camera.Scale = Constants.RenderScale;
 
-            var map = GetMap(level.Map);
+            var map = getMap(level);
+
             grid.ImportMap(map);
-            grid.LayerMode = LayerModes.GetAutomatic(map);
+            grid.LayerMode = LayerModes.GetAutomatic(map.Layers.Length);
 
             grid.OnLoad += () => {
                 var player = new Player() {

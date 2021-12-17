@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
 using TwelveEngine.UI;
 using TwelveEngine.UI.Elements;
-using Microsoft.Xna.Framework;
 using TwelveEngine.PuzzleGame;
-using TwelveEngine.Serial;
+using TwelveEngine.Serial.Map;
 using TwelveEngine.Game2D;
 
 namespace TwelveEngine {
@@ -61,7 +60,7 @@ namespace TwelveEngine {
         }
 
         public static GameState GetStartState() {
-            return GetUITestState();
+            return GetPuzzleGameTest();
         }
 
         public static void StartGame(GameManager game) {

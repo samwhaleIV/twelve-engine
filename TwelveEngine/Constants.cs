@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine {
-    public static class Constants {
+    public static partial class Constants {
         public const int SerialSubframeSize = 1024;
 
         public const double MaximumFrameDelta = 1000 / 15d;
@@ -15,7 +15,7 @@ namespace TwelveEngine {
 
         public const bool ShowCollisionLayer = false;
 
-        public const string MapDatabase = ContentRootDirectory + "/" + "map-database.json";
+
         public const string Tileset = "Tileset";
         public const string PlayerImage = "Player";
 
@@ -31,9 +31,9 @@ namespace TwelveEngine {
         public const Keys SaveState = Keys.F1;
         public const Keys LoadState = Keys.F2;
 
-        public const string PlaybackFileExtension = "input";
-        public const string PlaybackFolder = "playback";
 
+        public const string PlaybackFileExtension = "teinp"; /* Twelve Engine (Playback) Input (File) */
+        public const string PlaybackFolder = "playback";
         public const string DefaultPlaybackFile = "default." + PlaybackFileExtension;
 
         public const string PreferredPlaybackFile = null;

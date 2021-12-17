@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Serial;
+using TwelveEngine.Serial.Map;
 
 namespace TwelveEngine.Game2D {
     public sealed class Grid2D:GameState {
@@ -82,7 +82,7 @@ namespace TwelveEngine.Game2D {
 
         private bool spriteBatchActive = false;
 
-        private static int[,] convertFlatArray(int[] array,int width,int height) {
+        private static int[,] expandArray(int[] array,int width,int height) {
             var array2D = new int[width,height];
 
             for(var x = 0;x<width;x++) {
@@ -100,8 +100,9 @@ namespace TwelveEngine.Game2D {
 
             var layers = map.Layers;
             var newLayers = new int[map.Layers.Length][,];
+
             for(var i = 0;i<newLayers.Length;i++) {
-                newLayers[i] = convertFlatArray(layers[i],width,height);
+                newLayers[i] = expandArray(layers[i],width,height);
             }
 
             this.layers = newLayers;

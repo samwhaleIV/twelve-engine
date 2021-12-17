@@ -1,6 +1,4 @@
-﻿using TwelveEngine.Serial;
-
-namespace TwelveEngine.Game2D {
+﻿namespace TwelveEngine.Game2D {
     public struct LayerMode:ISerializable {
         public bool Background;
         public int BackgroundStart;
@@ -58,8 +56,8 @@ namespace TwelveEngine.Game2D {
             Background = true,
             Foreground = true
         };
-        public static LayerMode GetAutomatic(Map map) {
-            switch(map.Layers.Length) {
+        public static LayerMode GetAutomatic(int layerCount) {
+            switch(layerCount) {
                 default:
                 case 2:
                     return SingleLayerBackground;

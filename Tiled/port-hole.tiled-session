@@ -5,8 +5,8 @@
     },
     "activeFile": "maps_alpha/counter-test-2.tmx",
     "expandedProjectPaths": [
-        ".",
-        "maps_alpha"
+        "maps_alpha",
+        "."
     ],
     "exportAsImage.drawTileGrid": false,
     "exportAsImage.includeBackgroundColor": false,
@@ -141,19 +141,19 @@
             }
         },
         "maps_alpha/counter-test-2.tmx": {
-            "scale": 1.5,
+            "scale": 4,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 194.33333333333331,
-                "y": 269.3333333333333
+                "x": 91.375,
+                "y": 104
             }
         },
         "maps_alpha/counter-test.tmx": {
             "scale": 3,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 200.5,
-                "y": 172.33333333333331
+                "x": 183.83333333333331,
+                "y": 136.16666666666666
             }
         },
         "maps_alpha/level1.tmx": {

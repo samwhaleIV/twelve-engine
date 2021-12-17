@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TwelveEngine", "TwelveEngine\TwelveEngine.shproj", "{A0CDBD0E-3A41-42B7-9425-A838BC2C7383}"
 EndProject
@@ -9,23 +9,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwelveDesktop", "TwelveDesk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwelveUWP", "TwelveUWP\TwelveUWP.csproj", "{ACFBF054-13A9-423D-A02C-EC04F48BAB64}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workspace", "Workspace", "{8E475C8B-33A7-4344-A8D5-564B8099AB4A}"
-	ProjectSection(SolutionItems) = preProject
-		todo.txt = todo.txt
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{3011F088-EB04-438A-9014-1D539CFD9163}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineCMD", "EngineCMD\EngineCMD.csproj", "{EA5B3977-98E9-4901-BFE9-BFDE345A8521}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiledCompiler", "TiledCompiler\TiledCompiler.csproj", "{CE78CDD9-8CD2-407A-B5EB-832C4837D3BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledCompiler", "TiledCompiler\TiledCompiler.csproj", "{CE78CDD9-8CD2-407A-B5EB-832C4837D3BD}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MapFormat", "MapEncoder\MapFormat.shproj", "{E56962AA-CB12-4CE6-B75E-3D14382B4110}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Map Encoding", "Map Encoding", "{0F5445DA-1493-4E8B-B024-3CC428C94E31}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		MapEncoder\MapEncoder.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		TwelveEngine\TwelveEngine.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		TwelveEngine\TwelveEngine.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
-		TwelveEngine\TwelveEngine.projitems*{acfbf054-13a9-423d-a02c-ec04f48bab64}*SharedItemsImports = 4
-		TwelveEngine\TwelveEngine.projitems*{ea5b3977-98e9-4901-bfe9-bfde345a8521}*SharedItemsImports = 5
+		MapEncoder\MapEncoder.projitems*{ce78cdd9-8cd2-407a-b5eb-832c4837d3bd}*SharedItemsImports = 5
+		MapEncoder\MapEncoder.projitems*{e56962aa-cb12-4ce6-b75e-3d14382b4110}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +114,8 @@ Global
 		{7049D8D0-4EF9-4D9C-A731-10CE09DE4451} = {3011F088-EB04-438A-9014-1D539CFD9163}
 		{ACFBF054-13A9-423D-A02C-EC04F48BAB64} = {3011F088-EB04-438A-9014-1D539CFD9163}
 		{EA5B3977-98E9-4901-BFE9-BFDE345A8521} = {3011F088-EB04-438A-9014-1D539CFD9163}
+		{CE78CDD9-8CD2-407A-B5EB-832C4837D3BD} = {0F5445DA-1493-4E8B-B024-3CC428C94E31}
+		{E56962AA-CB12-4CE6-B75E-3D14382B4110} = {0F5445DA-1493-4E8B-B024-3CC428C94E31}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8D402DC-B34B-4D03-9F18-84DA46695DB2}

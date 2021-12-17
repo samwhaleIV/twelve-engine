@@ -1,25 +1,34 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
+﻿using System.IO;
+using System.Collections.Generic;
 
-namespace TwelveEngine.Serial {
-    public struct Map {
-        public int Width;
-        public int Height;
-        public int[][] Layers;
-    }
+namespace TwelveEngine.Serial.Map {
+
     public static class MapDatabase {
-        private static Dictionary<string,Map> maps = null;
-        public static Map GetMap(string name) {
-            if(maps == null) {
-                return new Map();
-            }
-            var map = maps[name];
-            return map;
+
+        private static readonly Dictionary<string,Map> maps;
+        static MapDatabase() {
+            maps = new Dictionary<string,Map>();
         }
+        private static void addMap(string name,Map map) => maps.Add(name,map);
+
+        public static Map? GetMap(string name) {
+            if(maps.ContainsKey(name)) {
+                return maps[name];
+            } else {
+                return null;
+            }
+        }
+
+        private static FileStream getDatabaseReadStream(string path) {
+            return File.Open(path,FileMode.Open,FileAccess.Read,FileShare.Read);
+        }
+
         public static void LoadMaps() {
-            string jsonData = File.ReadAllText(Constants.MapDatabase);
-            maps = JsonConvert.DeserializeObject<Dictionary<string,Map>>(jsonData);
+            var path = $"{Constants.ContentRootDirectory}/{Constants.MapDatabase}";
+            using(var file = getDatabaseReadStream(path)) {
+                var decoder = new MapDecoder(file);
+                decoder.ReadDatabase(addMap);
+            }
         }
     }
 }

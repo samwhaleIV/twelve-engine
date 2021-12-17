@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
 using TiledCS;
+using TwelveEngine;
+using TwelveEngine.Serial.Map;
 
 namespace TiledCompiler {
     class Program {
 
-        const string outputFile = "map-database.json";
-
-        public struct Map {
-            public int Width;
-            public int Height;
-            public int[][] Layers;
-        }
+        const string outputFile = Constants.MapDatabase;
 
         static void MergeBottomTwoLayers(List<TiledLayer> layers) {
             var layer1 = layers[0];
@@ -38,10 +33,6 @@ namespace TiledCompiler {
         }
 
         static Map ConvertMap(TiledMap tiledMap) {
-            var map = new Map {
-                Width = tiledMap.Width,
-                Height = tiledMap.Height
-            };
 
             var inputLayers = new List<TiledLayer>(tiledMap.Layers);
             MergeBottomTwoLayers(inputLayers);
@@ -54,7 +45,7 @@ namespace TiledCompiler {
                 layers[i] = layer.data;
             }
 
-            map.Layers = layers;
+            var map = new Map(tiledMap.Width,tiledMap.Height,layers);
 
             return map;
         }
@@ -96,8 +87,10 @@ namespace TiledCompiler {
                 Console.WriteLine($"Processed '{file}'");
             }
 
-            string jsonData = JsonConvert.SerializeObject(maps,Formatting.None);
-            File.WriteAllText(outputPath,jsonData);
+            using(var file = File.Open(outputPath,FileMode.Create,FileAccess.Write,FileShare.None)) {
+                var encoder = new MapEncoder(file);
+                encoder.WriteDatabase(maps);
+            }
         }
     }
 }
