@@ -57,7 +57,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\PanZoom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\GameManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Graphics2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Grid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Level.cs" />

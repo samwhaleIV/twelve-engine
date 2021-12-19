@@ -276,7 +276,7 @@ namespace TwelveEngine.Game2D {
             endSpriteBatch();
         }
 
-        public override void Draw(GameTime gameTime) {
+        public override void Render(GameTime gameTime) {
             screenSpace = getScreenSpace(Game.GraphicsDevice.Viewport);
             Game.GraphicsDevice.Clear(Color.Black);
             

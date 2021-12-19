@@ -40,7 +40,7 @@ namespace TwelveEngine.UI {
             }
         }
 
-        public void RefreshElementSelection() {
+        public void RefreshElement() {
             refreshHoverElement(lastX,lastY);
         }
 

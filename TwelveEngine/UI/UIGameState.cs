@@ -8,10 +8,10 @@ namespace TwelveEngine.UI {
 
         public UIGameState() {
             OnUnload += UIGameState_OnUnload;
-            OnPreDraw += UIGameState_OnPreDraw;
+            OnPreRender += UIGameState_OnPreRender;
         }
 
-        private void UIGameState_OnPreDraw(GameTime gameTime) {
+        private void UIGameState_OnPreRender(GameTime gameTime) {
             state?.PreRender(gameTime);
         }
 
@@ -22,14 +22,18 @@ namespace TwelveEngine.UI {
         public UIState State {
             get => state;
             internal set {
+                if(state == value) {
+                    return;
+                }
                 if(state != null) {
                     state.Unload();
                 }
                 state = value;
+                state.Load();
             }
         }
 
-        public override void Draw(GameTime gameTime) {
+        public override void Render(GameTime gameTime) {
             Game.GraphicsDevice.Clear(Color.Black);
             state?.Render(gameTime);
         }
@@ -42,10 +46,10 @@ namespace TwelveEngine.UI {
 
             gameState.OnLoad += () => {
                 var UI = new UIState(gameState.Game);
-                gameState.State = UI;
+
                 generateState(UI);
-                UI.UpdateCache();
-                UI.Load();
+                gameState.State = UI;
+
                 UI.StartLayout();
             };
 

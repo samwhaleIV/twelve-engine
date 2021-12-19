@@ -43,10 +43,23 @@ namespace TwelveEngine {
                     X = 0,
                     Y = 800,
                     Width = 800,
+                    Height = 800,
+                    IsInteractable = true
+                };
+                var frame = new RenderFrame(UI) {
+                    X = 0,
+                    Y = 1600,
+                    Width = 800,
                     Height = 800
                 };
+                var panel3 = new Panel(Color.Yellow) {
+                    Padding = 20,
+                    Sizing = Sizing.Fill,
+                    IsInteractable = true
+                };
+                frame.AddChild(panel3);
 
-                masterScrollBox.AddChild(panel1,panel2);
+                masterScrollBox.AddChild(panel1,panel2,frame);
 
                 UI.AddChild(masterScrollBox);
             });

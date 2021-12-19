@@ -12,6 +12,9 @@ namespace TwelveEngine.UI.Elements {
         private readonly Element rootNode;
         public Element Target => rootNode;
 
+        private InteractionState interactionState;
+        internal InteractionState InteractionState => interactionState;
+
         public RenderFrame(UIState state) {
             game = state.Game;
 
@@ -29,6 +32,9 @@ namespace TwelveEngine.UI.Elements {
 
             OnLoad += RenderFrame_OnLoad;
             OnUnload += RenderFrame_OnUnload;
+
+            interactionState = new InteractionState(() => renderCache);
+            OnMouseLeave += interactionState.DropFocus;
 
             rootNode = new Element() {
                 Positioning = Positioning.Fixed,
@@ -85,6 +91,7 @@ namespace TwelveEngine.UI.Elements {
             if(renderTarget == null) {
                 return;
             }
+            renderCache.PreRenderElements(gameTime);
             game.GraphicsDevice.SetRenderTarget(renderTarget);
             renderCache.RenderElements(game.SpriteBatch,gameTime);
             game.GraphicsDevice.SetRenderTarget(null);
@@ -121,21 +128,28 @@ namespace TwelveEngine.UI.Elements {
             renderTarget = new RenderTarget2D(game.GraphicsDevice,newSize.X,newSize.Y);
         }
 
+        public void RefreshHoverElement() {
+
+        }
 
         private void RenderFrame_OnScroll(int x,int y,ScrollDirection direction) {
-
+            x -= ScreenArea.X; y -= ScreenArea.Y;
+            interactionState.Scroll(x,y,direction);
         }
 
         private void RenderFrame_OnMouseMove(int x,int y) {
-
+            x -= ScreenArea.X; y -= ScreenArea.Y;
+            interactionState.MouseMove(x,y);
         }
 
         private void RenderFrame_OnMouseUp(int x,int y) {
-
+            x -= ScreenArea.X; y -= ScreenArea.Y;
+            interactionState.MouseUp(x,y);
         }
 
         private void RenderFrame_OnMouseDown(int x,int y) {
-
+            x -= ScreenArea.X; y -= ScreenArea.Y;
+            interactionState.MouseDown(x,y);
         }
     }
 }

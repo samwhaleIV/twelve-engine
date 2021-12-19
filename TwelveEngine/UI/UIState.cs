@@ -44,9 +44,8 @@ namespace TwelveEngine.UI {
             mouse.OnMouseScroll -= interactionState.Scroll;
         }
 
-        protected event Action OnLoad, OnUnload;
-
         public void Load() {
+            UpdateCache();
             renderCache.Load(game);
             addMouseHandlers();
         }

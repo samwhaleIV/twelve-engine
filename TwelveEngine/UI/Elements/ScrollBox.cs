@@ -6,7 +6,7 @@ using TwelveEngine.Input;
 namespace TwelveEngine.UI.Elements {
     public sealed class ScrollBox:RenderFrame {
 
-        private const int SCROLL_AMOUNT = 45;
+        private const int SCROLL_AMOUNT = 60;
         private static readonly TimeSpan SMOOTH_TIME = TimeSpan.FromMilliseconds(100);
 
         public ScrollBox(UIState state): base(state) {
@@ -46,6 +46,7 @@ namespace TwelveEngine.UI.Elements {
             //TODO: Implement X dimension
             if(y != Target.Y) {
                 Target.Y = limitY(y);
+                InteractionState.RefreshElement();
             }
             Target.PopLayoutFreeze();
         }
@@ -53,6 +54,7 @@ namespace TwelveEngine.UI.Elements {
         private void applyYLimit() {
             var newY = limitY(Target.Y);
             Target.Y = newY;
+            InteractionState.RefreshElement();
         }
 
         private void ScrollBox_LayoutUpdated() {
@@ -79,6 +81,7 @@ namespace TwelveEngine.UI.Elements {
                 return;
             }
             animationData.Apply(Target,t);
+            InteractionState.RefreshElement();
         }
 
         private ScrollMode scrollMode = ScrollMode.Y;
