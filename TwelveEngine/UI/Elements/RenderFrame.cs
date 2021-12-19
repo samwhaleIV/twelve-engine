@@ -128,10 +128,6 @@ namespace TwelveEngine.UI.Elements {
             renderTarget = new RenderTarget2D(game.GraphicsDevice,newSize.X,newSize.Y);
         }
 
-        public void RefreshHoverElement() {
-
-        }
-
         private void RenderFrame_OnScroll(int x,int y,ScrollDirection direction) {
             x -= ScreenArea.X; y -= ScreenArea.Y;
             interactionState.Scroll(x,y,direction);

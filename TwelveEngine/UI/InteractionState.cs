@@ -1,5 +1,6 @@
 ﻿using System;
 using TwelveEngine.Input;
+using TwelveEngine.UI.Elements;
 
 namespace TwelveEngine.UI {
     internal sealed class InteractionState {
@@ -35,13 +36,17 @@ namespace TwelveEngine.UI {
                 oldElement.Hovered = false;
                 oldElement.MouseLeave();
             }
-            if(newElement != null) {
-                newElement.Hovered = true;
+            if(newElement == null) {
+                return;
             }
+            newElement.Hovered = true;
         }
 
         public void RefreshElement() {
             refreshHoverElement(lastX,lastY);
+            if(hoverElement != null && hoverElement is RenderFrame frame) {
+                frame.InteractionState.MouseMove(lastX-frame.ComputedX,lastY-frame.ComputedY);
+            }
         }
 
         public void Scroll(int x,int y,ScrollDirection direction) {
