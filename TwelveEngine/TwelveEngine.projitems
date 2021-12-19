@@ -91,6 +91,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\PictureMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Positioning.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\ScrollMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Factory\DebugFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Padding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\RenderCache.cs" />

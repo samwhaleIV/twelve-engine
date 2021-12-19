@@ -6,7 +6,7 @@ using TwelveEngine.Input;
 namespace TwelveEngine.UI.Elements {
     public sealed class ScrollBox:RenderFrame {
 
-        private const int SCROLL_AMOUNT = 60;
+        private const int SCROLL_AMOUNT = 25;
         private static readonly TimeSpan SMOOTH_TIME = TimeSpan.FromMilliseconds(100);
 
         public ScrollBox(UIState state): base(state) {
@@ -137,13 +137,15 @@ namespace TwelveEngine.UI.Elements {
         }
 
         private (int minY,int maxY) getYLimits() {
-            var children = Target.Children;
-            var firstChild = children.First();
-            var lastChild = children.Last();
+            int maxY = 0;
 
-            int maxY = firstChild.Area.Top;
-
-            int minY = -(lastChild.Y + lastChild.Height - ComputedHeight);
+            int minY = 0;
+            foreach(var child in Target.Children) {
+                var testY = child.Y - child.ComputedHeight + ComputedHeight;
+                if(testY < minY) {
+                    minY = testY;
+                }
+            }
 
             return (minY, maxY);
         }

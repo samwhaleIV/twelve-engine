@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using TwelveEngine.UI.Elements;
 
 namespace TwelveEngine.UI {
@@ -69,17 +68,17 @@ namespace TwelveEngine.UI {
         }
         public void StartLayout() => startLayoutRecurse(rootNode);
 
-        internal void Render(GameTime gameTime) {
-            renderCache.RenderElements(game.SpriteBatch,gameTime);
+        public void Render(GameTime gameTime) {
+            renderCache.Render(game.SpriteBatch,gameTime);
         }
 
-        internal void PreRender(GameTime gameTime) {
-            renderCache.PreRenderElements(gameTime);
+        public void PreRender(GameTime gameTime) {
+            renderCache.PreRender(gameTime);
         }
 
-        internal void Update(GameTime gameTime) {
+        public void Update(GameTime gameTime) {
             rootNode.Update();
-            renderCache.UpdateElements(gameTime);
+            renderCache.Update(gameTime);
         }
     }
 }

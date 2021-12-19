@@ -7,7 +7,7 @@ namespace TwelveEngine.UI {
 
         public const SpriteSortMode SortMode = SpriteSortMode.BackToFront;
 
-        public readonly RenderElement[] Elements, Interact, Scroll;
+        public readonly RenderElement[] ElementsCache, InteractCache, ScrollCache;
 
         public readonly RenderFrame[] Frames;
 
@@ -17,40 +17,40 @@ namespace TwelveEngine.UI {
             RenderElement[] scroll,
             RenderFrame[] frames
         ) {
-            Elements = elements;
-            Interact = interact;
-            Scroll = scroll;
+            ElementsCache = elements;
+            InteractCache = interact;
+            ScrollCache = scroll;
             Frames = frames;
         }
 
-        public void UpdateElements(GameTime gameTime) {
-            foreach(var element in Elements) {
+        public void Update(GameTime gameTime) {
+            foreach(var element in ElementsCache) {
                 element.Update(gameTime);
             }
         }
 
-        public void RenderElements(SpriteBatch spriteBatch,GameTime gameTime) {
+        public void Render(SpriteBatch spriteBatch,GameTime gameTime) {
             spriteBatch.Begin(SortMode,null,SamplerState.PointClamp);
-            foreach(var element in Elements) {
+            foreach(var element in ElementsCache) {
                 element.Render(gameTime);
             }
             spriteBatch.End();
         }
 
-        public void PreRenderElements(GameTime gameTime) {
+        public void PreRender(GameTime gameTime) {
             foreach(var frame in Frames) {
                 frame.PreRender(gameTime);
             }
         }
 
         public void Load(GameManager game) {
-            foreach(var element in Elements) {
+            foreach(var element in ElementsCache) {
                 element.Load(game);
             }
         }
 
         public void Unload() {
-            foreach(var element in Elements) {
+            foreach(var element in ElementsCache) {
                 element.Unload();
             }
         }

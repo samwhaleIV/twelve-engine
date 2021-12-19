@@ -6,7 +6,8 @@ namespace TwelveEngine.UI {
     internal sealed class InteractionState {
 
         private Func<RenderCache> getCache;
-        public InteractionState(Func<RenderCache> getCache) {
+
+        internal InteractionState(Func<RenderCache> getCache) {
             this.getCache = getCache;
         }
 
@@ -26,7 +27,7 @@ namespace TwelveEngine.UI {
 
         private void refreshHoverElement(int x,int y) {
             lastX = x; lastY = y;
-            var newElement = findElement(x,y,getCache().Interact);
+            var newElement = findElement(x,y,getCache().InteractCache);
             var oldElement = hoverElement;
             if(newElement == oldElement) {
                 return;
@@ -50,7 +51,7 @@ namespace TwelveEngine.UI {
         }
 
         public void Scroll(int x,int y,ScrollDirection direction) {
-            var element = findElement(x,y,getCache().Scroll);
+            var element = findElement(x,y,getCache().ScrollCache);
             if(element == null) {
                 return;
             }
