@@ -15,10 +15,12 @@ namespace TwelveEngine.UI.Elements {
             Sizing = Sizing.PercentY;
             OnLoad += () => glyphs = GetImage("scroll-glpyh");
             IsInteractable = true;
+
+            OnRender += ScrollBar_OnRender;
         }
 
-        public override void Render(GameTime gameTime) {
-
+        private void ScrollBar_OnRender(GameTime obj) {
+            throw new NotImplementedException();
         }
     }
 }

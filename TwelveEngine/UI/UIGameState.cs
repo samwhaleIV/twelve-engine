@@ -6,26 +6,35 @@ namespace TwelveEngine.UI {
     /* Fundamentally, just a wrapper class */
     public class UIGameState:GameState {
 
-        public UIGameState() => OnUnload += UIGameState_OnUnload;
+        public UIGameState() {
+            OnUnload += UIGameState_OnUnload;
+            OnPreDraw += UIGameState_OnPreDraw;
+        }
+
+        private void UIGameState_OnPreDraw(GameTime gameTime) {
+            state?.PreRender(gameTime);
+        }
+
         private void UIGameState_OnUnload() => state?.Unload();
 
         private UIState state;
 
         public UIState State {
             get => state;
-            set {
+            internal set {
                 if(state != null) {
                     state.Unload();
                 }
                 state = value;
-                if(!IsLoaded) {
-                    state.Load();
-                }
             }
         }
 
-        public override void Draw(GameTime gameTime) => state?.Draw(gameTime);
-        public override void Update(GameTime gameTime) => state?.Update();
+        public override void Draw(GameTime gameTime) {
+            Game.GraphicsDevice.Clear(Color.Black);
+            state?.Render(gameTime);
+        }
+
+        public override void Update(GameTime gameTime) => state?.Update(gameTime);
 
         public static GameState Create(Action<UIState> generateState) {
 
@@ -35,9 +44,9 @@ namespace TwelveEngine.UI {
                 var UI = new UIState(gameState.Game);
                 gameState.State = UI;
                 generateState(UI);
+                UI.UpdateCache();
                 UI.Load();
                 UI.StartLayout();
-                UI.UpdateCaches();
             };
 
             return gameState;

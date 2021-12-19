@@ -18,33 +18,33 @@ namespace TwelveEngine.UI {
         public bool HasParent() => parent != null;
 
         private readonly List<Element> children = new List<Element>();
-        public Element[] GetChildren() => children.ToArray();
+        public List<Element> Children => children;
 
         private int layoutFreezes = 1;
         public bool LayoutUpdatesEnabled => layoutFreezes < 1;
 
         protected event Action LayoutUpdated;
 
-        internal virtual void AddChild(Element child,bool updateLayout = true) {
-            children.Add(child);
-            child.parent = this;
-            if(!updateLayout) {
-                return;
+        public void AddChild(params Element[] children) {
+            foreach(var child in children) {
+                this.children.Add(child);
+                child.parent = this;
+                child.UpdateLayout();
             }
-            child.UpdateLayout();
         }
 
-        public virtual void AddChild(Element child) {
-            AddChild(child,updateLayout: true);
-        }
-
-        public virtual void RemoveChild(Element child) {
+        public void RemoveChild(Element child) {
             children.Remove(child);
             child.parent = null;
             child.UpdateLayout();
         }
 
-        public void StartLayout() {
+        internal void ForceLayout() {
+            layoutFreezes = 1;
+            PopLayoutFreeze();
+        }
+
+        public void PopLayoutFreeze() {
             if(layoutFreezes == 0) {
                 return;
             }
@@ -54,7 +54,7 @@ namespace TwelveEngine.UI {
             }
             UpdateLayout();
         }
-        public void PauseLayout() {
+        public void PushLayoutFreeze() {
             layoutFreezes++;
         }
 
@@ -150,6 +150,10 @@ namespace TwelveEngine.UI {
         private Point getRelativePosition() {
             var position = GetPosition();
             switch(positioning) {
+                case Positioning.Fixed:
+                    position.X = X;
+                    position.Y = Y;
+                    break;
                 case Positioning.Normal:
                     position.X = horizontalAnchor(position.X);
                     position.Y = verticalAnchor(position.Y);
@@ -360,11 +364,11 @@ namespace TwelveEngine.UI {
             }
         }
         public void SwapOrientation() {
-            PauseLayout();
+            PushLayoutFreeze();
             int buffer = Width;
             Width = Height;
             Height = buffer;
-            StartLayout();
+            PopLayoutFreeze();
         }
     }
 }

@@ -7,8 +7,31 @@ using TwelveEngine.Input;
 namespace TwelveEngine.UI {
     public abstract class RenderElement:Element {
 
-        public RenderElement() => LayoutUpdated += updateScreenArea;
-        public abstract void Render(GameTime gameTime);
+        public RenderElement() {
+            LayoutUpdated += RenderElement_LayoutUpdated;
+        }
+
+        private void RenderElement_LayoutUpdated() {
+            updateScreenArea();
+        }
+
+        internal void Unload() {
+            foreach(var texture in disposableTextures) {
+                texture.Dispose();
+            }
+            OnUnload?.Invoke();
+        }
+
+        protected event Action<GameTime> OnRender;
+        protected event Action<GameTime> OnUpdate;
+
+        internal void Update(GameTime gameTime) {
+            OnUpdate?.Invoke(gameTime);
+        }
+
+        internal void Render(GameTime gameTime) {
+            OnRender?.Invoke(gameTime);
+        }
 
         private GameManager game;
         private Queue<Texture> disposableTextures = new Queue<Texture>();
@@ -20,28 +43,23 @@ namespace TwelveEngine.UI {
                      isInteractable = false, isScrollable = false;
 
         protected event Action OnLoad, OnUnload;
-        public event Action OnMouseDown, OnMouseUp;
 
-        public event Action<MouseMoveData> OnMouseMove;
-        public event Action<ScrollDirection> OnScroll;
+        protected event Action<int,int> OnMouseDown, OnMouseUp, OnMouseMove;
+        internal Action OnMouseLeave;
+
+        public event Action<int,int,ScrollDirection> OnScroll;
         
         internal void Load(GameManager game) {
             this.game = game;
             OnLoad?.Invoke();
         }
 
-        internal void Unload() {
-            foreach(var texture in disposableTextures) {
-                texture.Dispose();
-            }
-            OnUnload?.Invoke();
-        }
+        internal void MouseDown(int x,int y) => OnMouseDown?.Invoke(x,y);
+        internal void MouseUp(int x,int y) => OnMouseUp?.Invoke(x,y);
+        internal void MouseMove(int x,int y) => OnMouseMove?.Invoke(x,y);
+        internal void MouseLeave() => OnMouseLeave?.Invoke();
 
-        internal void MouseDown() => OnMouseDown?.Invoke();
-        internal void MouseUp() => OnMouseUp?.Invoke();
-        internal void MouseMove(MouseMoveData data) => OnMouseMove?.Invoke(data);
-
-        internal void Scroll(ScrollDirection direction) => OnScroll?.Invoke(direction);
+        internal void Scroll(int x,int y,ScrollDirection direction) => OnScroll?.Invoke(x,y,direction);
 
         private void updateScreenArea() => screenArea = GetScreenArea();
         protected virtual Rectangle GetScreenArea() => ComputedArea;

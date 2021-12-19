@@ -1,26 +1,85 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Linq;
 using TwelveEngine.Input;
 
 namespace TwelveEngine.UI.Elements {
-    public sealed class ScrollBox:RenderElement {
+    public sealed class ScrollBox:RenderFrame {
 
-        private const int SCROLL_AMOUNT = 60;
-        private static readonly TimeSpan SMOOTH_TIME = TimeSpan.FromMilliseconds(60);
+        private const int SCROLL_AMOUNT = 45;
+        private static readonly TimeSpan SMOOTH_TIME = TimeSpan.FromMilliseconds(100);
 
-        private readonly Element scrollFrame;
-
-        public ScrollBox() {
+        public ScrollBox(UIState state): base(state) {
             IsScrollable = true;
+
             OnScroll += ScrollBox_OnScroll;
+            OnUpdate += ScrollBox_OnUpdate;
 
-            scrollFrame = new Element() {
-                Sizing = Sizing.Fill
-            };
-
-            AddChild(scrollFrame);
+            LayoutUpdated += ScrollBox_LayoutUpdated;
         }
-        public Element Target => scrollFrame;
+
+        private void ScrollBox_OnScroll(int x,int y,ScrollDirection direction) {
+            cancelScrollAnimation();
+            switch(scrollMode) {
+                //TODO: Implement other cases
+                default:
+                case ScrollMode.Y: {
+                    sendScrollY(direction);
+                    break;
+                }
+            }
+        }
+
+        private int limitY(int value) {
+            (int minY, int maxY) = getYLimits();
+            if(value < minY) {
+                value = minY;
+            } else if(value > maxY) {
+                value = maxY;
+            }
+            return value;
+        }
+
+        public void ScrollTo(int x,int y) {
+            cancelScrollAnimation();
+            Target.PushLayoutFreeze();
+            //TODO: Implement X dimension
+            if(y != Target.Y) {
+                Target.Y = limitY(y);
+            }
+            Target.PopLayoutFreeze();
+        }
+
+        private void applyYLimit() {
+            var newY = limitY(Target.Y);
+            Target.Y = newY;
+        }
+
+        private void ScrollBox_LayoutUpdated() {
+            cancelScrollAnimation();
+            applyYLimit();
+            //TODO: Implement X dimension
+        }
+
+        private void ScrollBox_OnUpdate(GameTime gameTime) {
+            if(hasPendingAnimationData) {
+                animationData = pendingAnimationData;
+
+                animationStart = gameTime.TotalGameTime;
+                hasPendingAnimationData = false;
+                hasAnimationData = true;
+            }
+            if(!hasAnimationData) {
+                return;
+            }
+            var t = (float)((gameTime.TotalGameTime - animationStart) / SMOOTH_TIME);
+
+            if(t >= 1f) {
+                cancelScrollAnimation();
+                return;
+            }
+            animationData.Apply(Target,t);
+        }
 
         private ScrollMode scrollMode = ScrollMode.Y;
 
@@ -40,17 +99,17 @@ namespace TwelveEngine.UI.Elements {
             public readonly int YDifference;
 
             public void Apply(Element element) {
-                element.PauseLayout();
+                element.PushLayoutFreeze();
                 element.X = StartX + XDifference;
                 element.Y = StartY + YDifference;
-                element.StartLayout();
+                element.PopLayoutFreeze();
             }
 
             public void Apply(Element element,float t) {
-                element.PauseLayout();
+                element.PushLayoutFreeze();
                 element.X = StartX + (int)(t * XDifference);
                 element.Y = StartY + (int)(t * YDifference);
-                element.StartLayout();
+                element.PopLayoutFreeze();
             }
         }
 
@@ -63,54 +122,44 @@ namespace TwelveEngine.UI.Elements {
         private TimeSpan animationStart;
 
         private void cancelScrollAnimation() {
-
             if(hasPendingAnimationData) {
-                pendingAnimationData.Apply(scrollFrame);
+                pendingAnimationData.Apply(Target);
 
             } else if(hasAnimationData) {
-                animationData.Apply(scrollFrame);
+                animationData.Apply(Target);
             }
 
             hasPendingAnimationData = false;
             hasAnimationData = false;
         }
 
-        private void sendScrollY(int difference) {
-            var area = scrollFrame.Area;
-            pendingAnimationData = new AnimationData(area.X,area.Y,0,difference);
+        private (int minY,int maxY) getYLimits() {
+            var children = Target.Children;
+            var firstChild = children.First();
+            var lastChild = children.Last();
+
+            int maxY = firstChild.Area.Top;
+
+            int minY = -(lastChild.Y + lastChild.Height - ComputedHeight);
+
+            return (minY, maxY);
+        }
+
+        private void sendScrollY(ScrollDirection direction) {
+            var area = Target.Area;
+
+            int yDifference = -(int)direction * SCROLL_AMOUNT;
+            var endY = area.Y + yDifference;
+            (int minY, int maxY) = getYLimits();
+
+            if(endY < minY) {
+                yDifference = minY - area.Y;
+            } else if(endY > maxY) {
+                yDifference = maxY - area.Y;
+            }
+
+            pendingAnimationData = new AnimationData(area.X,area.Y,0,yDifference);
             hasPendingAnimationData = true;
-        }
-
-        private void ScrollBox_OnScroll(ScrollDirection direction) {
-            cancelScrollAnimation();
-            switch(scrollMode) {
-                //TODO: Implement other cases
-                default:
-                case ScrollMode.Y: {
-                    sendScrollY((int)direction * SCROLL_AMOUNT);
-                    break;
-                }
-            }
-        }
-
-        public override void Render(GameTime gameTime) {
-            if(hasPendingAnimationData) {
-                animationData = pendingAnimationData;
-
-                animationStart = gameTime.TotalGameTime;
-                hasPendingAnimationData = false;
-                hasAnimationData = true;
-            }
-            if(!hasAnimationData) {
-                return;
-            }
-            var t = (float)((gameTime.TotalGameTime - animationStart) / SMOOTH_TIME);
-
-            if(t >= 1f) {
-                cancelScrollAnimation();
-                return;
-            }
-            animationData.Apply(scrollFrame,t);
         }
 
         public ScrollMode ScrollMode {

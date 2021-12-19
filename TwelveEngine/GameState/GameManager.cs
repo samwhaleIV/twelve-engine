@@ -285,6 +285,7 @@ namespace TwelveEngine {
             watch.Start();
 #endif
             if(hasState()) {
+                gameState.PreDraw(proxyGameTime);
                 gameState.Draw(proxyGameTime);
             } else {
                 GraphicsDevice.Clear(Color.Black);

@@ -80,6 +80,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RootNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Anchor.cs" />
@@ -90,10 +92,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\PictureMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Positioning.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\ScrollMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\MouseMoveData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Padding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\RenderCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\RenderElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Sizing.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\RenderElementSorter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIState.cs" />
   </ItemGroup>

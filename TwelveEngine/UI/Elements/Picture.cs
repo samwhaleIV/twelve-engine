@@ -5,7 +5,30 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.UI.Elements {
     internal class Picture:RenderElement {
 
-        public Picture(string imageName) => OnLoad += () => picture = GetImage(imageName);
+        private readonly string imageName;
+
+        public Picture(string imageName) {
+            this.imageName = imageName;
+            OnLoad += Picture_OnLoad;
+            OnRender += Picture_OnRender;
+        }
+
+        private void Picture_OnLoad() {
+            picture = GetImage(imageName);
+        }
+
+        private void Picture_OnRender(GameTime _) {
+            switch(mode) {
+                default:
+                case PictureMode.Contain:
+                case PictureMode.Stretch:
+                    Draw(picture);
+                    break;
+                case PictureMode.Cover:
+                    Draw(picture,sourceArea);
+                    break;
+            }
+        }
 
         private Texture2D picture;
         private PictureMode mode = PictureMode.Stretch;
@@ -21,18 +44,6 @@ namespace TwelveEngine.UI.Elements {
             }
         }
 
-        public override void Render(GameTime _) {
-            switch(mode) {
-                default:
-                case PictureMode.Contain:
-                case PictureMode.Stretch:
-                    Draw(picture);
-                    break;
-                case PictureMode.Cover:
-                    Draw(picture,sourceArea);
-                    break;
-            }
-        }
 
         private Rectangle sourceArea;
 
