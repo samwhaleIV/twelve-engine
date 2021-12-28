@@ -1,6 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Linq;
+﻿using System;
+using Microsoft.Xna.Framework;
 using TwelveEngine.Input;
 
 namespace TwelveEngine.UI.Elements {

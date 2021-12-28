@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.UI {
     public class Element {
@@ -88,15 +88,30 @@ namespace TwelveEngine.UI {
         }
 
         protected virtual Point GetPosition() => area.Location;
+
         protected virtual Point GetSize() => area.Size;
+
         protected virtual Point GetFillSize() => parent.computedArea.Size;
-        protected virtual Point GetBoxFill() => new Point(Math.Max(parent.ComputedWidth,parent.ComputedHeight));
 
-        private int getFractionalWidth() => (int)(parent.ComputedWidth * (Width / 100f));
-        private int getFractionalHeight() => (int)(parent.ComputedHeight * (Height / 100f));
+        protected virtual Point GetBoxFill() {
+            return new Point(Math.Max(parent.ComputedWidth,parent.ComputedHeight));
+        }
 
-        private int getCenteredX() => (int)(parent.ComputedX + parent.ComputedWidth / 2f - ComputedWidth / 2f);
-        private int getCenteredY() => (int)(parent.ComputedY + parent.ComputedHeight / 2f - ComputedHeight / 2f);
+        private int getFractionalWidth() {
+            return (int)(parent.ComputedWidth * (Width / 100f));
+        }
+
+        private int getFractionalHeight() {
+            return (int)(parent.ComputedHeight * (Height / 100f));
+        }
+
+        private int getCenteredX() {
+            return (int)(parent.ComputedX + parent.ComputedWidth / 2f - ComputedWidth / 2f);
+        }
+        
+        private int getCenteredY() {
+            return (int)(parent.ComputedY + parent.ComputedHeight / 2f - ComputedHeight / 2f);
+        }
 
         private int horizontalAnchor(int x) {
             if(anchor == Anchor.TopLeft || anchor == Anchor.BottomLeft) {
@@ -114,8 +129,13 @@ namespace TwelveEngine.UI {
             }
         }
 
-        private int getCenteredXOrigin(int x) => (int)(x + ComputedWidth / 2f);
-        private int getCenteredYOrigin(int y) => (int)(y + ComputedHeight / 2f);
+        private int getCenteredXOrigin(int x) {
+            return (int)(x - ComputedWidth / 2f);
+        }
+
+        private int getCenteredYOrigin(int y) {
+            return (int)(y - ComputedHeight / 2f);
+        }
 
         private Point getRelativeSize() {
             var size = GetSize();
@@ -183,7 +203,6 @@ namespace TwelveEngine.UI {
                         position.Y = getCenteredYOrigin(position.Y);
                     }
                     break;
-
             }
             return position;
         }
