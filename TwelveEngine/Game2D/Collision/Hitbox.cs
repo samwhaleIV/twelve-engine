@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine.Game2D {
+﻿using TwelveEngine.Game2D.Entity;
+
+namespace TwelveEngine.Game2D {
     public struct Hitbox {
         public Hitbox(
             float x, float y,
@@ -17,7 +19,7 @@
             Height + Y >= target.Y;
         }
 
-        public static Hitbox GetInteractionArea(Entity entity) {
+        public static Hitbox GetInteractionArea(Entity2D entity) {
 
             var boxSize = Constants.InteractionBoxSize;
             var hitbox = new Hitbox() {

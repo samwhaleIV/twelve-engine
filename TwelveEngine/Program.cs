@@ -17,7 +17,6 @@ namespace TwelveEngine {
                 return;
             }
             MapDatabase.LoadMaps();
-            EntityFactory.InstallDefault();
             loadedPuzzleGameData = true;
         }
 
@@ -60,7 +59,7 @@ namespace TwelveEngine {
         }
 
         public static GameState GetStartState() {
-            return GetUITestState();
+            return GetPuzzleGameTest();
         }
 
         public static void StartGame(GameManager game) {

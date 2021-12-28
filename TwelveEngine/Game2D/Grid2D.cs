@@ -2,6 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Serial.Map;
+using TwelveEngine.EntitySystem;
+using TwelveEngine.Game2D.Collision;
+using TwelveEngine.Game2D.Entity;
 
 namespace TwelveEngine.Game2D {
     public sealed class Grid2D:GameState {
@@ -60,9 +63,10 @@ namespace TwelveEngine.Game2D {
             set => interactionLayer = value;
         }
 
-        private EntityManager entityManager = null;
-        public EntityManager EntityManager => entityManager;
-        public void AddEntity(Entity entity) => EntityManager.AddEntity(entity);
+        private EntityManager<Entity2D,Grid2D> entityManager = null;
+        public EntityManager<Entity2D,Grid2D> EntityManager => entityManager;
+
+        public void AddEntity(Entity2D entity) => EntityManager.AddEntity(entity);
 
         private IUpdateable[] updateables = new IUpdateable[0];
         private IRenderable[] renderables = new IRenderable[0];
@@ -143,7 +147,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void loadEntityManager() {
-            entityManager = new EntityManager(this);
+            entityManager = new EntityManager<Entity2D,Grid2D>(Game,this,Entity2DType.GetFactory());
 
             entityManager.OnUpdateListChanged += updateUpdateables;
             entityManager.OnRenderListChanged += updateRenderables;

@@ -1,7 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D;
-using System.Threading.Tasks;
-using System;
 
 namespace TwelveEngine.PuzzleGame.Components {
     public class PulseButton:WorldComponent,IInteract {
@@ -32,7 +31,7 @@ namespace TwelveEngine.PuzzleGame.Components {
             updating = false;
         }
 
-        public void Interact(Entity entity) {
+        public void Interact(Entity2D entity) {
             if(updating) {
                 return;
             }

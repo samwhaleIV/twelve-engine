@@ -2,8 +2,8 @@
 using System.Reflection;
 using System.Collections.Generic;
 using TwelveEngine.Game2D;
-using TwelveEngine.Game2D.Entities;
 using TwelveEngine.Serial.Map;
+using TwelveEngine.Game2D.Entity.Types;
 
 namespace TwelveEngine.PuzzleGame {
     public static class PuzzleFactory {

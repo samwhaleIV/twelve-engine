@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TwelveEngine.Game2D.Collision;
 
-namespace TwelveEngine.Game2D.Entities {
-    public sealed class Player:Entity, IUpdateable, IRenderable {
+namespace TwelveEngine.Game2D.Entity.Types {
+    public sealed class Player:Entity2D, IUpdateable, IRenderable {
 
-        protected override EntityType GetEntityType() => EntityType.Player;
+        protected override int GetEntityType() => Entity2DType.Player;
 
         public Player() {
             OnLoad += Player_OnLoad;
@@ -99,10 +100,10 @@ namespace TwelveEngine.Game2D.Entities {
 
         private void interact() {
             shouldInteract = false;
-            if(Grid.Interaction == null) {
+            if(Owner.Interaction == null) {
                 return;
             }
-            Grid.Interaction.HitTest(this);
+            Owner.Interaction.HitTest(this);
         }
 
         public float Speed {
@@ -179,7 +180,7 @@ namespace TwelveEngine.Game2D.Entities {
 
             Hitbox self = GetHitbox();
 
-            var collisionData = Grid.Collision.Collides(self);
+            var collisionData = Owner.Collision.Collides(self);
             if(collisionData.Count == 0) {
                 return;
             }
@@ -251,7 +252,7 @@ namespace TwelveEngine.Game2D.Entities {
 
         private void handleAutomaticOffset(Direction oldDirection) {
             Hitbox hitbox = GetHitbox();
-            List<Hitbox> collisionResult = Grid.Collision.Collides(hitbox);
+            List<Hitbox> collisionResult = Owner.Collision.Collides(hitbox);
 
             var hadCollision = false;
             foreach(var target in collisionResult) {
@@ -276,7 +277,7 @@ namespace TwelveEngine.Game2D.Entities {
 
             hitbox = GetHitbox();
 
-            collisionResult = Grid.Collision.Collides(hitbox);
+            collisionResult = Owner.Collision.Collides(hitbox);
             if(collisionResult.Count <= 0) {
                 return;
             }
@@ -370,7 +371,7 @@ namespace TwelveEngine.Game2D.Entities {
             if(shouldInteract) {
                 interact();
             }
-            var camera = Grid.Camera;
+            var camera = Owner.Camera;
             camera.X = X; camera.Y = Y;
         }
 
@@ -413,12 +414,11 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         public void Render(GameTime gameTime) {
-
             if(!OnScreen()) {
                 return;
             }
 
-            var tileSize = Grid.TileSize;
+            var tileSize = Owner.TileSize;
 
             var destination = GetDestination();
             var source = new Rectangle();
@@ -428,7 +428,7 @@ namespace TwelveEngine.Game2D.Entities {
             source.Width = tileSize;
             source.Height = tileSize;
 
-            var depth = 1 - Math.Max(destination.Y / (float)Grid.Viewport.Height,0);
+            var depth = 1 - Math.Max(destination.Y / (float)Owner.Viewport.Height,0);
             Game.SpriteBatch.Draw(playerTexure,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
         }
     }

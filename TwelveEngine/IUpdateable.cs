@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TwelveEngine.Game2D {
+namespace TwelveEngine {
     public interface IUpdateable {
         void Update(GameTime gameTime);
     }

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TwelveEngine.Game2D {
+namespace TwelveEngine.Game2D.Collision {
 
     public sealed class CollisionTypes {
 

@@ -6,7 +6,7 @@ namespace TwelveEngine.Game2D {
         private readonly List<IInteract> targets = new List<IInteract>();
         public void AddTarget(IInteract target) => targets.Add(target);
 
-        public void HitTest(Entity source) {
+        public void HitTest(Entity2D source) {
             var interactionBox = source.GetInteractionBox();
             foreach(var target in targets) {
                 if(interactionBox.Collides(target.GetHitbox())) {

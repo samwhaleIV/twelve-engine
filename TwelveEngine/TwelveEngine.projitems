@@ -13,17 +13,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Direction.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\RedBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\EntityManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EntityType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IRenderable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\IUpdateable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Direction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Types\Player.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Types\RedBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity2DType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IRenderable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IUpdateable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Hitbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\InteractionLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\DebugRenderer.cs" />
@@ -102,8 +103,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIState.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Game2D\Entity\" />
     <Folder Include="$(MSBuildThisFileDirectory)GameState\Automation\" />
     <Folder Include="$(MSBuildThisFileDirectory)GameUI\" />
+    <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />

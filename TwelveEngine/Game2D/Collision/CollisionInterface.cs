@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TwelveEngine.Game2D {
+namespace TwelveEngine.Game2D.Collision {
     public sealed class CollisionInterface {
 
         private readonly Grid2D grid;

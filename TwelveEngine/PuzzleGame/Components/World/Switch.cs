@@ -16,7 +16,7 @@ namespace TwelveEngine.PuzzleGame.Components {
             this.facingLeft = facingLeft;
         }
 
-        public void Interact(Entity entity) {
+        public void Interact(Entity2D entity) {
             SignalState = SignalState.NOT();
             SendSignal();
         }

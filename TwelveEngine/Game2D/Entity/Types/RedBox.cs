@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TwelveEngine.Game2D.Entities {
-    public sealed class RedBox:Entity, IRenderable {
+namespace TwelveEngine.Game2D.Entity.Types {
+    public sealed class RedBox:Entity2D, IRenderable {
 
         public RedBox() {
             OnLoad += RedBox_OnLoad;
@@ -17,7 +17,7 @@ namespace TwelveEngine.Game2D.Entities {
             redBoxTexture.Dispose();
         }
 
-        protected override EntityType GetEntityType() => EntityType.RedBox;
+        protected override int GetEntityType() => Entity2DType.RedBox;
 
         private Texture2D redBoxTexture;
         private Rectangle textureSource = new Rectangle(0,0,1,1);

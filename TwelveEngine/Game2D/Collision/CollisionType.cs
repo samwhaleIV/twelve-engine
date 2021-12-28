@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine.Game2D{
+﻿namespace TwelveEngine.Game2D.Collision {
     public readonly struct CollisionType {
         public CollisionType(
             int x,int y,int width,int height,float tileSize
