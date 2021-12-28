@@ -1,6 +1,4 @@
-﻿using TwelveEngine.Game2D.Entity;
-
-namespace TwelveEngine.Game2D {
+﻿namespace TwelveEngine.Game2D {
     public struct Hitbox {
         public Hitbox(
             float x, float y,

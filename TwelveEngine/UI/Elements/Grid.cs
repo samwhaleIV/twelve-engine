@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.UI.Elements {
+﻿namespace TwelveEngine.UI.Elements {
     public class Grid:Element {
 
         private (int Width, int Height) cellSize = (0,0);

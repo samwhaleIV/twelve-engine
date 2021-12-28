@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Game2D.Collision;
 
 namespace TwelveEngine.Game2D.Entity.Types {
     public sealed class Player:Entity2D, IUpdateable, IRenderable {
