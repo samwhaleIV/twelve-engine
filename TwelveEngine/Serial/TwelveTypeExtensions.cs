@@ -1,6 +1,5 @@
 ﻿using TwelveEngine.PuzzleGame;
 using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Input;
 
 namespace TwelveEngine {
     public sealed partial class SerialFrame {
@@ -13,7 +12,7 @@ namespace TwelveEngine {
         public void Set(Keys key) => Set((byte)key);
         public Keys GetKey() => (Keys)GetByte();
 
-        public void Set(Impulse bind) => Set((byte)bind);
-        public Impulse GetBind() => (Impulse)GetByte();
+        public void Set(Impulse bind) => Set((int)bind);
+        public Impulse GetBind() => (Impulse)GetInt();
     }
 }
