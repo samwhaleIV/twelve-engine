@@ -79,7 +79,7 @@ namespace TwelveEngine {
         private readonly VCRDisplay vcrDisplay;
         private readonly KeyWatcherSet keyWatcherSet;
         private readonly AutomationAgent automationAgent = new AutomationAgent();
-        private readonly KeyBinds keyBinds = new KeyBinds();
+        private readonly KeyBindSet keyBinds = new KeyBindSet();
         private readonly MouseHandler mouseHandler = new MouseHandler();
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
         private readonly TimeoutManager timeout = new TimeoutManager();
@@ -90,7 +90,7 @@ namespace TwelveEngine {
         public AutomationAgent AutomationAgent => automationAgent;
         public ImpulseHandler ImpulseHandler => impulseHandler;
         public MouseHandler MouseHandler => mouseHandler;
-        public KeyBinds KeyBinds => keyBinds;
+        public KeyBindSet KeyBinds => keyBinds;
         public SpriteFont DefaultFont => spriteFont;
 
         public KeyboardState KeyboardState => keyboardState;

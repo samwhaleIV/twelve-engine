@@ -1,6 +1,6 @@
-﻿using System;
+﻿using TwelveEngine.EntitySystem;
+using System;
 using Microsoft.Xna.Framework;
-using TwelveEngine.EntitySystem;
 
 namespace TwelveEngine.Game2D {
     public abstract class Entity2D:Entity<Grid2D> {
