@@ -3,26 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace TwelveEngine.EntitySystem {
-    public sealed class EntityManager<T,OwnerType>:ISerializable where T:Entity<OwnerType> where OwnerType:class {
+    public sealed class EntityManager<TEntity,TOwner>:ISerializable where TEntity:Entity<TOwner> where TOwner:GameState {
 
-        public EntityManager(GameManager game,OwnerType owner,EntityFactory<T,OwnerType> factory) {
-            entityDictionary = new Dictionary<int,T>();
-            namedEntities = new Dictionary<string,T>();
+        public EntityManager(TOwner owner,EntityFactory<TEntity,TOwner> factory) {
+            entityDictionary = new Dictionary<int,TEntity>();
+            namedEntities = new Dictionary<string,TEntity>();
 
-            this.game = game;
             this.owner = owner;
             this.factory = factory;
         }
 
-        private readonly GameManager game;
-        private readonly OwnerType owner;
-        private readonly EntityFactory<T,OwnerType> factory;
+        private readonly TOwner owner;
+        private readonly EntityFactory<TEntity,TOwner> factory;
 
         private int IDCounter = 0;
         private int getNextID() => IDCounter++;
 
-        private readonly Dictionary<int,T> entityDictionary;
-        private readonly Dictionary<string,T> namedEntities;
+        private readonly Dictionary<int,TEntity> entityDictionary;
+        private readonly Dictionary<string,TEntity> namedEntities;
 
         private bool updateListQueued = false, renderListQueued = false;
 
@@ -68,18 +66,18 @@ namespace TwelveEngine.EntitySystem {
             }
         }
 
-        public T Get(string name) {
-            T entity;
+        public TEntity Get(string name) {
+            TEntity entity;
             if(namedEntities.TryGetValue(name,out entity)) {
                 return entity;
             }
             return null;
         }
-        public T[] GetAll() {
+        public TEntity[] GetAll() {
             return entityDictionary.Values.ToArray();
         }
-        public T[] GetAllOfType(int type) {
-            var queue = new Queue<T>();
+        public TEntity[] GetAllOfType(int type) {
+            var queue = new Queue<TEntity>();
             foreach(var entity in entityDictionary.Values) {
                 if(entity.Type == type) {
                     queue.Enqueue(entity);
@@ -111,40 +109,40 @@ namespace TwelveEngine.EntitySystem {
             namedEntities.Remove(oldName);
             namedEntities.Add(newName,source);
         }
-        private bool hasName(T entity) {
+        private bool hasName(TEntity entity) {
             return string.IsNullOrWhiteSpace(entity.Name);
         }
-        private void removeNamedEntity(T entity) {
+        private void removeNamedEntity(TEntity entity) {
             namedEntities.Remove(entity.Name);
         }
-        private void addNamedEntity(T entity) {
+        private void addNamedEntity(TEntity entity) {
             namedEntities.Add(entity.Name,entity);
         }
 
-        private void addToLists(T entity) {
+        private void addToLists(TEntity entity) {
             entityDictionary.Add(entity.ID,entity);
             if(hasName(entity)) addNamedEntity(entity);
             if(entity is IRenderable) renderListChanged();
             if(entity is IUpdateable) updateListChanged();
         }
 
-        private void removeFromList(T entity) {
+        private void removeFromList(TEntity entity) {
             entityDictionary.Remove(entity.ID);
             if(hasName(entity)) removeNamedEntity(entity);
             if(entity is IRenderable) renderListChanged();
             if(entity is IUpdateable) updateListChanged();
         }
 
-        public void AddEntity(T entity) {
+        public void AddEntity(TEntity entity) {
             var ID = getNextID();
-            entity.Register(ID,game,owner);
+            entity.Register(ID,owner);
 
             addToLists(entity); //Stage 1
             entity.OnNameChanged += Entity_OnNameChanged; //Stage 2
             entity.Load(); //Stage 3
         }
 
-        public void RemoveEntity(T entity) {
+        public void RemoveEntity(TEntity entity) {
             /* Stage 1 and 2 are in reverse order for entity removal */
             entity.OnNameChanged -= Entity_OnNameChanged; //Stage 1
             removeFromList(entity); //Stage 2
@@ -170,7 +168,7 @@ namespace TwelveEngine.EntitySystem {
             ResumeListChanges();
         }
 
-        private T[] getSerializableEntities() {
+        private TEntity[] getSerializableEntities() {
             return entityDictionary.Values.Where(x => !x.StateLock).ToArray();
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace TwelveEngine.EntitySystem {
-    public abstract class Entity<OwnerType>:ISerializable where OwnerType:class {
+    public abstract class Entity<TOwner>:ISerializable where TOwner:GameState {
 
         protected abstract int GetEntityType();
         public int Type => GetEntityType();
@@ -14,15 +14,15 @@ namespace TwelveEngine.EntitySystem {
         public int ID => id;
 
         private GameManager game;
-        private OwnerType owner;
+        private TOwner owner;
 
         protected GameManager Game => game;
-        protected OwnerType Owner => owner;
+        protected TOwner Owner => owner;
 
-        internal void Register(int id,GameManager game,OwnerType owner) {
+        internal void Register(int id,TOwner owner) {
             this.id = id;
             this.owner = owner;
-            this.game = game;
+            game = owner.Game;
         }
 
         protected event Action OnLoad, OnUnload;

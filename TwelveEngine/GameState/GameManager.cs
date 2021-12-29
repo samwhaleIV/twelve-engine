@@ -25,17 +25,24 @@ namespace TwelveEngine {
             automationAgent.PlaybackStarted += AutomationAgent_PlaybackStarted;
             automationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
 
-            keyWatcherSet = new KeyWatcherSet(
-                new KeyWatcher(Constants.PlaybackKey,automationAgent.TogglePlayback),
-                new KeyWatcher(Constants.RecordingKey,automationAgent.ToggleRecording),
+            keyWatcherSet = new KeyWatcherSet(getDebugControls());
 
-                new KeyWatcher(Constants.AdvanceFrame,advanceFrame),
-                new KeyWatcher(Constants.PauseGame,togglePaused),
+            /* TODO: Load KeyBinds from a file */
 
-                new KeyWatcher(Constants.SaveState,saveSerialState),
-                new KeyWatcher(Constants.LoadState,loadSerialState)
-            );
+            impulseHandler = new ImpulseHandler(keyBinds);
         }
+
+        private (Keys key, Action action)[] getDebugControls() => new (Keys key, Action action)[]{
+
+            (Constants.PlaybackKey, automationAgent.TogglePlayback),
+            (Constants.RecordingKey, automationAgent.ToggleRecording),
+
+            (Constants.PauseGame, togglePaused),
+            (Constants.AdvanceFrame, queueAdvanceFrame),
+
+            (Constants.SaveState, saveSerialState),
+            (Constants.LoadState, loadSerialState)
+        };
 
         private void AutomationAgent_PlaybackStopped() {
             IsFixedTimeStep = false;
@@ -50,8 +57,10 @@ namespace TwelveEngine {
         private GameState gameState = null;
         private GameState pendingGameState = null;
         private SerialFrame savedState = null;
+
         private KeyboardState keyboardState;
         private MouseState mouseState;
+        private GamePadState gamePadState;
 
         /* Loading, automation, and time maniuplation state */
         private bool initialized = false;
@@ -64,31 +73,30 @@ namespace TwelveEngine {
         private SpriteBatch spriteBatch;
         private SpriteFont spriteFont;
         private GraphicsDeviceManager graphicsDeviceManager;
+        private ImpulseHandler impulseHandler;
 
         /* GameManager, "God class", extensions */
         private readonly VCRDisplay vcrDisplay;
         private readonly KeyWatcherSet keyWatcherSet;
         private readonly AutomationAgent automationAgent = new AutomationAgent();
-        private readonly KeyboardHandler keyboardHandler = new KeyboardHandler();
+        private readonly KeyBinds keyBinds = new KeyBinds();
         private readonly MouseHandler mouseHandler = new MouseHandler();
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
         private readonly TimeoutManager timeout = new TimeoutManager();
-        private readonly KeyBinds keyBinds = new KeyBinds();
 
         /* Public access */
-        public KeyboardState KeyboardState => keyboardState;
-        public MouseState MouseState => mouseState;
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
         public SpriteBatch SpriteBatch => spriteBatch;
         public AutomationAgent AutomationAgent => automationAgent;
-        public KeyboardHandler KeyboardHandler => keyboardHandler;
+        public ImpulseHandler ImpulseHandler => impulseHandler;
         public MouseHandler MouseHandler => mouseHandler;
         public KeyBinds KeyBinds => keyBinds;
         public SpriteFont DefaultFont => spriteFont;
 
-        public bool IsKeyDown(KeyBind type) {
-            return keyboardState.IsKeyDown(keyBinds.Get(type));
-        }
+        public KeyboardState KeyboardState => keyboardState;
+        public MouseState MouseState => mouseState;
+        public GamePadState GamePadState => gamePadState;
+
         public bool CancelTimeout(int ID) {
             return timeout.Remove(ID);
         }
@@ -111,14 +119,24 @@ namespace TwelveEngine {
             }
             gamePaused = paused;
         }
+
         private void togglePaused() => setPaused(!gamePaused);
 
+        private GamePadState getGamePadState() {
+            var state = GamePad.GetState(Constants.GamePadIndex);
+            return state;
+        }
+
         private KeyboardState getKeyboardState() {
-            return automationAgent.FilterKeyboardState(Keyboard.GetState());
+            var state = Keyboard.GetState();
+            return automationAgent.FilterKeyboardState(state);
         }
+
         private MouseState getMouseState() {
-            return automationAgent.FilterMouseState(Mouse.GetState());
+            var state = Mouse.GetState();
+            return automationAgent.FilterMouseState(state);
         }
+
         private bool hasState() {
             return gameState != null;
         }
@@ -146,7 +164,6 @@ namespace TwelveEngine {
             var oldGameState = gameState;
             oldGameState.Unload();
         }
-
         private void loadState(GameState gameState) {
             unloadState();
             if(gameState == null) {
@@ -183,6 +200,11 @@ namespace TwelveEngine {
             pendingGameState = null;
         }
 
+        private bool advanceFrameQueued = false;
+        private void queueAdvanceFrame() {
+            advanceFrameQueued = true;
+        }
+
         private void advanceFrame(KeyboardState keyboardState,GameTime gameTime) {
             if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
                 shouldAdvanceFrame = false;
@@ -200,6 +222,7 @@ namespace TwelveEngine {
         private void updateGame(GameTime trueGameTime) {
             proxyGameTime.Update(trueGameTime);
             automationAgent.StartUpdate();
+
             if(automationAgent.PlaybackActive) {
                 proxyGameTime.AddSimTime(automationAgent.GetFrameTime());
             }
@@ -209,8 +232,9 @@ namespace TwelveEngine {
 
             keyboardState = getKeyboardState();
             mouseState = getMouseState();
+            gamePadState = getGamePadState();
 
-            keyboardHandler.Update(keyboardState);
+            impulseHandler.Update(keyboardState,gamePadState);
             mouseHandler.Update(mouseState);
 
             timeout.Update(proxyGameTime.TotalGameTime);
@@ -261,8 +285,12 @@ namespace TwelveEngine {
 #endif
                 return;
             }
-
-            keyWatcherSet.Process(Keyboard.GetState(),gameTime);
+            var vanillaKeyboardState = Keyboard.GetState();
+            keyWatcherSet.Update(vanillaKeyboardState);
+            if(advanceFrameQueued) {
+                advanceFrame(vanillaKeyboardState,gameTime);
+                advanceFrameQueued = false;
+            }
             if(gamePaused) {
                 if(shouldAdvanceFrame) {
                     updateGame(gameTime);

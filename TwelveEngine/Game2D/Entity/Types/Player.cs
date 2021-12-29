@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Game2D.Entity.Types {
     public sealed class Player:Entity2D, IUpdateable, IRenderable {
@@ -16,16 +15,15 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         private void Player_OnLoad() {
             playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
-            Game.KeyboardHandler.KeyDown += KeyboardHandler_KeyDown;
-        }
-        public void Player_OnUnload() {
-            Game.KeyboardHandler.KeyDown -= KeyboardHandler_KeyDown;
+            Game.ImpulseHandler.OnAcceptDown += ImpulseHandler_OnAcceptDown;
         }
 
-        private void KeyboardHandler_KeyDown(Keys key) {
-            if(key == Game.KeyBinds.Accept) {
-                shouldInteract = true;
-            }
+        public void Player_OnUnload() {
+            Game.ImpulseHandler.OnAcceptDown -= ImpulseHandler_OnAcceptDown;
+        }
+
+        private void ImpulseHandler_OnAcceptDown() {
+            shouldInteract = true;
         }
 
         private const float FRAME_TIME = 300;
@@ -83,16 +81,16 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         private void keyHandler() {
             xDelta = 0; yDelta = 0;
-            if(Game.IsKeyDown(KeyBind.Up)) {
+            if(IsKeyDown(Impulse.Up)) {
                 yDelta--;
             }
-            if(Game.IsKeyDown(KeyBind.Down)) {
+            if(IsKeyDown(Impulse.Down)) {
                 yDelta++;
             }
-            if(Game.IsKeyDown(KeyBind.Left)) {
+            if(IsKeyDown(Impulse.Left)) {
                 xDelta--;
             }
-            if(Game.IsKeyDown(KeyBind.Right)) {
+            if(IsKeyDown(Impulse.Right)) {
                 xDelta++;
             }
         }

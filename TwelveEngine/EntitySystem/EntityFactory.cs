@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 
 namespace TwelveEngine.EntitySystem {
-    public sealed class EntityFactory<T,OwnerType> where T:Entity<OwnerType> where OwnerType:class {
+    public sealed class EntityFactory<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {
 
-        private readonly Dictionary<int,Func<T>> generators;
+        private readonly Dictionary<int,Func<TEntity>> generators;
 
-        public EntityFactory(params (int entityType, Func<T> generator)[] types) {
-            generators = new Dictionary<int,Func<T>>();
+        public EntityFactory(params (int entityType, Func<TEntity> generator)[] types) {
+            generators = new Dictionary<int,Func<TEntity>>();
             foreach(var type in types) {
                 generators[type.entityType] = type.generator;
             }
         }
 
-        public T Create(int type) {
+        public TEntity Create(int type) {
             if(!generators.ContainsKey(type)) {
                 return null;
             }

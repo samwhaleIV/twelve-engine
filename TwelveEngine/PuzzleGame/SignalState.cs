@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine.PuzzleGame {
-    public enum SignalState {
+    public enum SignalState:int {
         Neutral = 0, Positive = 1, Negative = -1
     }
     public static class SignalStateExtensions {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine {
     public static partial class Constants {
@@ -15,6 +16,7 @@ namespace TwelveEngine {
 
         public const bool ShowCollisionLayer = false;
 
+        public const PlayerIndex GamePadIndex = PlayerIndex.One;
 
         public const string Tileset = "Tileset";
         public const string PlayerImage = "Player";

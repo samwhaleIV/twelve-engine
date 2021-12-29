@@ -9,10 +9,10 @@ namespace TwelveEngine.Automation {
             for(var i = 0;i<keysState.Length;i++) {
                 keysState[i] = (Keys)pressedKeys[i];
             }
-            keyboardState = new KeyboardState(keysState);
-            elapsedTime = TimeSpan.FromTicks(frame.elapsedTime);
+            KeyboardState = new KeyboardState(keysState);
+            ElapsedTime = TimeSpan.FromTicks(frame.elapsedTime);
 
-            mouseState = new MouseState(
+            MouseState = new MouseState(
                 frame.mouseX,
                 frame.mouseY,
                 frame.scrollY,
@@ -25,9 +25,9 @@ namespace TwelveEngine.Automation {
             );
         }
 
-        internal TimeSpan elapsedTime;
+        internal TimeSpan ElapsedTime;
         
-        internal KeyboardState keyboardState;
-        internal MouseState mouseState;
+        internal KeyboardState KeyboardState;
+        internal MouseState MouseState;
     }
 }

@@ -8,6 +8,14 @@ namespace TwelveEngine.Game2D {
         private float x = 0, y = 0, width = 1, height = 1;
         private Direction direction = Direction.Down;
 
+        protected bool IsKeyDown(Impulse impulse) {
+            return Game.ImpulseHandler.IsKeyDown(impulse);
+        }
+
+        protected bool IsKeyUp(Impulse impulse) {
+            return Game.ImpulseHandler.IsKeyUp(impulse);
+        }
+
         public Hitbox GetInteractionBox() {
             return Hitbox.GetInteractionArea(this);
         }

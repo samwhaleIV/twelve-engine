@@ -147,7 +147,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void loadEntityManager() {
-            entityManager = new EntityManager<Entity2D,Grid2D>(Game,this,Entity2DType.GetFactory());
+            entityManager = new EntityManager<Entity2D,Grid2D>(this,Entity2DType.GetFactory());
 
             entityManager.OnUpdateListChanged += updateUpdateables;
             entityManager.OnRenderListChanged += updateRenderables;

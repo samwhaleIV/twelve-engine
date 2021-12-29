@@ -4,9 +4,8 @@ using Microsoft.Xna.Framework.Input;
 namespace TwelveEngine.Input {
     public sealed class MouseHandler {
 
-        public event Action<int,int> OnMouseDown;
-        public event Action<int,int> OnMouseUp;
-        public event Action<int,int> OnMouseMove;
+        public event Action<int,int> OnMouseDown, OnMouseUp, OnMouseMove;
+
         public event Action<int,int,ScrollDirection> OnMouseScroll;
 
         private void sendScrollEvent(ScrollDirection direction) {

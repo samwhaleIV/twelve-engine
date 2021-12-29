@@ -23,14 +23,14 @@ namespace TwelveEngine.Automation {
         internal byte[] pressedKeys;
 
         internal SerialInputFrame(InputFrame frame) {
-            Keys[] keysState = frame.keyboardState.GetPressedKeys();
+            Keys[] keysState = frame.KeyboardState.GetPressedKeys();
             pressedKeys = new byte[keysState.Length];
             for(var i = 0;i < pressedKeys.Length;i++) {
                 pressedKeys[i] = (byte)keysState[i];
             }
-            elapsedTime = frame.elapsedTime.Ticks;
+            elapsedTime = frame.ElapsedTime.Ticks;
 
-            var mouse = frame.mouseState;
+            var mouse = frame.MouseState;
 
             mouseX = mouse.X;
             mouseY = mouse.Y;
@@ -93,6 +93,7 @@ namespace TwelveEngine.Automation {
                 writer.Write(pressedKeys[i]);
             }
         }
+
         internal SerialInputFrame(SerialInputFrame lastFrame,BinaryReader reader) {
             elapsedTime = reader.ReadInt32();
 

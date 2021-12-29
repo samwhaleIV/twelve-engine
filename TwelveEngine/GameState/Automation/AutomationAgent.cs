@@ -118,19 +118,19 @@ namespace TwelveEngine.Automation {
 
         internal KeyboardState FilterKeyboardState(KeyboardState state) {
             if(playbackActive) {
-                state = playbackFrame.keyboardState;
+                state = playbackFrame.KeyboardState;
             }
             if(recording) {
-                recordingFrame.keyboardState = state;
+                recordingFrame.KeyboardState = state;
             }
             return state;
         }
         internal MouseState FilterMouseState(MouseState state) {
             if(playbackActive) {
-                state = playbackFrame.mouseState;
+                state = playbackFrame.MouseState;
             }
             if(recording) {
-                recordingFrame.mouseState = state;
+                recordingFrame.MouseState = state;
             }
             return state;
         }
@@ -156,14 +156,14 @@ namespace TwelveEngine.Automation {
             long ticks = 0;
             int count = playbackFrames.Length;
             for(int i = 0;i < count;i++) {
-                ticks += playbackFrames[i].elapsedTime.Ticks;
+                ticks += playbackFrames[i].ElapsedTime.Ticks;
             }
             return TimeSpan.FromTicks((long)Math.Floor((double)ticks / count));
         }
 
-        internal TimeSpan GetFrameTime() => playbackFrame.elapsedTime;
+        internal TimeSpan GetFrameTime() => playbackFrame.ElapsedTime;
         internal void UpdateRecordingFrame(GameTime gameTime) {
-            recordingFrame.elapsedTime = gameTime.ElapsedGameTime;
+            recordingFrame.ElapsedTime = gameTime.ElapsedGameTime;
         }
 
     }
