@@ -25,7 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyBinds.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OffThreadTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CPUTexture.cs" />
     <Compile Include="..\TwelveEngine\Input\Impulse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IRenderable.cs" />

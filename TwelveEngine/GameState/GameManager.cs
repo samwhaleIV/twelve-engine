@@ -237,8 +237,8 @@ namespace TwelveEngine {
         }
 
         protected override void LoadContent() {
-            if(Constants.DoLoadOffThreadTextures) {
-                OffThreadTexture.LoadDictionary(Content);
+            if(Constants.DoLoadCPUTextures) {
+                CPUTexture.LoadDictionary(Content);
             }
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteFont = Content.Load<SpriteFont>("default-font");

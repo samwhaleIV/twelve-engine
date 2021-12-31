@@ -28,7 +28,7 @@ namespace TwelveEngine.Game2D.Collision {
         }
 
         private (Color[,] pixels,int tilesetColumns) getCollisionSlice() {
-            var texture = OffThreadTexture.Get(textureName);
+            var texture = CPUTexture.Get(textureName);
 
             var width = texture.Width;
             var pixelsLinear = texture.Data;

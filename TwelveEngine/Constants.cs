@@ -39,7 +39,7 @@ namespace TwelveEngine {
         public const int PlayerDeaccel = 100;
         public const float DefaultPlayerSpeed = 2.5f;
 
-        public const bool DoLoadOffThreadTextures = true;
-        public static readonly string[] OffThreadTextures = new string[] {Tileset};
+        public const bool DoLoadCPUTextures = true;
+        public static readonly string[] CPUTextures = new string[] {Tileset};
     }
 }

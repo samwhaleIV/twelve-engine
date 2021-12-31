@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace TwelveEngine {
-    public readonly struct OffThreadTexture {
+    public readonly struct CPUTexture {
 
-        internal OffThreadTexture(int width,int height,Color[] data,string name) {
+        internal CPUTexture(int width,int height,Color[] data,string name) {
             Width = width;
             Height = height;
             Data = data;
@@ -18,24 +18,24 @@ namespace TwelveEngine {
         public readonly Color[] Data;
         public readonly string Name;
 
-        public static readonly OffThreadTexture Default = new OffThreadTexture(0,0,new Color[0],null);
+        public static readonly CPUTexture Default = new CPUTexture(0,0,new Color[0],null);
 
-        private static Dictionary<string,OffThreadTexture> offThreadTextures;
+        private static Dictionary<string,CPUTexture> cpuTextures;
 
-        public static OffThreadTexture Get(string name) {
-            if(!offThreadTextures.ContainsKey(name)) {
+        public static CPUTexture Get(string name) {
+            if(!cpuTextures.ContainsKey(name)) {
                 return Default;
             }
-            return offThreadTextures[name];
+            return cpuTextures[name];
         }
 
         internal static void LoadDictionary(ContentManager content) {
-            if(offThreadTextures != null) {
+            if(cpuTextures != null) {
                 return;
             }
-            offThreadTextures = new Dictionary<string,OffThreadTexture>();
+            cpuTextures = new Dictionary<string,CPUTexture>();
 
-            foreach(var name in Constants.OffThreadTextures) {
+            foreach(var name in Constants.CPUTextures) {
                 var texture = content.Load<Texture2D>(name);
 
                 int width = texture.Width;
@@ -44,8 +44,8 @@ namespace TwelveEngine {
                 Color[] buffer = new Color[width * height];
                 texture.GetData(buffer);
 
-                var offThreadTexture = new OffThreadTexture(width,height,buffer,name);
-                offThreadTextures[name] = offThreadTexture;
+                var offThreadTexture = new CPUTexture(width,height,buffer,name);
+                cpuTextures[name] = offThreadTexture;
             }
         }
     }
