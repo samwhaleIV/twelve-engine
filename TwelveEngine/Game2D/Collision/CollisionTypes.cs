@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D.Collision {
 
@@ -31,20 +29,17 @@ namespace TwelveEngine.Game2D.Collision {
             var texture = CPUTexture.Get(textureName);
 
             var width = texture.Width;
-            var pixelsLinear = texture.Data;
+            var data = texture.Data;
 
             var sliceWidth = area.Width;
             var sliceHeight = area.Height;
 
             var pixels = new Color[sliceWidth,sliceHeight];
-
-            var xOffset = area.X;
-            var yOffset = area.Y;
+            var offset = area.Location;
 
             for(var x = 0;x<sliceWidth;x++) {
                 for(var y = 0;y<sliceHeight;y++) {
-                    var index = (xOffset + x) + (yOffset + y) * width;
-                    pixels[x,y] = pixelsLinear[index];
+                    pixels[x,y] = data[x+offset.X,y+offset.Y];
                 }
             }
 
@@ -64,6 +59,10 @@ namespace TwelveEngine.Game2D.Collision {
                         continue;
                     }
                     hadMatch = true;
+
+                    /* At first glance, this might like like min-maxing the value, a-la 'Math.Max' / 'Math.Min': It's not.
+                     * This is to find the smallest and largest values over multiple iterations */
+
                     if(y < minY) minY = y;
                     if(y > maxY) maxY = y;
                 }

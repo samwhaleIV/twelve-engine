@@ -26,9 +26,9 @@ namespace TwelveEngine.Input {
             get => binds[Impulse.Accept];
             set => binds[Impulse.Accept] = value;
         }
-        public Keys Exit {
-            get => binds[Impulse.Exit];
-            set => binds[Impulse.Exit] = value;
+        public Keys Cancel {
+            get => binds[Impulse.Cancel];
+            set => binds[Impulse.Cancel] = value;
         }
 
         public Keys this[Impulse type] {

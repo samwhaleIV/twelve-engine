@@ -40,6 +40,6 @@ namespace TwelveEngine {
         public const float DefaultPlayerSpeed = 2.5f;
 
         public const bool DoLoadCPUTextures = true;
-        public static readonly string[] CPUTextures = new string[] {Tileset};
+        public static string[] CPUTextures { get => new string[] { Tileset }; }
     }
 }

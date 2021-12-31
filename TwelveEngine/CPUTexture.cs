@@ -6,19 +6,29 @@ using System.Collections.Generic;
 namespace TwelveEngine {
     public readonly struct CPUTexture {
 
-        internal CPUTexture(int width,int height,Color[] data,string name) {
+        private static Color[,] convertFlatData(Color[] data,int width,int height) {
+            var data2D = new Color[width,height];
+            for(int i = 0;i<data.Length;i++) {
+                int x = i % width;
+                int y = i / width;
+                data2D[x,y] = data[i];
+            }
+            return data2D;
+        }
+
+        internal CPUTexture(Color[] data,int width,int height,string name) {
+            Data = convertFlatData(data,width,height);
             Width = width;
             Height = height;
-            Data = data;
             Name = name;
         }
 
         public readonly int Width;
         public readonly int Height;
-        public readonly Color[] Data;
+        public readonly Color[,] Data;
         public readonly string Name;
 
-        public static readonly CPUTexture Default = new CPUTexture(0,0,new Color[0],null);
+        public static readonly CPUTexture Default = new CPUTexture(new Color[0],0,0,null);
 
         private static Dictionary<string,CPUTexture> cpuTextures;
 
@@ -38,13 +48,12 @@ namespace TwelveEngine {
             foreach(var name in Constants.CPUTextures) {
                 var texture = content.Load<Texture2D>(name);
 
-                int width = texture.Width;
-                int height = texture.Height;
+                int width = texture.Width, height = texture.Height;
 
                 Color[] buffer = new Color[width * height];
                 texture.GetData(buffer);
 
-                var offThreadTexture = new CPUTexture(width,height,buffer,name);
+                var offThreadTexture = new CPUTexture(buffer,width,height,name);
                 cpuTextures[name] = offThreadTexture;
             }
         }

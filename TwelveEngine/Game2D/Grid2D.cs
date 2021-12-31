@@ -71,8 +71,12 @@ namespace TwelveEngine.Game2D {
         private IUpdateable[] updateables = new IUpdateable[0];
         private IRenderable[] renderables = new IRenderable[0];
 
-        private void updateUpdateables(IUpdateable[] updateables) => this.updateables = updateables;
-        private void updateRenderables(IRenderable[] renderables) => this.renderables = renderables;
+        private void updateUpdateables(IUpdateable[] updateables) {
+            this.updateables = updateables;
+        }
+        private void updateRenderables(IRenderable[] renderables) {
+            this.renderables = renderables;
+        }
 
         private int[][,] layers;
         private TileRenderer tileRenderer = null;
@@ -81,38 +85,16 @@ namespace TwelveEngine.Game2D {
         public Viewport Viewport => Game.GraphicsDevice.Viewport;
 
         private ScreenSpace screenSpace;
+
         public ScreenSpace ScreenSpace => screenSpace;
         public ScreenSpace GetScreenSpace() => getScreenSpace(Viewport);
 
         private bool spriteBatchActive = false;
 
-        private static int[,] expandArray(int[] array,int width,int height) {
-            var array2D = new int[width,height];
-
-            for(var x = 0;x<width;x++) {
-                for(var y = 0;y<height;y++) {
-                    array2D[x,y] = array[x + y * width];
-                }
-            }
-
-            return array2D;
-        }
-
         public void ImportMap(Map map) {
-            var width = map.Width;
-            var height = map.Height;
-
-            var layers = map.Layers;
-            var newLayers = new int[map.Layers.Length][,];
-
-            for(var i = 0;i<newLayers.Length;i++) {
-                newLayers[i] = expandArray(layers[i],width,height);
-            }
-
-            this.layers = newLayers;
-
-            this.width = width;
-            this.height = height;
+            layers = map.Layers2D;
+            width = map.Width;
+            height = map.Height;
         }
 
         public void Fill(int layerIndex,Func<int,int,int> pattern) {
@@ -182,7 +164,7 @@ namespace TwelveEngine.Game2D {
                     if(hasPanZoom()) {
                         return;
                     }
-                    camera.EdgePadding = false;
+                    camera.SetPadding(false);
                     panZoom = new PanZoom(this);
                 } else if(hasPanZoom()) {
                     panZoom = null;

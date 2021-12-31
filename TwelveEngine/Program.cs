@@ -54,13 +54,5 @@ namespace TwelveEngine {
                 panel2.panel.AddChild(panel3.frame);
             });
         }
-
-        public static GameState GetStartState() {
-            return GetPuzzleGameTest();
-        }
-
-        public static void StartGame(GameManager game) {
-            game.SetState(GetStartState());
-        }
     }
 }

@@ -7,7 +7,7 @@ namespace TwelveDesktop {
         [STAThread]
         internal static void Main() {
             using var game = new GameManager();
-            game.SetState(TwelveEngine.Program.GetStartState);
+            game.SetState(TwelveEngine.Program.GetPuzzleGameTest);
             game.Run(GameRunBehavior.Synchronous);
         }
     }

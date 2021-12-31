@@ -257,14 +257,18 @@ namespace TwelveEngine {
 
         private void advanceFrame(KeyboardState keyboardState,GameTime gameTime) {
             if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
+
                 shouldAdvanceFrame = false;
                 framesToSkip = Constants.ShiftFastForwardFrames;
                 vcrDisplay.AdvanceFramesMany(gameTime);
+
             } else if(gamePaused && !shouldAdvanceFrame) {
+
                 var simTime = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
                 proxyGameTime.AddSimTime(simTime);
                 shouldAdvanceFrame = true;
                 vcrDisplay.AdvanceFrame(gameTime);
+
                 Debug.WriteLine($"Advanced to frame {automationAgent.FrameNumber + 1}");
             }
         }

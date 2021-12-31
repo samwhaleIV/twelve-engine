@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,32 +10,34 @@ namespace TwelveEngine.Automation {
         private const int SPACE = 4;
         private const double ADVANCE_FRAME_TIMEOUT = 250;
 
+        private const int GLPYH_SIZE = 15;
+
         private bool Loading => automationAgent.PlaybackLoading || gameManager.IsLoadingState;
         private bool Paused => gameManager.IsPaused;
 
-        private enum Mode {
-            None,
-            Recording,
-            Playback
+        private enum Mode { None, Recording, Playback };
+
+        private enum Symbol { Record, Play, Pause, Load, Advance, AdvanceMany };
+
+        private readonly Dictionary<Symbol,Rectangle> symbolSources = new Dictionary<Symbol,Rectangle>() {
+            { Symbol.Record, getSource(new Point(1,1)) },
+            { Symbol.Play, getSource(new Point(17,1)) },
+            { Symbol.Pause, getSource(new Point(1,17),new Point(-1,0)) },
+
+            { Symbol.Load, getSource(new Point(17,17)) },
+            { Symbol.Advance, getSource(new Point(33,1)) },
+            { Symbol.AdvanceMany, getSource(new Point(49,1)) }
         };
 
-        private enum Symbol {
-            Record, Play, Pause, Load, Advance, AdvanceMany
-        };
-
-        private readonly (int x, int y)[] symbolSources = {
-            (1,1),(17,1),(1,17),(17,17),(33,1),(49,1)
-        };
-
-        private Rectangle getSymbolSource(Symbol symbol) {
-            var (x,y) = symbolSources[(int)symbol];
-            var source = new Rectangle {
-                X = x,
-                Y = y,
-                Width = 15,
-                Height = 15
+        private static Rectangle getSource(Point source,Point? sizeOffset = null) {
+            Point offset = sizeOffset ?? Point.Zero;
+            Rectangle recetangle = new Rectangle {
+                X = source.X,
+                Y = source.Y,
+                Width = GLPYH_SIZE + offset.X,
+                Height = GLPYH_SIZE + offset.Y
             };
-            return source;
+            return recetangle;
         }
 
         private Mode getMode() {
@@ -68,7 +71,7 @@ namespace TwelveEngine.Automation {
             var destination = new Rectangle(
                 x,SPACE,RENDER_SIZE,RENDER_SIZE
             );
-            var source = getSymbolSource(symbol);
+            var source = symbolSources[symbol];
 
             spriteBatch.Draw(vcrTexture,destination,source,Color.White);
 

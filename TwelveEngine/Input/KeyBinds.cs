@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework.Input;
 namespace TwelveEngine.Input {
     public sealed partial class KeyBindSet {
         private static Dictionary<Impulse,Keys> GetKeyBinds() => new Dictionary<Impulse,Keys>() {
-            { Impulse.Up, Keys.W },
-            { Impulse.Down, Keys.S },
-            { Impulse.Left, Keys.A },
-            { Impulse.Right, Keys.D },
-            { Impulse.Accept, Keys.Enter} ,
-            { Impulse.Exit, Keys.Escape }
+            { Impulse.Up, KeyBinds.Up },
+            { Impulse.Down, KeyBinds.Down },
+            { Impulse.Left, KeyBinds.Left },
+            { Impulse.Right, KeyBinds.Right },
+            { Impulse.Accept, KeyBinds.Accept } ,
+            { Impulse.Cancel, KeyBinds.Cancel }
         };
     }
 }

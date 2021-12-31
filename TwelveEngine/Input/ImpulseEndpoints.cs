@@ -11,9 +11,9 @@ namespace TwelveEngine.Input {
                 () => OnAcceptUp?.Invoke()
             )},
 
-            {Impulse.Exit,(
-                () => OnExitDown?.Invoke(),
-                () => OnExitUp?.Invoke()
+            {Impulse.Cancel,(
+                () => OnCancelDown?.Invoke(),
+                () => OnCancelUp?.Invoke()
             )},
 
             {Impulse.Up,(
@@ -40,8 +40,8 @@ namespace TwelveEngine.Input {
         public event Action OnAcceptDown;
         public event Action OnAcceptUp;
 
-        public event Action OnExitDown;
-        public event Action OnExitUp;
+        public event Action OnCancelDown;
+        public event Action OnCancelUp;
 
         public event Action<Direction> OnDirectionUp;
         public event Action<Direction> OnDirectionDown;

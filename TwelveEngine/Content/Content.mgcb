@@ -25,6 +25,18 @@
 /processorParam:TextureFormat=Color
 /build:../../Content/cat-test-picture.jpg;cat-test-picture.jpg
 
+#begin ../../Content/controller-glyph.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../../Content/controller-glyph.png;controller-glyph.png
+
 #begin ../../Content/hello-world.png
 /importer:TextureImporter
 /processor:TextureProcessor
