@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # Tiled Files
 *.tiled-session
+
+# Map database
+*.temdb
