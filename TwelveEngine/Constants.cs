@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace TwelveEngine {
     public static partial class Constants {
@@ -10,6 +10,9 @@ namespace TwelveEngine {
         public const int RenderScale = 8;
 
         public const float InteractionBoxSize = 0.25f;
+
+        public const bool DoFakeLoadingTime = true;
+        public static readonly TimeSpan FakeLoadingTime = TimeSpan.FromMilliseconds(500);
 
         public const string ContentRootDirectory = "Content";
         public const int DefaultTileSize = 16;
@@ -24,16 +27,6 @@ namespace TwelveEngine {
         public const int ObjectLayerIndex = 1;
         public const int CollisionLayerIndex = 2;
 
-        public const Keys RecordingKey = Keys.F3;
-        public const Keys PlaybackKey = Keys.F4;
-
-        public const Keys PauseGame = Keys.F5;
-        public const Keys AdvanceFrame = Keys.F6;
-
-        public const Keys SaveState = Keys.F1;
-        public const Keys LoadState = Keys.F2;
-
-
         public const string PlaybackFileExtension = "teinp"; /* Twelve Engine (Playback) Input (File) */
         public const string PlaybackFolder = "playback";
         public const string DefaultPlaybackFile = "default." + PlaybackFileExtension;
@@ -45,5 +38,8 @@ namespace TwelveEngine {
         public const int PlayerAccel = 200;
         public const int PlayerDeaccel = 100;
         public const float DefaultPlayerSpeed = 2.5f;
+
+        public const bool DoLoadOffThreadTextures = true;
+        public static readonly string[] OffThreadTextures = new string[] {Tileset};
     }
 }

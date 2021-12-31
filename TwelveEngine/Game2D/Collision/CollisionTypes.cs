@@ -23,18 +23,15 @@ namespace TwelveEngine.Game2D.Collision {
         ) {
             this.tileSize = tileSize;
             this.textureName = textureName;
-            this.area = area.HasValue ? area.Value : Tiles.CollisionArea;
-            this.color = color.HasValue ? color.Value : Tiles.CollisionColor;
+            this.area = area ?? Tiles.CollisionArea;
+            this.color = color ?? Tiles.CollisionColor;
         }
 
-        private (Color[,] pixels,int tilesetColumns) getCollisionSlice(ContentManager contentManager) {
-            var texture = contentManager.Load<Texture2D>(textureName);
+        private (Color[,] pixels,int tilesetColumns) getCollisionSlice() {
+            var texture = OffThreadTexture.Get(textureName);
 
             var width = texture.Width;
-            var height = texture.Height;
-
-            var pixelsLinear = new Color[width * height];
-            texture.GetData(pixelsLinear);
+            var pixelsLinear = texture.Data;
 
             var sliceWidth = area.Width;
             var sliceHeight = area.Height;
@@ -46,7 +43,8 @@ namespace TwelveEngine.Game2D.Collision {
 
             for(var x = 0;x<sliceWidth;x++) {
                 for(var y = 0;y<sliceHeight;y++) {
-                    pixels[x,y] = pixelsLinear[(xOffset + x) + (yOffset + y) * width];
+                    var index = (xOffset + x) + (yOffset + y) * width;
+                    pixels[x,y] = pixelsLinear[index];
                 }
             }
 
@@ -82,8 +80,8 @@ namespace TwelveEngine.Game2D.Collision {
             return new CollisionType(minX,minY,maxX - minX + 1,maxY - minY + 1,tileSize);
         }
 
-        internal void LoadTypes(ContentManager contentManager) {
-            var (pixels,tilestColumns) = getCollisionSlice(contentManager);
+        internal void LoadTypes() {
+            var (pixels,tilestColumns) = getCollisionSlice();
 
             var width = pixels.GetLength(0);
             var height = pixels.GetLength(1);

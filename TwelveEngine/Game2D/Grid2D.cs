@@ -157,7 +157,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void Grid2D_OnLoad() {
-            collisionInterface.Types?.LoadTypes(Game.Content);
+            collisionInterface.Types.LoadTypes();
             loadEntityManager();
             if(pendingTileRenderer != null) {
                 tileRenderer = pendingTileRenderer;

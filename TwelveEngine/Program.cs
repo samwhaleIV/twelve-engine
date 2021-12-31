@@ -1,11 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using TwelveEngine.UI;
-using TwelveEngine.UI.Elements;
 using TwelveEngine.UI.Factory;
 using TwelveEngine.PuzzleGame;
 using TwelveEngine.Serial.Map;
-using TwelveEngine.Game2D;
 
 namespace TwelveEngine {
     public static partial class Program {

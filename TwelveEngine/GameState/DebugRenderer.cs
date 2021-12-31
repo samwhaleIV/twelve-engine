@@ -10,16 +10,25 @@ namespace TwelveEngine {
         private static readonly Stopwatch watch = new Stopwatch();
         private TimeSpan updateTime = TimeSpan.Zero, renderTime = TimeSpan.Zero;
 
+        private double getFps() {
+            var totalSeconds = proxyGameTime.ElapsedGameTime.TotalSeconds;
+            if(totalSeconds == 0) {
+                return 0;
+            }
+            return 1 / totalSeconds;
+        }
+
         private void renderGameTime() {
-            var position = new Vector2();
-            position.X = 4;
-            position.Y = GraphicsDevice.Viewport.Height - 99;
+            Vector2 position = new Vector2 {
+                X = 4,
+                Y = GraphicsDevice.Viewport.Height - 99
+            };
             SpriteBatch.Begin();
 
             updateTime.TotalMilliseconds.ToString();
             spriteBatch.DrawString(spriteFont,proxyGameTime.TotalGameTime.ToString("hh\\:mm\\:ss\\:ff"),position,Color.White);
             position.Y += 25;
-            spriteBatch.DrawString(spriteFont,$"FPS: {1 / proxyGameTime.ElapsedGameTime.TotalSeconds:F}",position,Color.White);
+            spriteBatch.DrawString(spriteFont,$"FPS: {getFps():F}",position,Color.White);
             position.Y += 25;
             spriteBatch.DrawString(spriteFont,$"Update: {string.Format("{0:0.00}",updateTime.TotalMilliseconds)}ms",position,Color.White);
             position.Y += 25;

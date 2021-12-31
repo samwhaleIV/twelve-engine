@@ -9,8 +9,8 @@ namespace TwelveEngine.Automation {
         private const int SPACE = 4;
         private const double ADVANCE_FRAME_TIMEOUT = 250;
 
-        private bool Loading => automationAgent.PlaybackLoading;
-        private bool Paused => gameManager.Paused;
+        private bool Loading => automationAgent.PlaybackLoading || gameManager.IsLoadingState;
+        private bool Paused => gameManager.IsPaused;
 
         private enum Mode {
             None,
@@ -22,17 +22,18 @@ namespace TwelveEngine.Automation {
             Record, Play, Pause, Load, Advance, AdvanceMany
         };
 
-        private (int x, int y)[] symbolSources = {
+        private readonly (int x, int y)[] symbolSources = {
             (1,1),(17,1),(1,17),(17,17),(33,1),(49,1)
         };
 
         private Rectangle getSymbolSource(Symbol symbol) {
             var (x,y) = symbolSources[(int)symbol];
-            var source = new Rectangle();
-            source.X = x;
-            source.Y = y;
-            source.Width = 15;
-            source.Height = 15;
+            var source = new Rectangle {
+                X = x,
+                Y = y,
+                Width = 15,
+                Height = 15
+            };
             return source;
         }
 
