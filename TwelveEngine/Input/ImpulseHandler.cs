@@ -34,22 +34,46 @@ namespace TwelveEngine.Input {
         public event Action<InputMethod> OnInputMethodChanged; //todo, implement this so we can one day use icon glyphs!
 
         private InputMethod inputMethod = InputMethod.Unknown;
-        public InputMethod InputMethod => inputMethod;
+        public InputMethod InputMethod {
+            get => inputMethod;
+            private set {
+                if(inputMethod == value) {
+                    return;
+                }
+                inputMethod = value;
+                OnInputMethodChanged.Invoke(inputMethod);
+            }
+        }
 
-        private KeyState getState(Impulse impulse,KeyboardState keyboardState,GamePadState gamePadState) {
-            bool pressed = keyboardState.IsKeyDown(keyBinds[impulse]) || gamePadState.IsButtonDown(controllerBinds[impulse]);
-            return pressed ? KeyState.Down : KeyState.Up;
+        private void updateInputMethod(bool fromKeyboard) {
+            InputMethod = fromKeyboard ? InputMethod.Keyboard : InputMethod.Gamepad;
+        }
+
+        private (KeyState Value,bool FromKeyboard) getImpulseState(
+            Impulse impulse,KeyboardState keyboardState,GamePadState gamePadState
+        ) {
+            bool keyboard = keyboardState.IsKeyDown(keyBinds[impulse]);
+            if(keyboard) {
+                return (keyboard ? KeyState.Down : KeyState.Up, true);
+            }
+            bool gamePad = gamePadState.IsButtonDown(controllerBinds[impulse]);
+            return (gamePad ? KeyState.Down : KeyState.Up, false);
         }
 
         public void Update(KeyboardState keyboardState,GamePadState gamePadState) {
+            bool fromKeyboard = true;
+
             foreach(Impulse impulse in impulses) {
 
-                KeyState newState = getState(impulse,keyboardState,gamePadState);
-                KeyState oldState = impulseStates[impulse];
+                var impulseState = getImpulseState(impulse,keyboardState,gamePadState);
+
+                KeyState newState = impulseState.Value, oldState = impulseStates[impulse];
 
                 if(newState == oldState) {
                     continue;
                 }
+
+                fromKeyboard = impulseState.FromKeyboard;
 
                 impulseStates[impulse] = newState;
                 if(newState == KeyState.Down) {
@@ -58,6 +82,8 @@ namespace TwelveEngine.Input {
                     endpoints[impulse].Up();
                 }
             }
+
+            updateInputMethod(fromKeyboard);
         }
 
         public bool IsKeyDown(Impulse impulse) {
