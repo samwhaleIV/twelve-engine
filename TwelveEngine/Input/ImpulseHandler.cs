@@ -10,8 +10,8 @@ namespace TwelveEngine.Input {
 
     public sealed partial class ImpulseHandler {
 
-        public ImpulseHandler(KeyBindSet keyBinds) {
-            this.keyBinds = keyBinds;
+        public ImpulseHandler(KeyBindSet keyBindSet) {
+            this.keyBindSet = keyBindSet;
 
             impulses = (Impulse[])Enum.GetValues(typeof(Impulse));
 
@@ -28,8 +28,10 @@ namespace TwelveEngine.Input {
         private readonly Dictionary<Impulse,KeyState> impulseStates;
         private Dictionary<Impulse,(Action Down, Action Up)> endpoints;
 
-        private readonly KeyBindSet keyBinds;
+        private readonly KeyBindSet keyBindSet;
         private Dictionary<Impulse,Buttons> controllerBinds = GetControllerBinds();
+
+        public KeyBindSet KeyBindSet => keyBindSet;
 
         public event Action<InputMethod> OnInputMethodChanged; //todo, implement this so we can one day use icon glyphs!
 
@@ -52,7 +54,7 @@ namespace TwelveEngine.Input {
         private (KeyState Value,bool FromKeyboard) getImpulseState(
             Impulse impulse,KeyboardState keyboardState,GamePadState gamePadState
         ) {
-            bool keyboard = keyboardState.IsKeyDown(keyBinds[impulse]);
+            bool keyboard = keyboardState.IsKeyDown(keyBindSet[impulse]);
             if(keyboard) {
                 return (keyboard ? KeyState.Down : KeyState.Up, true);
             }

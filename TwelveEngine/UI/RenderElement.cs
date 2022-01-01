@@ -33,7 +33,10 @@ namespace TwelveEngine.UI {
             OnRender?.Invoke(gameTime);
         }
 
-        private GameManager game;
+        /* Must be accessed after or during a Load event */
+        private GameManager game = null;
+        protected GameManager Game => game;
+
         private Queue<Texture> disposableTextures = new Queue<Texture>();
 
         private Rectangle screenArea;

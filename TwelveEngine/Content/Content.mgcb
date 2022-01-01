@@ -25,17 +25,17 @@
 /processorParam:TextureFormat=Color
 /build:../../Content/cat-test-picture.jpg;cat-test-picture.jpg
 
-#begin ../../Content/controller-glyph.png
+#begin ../../Content/controller-glyphs.png
 /importer:TextureImporter
 /processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyColor=255,106,0,255
 /processorParam:ColorKeyEnabled=True
 /processorParam:GenerateMipmaps=False
 /processorParam:PremultiplyAlpha=True
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:../../Content/controller-glyph.png;controller-glyph.png
+/build:../../Content/controller-glyphs.png;controller-glyphs.png
 
 #begin ../../Content/hello-world.png
 /importer:TextureImporter
@@ -48,6 +48,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:../../Content/hello-world.png;hello-world.png
+
+#begin ../../Content/keyboard-glyphs.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,106,0,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../../Content/keyboard-glyphs.png;keyboard-glyphs.png
 
 #begin ../../Content/player.png
 /importer:TextureImporter
