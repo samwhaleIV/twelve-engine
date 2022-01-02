@@ -1,4 +1,4 @@
-﻿using TwelveEngine.PuzzleGame;
+﻿using TwelveEngine.Porthole.PuzzleGame;
 using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine {

@@ -43,7 +43,7 @@ namespace TwelveEngine.Input {
                     return;
                 }
                 inputMethod = value;
-                OnInputMethodChanged.Invoke(inputMethod);
+                OnInputMethodChanged?.Invoke(inputMethod);
             }
         }
 

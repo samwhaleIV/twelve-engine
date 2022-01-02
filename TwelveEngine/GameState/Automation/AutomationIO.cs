@@ -92,25 +92,20 @@ namespace TwelveEngine.Automation {
         }
 
         internal static string GetPlaybackFile() {
-            var preferredFile = Constants.PreferredPlaybackFile;
-            if(!string.IsNullOrWhiteSpace(preferredFile)) {
-                return preferredFile;
-            }
-
-            var defaultFile = Constants.DefaultPlaybackFile;
+            var defaultFile = Constants.Config.DefaultPlaybackFile;
             if(File.Exists(defaultFile)) {
                 return defaultFile;
             }
 
             var file = Directory.EnumerateFiles(
-                Directory.GetCurrentDirectory(),$"{Constants.PlaybackFolder}\\*.{Constants.PlaybackFileExtension}"
+                Directory.GetCurrentDirectory(),$"{Constants.Config.PlaybackFolder}\\*.{Constants.PlaybackFileExt}"
             ).OrderByDescending(name => name).FirstOrDefault();
 
             return file;
         }
         internal static string PrepareOutputPath() {
-            var folder = Constants.PlaybackFolder;
-            var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExtension}";
+            var folder = Constants.Config.PlaybackFolder;
+            var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExt}";
             if(!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);
             }

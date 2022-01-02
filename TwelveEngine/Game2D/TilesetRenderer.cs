@@ -14,7 +14,7 @@ namespace TwelveEngine.Game2D {
         private Rectangle[] textureSources;
 
         private void TilesetRenderer_OnLoad() {
-            tileset = Game.Content.Load<Texture2D>(Constants.Tileset);
+            tileset = Game.Content.Load<Texture2D>(Constants.Config.Tileset);
             int tileSize = Grid.TileSize;
             spriteBatch = Game.SpriteBatch;
 

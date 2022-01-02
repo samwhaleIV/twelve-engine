@@ -4,7 +4,7 @@ using System;
 namespace TwelveEngine {
     internal sealed class ProxyGameTime:GameTime {
 
-        private readonly TimeSpan MAX_ELAPSED_TIME = TimeSpan.FromMilliseconds(Constants.MaximumFrameDelta);
+        private readonly TimeSpan MAX_ELAPSED_TIME = TimeSpan.FromMilliseconds(Constants.MaxFrameDelta);
 
         private TimeSpan pauseTimeOffset = TimeSpan.Zero;
 

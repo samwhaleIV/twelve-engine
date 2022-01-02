@@ -10,19 +10,17 @@ namespace TwelveEngine.Game2D {
     public sealed class Grid2D:GameState {
 
         public Grid2D(
-
-            int tileSize = Constants.DefaultTileSize,
+            int? tileSize = null,
             LayerMode? layerMode = null,
             CollisionTypes collisionTypes = null
-
         ) {
-            this.tileSize = tileSize;
+            if(!tileSize.HasValue) {
+                tileSize = Constants.Config.TileSize;
+            }
+            this.tileSize = tileSize.Value;
             LayerMode = layerMode.HasValue ? layerMode.Value : LayerModes.Default;
 
             collisionInterface = new CollisionInterface(this);
-            if(collisionTypes == null) {
-                collisionTypes = new CollisionTypes(tileSize);
-            }
             collisionInterface.Types = collisionTypes;
 
             OnLoad += Grid2D_OnLoad;

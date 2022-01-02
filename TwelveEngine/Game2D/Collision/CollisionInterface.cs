@@ -29,7 +29,7 @@ namespace TwelveEngine.Game2D.Collision {
         }
 
         private Hitbox? getTileHitbox(int value,int x,int y) {
-            return collisionTypes.GetHitbox(value,x,y);
+            return collisionTypes?.GetHitbox(value,x,y);
         }
 
         private List<Hitbox> getSurroundingArea(int[,] layer,Hitbox hitbox) {

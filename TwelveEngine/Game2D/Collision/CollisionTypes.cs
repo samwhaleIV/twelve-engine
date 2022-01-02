@@ -13,16 +13,22 @@ namespace TwelveEngine.Game2D.Collision {
         private readonly Color color;
         private readonly Rectangle area;
 
-        public CollisionTypes(
-            int tileSize = Constants.DefaultTileSize,
-            string textureName = Constants.Tileset,
-            Rectangle? area = null,
-            Color? color = null
+        public CollisionTypes(   
+            Rectangle area,
+            Color color,           
+            int? tileSize = null,
+            string textureName = null
         ) {
-            this.tileSize = tileSize;
+            if(string.IsNullOrWhiteSpace(textureName)) {
+                textureName = Constants.Config.Tileset;
+            }
+            if(!tileSize.HasValue) {
+                tileSize = Constants.Config.TileSize;
+            }
+            this.tileSize = tileSize.Value;
             this.textureName = textureName;
-            this.area = area ?? Tiles.CollisionArea;
-            this.color = color ?? Tiles.CollisionColor;
+            this.area = area;
+            this.color = color;
         }
 
         private (Color[,] pixels,int tilesetColumns) getCollisionSlice() {

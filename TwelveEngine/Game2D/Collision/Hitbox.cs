@@ -19,7 +19,7 @@
 
         public static Hitbox GetInteractionArea(Entity2D entity) {
 
-            var boxSize = Constants.InteractionBoxSize;
+            var boxSize = Constants.Config.InteractSize;
             var hitbox = new Hitbox() {
                 Width = boxSize,Height = boxSize
             };

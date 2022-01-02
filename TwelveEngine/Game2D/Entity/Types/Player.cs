@@ -14,7 +14,7 @@ namespace TwelveEngine.Game2D.Entity.Types {
         }
 
         private void Player_OnLoad() {
-            playerTexure = Game.Content.Load<Texture2D>(Constants.PlayerImage);
+            playerTexure = Game.Content.Load<Texture2D>(Constants.Config.PlayerImage);
             Game.ImpulseHandler.OnAcceptDown += ImpulseHandler_OnAcceptDown;
         }
 
@@ -33,7 +33,9 @@ namespace TwelveEngine.Game2D.Entity.Types {
         private const float ANIM_JUMP_START = 0.5f;
         private const int ANIM_ROWS = 4;
 
-        private float maxSpeed = Constants.DefaultPlayerSpeed;
+        private float maxSpeed = Constants.Config.PlayerSpeed;
+        private float accel = Constants.Config.PlayerAccel;
+        private float deaccel = Constants.Config.PlayerDeaccel;
 
         private int lastDeltaX = 0, lastDeltaY = 0;
         private int xDelta = 0, yDelta = 0;
@@ -237,10 +239,10 @@ namespace TwelveEngine.Game2D.Entity.Types {
         private float getSpeed(TimeSpan totalTime) {
             float t;
             if(movingStart.HasValue) {
-                t = (float)Math.Min((totalTime - movingStart.Value).TotalMilliseconds / Constants.PlayerAccel,1);
+                t = (float)Math.Min((totalTime - movingStart.Value).TotalMilliseconds / accel,1);
                 return maxSpeed * t;
             } else if(deacelStart.HasValue) {
-                t = (float)Math.Min((totalTime - deacelStart.Value).TotalMilliseconds / Constants.PlayerDeaccel,1);
+                t = (float)Math.Min((totalTime - deacelStart.Value).TotalMilliseconds / deaccel,1);
                 return deacelStartValue * (1 - t);
             } else {
                 return 0f;
@@ -303,7 +305,7 @@ namespace TwelveEngine.Game2D.Entity.Types {
                 movingRenderStart = null;
                 if(deacelStart.HasValue) {
                     var timeDifference = deacelStart.Value - totalTime;
-                    if(timeDifference.TotalMilliseconds >= Constants.PlayerDeaccel) {
+                    if(timeDifference.TotalMilliseconds >= deaccel) {
                         deacelStart = null;
                     }
                 } else if(movingStart.HasValue) {

@@ -39,13 +39,13 @@ namespace TwelveEngine {
             return cpuTextures[name];
         }
 
-        internal static void LoadDictionary(ContentManager content) {
+        internal static void LoadDictionary(ContentManager content,string[] textureNames) {
             if(cpuTextures != null) {
                 return;
             }
             cpuTextures = new Dictionary<string,CPUTexture>();
 
-            foreach(var name in Constants.CPUTextures) {
+            foreach(var name in textureNames) {
                 var texture = content.Load<Texture2D>(name);
 
                 int width = texture.Width, height = texture.Height;

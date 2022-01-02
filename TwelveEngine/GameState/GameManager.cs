@@ -12,7 +12,7 @@ namespace TwelveEngine {
 
         public GameManager() {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
-            Content.RootDirectory = Constants.ContentRootDirectory;
+            Content.RootDirectory = Constants.Config.ContentDirectory;
             IsMouseVisible = true;
 
             graphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
@@ -127,7 +127,7 @@ namespace TwelveEngine {
         private void togglePaused() => setPaused(!gamePaused);
 
         private GamePadState getGamePadState() {
-            var state = GamePad.GetState(Constants.GamePadIndex);
+            var state = GamePad.GetState(Constants.Config.GamePadIndex);
             return state;
         }
 
@@ -180,13 +180,12 @@ namespace TwelveEngine {
         }
 
         private Task loadingTask(Action loadOperation) {
-#pragma warning disable CS0162 // Unreachable code detected
-            if(Constants.DoFakeLoadingTime) {
-                return Task.WhenAll(Task.Run(loadOperation),Task.Delay(Constants.FakeLoadingTime));
+            var minLoadTime = Constants.Config.MinLoadTime;
+            if(minLoadTime != TimeSpan.Zero) {
+                return Task.WhenAll(Task.Run(loadOperation),Task.Delay(minLoadTime));
             } else {
                 return Task.Run(loadOperation);
             }
-#pragma warning restore CS0162 // Unreachable code detected
         }
 
         public async void SetState(GameState gameState) {
@@ -237,8 +236,9 @@ namespace TwelveEngine {
         }
 
         protected override void LoadContent() {
-            if(Constants.DoLoadCPUTextures) {
-                CPUTexture.LoadDictionary(Content);
+            var cpuTextures = Constants.Config.CPUTextures;
+            if(cpuTextures.Length > 0) {
+                CPUTexture.LoadDictionary(Content,cpuTextures);
             }
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteFont = Content.Load<SpriteFont>("default-font");
@@ -259,7 +259,7 @@ namespace TwelveEngine {
             if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
 
                 shouldAdvanceFrame = false;
-                framesToSkip = Constants.ShiftFastForwardFrames;
+                framesToSkip = Constants.ShiftFrameSkip;
                 vcrDisplay.AdvanceFramesMany(gameTime);
 
             } else if(gamePaused && !shouldAdvanceFrame) {

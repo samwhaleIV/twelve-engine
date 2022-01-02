@@ -15,7 +15,7 @@ namespace TwelveEngine.UI {
             updateScreenArea();
         }
 
-        internal void Unload() {
+        public void Unload() {
             foreach(var texture in disposableTextures) {
                 texture.Dispose();
             }
@@ -52,7 +52,7 @@ namespace TwelveEngine.UI {
 
         public event Action<int,int,ScrollDirection> OnScroll;
         
-        internal void Load(GameManager game) {
+        public void Load(GameManager game) {
             this.game = game;
             OnLoad?.Invoke();
         }

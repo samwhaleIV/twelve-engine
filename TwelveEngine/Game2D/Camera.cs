@@ -7,7 +7,7 @@
         private float xOffset = 0f;
         private float yOffset = 0f;
 
-        private float scale = 1f;
+        private float scale = Constants.Config.RenderScale;
 
         private bool horizontalPadding = false;
         private bool verticalPadding = false;

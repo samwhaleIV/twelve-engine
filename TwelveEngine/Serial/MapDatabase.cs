@@ -24,7 +24,7 @@ namespace TwelveEngine.Serial.Map {
         }
 
         public static void LoadMaps() {
-            var path = $"{Constants.ContentRootDirectory}/{Constants.MapDatabase}";
+            var path = $"{Constants.Config.ContentDirectory}/{Constants.MapDatabase}";
             using(var file = getDatabaseReadStream(path)) {
                 var decoder = new MapDecoder(file);
                 decoder.ReadDatabase(addMap);
