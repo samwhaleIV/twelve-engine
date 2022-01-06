@@ -1,6 +1,7 @@
 ﻿using TwelveEngine.EntitySystem;
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D {
     public abstract class Entity2D:Entity<Grid2D> {
@@ -11,13 +12,22 @@ namespace TwelveEngine.Game2D {
         protected bool IsKeyDown(Impulse impulse) {
             return Game.ImpulseHandler.IsKeyDown(impulse);
         }
-
         protected bool IsKeyUp(Impulse impulse) {
             return Game.ImpulseHandler.IsKeyUp(impulse);
         }
 
         public Hitbox GetInteractionBox() {
             return Hitbox.GetInteractionArea(this);
+        }
+
+        public void Draw(Texture2D texture,Rectangle source) {
+            var destination = GetDestination();
+            var depth = getRenderDepth(destination.Y);
+            Game.SpriteBatch.Draw(texture,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
+        }
+
+        private float getRenderDepth(int destinationY) {
+            return 1 - Math.Max(destinationY / (float)Owner.Viewport.Height,0);
         }
 
         public Rectangle GetDestination() {

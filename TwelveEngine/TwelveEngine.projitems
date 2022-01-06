@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Direction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Types\MovingEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Types\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Types\RedBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\Entity.cs" />
@@ -116,7 +117,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIState.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Game2D\Entity\" />
     <Folder Include="$(MSBuildThisFileDirectory)GameUI\" />
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\" />
     <Folder Include="$(MSBuildThisFileDirectory)Input\Watcher\" />

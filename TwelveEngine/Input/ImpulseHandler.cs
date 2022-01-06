@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Input {
@@ -93,6 +94,25 @@ namespace TwelveEngine.Input {
         }
         public bool IsKeyUp(Impulse impulse) {
             return impulseStates[impulse] == KeyState.Up;
+        }
+
+        public Point GetDirectionDelta() {
+            var delta = Point.Zero;
+
+            if(IsKeyDown(Impulse.Up)) {
+                delta.Y--;
+            }
+            if(IsKeyDown(Impulse.Down)) {
+                delta.Y++;
+            }
+            if(IsKeyDown(Impulse.Left)) {
+                delta.X--;
+            }
+            if(IsKeyDown(Impulse.Right)) {
+                delta.X++;
+            }
+
+            return delta;
         }
     }
 }

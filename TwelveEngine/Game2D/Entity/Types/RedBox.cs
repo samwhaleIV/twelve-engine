@@ -10,25 +10,24 @@ namespace TwelveEngine.Game2D.Entity.Types {
         }
 
         private void RedBox_OnLoad() {
-            redBoxTexture = new Texture2D(Game.GraphicsDevice,1,1);
-            redBoxTexture.SetData(new Color[] { Color.Red });
+            texture = new Texture2D(Game.GraphicsDevice,1,1);
+            texture.SetData(new Color[] { Color.Red });
         }
         private void RedBox_OnUnload() {
-            redBoxTexture.Dispose();
+            texture.Dispose();
         }
 
         protected override int GetEntityType() => Entity2DType.RedBox;
 
-        private Texture2D redBoxTexture;
-        private Rectangle textureSource = new Rectangle(0,0,1,1);
+        private Texture2D texture;
+        private Rectangle source = new Rectangle(0,0,1,1);
 
 
         public void Render(GameTime gameTime) {
             if(!OnScreen()) {
                 return;
             }
-            var destination = GetDestination();
-            Game.SpriteBatch.Draw(redBoxTexture,destination,textureSource,Color.White);
+            Draw(texture,source);
         }
 
     }
