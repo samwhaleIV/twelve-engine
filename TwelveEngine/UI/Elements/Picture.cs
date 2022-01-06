@@ -59,8 +59,8 @@ namespace TwelveEngine.UI.Elements {
                 source.Width = (int)((float)area.Width / area.Height * source.Height);
             }
 
-            source.X = (int)(picture.Width / 2f - source.Width / 2f);
-            source.Y = (int)(picture.Height / 2f - source.Height / 2f);
+            source.X = (int)(picture.Width * 0.5f - source.Width * 0.5f);
+            source.Y = (int)(picture.Height * 0.5f - source.Height * 0.5f);
 
             sourceArea = source;
         }
@@ -70,8 +70,8 @@ namespace TwelveEngine.UI.Elements {
 
             float newWidth = picture.Width * scale, newHeight = picture.Height * scale;
 
-            area.X += (int)(area.Width / 2f - newWidth / 2f);
-            area.Y += (int)(area.Height / 2f - newHeight / 2f);
+            area.X += (int)(area.Width * 0.5f - newWidth * 0.5f);
+            area.Y += (int)(area.Height * 0.5f - newHeight * 0.5f);
 
             area.Width = (int)(newWidth);
             area.Height = (int)(newHeight);

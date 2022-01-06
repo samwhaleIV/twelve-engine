@@ -37,7 +37,7 @@ namespace TwelveEngine.Game2D.Collision {
 
         private List<Hitbox> getSurroundingArea(int[,] layer,Hitbox hitbox) {
 
-            Point center = (hitbox.Position + hitbox.Size / 2f).ToPoint();
+            Point center = (hitbox.Position + hitbox.Size * 0.5f).ToPoint();
 
             var hitboxes = new List<Hitbox>();
 

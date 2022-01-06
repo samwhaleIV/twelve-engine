@@ -28,20 +28,20 @@ namespace TwelveEngine.Game2D {
         public static Hitbox GetInteractionArea(Entity2D entity) {
 
             var boxSize = Constants.Config.InteractSize;
-            var halfSize = boxSize / 2f;
+            var halfSize = boxSize * 0.5f;
 
             var location = Vector2.Zero;
 
             var direction = entity.Direction;
             if(direction == Direction.Left || direction == Direction.Right) {
-                location.Y = (entity.Y + entity.Height / 2) - halfSize;
+                location.Y = (entity.Y + entity.Height * 0.5f) - halfSize;
                 if(direction == Direction.Left) {
                     location.X = entity.X - boxSize;
                 } else {
                     location.X = entity.X + entity.Width;
                 }
             } else {
-                location.X = (entity.X + entity.Width / 2) - halfSize;
+                location.X = (entity.X + entity.Width * 0.5f) - halfSize;
                 if(direction == Direction.Up) {
                     location.Y = entity.Y - boxSize;
                 } else {

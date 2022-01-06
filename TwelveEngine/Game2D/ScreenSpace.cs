@@ -16,7 +16,7 @@ namespace TwelveEngine.Game2D {
         public readonly int TileSize;
 
         public Vector2 GetCenter() {
-            return Position + Size / 2f;
+            return Position + Size * 0.5f;
         }
 
         public float X => Position.X;

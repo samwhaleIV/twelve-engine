@@ -106,11 +106,11 @@ namespace TwelveEngine.UI {
         }
 
         private int getCenteredX() {
-            return (int)(parent.ComputedX + parent.ComputedWidth / 2f - ComputedWidth / 2f);
+            return (int)(parent.ComputedX + parent.ComputedWidth * 0.5f - ComputedWidth * 0.5f);
         }
         
         private int getCenteredY() {
-            return (int)(parent.ComputedY + parent.ComputedHeight / 2f - ComputedHeight / 2f);
+            return (int)(parent.ComputedY + parent.ComputedHeight * 0.5f - ComputedHeight * 0.5f);
         }
 
         private int horizontalAnchor(int x) {
@@ -130,11 +130,11 @@ namespace TwelveEngine.UI {
         }
 
         private int getCenteredXOrigin(int x) {
-            return (int)(x - ComputedWidth / 2f);
+            return (int)(x - ComputedWidth * 0.5f);
         }
 
         private int getCenteredYOrigin(int y) {
-            return (int)(y - ComputedHeight / 2f);
+            return (int)(y - ComputedHeight * 0.5f);
         }
 
         private Point getRelativeSize() {
