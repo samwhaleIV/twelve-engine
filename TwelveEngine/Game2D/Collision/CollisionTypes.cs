@@ -82,7 +82,7 @@ namespace TwelveEngine.Game2D.Collision {
                 return null;
             }
 
-            return new CollisionType(minX,minY,maxX - minX + 1,maxY - minY + 1,tileSize);
+            return new CollisionType(new Point(minX,minY),new Point(maxX - minX + 1,maxY - minY + 1),tileSize);
         }
 
         internal void LoadTypes() {
@@ -109,19 +109,21 @@ namespace TwelveEngine.Game2D.Collision {
             }
         }
 
-        public Hitbox? GetHitbox(int ID,float x,float y) {
+        public Hitbox? GetHitbox(int ID,Vector2 location) {
             if(!types.ContainsKey(ID)) {
                 return null;
             }
-            var hitbox = new Hitbox();
+
             var collisionType = types[ID];
 
-            hitbox.X = x + collisionType.X;
-            hitbox.Y = y + collisionType.Y;
-            hitbox.Width = collisionType.Width;
-            hitbox.Height = collisionType.Height;
-
+            var hitbox = new Hitbox(
+                location + collisionType.Location,collisionType.Size
+            );
             return hitbox;
+        }
+
+        public Hitbox? GetHitbox(int ID,Point location) {
+            return GetHitbox(ID,location.ToVector2());
         }
     }
 }

@@ -1,71 +1,33 @@
-﻿namespace TwelveEngine.Game2D {
+﻿using Microsoft.Xna.Framework;
+
+namespace TwelveEngine.Game2D {
     public class Camera:ISerializable {
 
-        private float x = 0f;
-        private float y = 0f;
+        public Vector2 Position { get; set; }
+        public Vector2 Offset { get; set; }
 
-        private float xOffset = 0f;
-        private float yOffset = 0f;
+        public float Scale { get; set; } = Constants.Config.RenderScale;
 
-        private float scale = Constants.Config.RenderScale;
-
-        private bool horizontalPadding = false;
-        private bool verticalPadding = false;
-
-        public float X {
-            get => x;
-            set => x = value;
-        }
-        public float Y {
-            get => y;
-            set => y = value;
-        }
-
-        public float XOffset {
-            get => xOffset;
-            set => xOffset = value;
-        }
-
-        public float YOffset {
-            get => yOffset;
-            set => yOffset = value;
-        }
-
-        public float AbsoluteX => x + xOffset;
-        public float AbsoluteY => y + yOffset;
-
-        public float Scale {
-            get => scale;
-            set => scale = value;
-        }
-
-        public bool HorizontalPadding {
-            get => horizontalPadding;
-            set => horizontalPadding = value;
-        }
-
-        public bool VerticalPadding {
-            get => verticalPadding;
-            set => verticalPadding = value;
-        }
+        public bool HorizontalPadding { get; set; } = false;
+        public bool VerticalPadding { get; set; } = false;
 
         public void SetPadding(bool horizontal,bool vertical) {
-            horizontalPadding = horizontal;
-            verticalPadding = vertical;
+            HorizontalPadding = horizontal;
+            VerticalPadding = vertical;
         }
 
         public void SetPadding(bool all) {
-            horizontalPadding = all;
-            verticalPadding = all;
+            HorizontalPadding = all;
+            VerticalPadding = all;
         }
 
         public CameraPadding Padding {
             get {
-                if(horizontalPadding && verticalPadding) {
+                if(HorizontalPadding && VerticalPadding) {
                     return CameraPadding.All;
-                } else if(horizontalPadding) {
+                } else if(HorizontalPadding) {
                     return CameraPadding.Horizontal;
-                } else if(verticalPadding) {
+                } else if(VerticalPadding) {
                     return CameraPadding.Vertical;
                 } else {
                     return CameraPadding.None;
@@ -74,42 +36,37 @@
             set {
                 switch(value) {
                     case CameraPadding.All:
-                        horizontalPadding = true;
-                        verticalPadding = true;
+                        HorizontalPadding = true;
+                        VerticalPadding = true;
                         break;
                     case CameraPadding.Horizontal:
-                        horizontalPadding = true;
-                        verticalPadding = false;
+                        HorizontalPadding = true;
+                        VerticalPadding = false;
                         break;
                     case CameraPadding.Vertical:
-                        horizontalPadding = false;
-                        verticalPadding = true;
+                        HorizontalPadding = false;
+                        VerticalPadding = true;
                         break;
                     default:
                     case CameraPadding.None:
-                        horizontalPadding = false;
-                        verticalPadding = false;
+                        HorizontalPadding = false;
+                        VerticalPadding = false;
                         break;
                 }
             }
         }
 
         public void Export(SerialFrame frame) {
-            frame.Set(X);
-            frame.Set(Y);
-            frame.Set(XOffset);
-            frame.Set(YOffset);
+            frame.Set(Position);
+            frame.Set(Offset);
             frame.Set(Scale);
             frame.Set(HorizontalPadding);
             frame.Set(VerticalPadding);
         }
 
         public void Import(SerialFrame frame) {
-            X = frame.GetFloat();
-            Y = frame.GetFloat();
-            XOffset = frame.GetFloat();
-            YOffset = frame.GetFloat();
-            Scale = frame.GetFloat();
+            Position = frame.GetVector2();
+            Offset = frame.GetVector2();
             HorizontalPadding = frame.GetBool();
             VerticalPadding = frame.GetBool();
         }

@@ -30,10 +30,10 @@ namespace TwelveEngine.Game2D {
             OnExport += Grid2D_OnExport;
         }
 
-        private int width = 0, height = 0;
+        private Point size;
 
-        public int Width => width;
-        public int Height => height;
+        public int Columns => size.X;
+        public int Rows => size.Y;
 
         private Camera camera = new Camera();
 
@@ -55,14 +55,9 @@ namespace TwelveEngine.Game2D {
         private readonly CollisionInterface collisionInterface;
         public CollisionInterface Collision => collisionInterface;
 
-        private InteractionLayer interactionLayer = null;
-        public InteractionLayer Interaction {
-            get => interactionLayer;
-            set => interactionLayer = value;
-        }
+        public InteractionLayer Interaction { get; set; }
 
-        private EntityManager<Entity2D,Grid2D> entityManager = null;
-        public EntityManager<Entity2D,Grid2D> EntityManager => entityManager;
+        public EntityManager<Entity2D,Grid2D> EntityManager { get; private set; }
 
         public void AddEntity(Entity2D entity) => EntityManager.AddEntity(entity);
 
@@ -91,14 +86,13 @@ namespace TwelveEngine.Game2D {
 
         public void ImportMap(Map map) {
             layers = map.Layers2D;
-            width = map.Width;
-            height = map.Height;
+            size = new Point(map.Width,map.Height);
         }
 
         public void Fill(int layerIndex,Func<int,int,int> pattern) {
             var map2D = layers[layerIndex];
-            for(var x = 0;x < Width;x++) {
-                for(var y = 0;y < Height;y++) {
+            for(var x = 0;x < Columns;x++) {
+                for(var y = 0;y < Rows;y++) {
                     map2D[x,y] = pattern(x,y);
                 }
             }
@@ -127,13 +121,15 @@ namespace TwelveEngine.Game2D {
         }
 
         private void loadEntityManager() {
-            entityManager = new EntityManager<Entity2D,Grid2D>(this,Entity2DType.GetFactory());
+            var entityManager = new EntityManager<Entity2D,Grid2D>(this,Entity2DType.GetFactory());
 
             entityManager.OnUpdateListChanged += updateUpdateables;
             entityManager.OnRenderListChanged += updateRenderables;
 
             OnImport += entityManager.Import;
             OnExport += entityManager.Export;
+
+            EntityManager = entityManager;
         }
 
         private void Grid2D_OnLoad() {
@@ -150,7 +146,7 @@ namespace TwelveEngine.Game2D {
             if(hasTileRenderer()) {
                 tileRenderer.Unload();
             }
-            entityManager.Unload();
+            EntityManager.Unload();
         }
 
         private PanZoom panZoom = null;
@@ -176,9 +172,13 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private static float zeroMinMax(float value,float width,int gridWidth) {
-            if(value < 0f) return 0f;
-            if(value + width > gridWidth) return gridWidth - width;
+        private static float cameraBounds(float value,float size,int gridSize) {
+            if(value < 0f) {
+                return 0f;
+            }
+            if(value + size > gridSize) {
+                return gridSize - size;
+            }
             return value;
         }
 
@@ -193,30 +193,25 @@ namespace TwelveEngine.Game2D {
         private ScreenSpace getScreenSpace(Viewport viewport) {
             int tileSize = getTileSize();
 
-            float width = viewport.Width / (float)tileSize;
-            float height = viewport.Height / (float)tileSize;
+            Vector2 size = viewport.Bounds.Size.ToVector2() / tileSize;
+            Vector2 position = Camera.Position + Camera.Offset - (size * 0.5f) + new Vector2(0.5f);
 
-            float halfScreenWidth = width * 0.5f;
-            float halfScreenHeight = height * 0.5f;
+            if(camera.HorizontalPadding) {
+                position.X = cameraBounds(position.X,size.X,Columns);
+            }
+            if(camera.VerticalPadding) {
+                position.Y = cameraBounds(position.Y,size.Y,Rows);
+            }
 
-            float x = camera.AbsoluteX - halfScreenWidth + 0.5f;
-            float y = camera.AbsoluteY - halfScreenHeight + 0.5f;
-
-            if(camera.HorizontalPadding) x = zeroMinMax(x,width,Width);
-            if(camera.VerticalPadding) y = zeroMinMax(y,height,Height);
-
-            return new ScreenSpace(x,y,width,height,tileSize);
+            return new ScreenSpace(position,size,tileSize);
         }
 
-        public (float x, float y) GetCoordinate(ScreenSpace screenSpace,int screenX,int screenY) {
-            var viewport = Viewport;
-            float x = (float)screenX / viewport.Width * screenSpace.Width;
-            float y = (float)screenY / viewport.Height * screenSpace.Height;
-            return (x + screenSpace.X, y + screenSpace.Y);
+        public Vector2 GetCoordinate(ScreenSpace screenSpace,Point position) {
+            return position.ToVector2() / Viewport.Bounds.Size.ToVector2() * screenSpace.Size;
         }
 
-        public (float x,float y) GetCoordinate(int screenX,int screenY) {
-            return GetCoordinate(screenSpace,screenX,screenY);
+        public Vector2 GetCoordinate(Point position) {
+            return GetCoordinate(screenSpace,position);
         }
 
         private void renderEntities(GameTime gameTime) {
@@ -291,9 +286,8 @@ namespace TwelveEngine.Game2D {
 
         private void Grid2D_OnExport(SerialFrame frame) {
             frame.Set(camera);
-            frame.Set(Width);
-            frame.Set(Height);
             frame.Set(LayerMode);
+            frame.Set(size);
             frame.Set(PanZoom);
             frame.Set(layers.Length);
             for(var i = 0;i<layers.Length;i++) {
@@ -303,9 +297,8 @@ namespace TwelveEngine.Game2D {
 
         private void Grid2D_OnImport(SerialFrame frame) {
             frame.Get(camera);
-            width = frame.GetInt();
-            height = frame.GetInt();
             frame.Get(LayerMode);
+            size = frame.GetPoint();
             PanZoom = frame.GetBool();
             var layerCount = frame.GetInt();
 

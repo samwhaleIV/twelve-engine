@@ -51,7 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ExportMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ImportMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\MetaSerializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\TwelveTypeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Type.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Value.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Porthole\Tiles.cs" />

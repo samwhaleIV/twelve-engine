@@ -6,8 +6,44 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game2D {
     public abstract class Entity2D:Entity<Grid2D> {
 
-        private float x = 0, y = 0, width = 1, height = 1;
+        private Vector2 position = Vector2.Zero;
+        private Vector2 size = Vector2.One;
+
+        public float X {
+            get => position.X;
+            set => position.X = value;
+        }
+        public float Y {
+            get => position.Y;
+            set => position.Y = value;
+        }
+
+        public float Width {
+            get => size.X;
+            set => size.X = value;
+        }
+
+        public float Height {
+            get => size.Y;
+            set => size.Y = value;
+        }
+
         private Direction direction = Direction.Down;
+
+        public Vector2 Position {
+            get => position;
+            set => position = value;
+        }
+
+        public Vector2 Size {
+            get => size;
+            set => size = value;
+        }
+
+        public Direction Direction {
+            get => direction;
+            set => direction = value;
+        }
 
         protected bool IsKeyDown(Impulse impulse) {
             return Game.ImpulseHandler.IsKeyDown(impulse);
@@ -35,11 +71,11 @@ namespace TwelveEngine.Game2D {
             var tileSize = screenSpace.TileSize;
 
             var destination = new Rectangle {
-                X = (int)Math.Round((x - screenSpace.X) * tileSize),
-                Y = (int)Math.Round((y - screenSpace.Y) * tileSize),
+                X = (int)Math.Round((X - screenSpace.X) * tileSize),
+                Y = (int)Math.Round((Y - screenSpace.Y) * tileSize),
 
-                Width = (int)Math.Floor(width * tileSize),
-                Height = (int)Math.Floor(height * tileSize)
+                Width = (int)Math.Floor(Width * tileSize),
+                Height = (int)Math.Floor(Height * tileSize)
             };
 
             return destination;
@@ -48,47 +84,23 @@ namespace TwelveEngine.Game2D {
         public bool OnScreen() {
             var screenSpace = Owner.ScreenSpace;
             return !(
-                x + width <= screenSpace.X ||
-                y + height <= screenSpace.Y ||
-                x >= screenSpace.X + screenSpace.Width ||
-                y >= screenSpace.Y + screenSpace.Height
+                X + Width <= screenSpace.X ||
+                Y + Height <= screenSpace.Y ||
+                X >= screenSpace.X + screenSpace.Width ||
+                Y >= screenSpace.Y + screenSpace.Height
             );
         }
 
-        public float X {
-            get => x;
-            set => x = value;
-        }
-        public float Y {
-            get => y;
-            set => y = value;
-        }
-        public float Width {
-            get => width;
-            set => width = value;
-        }
-        public float Height {
-            get => height;
-            set => height = value;
-        }
-        public Direction Direction {
-            get => direction;
-            set => direction = value;
-        }
 
         public override void Import(SerialFrame frame) {
-            X = frame.GetFloat();
-            Y = frame.GetFloat();
-            Width = frame.GetFloat();
-            Height = frame.GetFloat();
+            Position = frame.GetVector2();
+            Size = frame.GetVector2();
             Direction = frame.GetDirection();
         }
 
         public override void Export(SerialFrame frame) {
-            frame.Set(X);
-            frame.Set(Y);
-            frame.Set(Width);
-            frame.Set(Height);
+            frame.Set(Position);
+            frame.Set(Size);
             frame.Set(Direction);
         }
     }

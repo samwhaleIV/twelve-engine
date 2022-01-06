@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TwelveEngine.Game2D.Entity.Types {
     public abstract class MovingEntity2D:Entity2D {
@@ -11,11 +10,8 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         private bool shouldInteract = false;
 
-        private int lastXDelta, lastYDelta;
-
         private TimeSpan? movingStart = null, deacelStart = null;
 
-        private int deacelDeltaX, deacelDeltaY;
         private float deacelStartValue;
 
         protected float MaxSpeed { get; set; }
@@ -23,10 +19,9 @@ namespace TwelveEngine.Game2D.Entity.Types {
         protected float DeaccelRate { get; set; }
         protected float OrientationOffset { get; set; }
 
-        protected int XDelta { get; private set; }
-        protected int YDelta { get; private set; }
-
-        protected Point MovementDelta => new Point(XDelta,YDelta);
+        protected Point MovementDelta { get; private set; }
+        private Point LastDelta { get; set; }
+        private Point DeaccelDelta { get; set; }
 
         public event Action OnPositionChanged;
         protected Action OnMovementStopped;
@@ -42,8 +37,7 @@ namespace TwelveEngine.Game2D.Entity.Types {
         }
 
         protected void UpdateMovement(GameTime gameTime) {
-            var delta = GetMovementDelta();
-            XDelta = delta.X; YDelta = delta.Y;
+            MovementDelta = GetMovementDelta();
 
             var startPosition = new Vector2(X,Y);
             updateMovement(gameTime);
@@ -141,15 +135,15 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         private Direction getDirection() {
             Direction direction = Direction;
-            if(XDelta != 0) {
-                if(XDelta < 0) {
+            if(MovementDelta.X != 0) {
+                if(MovementDelta.X < 0) {
                     direction = Direction.Left;
                 } else {
                     direction = Direction.Right;
                 }
             }
-            if(YDelta != 0) {
-                if(YDelta < 0) {
+            if(MovementDelta.Y != 0) {
+                if(MovementDelta.Y < 0) {
                     direction = Direction.Up;
                 } else {
                     direction = Direction.Down;
@@ -159,15 +153,15 @@ namespace TwelveEngine.Game2D.Entity.Types {
         }
 
         private void handleDeltas(float distance) {
-            if(XDelta != 0) {
-                if(XDelta < 0) {
+            if(MovementDelta.X != 0) {
+                if(MovementDelta.X < 0) {
                     move(Direction.Left,distance);
                 } else {
                     move(Direction.Right,distance);
                 }
             }
-            if(YDelta != 0) {
-                if(YDelta < 0) {
+            if(MovementDelta.Y != 0) {
+                if(MovementDelta.Y < 0) {
                     move(Direction.Up,distance);
                 } else {
                     move(Direction.Down,distance);
@@ -248,7 +242,7 @@ namespace TwelveEngine.Game2D.Entity.Types {
         }
 
         private void processAccelerationTiming(TimeSpan totalTime) {
-            if(XDelta == 0 && YDelta == 0) {
+            if(MovementDelta.X == 0 && MovementDelta.Y == 0) {
                 OnMovementStopped?.Invoke();
                 if(deacelStart.HasValue) {
                     var timeDifference = deacelStart.Value - totalTime;
@@ -258,8 +252,7 @@ namespace TwelveEngine.Game2D.Entity.Types {
                 } else if(movingStart.HasValue) {
                     deacelStartValue = getSpeed(totalTime);
 
-                    deacelDeltaX = lastXDelta;
-                    deacelDeltaY = lastYDelta;
+                    DeaccelDelta = LastDelta;
 
                     deacelStart = totalTime;
                     movingStart = null;
@@ -268,22 +261,18 @@ namespace TwelveEngine.Game2D.Entity.Types {
                 deacelStart = null;
                 movingStart = totalTime;
             }
-            lastXDelta = XDelta;
-            lastYDelta = YDelta;
+
+            LastDelta = MovementDelta;
         }
 
         private void handleDeaccelerationDistance(float distance) {
-            var oldXDelta = XDelta;
-            var oldYDelta = YDelta;
+            var currentDelta = MovementDelta;
 
-            XDelta = deacelDeltaX;
-            YDelta = deacelDeltaY;
-
+            MovementDelta = DeaccelDelta;
             updateDirection();
             handleDeltas(distance);
 
-            XDelta = oldXDelta;
-            YDelta = oldYDelta;
+            MovementDelta = currentDelta;
         }
 
         private void updateMovement(GameTime gameTime) {

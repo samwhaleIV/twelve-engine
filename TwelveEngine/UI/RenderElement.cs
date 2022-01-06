@@ -47,22 +47,22 @@ namespace TwelveEngine.UI {
 
         protected event Action OnLoad, OnUnload;
 
-        protected event Action<int,int> OnMouseDown, OnMouseUp, OnMouseMove;
+        protected event Action<Point> OnMouseDown, OnMouseUp, OnMouseMove;
         internal Action OnMouseLeave;
 
-        public event Action<int,int,ScrollDirection> OnScroll;
+        public event Action<Point,ScrollDirection> OnScroll;
         
         public void Load(GameManager game) {
             this.game = game;
             OnLoad?.Invoke();
         }
 
-        internal void MouseDown(int x,int y) => OnMouseDown?.Invoke(x,y);
-        internal void MouseUp(int x,int y) => OnMouseUp?.Invoke(x,y);
-        internal void MouseMove(int x,int y) => OnMouseMove?.Invoke(x,y);
+        internal void MouseDown(Point mousePosition) => OnMouseDown?.Invoke(mousePosition);
+        internal void MouseUp(Point mousePosition) => OnMouseUp?.Invoke(mousePosition);
+        internal void MouseMove(Point mousePosition) => OnMouseMove?.Invoke(mousePosition);
         internal void MouseLeave() => OnMouseLeave?.Invoke();
 
-        internal void Scroll(int x,int y,ScrollDirection direction) => OnScroll?.Invoke(x,y,direction);
+        internal void Scroll(Point mousePosition,ScrollDirection direction) => OnScroll?.Invoke(mousePosition,direction);
 
         private void updateScreenArea() => screenArea = GetScreenArea();
         protected virtual Rectangle GetScreenArea() => ComputedArea;

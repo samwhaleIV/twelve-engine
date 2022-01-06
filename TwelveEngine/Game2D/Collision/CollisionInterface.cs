@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game2D.Collision {
     public sealed class CollisionInterface {
@@ -14,43 +14,43 @@ namespace TwelveEngine.Game2D.Collision {
             get => collisionTypes;
             set => collisionTypes = value;
         }
-        public Hitbox? GetHitbox(int ID,float x,float y) {
-            return collisionTypes?.GetHitbox(ID,x,y);
+
+        public Hitbox? GetHitbox(int ID,Vector2 location) {
+            return collisionTypes?.GetHitbox(ID,location);
+        }
+        public Hitbox? GetHitbox(int ID,Point location) {
+            return collisionTypes?.GetHitbox(ID,location);
         }
 
         private const int MATRIX_SIZE = 9;
-
         private int[,] surroundingMatrix = new int[MATRIX_SIZE,2] {
             {0,0},{0,-1},{0,1},{-1,0},{1,0},{-1,-1},{1,-1},{-1,1},{1,1}
         };
 
-        private bool inRange(int x, int y) {
-            return x >= 0 && y >= 0 && x < grid.Width && y < grid.Height;
+        private bool inRange(Point location) {
+            return location.X >= 0 && location.Y >= 0 && location.X < grid.Columns && location.Y < grid.Rows;
         }
 
-        private Hitbox? getTileHitbox(int value,int x,int y) {
-            return collisionTypes?.GetHitbox(value,x,y);
+        private Hitbox? getTileHitbox(int value,Point location) {
+            return collisionTypes?.GetHitbox(value,location);
         }
 
         private List<Hitbox> getSurroundingArea(int[,] layer,Hitbox hitbox) {
-            var centerX = (int)Math.Floor(hitbox.X + hitbox.Width / 2);
-            var centerY = (int)Math.Floor(hitbox.Y + hitbox.Height / 2);
+
+            Point center = (hitbox.Position + hitbox.Size / 2f).ToPoint();
 
             var hitboxes = new List<Hitbox>();
 
             for(int i = 0;i<MATRIX_SIZE;i++) {
-                int xOffset = surroundingMatrix[i,0];
-                int yOffset = surroundingMatrix[i,1];
+                var offset = new Point(surroundingMatrix[i,0],surroundingMatrix[i,1]);
+                var location = center + offset;
 
-                int x = centerX + xOffset;
-                int y = centerY + yOffset;
-
-                if(!inRange(x,y)) {
+                if(!inRange(location)) {
                     continue;
                 }
 
-                int layerValue = layer[x,y];
-                Hitbox? tileHitbox = getTileHitbox(layerValue,x,y);
+                int layerValue = layer[location.X,location.Y];
+                Hitbox? tileHitbox = getTileHitbox(layerValue,location);
 
                 if(!tileHitbox.HasValue) {
                     continue;

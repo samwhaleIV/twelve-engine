@@ -21,7 +21,7 @@ namespace TwelveEngine.Porthole.PuzzleGame.Components {
 
         public Hitbox GetHitbox() {
             int x = location.X, y = location.Y;
-            return Grid.Collision.Types.GetHitbox(CollisionLayer[x,y],x,y).Value;
+            return Grid.Collision.Types.GetHitbox(CollisionLayer[x,y],location).Value;
         }
 
         private bool updating = false;

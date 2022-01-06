@@ -1,14 +1,22 @@
-﻿namespace TwelveEngine.Game2D {
-    public struct Hitbox {
+﻿using Microsoft.Xna.Framework;
+
+namespace TwelveEngine.Game2D {
+    public readonly struct Hitbox {
         public Hitbox(
-            float x, float y,
-            float width, float height
+            Vector2 position,
+            Vector2 size
         ) {
-            X = x; Y = y;
-            Width = width; Height = height;
+            Position = position;
+            Size = size;
         }
 
-        public float X, Y, Width, Height;
+        public readonly Vector2 Position;
+        public readonly Vector2 Size;
+
+        public float X => Position.X;
+        public float Y => Position.Y;
+        public float Width => Size.X;
+        public float Height => Size.Y;
 
         public bool Collides(Hitbox target) {
             return X <= target.X + target.Width &&
@@ -20,27 +28,28 @@
         public static Hitbox GetInteractionArea(Entity2D entity) {
 
             var boxSize = Constants.Config.InteractSize;
-            var hitbox = new Hitbox() {
-                Width = boxSize,Height = boxSize
-            };
+            var halfSize = boxSize / 2f;
+
+            var location = Vector2.Zero;
 
             var direction = entity.Direction;
             if(direction == Direction.Left || direction == Direction.Right) {
-                hitbox.Y = (entity.Y + entity.Height / 2) - hitbox.Height / 2;
+                location.Y = (entity.Y + entity.Height / 2) - halfSize;
                 if(direction == Direction.Left) {
-                    hitbox.X = entity.X - hitbox.Width;
+                    location.X = entity.X - boxSize;
                 } else {
-                    hitbox.X = entity.X + entity.Width;
+                    location.X = entity.X + entity.Width;
                 }
             } else {
-                hitbox.X = (entity.X + entity.Width / 2) - hitbox.Width / 2;
+                location.X = (entity.X + entity.Width / 2) - halfSize;
                 if(direction == Direction.Up) {
-                    hitbox.Y = entity.Y - hitbox.Height;
+                    location.Y = entity.Y - boxSize;
                 } else {
-                    hitbox.Y = entity.Y + entity.Height;
+                    location.Y = entity.Y + entity.Height;
                 }
             }
-            return hitbox;
+
+            return new Hitbox(location,new Vector2(boxSize));
         }
     }
 }

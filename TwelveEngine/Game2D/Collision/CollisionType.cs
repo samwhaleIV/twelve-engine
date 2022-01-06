@@ -1,16 +1,14 @@
-﻿namespace TwelveEngine.Game2D.Collision {
+﻿using Microsoft.Xna.Framework;
+
+namespace TwelveEngine.Game2D.Collision {
     public readonly struct CollisionType {
         public CollisionType(
-            int x,int y,int width,int height,float tileSize
+            Point location,Point size,float tileSize
         ) {
-            X = x / tileSize;
-            Y = y / tileSize;
-            Width = width / tileSize;
-            Height = height / tileSize;
+            Location = location.ToVector2() / tileSize;
+            Size = size.ToVector2() / tileSize;
         }
-        public readonly float X;
-        public readonly float Y;
-        public readonly float Width;
-        public readonly float Height;
+        public readonly Vector2 Location;
+        public readonly Vector2 Size;
     }
 }

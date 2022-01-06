@@ -23,7 +23,7 @@ namespace TwelveEngine.Porthole.PuzzleGame.Components {
 
         public Hitbox GetHitbox() {
             int x = location.X, y = location.Y;
-            return Grid.Collision.GetHitbox(CollisionLayer[x,y],x,y).Value;
+            return Grid.Collision.GetHitbox(CollisionLayer[x,y],location).Value;
         }
 
         protected override void OnChange() {

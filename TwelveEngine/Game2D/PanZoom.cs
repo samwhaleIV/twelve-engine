@@ -1,11 +1,10 @@
-﻿using TwelveEngine.Input;
+﻿using Microsoft.Xna.Framework;
+using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D {
     internal sealed class PanZoom {
 
-        private const float MIN_SCALE = 1;
-        private const float MAX_SCALE = 8;
-        private const float ZOOM_RATE = 0.1f;
+        private const float MIN_SCALE = 1, MAX_SCALE = 8, ZOOM_RATE = 0.1f;
 
         private readonly Grid2D grid;
         private readonly Camera camera;
@@ -30,24 +29,20 @@ namespace TwelveEngine.Game2D {
             mouseHandler.OnMouseUp -= clearPanData;
         }
 
-        private (int x, int y, float cameraX, float cameraY)? panData = null;
-        private void refreshPanData(int x,int y) {
-            panData = (x, y, camera.X, camera.Y);
-        }
-        private void clearPanData(int x,int y) {
-            panData = null;
-        }
+        private (Point MousePosition, Vector2 CameraPosition)? panData = null;
 
-        private void zoom(int x,int y,ScrollDirection direction) {
-            var startPosition = grid.GetCoordinate(x,y);
+        private void refreshPanData(Point mousePosition) => panData = (mousePosition,camera.Position);
+
+        private void clearPanData(Point mousePosition) => panData = null;
+
+        private void zoom(Point mousePosition,ScrollDirection direction) {
+
+            var startPosition = grid.GetCoordinate(mousePosition);
             var zoomInTarget = startPosition;
 
-            var worldCenter = grid.ScreenSpace.getCenter();
+            var worldCenter = grid.ScreenSpace.GetCenter();
 
-            (float x, float y) distanceToTarget = (
-                worldCenter.x - zoomInTarget.x,
-                worldCenter.y - zoomInTarget.y
-            );
+            Vector2 distanceToTarget = worldCenter - zoomInTarget;
 
             float scaleChange = 1 + (int)direction * ZOOM_RATE;
             float startScale = camera.Scale;
@@ -62,33 +57,28 @@ namespace TwelveEngine.Game2D {
             camera.Scale = newScale;
 
             var newScreenSpace = grid.ScreenSpace;
-            zoomInTarget = grid.GetCoordinate(newScreenSpace,x,y);
-            worldCenter = newScreenSpace.getCenter();
+            zoomInTarget = grid.GetCoordinate(newScreenSpace,mousePosition);
+            worldCenter = newScreenSpace.GetCenter();
 
-            (float x, float y) newDistanceToTarget = (
-                worldCenter.x - zoomInTarget.x,
-                worldCenter.y - zoomInTarget.y
-            );
+            Vector2 newDistanceToTarget = worldCenter - zoomInTarget;
 
-            camera.X += newDistanceToTarget.x - distanceToTarget.x;
-            camera.Y += newDistanceToTarget.y - distanceToTarget.y;
-
+            camera.Position += newDistanceToTarget - distanceToTarget;
             if(panData.HasValue) {
-                refreshPanData(x,y);
+                refreshPanData(mousePosition);
             }
         }
-        private void pan(int x,int y) {
+        private void pan(Point mousePosition) {
             if(!this.panData.HasValue) {
                 return;
             }
+
             var panData = this.panData.Value;
-            int xDifference = panData.x - x;
-            int yDifference = panData.y - y;
+            Point difference = panData.MousePosition - mousePosition;
 
             float tileSize = grid.GetScreenSpace().TileSize;
-            camera.X = panData.cameraX + xDifference / tileSize;
-            camera.Y = panData.cameraY + yDifference / tileSize;
-            refreshPanData(x,y);
+
+            camera.Position = panData.CameraPosition + difference.ToVector2() / tileSize;
+            refreshPanData(mousePosition);
         }
     }
 }

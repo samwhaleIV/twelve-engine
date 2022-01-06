@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using TwelveEngine.Input;
 using TwelveEngine.UI.Elements;
 
@@ -13,9 +14,9 @@ namespace TwelveEngine.UI {
 
         private RenderElement focusedElement = null, hoverElement = null;
 
-        private RenderElement findElement(int x,int y,RenderElement[] cache) {
+        private RenderElement findElement(Point mousePosition,RenderElement[] cache) {
             foreach(var element in cache) {
-                if(!element.ScreenArea.Contains(x,y)) {
+                if(!element.ScreenArea.Contains(mousePosition)) {
                     continue;
                 }
                 return element;
@@ -23,11 +24,11 @@ namespace TwelveEngine.UI {
             return null;
         }
 
-        private int lastX = 0, lastY = 0;
+        private Point lastMousePosition;
 
-        private void refreshHoverElement(int x,int y) {
-            lastX = x; lastY = y;
-            var newElement = findElement(x,y,getCache().InteractCache);
+        private void refreshHoverElement(Point mousePosition) {
+            lastMousePosition = mousePosition;
+            var newElement = findElement(mousePosition,getCache().InteractCache);
             var oldElement = hoverElement;
             if(newElement == oldElement) {
                 return;
@@ -44,30 +45,30 @@ namespace TwelveEngine.UI {
         }
 
         public void RefreshElement() {
-            refreshHoverElement(lastX,lastY);
+            refreshHoverElement(lastMousePosition);
             if(hoverElement != null && hoverElement is RenderFrame frame) {
-                frame.InteractionState.MouseMove(lastX-frame.ComputedX,lastY-frame.ComputedY);
+                frame.InteractionState.MouseMove(lastMousePosition - frame.ComputedArea.Location);
             }
         }
 
-        public void Scroll(int x,int y,ScrollDirection direction) {
-            var element = findElement(x,y,getCache().ScrollCache);
+        public void Scroll(Point mousePosition,ScrollDirection direction) {
+            var element = findElement(mousePosition,getCache().ScrollCache);
             if(element == null) {
                 return;
             }
-            element.Scroll(x,y,direction);
-            refreshHoverElement(x,y);
+            element.Scroll(mousePosition,direction);
+            refreshHoverElement(mousePosition);
         }
 
-        public void MouseMove(int x,int y) {
-            refreshHoverElement(x,y);
+        public void MouseMove(Point mousePosition) {
+            refreshHoverElement(mousePosition);
             if(hoverElement == null) {
                 return;
             }
-            hoverElement.MouseMove(x,y);
+            hoverElement.MouseMove(mousePosition);
         }
 
-        public void MouseUp(int x,int y) {
+        public void MouseUp(Point mousePosition) {
             var element = focusedElement;
             if(element == null) {
                 return;
@@ -75,19 +76,19 @@ namespace TwelveEngine.UI {
             element.Pressed = false;
             focusedElement = null;
 
-            element.MouseUp(x,y);
-            refreshHoverElement(x,y);
+            element.MouseUp(mousePosition);
+            refreshHoverElement(mousePosition);
         }
 
-        public void MouseDown(int x,int y) {
+        public void MouseDown(Point mousePosition) {
             if(hoverElement == null) {
                 return;
             }
             focusedElement = hoverElement;
             hoverElement.Pressed = true;
 
-            hoverElement.MouseDown(x,y);
-            refreshHoverElement(x,y);
+            hoverElement.MouseDown(mousePosition);
+            refreshHoverElement(mousePosition);
         }
 
         public void DropFocus() {

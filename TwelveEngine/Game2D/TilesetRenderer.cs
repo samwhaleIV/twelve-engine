@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D {
@@ -37,48 +36,21 @@ namespace TwelveEngine.Game2D {
             return sources;
         }
 
-        public override void RenderTiles(ScreenSpace screenSpace,int[,] data) {
-            int tileSize = screenSpace.TileSize;
-
-            int startX = (int)Math.Floor(screenSpace.X);
-            int startY = (int)Math.Floor(screenSpace.Y);
-
-            float renderX = startX - screenSpace.X;
-            float renderY = startY - screenSpace.Y;
-
-            int width = (int)Math.Ceiling(screenSpace.Width - renderX);
-            int height = (int)Math.Ceiling(screenSpace.Height - renderY);
-
-            if(renderX * -2 > tileSize) width++;
-            if(renderY * -2 > tileSize) height++;
-
-            int tileX = (int)Math.Round(renderX * tileSize);
-            int tileY = (int)Math.Round(renderY * tileSize);
-
-            int xOffset = 0;
-            int yOffset = 0;
-            if(startX < 0) xOffset = -startX;
-            if(startY < 0) yOffset = -startY;
-
-            int endX = startX + width;
-            int endY = startY + height;
-            if(endX > Grid.Width) width -= endX - Grid.Width;
-            if(endY > Grid.Height) height -= endY - Grid.Height;
-
-            var target = new Rectangle(0,0,tileSize,tileSize);
+        private void draw(Point start,Point tile,Point size,Point offset,int tileSize,int[,] data) {
+            var target = new Rectangle(Point.Zero,new Point(tileSize));
 
             float depthBase = 1f / Grid.Viewport.Height;
             int gridX, value, y;
             float depth;
 
-            for(int x = xOffset;x < width;x++) {
-                gridX = x + startX;
-                target.X = tileX + x * tileSize;
-                for(y = yOffset;y < height;y++) {
-                    value = data[gridX,y + startY];
+            for(int x = offset.X;x < size.X;x++) {
+                gridX = x + start.X;
+                target.X = tile.X + x * tileSize;
+                for(y = offset.Y;y < size.Y;y++) {
+                    value = data[gridX,y + start.Y];
                     if(value < 1) continue;
 
-                    target.Y = tileY + y * tileSize;
+                    target.Y = tile.Y + y * tileSize;
 
                     depth = target.Y * depthBase;
                     if(depth < 0) depth = 0;
@@ -86,6 +58,30 @@ namespace TwelveEngine.Game2D {
                     spriteBatch.Draw(tileset,target,textureSources[value],Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
                 }
             }
+        }
+
+        public override void RenderTiles(ScreenSpace screenSpace,int[,] data) {
+            int tileSize = screenSpace.TileSize;
+
+            Point start = screenSpace.Position.ToPoint();
+            Vector2 render = start.ToVector2() - screenSpace.Position;
+
+            Point size = Vector2.Ceiling(screenSpace.Size - render).ToPoint();
+
+            if(render.X * -2 > tileSize) size.X++;
+            if(render.Y * -2 > tileSize) size.Y++;
+
+            Point tile = Vector2.Round(render * tileSize).ToPoint();
+
+            Point offset = Point.Zero;
+            if(start.X < 0) offset.X = -start.X;
+            if(start.Y < 0) offset.Y = -start.Y;
+
+            Point end = start + size;
+            if(end.X > Grid.Columns) size.X -= end.X - Grid.Columns;
+            if(end.Y > Grid.Rows) size.Y -= end.Y - Grid.Rows;
+
+            draw(start,tile,size,offset,tileSize,data);
         }
     }
 }

@@ -50,28 +50,25 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         protected override Hitbox GetHitbox() {
             /* Notice: This hitbox does not scale with Entity Width and Height properties */
-            var hitbox = new Hitbox();
-
-            hitbox.Y = Y;
-            hitbox.Height = 1;
+            var location = new Vector2(0f,Y);
+            var size = new Vector2(0,1f);
 
             if(Direction == Direction.Down || Direction == Direction.Up) {
-                hitbox.X = X + VERTICAL_HITBOX_X;
-                hitbox.Width = VERTICAL_HITBOX_WIDTH;
+                location.X = X + VERTICAL_HITBOX_X;
+                size.X = VERTICAL_HITBOX_WIDTH;
             } else {
-                hitbox.X = X + HORIZONTAL_HITBOX_X;
-                hitbox.Width = HORIZONTAL_HITBOX_WIDTH;
+                location.X = X + HORIZONTAL_HITBOX_X;
+                size.X = HORIZONTAL_HITBOX_WIDTH;
             }
 
-            return hitbox;
+            return new Hitbox(location,size);
         }
 
         protected override Point GetMovementDelta() => Game.ImpulseHandler.GetDirectionDelta();
 
         public override void Update(GameTime gameTime) {
             UpdateMovement(gameTime);
-            var camera = Owner.Camera;
-            camera.X = X; camera.Y = Y;
+            Owner.Camera.Position = Position;
         }
 
         private bool isBlinking(GameTime gameTime) {

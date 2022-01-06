@@ -1,24 +1,22 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Input {
     public sealed class MouseHandler {
 
-        public event Action<int,int> OnMouseDown, OnMouseUp, OnMouseMove;
-
-        public event Action<int,int,ScrollDirection> OnMouseScroll;
-
-        private void sendScrollEvent(ScrollDirection direction) {
-            OnMouseScroll?.Invoke(x,y,direction);
-        }
+        public event Action<Point> OnMouseDown, OnMouseUp, OnMouseMove;
+        public event Action<Point,ScrollDirection> OnMouseScroll;
 
         private MouseState? lastState;
 
         private bool mouseIsDown = false;
         public bool Capturing => mouseIsDown;
 
-        private int x, y;
-        public int X => x; public int Y => y;
+        private Point position;
+
+        public int X => position.X;
+        public int Y => position.Y;
 
         public void Update(MouseState mouseState) {
             if(!this.lastState.HasValue) {
@@ -26,27 +24,26 @@ namespace TwelveEngine.Input {
             }
             var lastState = this.lastState.Value;
 
-            x = mouseState.X; y = mouseState.Y;
+            position = mouseState.Position;
 
             if(mouseState.LeftButton != lastState.LeftButton) {
                 if(mouseState.LeftButton == ButtonState.Pressed) {
                     mouseIsDown = true;
-                    OnMouseDown?.Invoke(x,y);
+                    OnMouseDown?.Invoke(position);
                 } else {
                     mouseIsDown = false;
-                    OnMouseUp?.Invoke(x,y);
+                    OnMouseUp?.Invoke(position);
                 }
             }
 
-            var delta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
-            if(delta > 0) {
-                sendScrollEvent(ScrollDirection.Up);
-            } else if(delta < 0) {
-                sendScrollEvent(ScrollDirection.Down);
+            int scrollDelta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
+
+            if(scrollDelta != 0) {
+                OnMouseScroll?.Invoke(position,scrollDelta > 0 ? ScrollDirection.Up : ScrollDirection.Down);
             }
 
-            if(x != lastState.X || y != lastState.Y) {
-                OnMouseMove?.Invoke(x,y);
+            if(position != lastState.Position) {
+                OnMouseMove?.Invoke(position);
             }
 
             this.lastState = mouseState;

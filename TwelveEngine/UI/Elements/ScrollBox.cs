@@ -17,7 +17,7 @@ namespace TwelveEngine.UI.Elements {
             LayoutUpdated += ScrollBox_LayoutUpdated;
         }
 
-        private void ScrollBox_OnScroll(int x,int y,ScrollDirection direction) {
+        private void ScrollBox_OnScroll(Point mousePosition,ScrollDirection direction) {
             cancelScrollAnimation();
             switch(scrollMode) {
                 //TODO: Implement other cases
@@ -39,12 +39,12 @@ namespace TwelveEngine.UI.Elements {
             return value;
         }
 
-        public void ScrollTo(int x,int y) {
+        public void ScrollTo(Point position) {
             cancelScrollAnimation();
             Target.PushLayoutFreeze();
             //TODO: Implement X dimension
-            if(y != Target.Y) {
-                Target.Y = limitY(y);
+            if(position.Y != Target.Y) {
+                Target.Y = limitY(position.Y);
                 InteractionState.RefreshElement();
             }
             Target.PopLayoutFreeze();

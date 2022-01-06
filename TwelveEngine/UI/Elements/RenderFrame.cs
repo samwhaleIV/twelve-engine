@@ -128,24 +128,24 @@ namespace TwelveEngine.UI.Elements {
             renderTarget = new RenderTarget2D(game.GraphicsDevice,newSize.X,newSize.Y);
         }
 
-        private void RenderFrame_OnScroll(int x,int y,ScrollDirection direction) {
-            x -= ScreenArea.X; y -= ScreenArea.Y;
-            interactionState.Scroll(x,y,direction);
+        private Point translatePosition(Point mousePosition) {
+            return mousePosition - ScreenArea.Location;
         }
 
-        private void RenderFrame_OnMouseMove(int x,int y) {
-            x -= ScreenArea.X; y -= ScreenArea.Y;
-            interactionState.MouseMove(x,y);
+        private void RenderFrame_OnScroll(Point mousePosition,ScrollDirection direction) {
+            interactionState.Scroll(translatePosition(mousePosition),direction);
         }
 
-        private void RenderFrame_OnMouseUp(int x,int y) {
-            x -= ScreenArea.X; y -= ScreenArea.Y;
-            interactionState.MouseUp(x,y);
+        private void RenderFrame_OnMouseMove(Point mousePosition) {
+            interactionState.MouseMove(translatePosition(mousePosition));
         }
 
-        private void RenderFrame_OnMouseDown(int x,int y) {
-            x -= ScreenArea.X; y -= ScreenArea.Y;
-            interactionState.MouseDown(x,y);
+        private void RenderFrame_OnMouseUp(Point mousePosition) {
+            interactionState.MouseUp(translatePosition(mousePosition));
+        }
+
+        private void RenderFrame_OnMouseDown(Point mousePosition) {
+            interactionState.MouseDown(translatePosition(mousePosition));
         }
     }
 }
