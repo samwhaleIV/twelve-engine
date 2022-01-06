@@ -17,6 +17,8 @@ namespace TwelveEngine {
 
         public const string EngineConfigFile = "twelve.config";
 
+        public const string DefaultFont = "default-font";
+
         private static bool loadedConfigFile = false;
 
         private static TwelveConfig config = null;

@@ -241,7 +241,7 @@ namespace TwelveEngine {
                 CPUTexture.LoadDictionary(Content,cpuTextures);
             }
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteFont = Content.Load<SpriteFont>("default-font");
+            spriteFont = Content.Load<SpriteFont>(Constants.DefaultFont);
             vcrDisplay.Load();
             if(pendingGameState == null) {
                 return;

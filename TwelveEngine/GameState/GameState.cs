@@ -3,23 +3,20 @@ using Microsoft.Xna.Framework;
 
 namespace TwelveEngine {
     public abstract class GameState:ISerializable {
-        internal void SetReferences(GameManager game) => this.game = game;
+        internal void SetReferences(GameManager game) => Game = game;
 
-        private GameManager game = null;
-        public GameManager Game => game;
+        public GameManager Game { get; private set; } = null;
 
         public event Action OnLoad, OnUnload;
 
-        protected internal event Action<SerialFrame> OnExport, OnImport;
+        public Action<SerialFrame> OnExport, OnImport;
+        protected event Action<GameTime> OnPreRender;
 
-        protected internal event Action<GameTime> OnPreRender;
-
-        private bool loaded = false;
-        public bool IsLoaded => loaded;
+        public bool IsLoaded { get; private set; } = false;
 
         internal void Load() {
             OnLoad?.Invoke();
-            loaded = true;
+            IsLoaded = true;
         }
         internal void Unload() {
             OnUnload?.Invoke();

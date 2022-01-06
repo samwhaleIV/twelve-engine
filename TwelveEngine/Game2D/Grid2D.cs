@@ -77,9 +77,7 @@ namespace TwelveEngine.Game2D {
 
         public Viewport Viewport => Game.GraphicsDevice.Viewport;
 
-        private ScreenSpace screenSpace;
-
-        public ScreenSpace ScreenSpace => screenSpace;
+        public ScreenSpace ScreenSpace { get; private set; }
         public ScreenSpace GetScreenSpace() => getScreenSpace(Viewport);
 
         private bool spriteBatchActive = false;
@@ -211,7 +209,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public Vector2 GetCoordinate(Point position) {
-            return GetCoordinate(screenSpace,position);
+            return GetCoordinate(ScreenSpace,position);
         }
 
         private void renderEntities(GameTime gameTime) {
@@ -226,7 +224,7 @@ namespace TwelveEngine.Game2D {
             }
             int end = start + length;
             for(int i = start;i<end;i++) {
-                tileRenderer.RenderTiles(screenSpace,layers[i]);
+                tileRenderer.RenderTiles(ScreenSpace,layers[i]);
             }
         }
 
@@ -256,7 +254,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public override void Render(GameTime gameTime) {
-            screenSpace = getScreenSpace(Game.GraphicsDevice.Viewport);
+            ScreenSpace = getScreenSpace(Game.GraphicsDevice.Viewport);
             Game.GraphicsDevice.Clear(Color.Black);
             
             if(LayerMode.Background) {

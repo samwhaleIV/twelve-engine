@@ -8,13 +8,14 @@ namespace TwelveEngine.EntitySystem {
 
         private string name = string.Empty;
 
-        internal event Action<int,string> OnNameChanged;
+        /* int: ID, string: NewName */
+        internal event Action<int,string> OnNameChanged; 
 
         private int id = 0;
         public int ID => id;
 
-        private GameManager game;
-        private TOwner owner;
+        private GameManager game = null;
+        private TOwner owner = null;
 
         protected GameManager Game => game;
         protected TOwner Owner => owner;
@@ -28,7 +29,12 @@ namespace TwelveEngine.EntitySystem {
         protected event Action OnLoad, OnUnload;
 
         internal void Load() => OnLoad?.Invoke();
-        internal void Unload() => OnUnload?.Invoke();
+        internal void Unload() {
+            id = 0;
+            owner = null;
+            game = null;
+            OnUnload?.Invoke();
+        }
 
         public bool StateLock { get; set; } = false;
 
