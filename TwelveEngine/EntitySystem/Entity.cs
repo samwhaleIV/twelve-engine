@@ -29,11 +29,12 @@ namespace TwelveEngine.EntitySystem {
         protected event Action OnLoad, OnUnload;
 
         internal void Load() => OnLoad?.Invoke();
+
         internal void Unload() {
+            OnUnload?.Invoke();
             id = 0;
             owner = null;
             game = null;
-            OnUnload?.Invoke();
         }
 
         public bool StateLock { get; set; } = false;

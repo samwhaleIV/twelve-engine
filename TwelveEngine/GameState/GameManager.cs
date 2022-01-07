@@ -33,7 +33,7 @@ namespace TwelveEngine {
             impulseHandler = new ImpulseHandler(keyBindSet);
         }
 
-        private (Keys key, Action action)[] getDebugControls() => new (Keys key, Action action)[]{
+        private (Keys key, Action action)[] getDebugControls() => new (Keys, Action)[]{
 
             (KeyBinds.Playback, automationAgent.TogglePlayback),
             (KeyBinds.Recording, automationAgent.ToggleRecording),
@@ -56,7 +56,6 @@ namespace TwelveEngine {
 
         /* Runtime state variables */
         private GameState gameState = null;
-        private GameState pendingGameState = null;
         private SerialFrame savedState = null;
 
         private KeyboardState keyboardState;
@@ -161,81 +160,74 @@ namespace TwelveEngine {
             gameState.Import(savedState);
         }
 
-        private void unloadState() {
-            if(!hasState()) {
-                return;
-            }
-            var oldGameState = gameState;
-            oldGameState.Unload();
-        }
-
-        private void swapAndLoadState(GameState gameState) {
-            unloadState();
-            this.gameState = null;
-            if(gameState == null) {
-                return;
-            }
-            gameState.SetReferences(this);
-            gameState.Load();
-        }
-
-        private Task loadingTask(Action loadOperation) {
+        private async Task loadingTask(Func<Task> loadOperation) {
             var minLoadTime = Constants.Config.MinLoadTime;
             if(minLoadTime != TimeSpan.Zero) {
-                return Task.WhenAll(Task.Run(loadOperation),Task.Delay(minLoadTime));
+                var startTime = DateTime.Now;
+                await loadOperation();
+                var timeDifference = DateTime.Now - startTime;
+                if(timeDifference > minLoadTime) {
+                    return;
+                }
+                await Task.Delay(minLoadTime - timeDifference);
             } else {
-                return Task.Run(loadOperation);
+                await loadOperation();
             }
         }
 
-        public async void SetState(GameState gameState) {
+        private GameState pendingGameState = null;
+
+        private bool terminated = false;
+
+        public async Task SetState(Func<GameState> stateGenerator) {
             if(loadingState) {
                 return;
             }
             if(!initialized) {
-                pendingGameState = gameState;
-                return;
+                throw new InvalidOperationException("Cannot change GameState until GameManager has loaded all of its own content");
             }
             loadingState = true;
 
-            void loadOperation() => swapAndLoadState(gameState);
-            await loadingTask(loadOperation);
+            GameState oldState = gameState, newGameState = null;
+            gameState = null;
 
-            this.gameState = gameState;
-            loadingState = false;
-        }
+            void loadState() {
+                if(terminated) {
+                    return;
+                }
+                if(oldState != null) {
+                    oldState.Unload();
+                    oldState = null;
+                }
+                newGameState = stateGenerator();
+                if(newGameState != null) {
+                    newGameState.SetReferences(this);
+                    newGameState.Load();
+                }
+            }
 
-        public async void SetState(Func<GameState> stateGenerator) {
-            if(loadingState) {
+            await loadingTask(()=>Task.Run(loadState));
+
+            if(terminated) {
+                newGameState?.Unload();
                 return;
             }
-            if(!initialized) {
-                pendingGameState = stateGenerator.Invoke();
-                return;
-            }
 
-            loadingState = true;
-            GameState newGameState = null;
-
-            async void loadState() {
-                GameState gameState = await Task.Run(stateGenerator);
-                await Task.Run(() => swapAndLoadState(gameState));
-                newGameState = gameState;
-            }
-            await loadingTask(loadState);
-
-            this.gameState = newGameState;
-            loadingState = false;
+            pendingGameState = newGameState;
         }
+
+        public Task SetState(GameState state) => SetState(() => state);
 
         protected override void Initialize() {
-            initialized = true;
             Window.AllowUserResizing = true;
             Window.AllowAltF4 = true;
             base.Initialize();
         }
 
+        public event Action<GameManager> OnLoad;
+
         protected override void LoadContent() {
+            base.LoadContent();
             var cpuTextures = Constants.Config.CPUTextures;
             if(cpuTextures.Length > 0) {
                 CPUTexture.LoadDictionary(Content,cpuTextures);
@@ -243,11 +235,15 @@ namespace TwelveEngine {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteFont = Content.Load<SpriteFont>(Constants.DefaultFont);
             vcrDisplay.Load();
-            if(pendingGameState == null) {
-                return;
-            }
-            SetState(pendingGameState);
-            pendingGameState = null;
+            initialized = true;
+            OnLoad?.Invoke(this);
+        }
+
+        protected override void UnloadContent() {
+            base.UnloadContent();
+            gameState?.Unload();
+            pendingGameState?.Unload();
+            terminated = true;
         }
 
         private bool advanceFrameQueued = false;
@@ -336,6 +332,14 @@ namespace TwelveEngine {
                 watch.Stop();
                 updateTime = watch.Elapsed;
                 watch.Reset();
+
+                if(pendingGameState != null) {
+                    var newState = pendingGameState;
+                    pendingGameState = null;
+                    gameState = newState;
+                    loadingState = false;
+                    Update(gameTime);
+                }
 #endif
                 return;
             }
