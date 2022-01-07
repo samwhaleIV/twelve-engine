@@ -10,9 +10,7 @@ namespace TwelveDesktop {
         internal static void Main() {
             LoadEngineConfig();
             using var game = new GameManager();
-            game.OnLoad += async game => {
-                await game.SetState(GetPuzzleGameTest);
-            };
+            game.OnLoad += game => game.SetState(GetPuzzleGameTest);
             game.Run(GameRunBehavior.Synchronous);
         }
     }

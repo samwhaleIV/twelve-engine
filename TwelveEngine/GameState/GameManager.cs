@@ -68,7 +68,9 @@ namespace TwelveEngine {
         private bool shouldAdvanceFrame = false;
         private int framesToSkip = 0;
         private bool gamePaused = false;
-        private bool loadingState = false;
+
+        private bool updating = false;
+        private bool rendering = false;
 
         /* Runtime fixed variables (These should not be updated after initialization) */
         private SpriteBatch spriteBatch;
@@ -97,8 +99,6 @@ namespace TwelveEngine {
         public KeyboardState KeyboardState => keyboardState;
         public MouseState MouseState => mouseState;
         public GamePadState GamePadState => gamePadState;
-
-        internal bool IsLoadingState => loadingState;
 
         public bool CancelTimeout(int ID) {
             return timeout.Remove(ID);
@@ -141,7 +141,7 @@ namespace TwelveEngine {
         }
 
         private bool hasState() {
-            return !loadingState && gameState != null;
+            return gameState != null;
         }
 
         private void saveSerialState() {
@@ -160,65 +160,39 @@ namespace TwelveEngine {
             gameState.Import(savedState);
         }
 
-        private async Task loadingTask(Func<Task> loadOperation) {
-            var minLoadTime = Constants.Config.MinLoadTime;
-            if(minLoadTime != TimeSpan.Zero) {
-                var startTime = DateTime.Now;
-                await loadOperation();
-                if(terminated) {
-                    return;
-                }
-                var timeDifference = DateTime.Now - startTime;
-                if(timeDifference > minLoadTime) {
-                    return;
-                }
-                await Task.Delay(minLoadTime - timeDifference);
-            } else {
-                await loadOperation();
-            }
-        }
-
         private GameState pendingGameState = null;
+        private Func<GameState> pendingStateGenerator = null;
 
-        private bool terminated = false;
-
-        public async Task SetState(Func<GameState> stateGenerator) {
-            if(loadingState) {
-                return;
+        public void SetState(Func<GameState> stateGenerator) {
+            if(pendingGameState != null || pendingStateGenerator != null) {
+                throw new InvalidOperationException("A GameState has already been queued. Cannot override the previous SetState; Load only one GameState at a time.");
             }
             if(!initialized) {
-                throw new InvalidOperationException("Cannot change GameState until GameManager has loaded all of its own content");
+                throw new InvalidOperationException("Cannot change GameState until GameManager has loaded all of its own content.");
             }
-            loadingState = true;
+            if(rendering) {
+                throw new InvalidOperationException("Cannot change a GameState during a Draw operation.");
+            }
+            if(updating) {
+                pendingStateGenerator = stateGenerator;
+                return;
+            }
 
-            GameState oldState = gameState, newGameState = null;
+            GameState oldState = gameState, newGameState;
             gameState = null;
 
-            void loadState() {
-                if(terminated) {
-                    return;
-                }
-                if(oldState != null) {
-                    oldState.Unload();
-                    oldState = null;
-                }
-                newGameState = stateGenerator();
-                if(newGameState != null) {
-                    newGameState.Load(this);
-                }
+            if(oldState != null) {
+                oldState.Unload();
             }
-
-            await loadingTask(()=>Task.Run(loadState));
-
-            if(terminated) {
-                newGameState?.Unload();
-                return;
+            newGameState = stateGenerator.Invoke();
+            if(newGameState != null) {
+                newGameState.Load(this);
             }
 
             pendingGameState = newGameState;
         }
 
-        public Task SetState(GameState state) => SetState(() => state);
+        public void SetState(GameState state) => SetState(() => state);
 
         protected override void Initialize() {
             Window.AllowUserResizing = true;
@@ -241,7 +215,6 @@ namespace TwelveEngine {
         }
 
         protected override void UnloadContent() {
-            terminated = true;
             if(gameState != null) {
                 gameState.Unload();
                 gameState = null;
@@ -328,6 +301,7 @@ namespace TwelveEngine {
         }
 
         protected override void Update(GameTime gameTime) {
+            updating = true;
 #if DEBUG
             watch.Start();
 #endif
@@ -341,10 +315,10 @@ namespace TwelveEngine {
                     var newState = pendingGameState;
                     pendingGameState = null;
                     gameState = newState;
-                    loadingState = false;
                     Update(gameTime);
                 }
 #endif
+                updating = false;
                 return;
             }
             var vanillaKeyboardState = Keyboard.GetState();
@@ -367,9 +341,14 @@ namespace TwelveEngine {
             updateTime = watch.Elapsed;
             watch.Reset();
 #endif
+            updating = false;
+            if(pendingStateGenerator != null) {
+                SetState(pendingStateGenerator);
+            }
         }
 
         protected override void Draw(GameTime trueGameTime) {
+            rendering = true;
 #if DEBUG
             watch.Start();
 #endif
@@ -386,6 +365,7 @@ namespace TwelveEngine {
             watch.Reset();
             renderGameTime();
 #endif
+            rendering = false;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace TwelveEngine.Automation {
 
         private const int GLPYH_SIZE = 15;
 
-        private bool Loading => automationAgent.PlaybackLoading || gameManager.IsLoadingState;
+        private bool Loading => automationAgent.PlaybackLoading;
         private bool Paused => gameManager.IsPaused;
 
         private enum Mode { None, Recording, Playback };

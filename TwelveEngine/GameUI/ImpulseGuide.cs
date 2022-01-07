@@ -66,7 +66,7 @@ namespace TwelveEngine.GameUI {
                 game.SpriteBatch.Draw(texture,new Rectangle(location,glyphSize),source,Color.White);
 
                 var textLocation = (location + glyphSize).ToVector2();
-                textLocation.Y += glyphSize.Y * -0.5f - 7f;
+                textLocation.Y += glyphSize.Y * -0.5f - 6f;
                 textLocation.X += Padding + 1;
                 game.SpriteBatch.DrawString(guideFont,description.Text,textLocation,Color.White);
 
