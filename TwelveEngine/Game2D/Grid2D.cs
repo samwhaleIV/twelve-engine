@@ -64,16 +64,6 @@ namespace TwelveEngine.Game2D {
 
         public void AddEntity(Entity2D entity) => EntityManager.AddEntity(entity);
 
-        private IUpdateable[] updateables = new IUpdateable[0];
-        private IRenderable[] renderables = new IRenderable[0];
-
-        private void updateUpdateables(IUpdateable[] updateables) {
-            this.updateables = updateables;
-        }
-        private void updateRenderables(IRenderable[] renderables) {
-            this.renderables = renderables;
-        }
-
         private int[][,] layers;
         private TileRenderer tileRenderer = null;
         private TileRenderer pendingTileRenderer = null;
@@ -124,9 +114,6 @@ namespace TwelveEngine.Game2D {
         private void loadEntityManager() {
             var entityManager = new EntityManager<Entity2D,Grid2D>(this,Entity2DType.GetFactory());
 
-            entityManager.OnUpdateListChanged += updateUpdateables;
-            entityManager.OnRenderListChanged += updateRenderables;
-
             OnImport += entityManager.Import;
             OnExport += entityManager.Export;
 
@@ -175,6 +162,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public override void Update(GameTime gameTime) {
+            var updateables = EntityManager.UpdateList;
             for(var i = 0;i<updateables.Length;i++) {
                 updateables[i].Update(gameTime);
             }
@@ -223,6 +211,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void renderEntities(GameTime gameTime) {
+            var renderables = EntityManager.RenderList;
             for(var i = 0;i < renderables.Length;i++) {
                 renderables[i].Render(gameTime);
             }

@@ -24,8 +24,8 @@ namespace TwelveEngine.EntitySystem {
 
         private bool updateListQueued = false, renderListQueued = false;
 
-        internal event Action<IRenderable[]> OnRenderListChanged;
-        internal event Action<IUpdateable[]> OnUpdateListChanged;
+        public IRenderable[] RenderList { get; private set; }
+        public IUpdateable[] UpdateList { get; private set; }
 
         public Type[] GetAllOfType<Type>() {
             var queue = new Queue<Type>();
@@ -91,7 +91,7 @@ namespace TwelveEngine.EntitySystem {
                 renderListQueued = true;
                 return;
             }
-            OnRenderListChanged?.Invoke(getRenderList());
+            RenderList = getRenderList();
             renderListQueued = false;
         }
         private void updateListChanged() {
@@ -99,7 +99,7 @@ namespace TwelveEngine.EntitySystem {
                 updateListQueued = true;
                 return;
             }
-            OnUpdateListChanged?.Invoke(getUpdateList());
+            UpdateList = getUpdateList();
             updateListQueued = false;
         }
 
