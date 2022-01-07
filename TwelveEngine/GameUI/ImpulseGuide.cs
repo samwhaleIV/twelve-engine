@@ -61,13 +61,15 @@ namespace TwelveEngine.GameUI {
             return (glyphSize + Padding) * descriptions.Length - Padding;
         }
 
-        private void renderGuide<TKey>(Texture2D texture,GlyphMap<TKey> map,Func<Impulse,TKey> getKey) {
+        private void renderGuide<TKey>(Texture2D texture,GlyphMap<TKey> map,Func<Impulse,TKey> getKey,Point sourceOffset) {
             Point glyphSize = new Point(map.GlyphSize * GlyphScale);
             Point location = new Point(Padding,(int)(game.GraphicsDevice.Viewport.Height * 0.5f - calculateStackHeight(glyphSize.Y) * 0.5f));
 
             for(int i = 0;i<descriptions.Length;i++) {
                 var description = descriptions[i];
                 Rectangle source = map.GetGlyph(getKey(description.Type));
+                source.Location += sourceOffset;
+
                 game.SpriteBatch.Draw(texture,new Rectangle(location,glyphSize),source,Color.White);
 
                 var textLocation = (location + glyphSize).ToVector2();
@@ -79,6 +81,18 @@ namespace TwelveEngine.GameUI {
             }
         }
 
+        private Point getGamepadBlockOffset() {
+            switch(impulseHandler.GamePadType) {
+                default:
+                case GamePadType.MicrosoftXbox:
+                    return Point.Zero;
+                case GamePadType.SonyPlaystation:
+                    return new Point(gamePadMap.BlockSize,0);
+                case GamePadType.NintendoSwitch:
+                    return new Point(0,gamePadMap.BlockSize);
+            }
+        }
+
         public void Render() {
             if(descriptions == null) {
                 return;
@@ -86,10 +100,10 @@ namespace TwelveEngine.GameUI {
             switch(impulseHandler.InputMethod) {
                 default: return;
                 case InputMethod.Keyboard:
-                    renderGuide(keyboardTexture,keyboardMap,impulseHandler.GetKeyboardBind);
+                    renderGuide(keyboardTexture,keyboardMap,impulseHandler.GetKeyboardBind,Point.Zero);
                     return;
                 case InputMethod.GamePad:
-                    renderGuide(gamePadTexture,gamePadMap,impulseHandler.GetGamePadBind);
+                    renderGuide(gamePadTexture,gamePadMap,impulseHandler.GetGamePadBind,getGamepadBlockOffset());
                     return;
             }
         }

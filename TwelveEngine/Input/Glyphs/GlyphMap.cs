@@ -7,6 +7,8 @@ namespace TwelveEngine.Input.Glyphs {
         public int BlockColumns { get; set; } = 4;
         public int GlyphSize { get; set; } = 16;
 
+        public int BlockSize => BlockColumns * GlyphSize;
+
         protected abstract T[] GetList();
 
         private Dictionary<T,Rectangle> glyphTable;
