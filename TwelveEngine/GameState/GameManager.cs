@@ -165,6 +165,9 @@ namespace TwelveEngine {
             if(minLoadTime != TimeSpan.Zero) {
                 var startTime = DateTime.Now;
                 await loadOperation();
+                if(terminated) {
+                    return;
+                }
                 var timeDifference = DateTime.Now - startTime;
                 if(timeDifference > minLoadTime) {
                     return;
@@ -201,8 +204,7 @@ namespace TwelveEngine {
                 }
                 newGameState = stateGenerator();
                 if(newGameState != null) {
-                    newGameState.SetReferences(this);
-                    newGameState.Load();
+                    newGameState.Load(this);
                 }
             }
 
@@ -227,7 +229,6 @@ namespace TwelveEngine {
         public event Action<GameManager> OnLoad;
 
         protected override void LoadContent() {
-            base.LoadContent();
             var cpuTextures = Constants.Config.CPUTextures;
             if(cpuTextures.Length > 0) {
                 CPUTexture.LoadDictionary(Content,cpuTextures);
@@ -240,16 +241,19 @@ namespace TwelveEngine {
         }
 
         protected override void UnloadContent() {
-            base.UnloadContent();
-            gameState?.Unload();
-            pendingGameState?.Unload();
             terminated = true;
+            if(gameState != null) {
+                gameState.Unload();
+                gameState = null;
+            }
+            if(pendingGameState != null) {
+                pendingGameState.Unload();
+                pendingGameState = null;
+            }
         }
 
         private bool advanceFrameQueued = false;
-        private void queueAdvanceFrame() {
-            advanceFrameQueued = true;
-        }
+        private void queueAdvanceFrame() => advanceFrameQueued = true;
 
         private void advanceFrame(KeyboardState keyboardState,GameTime gameTime) {
             if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {

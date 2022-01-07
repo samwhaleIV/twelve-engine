@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework;
 
 namespace TwelveEngine {
     public abstract class GameState:ISerializable {
-        internal void SetReferences(GameManager game) => Game = game;
-
         public GameManager Game { get; private set; } = null;
 
         public event Action OnLoad, OnUnload;
@@ -14,12 +12,15 @@ namespace TwelveEngine {
 
         public bool IsLoaded { get; private set; } = false;
 
-        internal void Load() {
+        internal void Load(GameManager game) {
+            Game = game;
             OnLoad?.Invoke();
             IsLoaded = true;
         }
+
         internal void Unload() {
             OnUnload?.Invoke();
+            Game = null;
         }
 
         public abstract void Render(GameTime gameTime);
