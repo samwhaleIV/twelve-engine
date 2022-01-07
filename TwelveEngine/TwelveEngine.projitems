@@ -28,11 +28,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity2DType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\GamePadType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Glyphs\GamePadMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Glyphs\KeyboardMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Glyphs\GlyphMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseEndpoints.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\InputMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\KeyBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CPUTexture.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImpulseNotifier.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameUI\ImpulseGuide.cs" />
     <Compile Include="..\TwelveEngine\Input\Impulse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IRenderable.cs" />
@@ -45,8 +50,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)GameState\DebugRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\TimeoutManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ScrollDirection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\World\Counter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\World\LaserDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ArrayConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ExportMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ImportMethods.cs" />
@@ -54,7 +57,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serial\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Type.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Value.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\Tiles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\AutomationAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\AutomationIO.cs" />
@@ -74,24 +76,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GameState\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Grid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\GameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Level.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Levels\AlphaLevels.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\ComponentFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\Logic\AND.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Component.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\Gate.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\Logic\NOT.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\Logic\OR.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\Logic\XOR.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\World\LaserGate.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\World\LaserSplitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\IInteract.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\PuzzleFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\SignalState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\World\PulseButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\Components\World\Switch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\PuzzleManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Porthole\PuzzleGame\WorldComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderFrame.cs" />
@@ -117,10 +102,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIState.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)GameUI\" />
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\" />
     <Folder Include="$(MSBuildThisFileDirectory)Input\Watcher\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Porthole\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />

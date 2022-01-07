@@ -2,28 +2,10 @@
 using Microsoft.Xna.Framework;
 using TwelveEngine.UI;
 using TwelveEngine.UI.Factory;
-using TwelveEngine.Porthole.PuzzleGame;
-using TwelveEngine.Serial.Map;
 using TwelveEngine.Config;
 
 namespace TwelveEngine {
     public static partial class Program {
-
-        private static bool loadedPuzzleGameData = false;
-
-        private static void tryLoadPuzzleGameData() {
-            if(loadedPuzzleGameData) {
-                return;
-            }
-            MapDatabase.LoadMaps();
-            loadedPuzzleGameData = true;
-        }
-
-        public static GameState GetPuzzleGameTest() {
-            tryLoadPuzzleGameData();
-            return PuzzleFactory.GetLevel("CounterTest2");
-        }
-
         public static GameState GetUITestState() {
             return UIGameState.Create(UI => {
                 var panel1 = DebugFactory.GetColoredScrollBox(UI,Color.Red,frame => {

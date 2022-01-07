@@ -30,4 +30,5 @@
   </ItemGroup>
   <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
   <Import Project="..\MapEncoder\MapEncoder.projitems" Label="Shared" />
+  <Import Project="..\Porthole\Porthole.projitems" Label="Shared" />
 </Project>

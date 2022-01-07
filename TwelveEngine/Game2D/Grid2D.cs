@@ -5,6 +5,7 @@ using TwelveEngine.Serial.Map;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Collision;
 using TwelveEngine.Game2D.Entity;
+using TwelveEngine.GameUI;
 
 namespace TwelveEngine.Game2D {
     public sealed class Grid2D:GameState {
@@ -29,6 +30,8 @@ namespace TwelveEngine.Game2D {
             OnImport += Grid2D_OnImport;
             OnExport += Grid2D_OnExport;
         }
+
+        public ImpulseGuide ImpulseGuide { get; private set; }
 
         private Point size;
 
@@ -130,7 +133,14 @@ namespace TwelveEngine.Game2D {
             EntityManager = entityManager;
         }
 
+        private void loadImpulseGuide() {
+            var impulseGuide = new ImpulseGuide(Game);
+            impulseGuide.Load();
+            ImpulseGuide = impulseGuide;
+        }
+
         private void Grid2D_OnLoad() {
+            loadImpulseGuide();          
             collisionInterface.Types.LoadTypes();
             loadEntityManager();
             if(pendingTileRenderer != null) {
@@ -274,11 +284,14 @@ namespace TwelveEngine.Game2D {
                 }
             }
 
+            tryStartSpriteBatch();
+
             if(LayerMode.Foreground) {
-                tryStartSpriteBatch();
+
                 renderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
             }
 
+            ImpulseGuide.Render();
             tryEndSpriteBatch();
         }
 

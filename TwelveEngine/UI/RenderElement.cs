@@ -22,8 +22,7 @@ namespace TwelveEngine.UI {
             OnUnload?.Invoke();
         }
 
-        protected event Action<GameTime> OnRender;
-        protected event Action<GameTime> OnUpdate;
+        protected event Action<GameTime> OnRender, OnUpdate;
 
         internal void Update(GameTime gameTime) {
             OnUpdate?.Invoke(gameTime);
@@ -34,12 +33,11 @@ namespace TwelveEngine.UI {
         }
 
         /* Must be accessed after or during a Load event */
-        private GameManager game = null;
-        protected GameManager Game => game;
+        protected GameManager Game { get; private set; }
 
         private Queue<Texture> disposableTextures = new Queue<Texture>();
 
-        private Rectangle screenArea;
+        protected internal Rectangle ScreenArea { get; private set; }
         private float depth = 0;
 
         private bool hovered = false, pressed = false,
@@ -53,7 +51,7 @@ namespace TwelveEngine.UI {
         public event Action<Point,ScrollDirection> OnScroll;
         
         public void Load(GameManager game) {
-            this.game = game;
+            Game = game;
             OnLoad?.Invoke();
         }
 
@@ -64,7 +62,7 @@ namespace TwelveEngine.UI {
 
         internal void Scroll(Point mousePosition,ScrollDirection direction) => OnScroll?.Invoke(mousePosition,direction);
 
-        private void updateScreenArea() => screenArea = GetScreenArea();
+        private void updateScreenArea() => ScreenArea = GetScreenArea();
         protected virtual Rectangle GetScreenArea() => ComputedArea;
 
         private Color getRenderColor() {
@@ -81,11 +79,11 @@ namespace TwelveEngine.UI {
         }
 
         protected Texture2D GetImage(string name) {
-            return game.Content.Load<Texture2D>(name);
+            return Game.Content.Load<Texture2D>(name);
         }
 
         protected Texture2D GetTexture(int width,int height) {
-            var texture = new Texture2D(game.GraphicsDevice,width,height);
+            var texture = new Texture2D(Game.GraphicsDevice,width,height);
             disposableTextures.Enqueue(texture);
             return texture;
         }
@@ -97,23 +95,19 @@ namespace TwelveEngine.UI {
         }
 
         protected void Draw(Texture2D texture,Rectangle source,Color color) {
-            game.SpriteBatch.Draw(texture,screenArea,source,color,0f,Vector2.Zero,SpriteEffects.None,depth);
+            Game.SpriteBatch.Draw(texture,ScreenArea,source,color,0f,Vector2.Zero,SpriteEffects.None,depth);
         }
 
         protected void Draw(Texture2D texture,Rectangle source) {
-            game.SpriteBatch.Draw(texture,screenArea,source,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,depth);
+            Game.SpriteBatch.Draw(texture,ScreenArea,source,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,depth);
         }
 
         protected void Draw(Texture2D texture,Color color) {
-            game.SpriteBatch.Draw(texture,screenArea,null,color,0f,Vector2.Zero,SpriteEffects.None,depth);
+            Game.SpriteBatch.Draw(texture,ScreenArea,null,color,0f,Vector2.Zero,SpriteEffects.None,depth);
         }
 
         protected void Draw(Texture2D texture) {
-            game.SpriteBatch.Draw(texture,screenArea,null,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,depth);
-        }
-
-        internal Rectangle ScreenArea {
-            get => screenArea;
+            Game.SpriteBatch.Draw(texture,ScreenArea,null,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,depth);
         }
 
         internal float Depth {

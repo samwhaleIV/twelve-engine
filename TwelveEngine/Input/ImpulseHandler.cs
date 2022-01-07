@@ -5,10 +5,6 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Input {
 
-    public enum InputMethod {
-        Unknown, Keyboard, Gamepad
-    }
-
     public sealed partial class ImpulseHandler {
 
         public ImpulseHandler(KeyBindSet keyBindSet) {
@@ -30,53 +26,50 @@ namespace TwelveEngine.Input {
         private Dictionary<Impulse,(Action Down, Action Up)> endpoints;
 
         private readonly KeyBindSet keyBindSet;
-        private Dictionary<Impulse,Buttons> controllerBinds = GetControllerBinds();
+        private Dictionary<Impulse,Buttons> gamePadBinds = GetControllerBinds();
+
+        public Buttons GetGamePadBind(Impulse impulse) {
+            return gamePadBinds[impulse];
+        }
+
+        public Keys GetKeyboardBind(Impulse impulse) {
+            return keyBindSet[impulse];
+        }
 
         public KeyBindSet KeyBindSet => keyBindSet;
 
-        public event Action<InputMethod> OnInputMethodChanged; //todo, implement this so we can one day use icon glyphs!
+        public InputMethod InputMethod { get; private set; } = InputMethod.Unknown;
+        public GamePadType GamePadType { get; set; } = GamePadType.Default;
 
-        private InputMethod inputMethod = InputMethod.Unknown;
-        public InputMethod InputMethod {
-            get => inputMethod;
-            private set {
-                if(inputMethod == value) {
-                    return;
-                }
-                inputMethod = value;
-                OnInputMethodChanged?.Invoke(inputMethod);
-            }
-        }
-
-        private void updateInputMethod(bool fromKeyboard) {
-            InputMethod = fromKeyboard ? InputMethod.Keyboard : InputMethod.Gamepad;
-        }
-
-        private (KeyState Value,bool FromKeyboard) getImpulseState(
+        private KeyState getImpulseState(
             Impulse impulse,KeyboardState keyboardState,GamePadState gamePadState
         ) {
             bool keyboard = keyboardState.IsKeyDown(keyBindSet[impulse]);
             if(keyboard) {
-                return (keyboard ? KeyState.Down : KeyState.Up, true);
+                return KeyState.Down;
             }
-            bool gamePad = gamePadState.IsButtonDown(controllerBinds[impulse]);
-            return (gamePad ? KeyState.Down : KeyState.Up, false);
+            bool gamePad = gamePadState.IsButtonDown(gamePadBinds[impulse]);
+            if(gamePad) {
+                return KeyState.Down;
+            } else {
+                return KeyState.Up;
+            }
         }
 
-        public void Update(KeyboardState keyboardState,GamePadState gamePadState) {
-            bool fromKeyboard = true;
+        private KeyboardState lastKeyboardState;
+        private GamePadState lastGamePadState;
 
+        private bool didUpdate = false;
+
+        public void Update(KeyboardState keyboardState,GamePadState gamePadState) {
             foreach(Impulse impulse in impulses) {
 
-                var impulseState = getImpulseState(impulse,keyboardState,gamePadState);
-
-                KeyState newState = impulseState.Value, oldState = impulseStates[impulse];
+                var newState = getImpulseState(impulse,keyboardState,gamePadState);
+                var oldState = impulseStates[impulse];
 
                 if(newState == oldState) {
                     continue;
                 }
-
-                fromKeyboard = impulseState.FromKeyboard;
 
                 impulseStates[impulse] = newState;
                 if(newState == KeyState.Down) {
@@ -86,7 +79,18 @@ namespace TwelveEngine.Input {
                 }
             }
 
-            updateInputMethod(fromKeyboard);
+            if(didUpdate) {
+                if(keyboardState != lastKeyboardState) {
+                    InputMethod = InputMethod.Keyboard;
+                } else if(gamePadState != lastGamePadState) {
+                    InputMethod = InputMethod.GamePad;
+                }
+            }
+
+            didUpdate = true;
+
+            lastKeyboardState = keyboardState;
+            lastGamePadState = gamePadState;
         }
 
         public bool IsKeyDown(Impulse impulse) {

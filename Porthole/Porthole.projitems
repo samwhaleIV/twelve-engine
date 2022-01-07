@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>8e5e3dd6-2b80-4bf8-9755-ba8a8e4c59a2</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Porthole</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Component.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\ComponentFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\Gate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\Logic\AND.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\Logic\NOT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\Logic\OR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\Logic\XOR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\Counter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserGate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\PulseButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\Switch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Level.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Levels\AlphaLevels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\SignalState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Strings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tiles.cs" />
+  </ItemGroup>
+</Project>

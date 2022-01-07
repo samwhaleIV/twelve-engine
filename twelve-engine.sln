@@ -19,10 +19,14 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MapFormat", "MapEncoder\Map
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Map Encoding", "Map Encoding", "{0F5445DA-1493-4E8B-B024-3CC428C94E31}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Porthole", "Porthole\Porthole.shproj", "{8E5E3DD6-2B80-4BF8-9755-BA8A8E4C59A2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		MapEncoder\MapEncoder.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
+		Porthole\Porthole.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		TwelveEngine\TwelveEngine.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
+		Porthole\Porthole.projitems*{8e5e3dd6-2b80-4bf8-9755-ba8a8e4c59a2}*SharedItemsImports = 13
 		TwelveEngine\TwelveEngine.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
 		MapEncoder\MapEncoder.projitems*{ce78cdd9-8cd2-407a-b5eb-832c4837d3bd}*SharedItemsImports = 5
 		MapEncoder\MapEncoder.projitems*{e56962aa-cb12-4ce6-b75e-3d14382b4110}*SharedItemsImports = 13
