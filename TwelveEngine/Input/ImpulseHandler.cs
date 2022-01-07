@@ -80,10 +80,10 @@ namespace TwelveEngine.Input {
             }
 
             if(didUpdate) {
-                if(keyboardState != lastKeyboardState) {
-                    InputMethod = InputMethod.Keyboard;
-                } else if(gamePadState != lastGamePadState) {
+                 if(gamePadState != lastGamePadState) {
                     InputMethod = InputMethod.GamePad;
+                } else if(keyboardState != lastKeyboardState) {
+                    InputMethod = InputMethod.Keyboard;
                 }
             }
 

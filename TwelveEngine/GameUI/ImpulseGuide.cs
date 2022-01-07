@@ -57,12 +57,17 @@ namespace TwelveEngine.GameUI {
             }
         }
 
+        private int calculateStackHeight(int glyphSize) {
+            return (glyphSize + Padding) * descriptions.Length - Padding;
+        }
+
         private void renderGuide<TKey>(Texture2D texture,GlyphMap<TKey> map,Func<Impulse,TKey> getKey) {
-            var location = new Point(Padding);
-            var glyphSize = new Point(keyboardMap.GlyphSize * GlyphScale);
+            Point glyphSize = new Point(map.GlyphSize * GlyphScale);
+            Point location = new Point(Padding,(int)(game.GraphicsDevice.Viewport.Height * 0.5f - calculateStackHeight(glyphSize.Y) * 0.5f));
+
             for(int i = 0;i<descriptions.Length;i++) {
                 var description = descriptions[i];
-                var source = map.GetGlyph(getKey(description.Type));
+                Rectangle source = map.GetGlyph(getKey(description.Type));
                 game.SpriteBatch.Draw(texture,new Rectangle(location,glyphSize),source,Color.White);
 
                 var textLocation = (location + glyphSize).ToVector2();
