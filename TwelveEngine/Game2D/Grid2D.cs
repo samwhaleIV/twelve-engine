@@ -234,7 +234,7 @@ namespace TwelveEngine.Game2D {
             }
             int end = start + length;
             for(int i = start;i<end;i++) {
-                tileRenderer.RenderTiles(ScreenSpace,layers[i]);
+                tileRenderer.RenderTiles(layers[i]);
             }
         }
 
@@ -265,6 +265,8 @@ namespace TwelveEngine.Game2D {
 
         public override void Render(GameTime gameTime) {
             ScreenSpace = getScreenSpace(Game.GraphicsDevice.Viewport);
+            tileRenderer.CacheArea(ScreenSpace);
+
             Game.GraphicsDevice.Clear(Color.Black);
             
             if(LayerMode.Background) {

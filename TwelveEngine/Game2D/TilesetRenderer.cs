@@ -36,6 +36,8 @@ namespace TwelveEngine.Game2D {
             return sources;
         }
 
+        private (Point start, Point tile, Point size, Point offset,int tileSize) tileArea;
+
         private void draw(Point start,Point tile,Point size,Point offset,int tileSize,int[,] data) {
             var target = new Rectangle(Point.Zero,new Point(tileSize));
 
@@ -60,14 +62,13 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        public override void RenderTiles(ScreenSpace screenSpace,int[,] data) {
-            int tileSize = screenSpace.TileSize;
-
+        public override void CacheArea(ScreenSpace screenSpace) {
             Point start = screenSpace.Position.ToPoint();
             Vector2 render = start.ToVector2() - screenSpace.Position;
 
             Point size = Vector2.Ceiling(screenSpace.Size - render).ToPoint();
 
+            int tileSize = screenSpace.TileSize;
             if(render.X * -2 > tileSize) size.X++;
             if(render.Y * -2 > tileSize) size.Y++;
 
@@ -81,7 +82,11 @@ namespace TwelveEngine.Game2D {
             if(end.X > Grid.Columns) size.X -= end.X - Grid.Columns;
             if(end.Y > Grid.Rows) size.Y -= end.Y - Grid.Rows;
 
-            draw(start,tile,size,offset,tileSize,data);
+            tileArea = (start, tile, size, offset, tileSize);
+        }
+
+        public override void RenderTiles(int[,] data) {
+            draw(tileArea.start,tileArea.tile,tileArea.size,tileArea.offset,tileArea.tileSize,data);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace TwelveEngine.Game2D {
         }
         internal void Unload() => OnUnload?.Invoke();
 
-        public abstract void RenderTiles(ScreenSpace screenSpace,int[,] data);
+        public abstract void CacheArea(ScreenSpace screenSpace);
+        public abstract void RenderTiles(int[,] data);
     }
 }
