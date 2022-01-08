@@ -5,8 +5,6 @@
         public int TileSize = 16;
         public int GamePadIndex = 0;
 
-        public double MinLoadTime = 500;
-
         public float PlayerSpeed = 2.5f;
         public float PlayerAccel = 200;
         public float PlayerDeaccel = 100;
@@ -16,9 +14,9 @@
         public string DefaultPlaybackFile = "default" + '.' + Constants.PlaybackFileExt;
         public string ContentDirectory = "Content";
         public string PlayerImage = "player";
-        public string Tileset = "tileset";
+        public string Tileset = Constants.DefaultTileset;
 
-        public string[] CPUTextures = new string[] { "tileset" };
+        public string[] CPUTextures = new string[] { Constants.DefaultTileset, Constants.PatternsImage };
 
         public bool ShowCollision = false;
     }

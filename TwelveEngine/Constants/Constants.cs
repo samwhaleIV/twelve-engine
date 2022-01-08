@@ -19,6 +19,10 @@ namespace TwelveEngine {
 
         public const string DefaultFont = "default-font";
 
+        public const string PatternsImage = "patterns";
+
+        public const string DefaultTileset = "tileset";
+
         private static bool loadedConfigFile = false;
 
         private static TwelveConfig config = null;

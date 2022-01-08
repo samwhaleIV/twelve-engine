@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Config {
     public sealed class TwelveConfig {
+
         private static PlayerIndex gamePadIndex;
         public PlayerIndex GamePadIndex => gamePadIndex;
         private void setGamePadIndex(int value) {
@@ -14,12 +14,6 @@ namespace TwelveEngine.Config {
                 value = maxValue;
             }
             gamePadIndex = (PlayerIndex)value;
-        }
-
-        private TimeSpan minLoadTime;
-        public TimeSpan MinLoadTime => minLoadTime;
-        private void setMinLoadTime(double value) {
-            minLoadTime = TimeSpan.FromMilliseconds(value);
         }
 
         private int renderScale;
@@ -72,7 +66,6 @@ namespace TwelveEngine.Config {
             tileSize = set.TileSize;
             setGamePadIndex(set.GamePadIndex);
 
-            setMinLoadTime(set.MinLoadTime);
             playerSpeed = set.PlayerSpeed;
             playerAccel = set.PlayerAccel;
             playerDeaccel = set.PlayerDeaccel;
