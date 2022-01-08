@@ -19,19 +19,20 @@ namespace TwelveEngine {
         }
 
         private void renderGameTime() {
+            int lineHeight = 24;
             Vector2 position = new Vector2 {
-                X = 4,
-                Y = GraphicsDevice.Viewport.Height - 99
+                X = Constants.ScreenEdgePadding,
+                Y = GraphicsDevice.Viewport.Height - lineHeight * 4 - 2
             };
             SpriteBatch.Begin();
 
             updateTime.TotalMilliseconds.ToString();
             spriteBatch.DrawString(spriteFont,proxyGameTime.TotalGameTime.ToString("hh\\:mm\\:ss\\:ff"),position,Color.White);
-            position.Y += 25;
+            position.Y += lineHeight;
             spriteBatch.DrawString(spriteFont,$"FPS: {getFps():F}",position,Color.White);
-            position.Y += 25;
+            position.Y += lineHeight;
             spriteBatch.DrawString(spriteFont,$"Update: {string.Format("{0:0.00}",updateTime.TotalMilliseconds)}ms",position,Color.White);
-            position.Y += 25;
+            position.Y += lineHeight;
             spriteBatch.DrawString(spriteFont,$"Render: {string.Format("{0:0.00}",renderTime.TotalMilliseconds)}ms",position,Color.White);
             spriteBatch.End();
         }

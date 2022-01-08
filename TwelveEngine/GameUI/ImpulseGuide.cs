@@ -9,7 +9,10 @@ namespace TwelveEngine.GameUI {
     public sealed class ImpulseGuide {
 
         public int GlyphScale { get; set; } = 2;
-        public int Padding { get; set; } = 2;
+
+        public int ScreenEdgePadding { get; set; } = Constants.ScreenEdgePadding;
+        public int VerticalPadding { get; set; } = 4;
+        public int TextPadding { get; set; } = 4;
 
         private const string GAMEPAD_GLYPHS = "controller-glyphs", KEYBOARD_GLYPHS = "keyboard-glyphs", GUIDE_FONT = "guide-font";
         private Texture2D gamePadTexture, keyboardTexture;
@@ -58,12 +61,12 @@ namespace TwelveEngine.GameUI {
         }
 
         private int calculateStackHeight(int glyphSize) {
-            return (glyphSize + Padding) * descriptions.Length - Padding;
+            return (glyphSize + VerticalPadding) * descriptions.Length - VerticalPadding;
         }
 
         private void renderGuide<TKey>(Texture2D texture,GlyphMap<TKey> map,Func<Impulse,TKey> getKey,Point sourceOffset) {
             Point glyphSize = new Point(map.GlyphSize * GlyphScale);
-            Point location = new Point(Padding,(int)(game.GraphicsDevice.Viewport.Height * 0.5f - calculateStackHeight(glyphSize.Y) * 0.5f));
+            Point location = new Point(ScreenEdgePadding,(int)(game.GraphicsDevice.Viewport.Height * 0.5f - calculateStackHeight(glyphSize.Y) * 0.5f));
 
             for(int i = 0;i<descriptions.Length;i++) {
                 var description = descriptions[i];
@@ -74,10 +77,10 @@ namespace TwelveEngine.GameUI {
 
                 var textLocation = (location + glyphSize).ToVector2();
                 textLocation.Y += glyphSize.Y * -0.5f - 6f;
-                textLocation.X += Padding + 1;
+                textLocation.X += TextPadding;
                 game.SpriteBatch.DrawString(guideFont,description.Text,textLocation,Color.White);
 
-                location.Y += glyphSize.Y + Padding;
+                location.Y += glyphSize.Y + VerticalPadding;
             }
         }
 

@@ -70,7 +70,7 @@ namespace TwelveEngine.Input.Glyphs {
             Keys.Enter,
             Keys.Delete,
             Keys.End,
-            Keys.Pause
+            Keys.Escape
         };
     }
 }

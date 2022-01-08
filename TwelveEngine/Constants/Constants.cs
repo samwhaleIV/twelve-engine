@@ -13,6 +13,8 @@ namespace TwelveEngine {
 
         public const int ShiftFrameSkip = 30;
 
+        public const int ScreenEdgePadding = 8;
+
         public const string PlaybackFileExt = "teinp"; /* Twelve Engine (Playback) Input (File) */
 
         public const string EngineConfigFile = "twelve.config";

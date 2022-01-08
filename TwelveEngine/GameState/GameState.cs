@@ -1,9 +1,11 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using TwelveEngine.Input;
 
 namespace TwelveEngine {
     public abstract class GameState:ISerializable {
         public GameManager Game { get; private set; } = null;
+        public ImpulseHandler Input => Game.ImpulseHandler;
 
         public event Action OnLoad, OnUnload;
 

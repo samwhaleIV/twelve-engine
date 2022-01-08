@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TwelveEngine.GameUI;
 
 namespace TwelveEngine.TileGen {
     public sealed class TileGenViewer:GameState {
@@ -10,7 +11,9 @@ namespace TwelveEngine.TileGen {
 
         private Texture2D texture = null;
 
-        public int RenderScale { get; set; } = 4;
+        public int RenderScale { get; set; } = 3;
+
+        private ImpulseGuide impulseGuide;
 
         public TileGenViewer() {
             OnLoad += TileGenViewer_OnLoad;
@@ -26,11 +29,30 @@ namespace TwelveEngine.TileGen {
             patternSet = Pattern.GetSet(Constants.PatternsImage,PATTERN_SIZE);
             patternSet.Settings.Seed = null;
 
-            Game.ImpulseHandler.OnAcceptDown += ImpulseHandler_OnAcceptDown;
+            Input.OnAcceptDown += ImpulseHandler_OnAcceptDown;
+            Input.OnCancelDown += ImpulseHandler_OnCancelDown;
             generatePatterns();
+
+            impulseGuide = new ImpulseGuide(Game);
+            impulseGuide.Load();
+
+            impulseGuide.SetDescriptions(
+                (Impulse.Accept, "Generate Tiles"),
+                (Impulse.Cancel, "Delete Texture")
+            );
         }
+
+        private void ImpulseHandler_OnCancelDown() {
+            if(texture == null) {
+                return;
+            }
+            texture.Dispose();
+            texture = null;
+        }
+
         private void TileGenViewer_OnUnload() {
-            Game.ImpulseHandler.OnAcceptDown -= ImpulseHandler_OnAcceptDown;
+            Input.OnAcceptDown -= ImpulseHandler_OnAcceptDown;
+            Input.OnCancelDown -= ImpulseHandler_OnCancelDown;
         }
 
         private void ImpulseHandler_OnAcceptDown() => generatePatterns();
@@ -40,6 +62,9 @@ namespace TwelveEngine.TileGen {
         public override void Render(GameTime gameTime) {
             Game.GraphicsDevice.Clear(Color.Black);
             if(texture == null) {
+                Game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
+                impulseGuide.Render();
+                Game.SpriteBatch.End();
                 return;
             }
 
@@ -52,6 +77,7 @@ namespace TwelveEngine.TileGen {
 
             Game.SpriteBatch.Draw(texture,destination,Color.White);
 
+            impulseGuide.Render();
             Game.SpriteBatch.End();
         }
     }
