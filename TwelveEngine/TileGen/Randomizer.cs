@@ -87,16 +87,13 @@ namespace TwelveEngine.TileGen {
         }
 
         public PatternDrawSettings GetDrawSettings() {
-
             var painter = GetPainter();
 
-            var settings = new PatternDrawSettings() {
-                Mirroring = GetMirroring(),
-                Rotation = GetRotation(),
-                Polarity = GetStampPolarity(),
-                Paint = painter.Paint
-            };
+            var polarity = GetStampPolarity();
+            var mirroring = GetMirroring();
+            var rotation = GetRotation();
 
+            var settings = new PatternDrawSettings(polarity,mirroring,rotation,painter.Paint);
             return settings;
         }
     }

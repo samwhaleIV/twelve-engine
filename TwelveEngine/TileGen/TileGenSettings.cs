@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.TileGen {
-    public class TileGenSettings {
+    public sealed class TileGenSettings {
         public int MinLayers { get; set; }
         public int MaxLayers { get; set; }
 
