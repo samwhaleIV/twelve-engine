@@ -12,7 +12,9 @@ namespace TwelveEngine.Config {
             }
 
             var processor = new ConfigProcessor<KeyBindSet>();
-            var keyBindSet = processor.Load(path);
+
+            var lines = File.ReadAllLines(path);
+            var keyBindSet = processor.Load(lines);
 
             return keyBindSet;
         }
@@ -27,7 +29,8 @@ namespace TwelveEngine.Config {
                 propertySet = new TPropertySet();
             } else {
                 var processor = new ConfigProcessor<TPropertySet>();
-                propertySet = processor.Load(path);
+                var lines = File.ReadAllLines(path);
+                propertySet = processor.Load(lines);
             }
 
             var engineConfig = new TwelveConfig();

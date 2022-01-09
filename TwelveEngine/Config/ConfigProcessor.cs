@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using TwelveEngine.Serial.String;
@@ -75,8 +74,7 @@ namespace TwelveEngine.Config {
             field.SetValue(set,boxedValue);
         }
 
-        public TPropertySet Load(string path) {
-            var lines = File.ReadAllLines(path);
+        public TPropertySet Load(string[] lines) {
             var fileProperties = getFileProperties(lines);
             return getPropertySet(fileProperties);
         }
@@ -96,7 +94,7 @@ namespace TwelveEngine.Config {
             return true;
         }
 
-        public void Save(string path,TPropertySet propertySet) {
+        public string Save(TPropertySet propertySet) {
             var builder = new StringBuilder();
 
             foreach(var field in propertyFields) {
@@ -113,8 +111,7 @@ namespace TwelveEngine.Config {
             }
 
             if(builder.Length < 1) {
-                File.WriteAllText(path,string.Empty);
-                return;
+                return string.Empty;
             }
 
             builder.Remove(builder.Length-1,1);
@@ -122,7 +119,7 @@ namespace TwelveEngine.Config {
             var contents = builder.ToString();
             builder.Clear();
 
-            File.WriteAllText(path,contents);
+            return contents;
         }
     }
 }
