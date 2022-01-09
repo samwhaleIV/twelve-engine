@@ -7,14 +7,15 @@ namespace TwelveEngine.Game2D {
         private const float MIN_SCALE = 1, MAX_SCALE = 8, ZOOM_RATE = 0.1f;
 
         private readonly Grid2D grid;
-        private readonly Camera camera;
+        private readonly MouseHandler mouseHandler;
+        private Camera camera => grid.Camera;
 
-        internal PanZoom(Grid2D grid) {
+        internal PanZoom(Grid2D grid,MouseHandler mouseHandler) {
             this.grid = grid;
-            camera = grid.Camera;
+            this.mouseHandler = mouseHandler;
 
             grid.OnUnload += Grid_OnUnload;
-            var mouseHandler = grid.Game.MouseHandler;
+
             mouseHandler.OnMouseMove += pan;
             mouseHandler.OnMouseScroll += zoom;
             mouseHandler.OnMouseDown += refreshPanData;
@@ -22,7 +23,6 @@ namespace TwelveEngine.Game2D {
         }
 
         private void Grid_OnUnload() {
-            var mouseHandler = grid.Game.MouseHandler;
             mouseHandler.OnMouseMove -= pan;
             mouseHandler.OnMouseScroll -= zoom;
             mouseHandler.OnMouseDown -= refreshPanData;

@@ -342,7 +342,9 @@ namespace TwelveEngine {
 #endif
             updating = false;
             if(pendingStateGenerator != null) {
-                SetState(pendingStateGenerator);
+                var generator = pendingStateGenerator;
+                pendingStateGenerator = null;
+                SetState(generator);
             }
         }
 

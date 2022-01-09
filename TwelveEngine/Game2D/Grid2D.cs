@@ -155,7 +155,7 @@ namespace TwelveEngine.Game2D {
                         return;
                     }
                     camera.SetPadding(false);
-                    panZoom = new PanZoom(this);
+                    panZoom = new PanZoom(this,Game.MouseHandler);
                 } else if(hasPanZoom()) {
                     panZoom = null;
                 }
