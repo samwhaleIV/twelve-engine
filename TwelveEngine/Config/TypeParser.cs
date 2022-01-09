@@ -7,71 +7,84 @@ namespace TwelveEngine.Config {
 
         private static readonly Type keysType = typeof(Keys);
 
-        private readonly Dictionary<string,PropertyType> validTypes = new Dictionary<string,PropertyType>() {
+        private static readonly Dictionary<PropertyType,(string TypeName,Func<string,object> Objectify,Func<object,string> Stringify)> types =
+            new Dictionary<PropertyType,(string,Func<string,object>,Func<object,string>)>() {
 
-            { typeof(bool).FullName, PropertyType.Bool },
-            { typeof(byte).FullName, PropertyType.Byte },
-            { typeof(sbyte).FullName, PropertyType.SByte },
-            { typeof(char).FullName, PropertyType.Char },
-            { typeof(decimal).FullName, PropertyType.Decimal },
-            { typeof(double).FullName, PropertyType.Double },
-            { typeof(float).FullName, PropertyType.Float },
-            { typeof(int).FullName, PropertyType.Int },
-            { typeof(uint).FullName, PropertyType.Uint },
-            { typeof(long).FullName, PropertyType.Long },
-            { typeof(ulong).FullName, PropertyType.ULong },
-            { typeof(short).FullName, PropertyType.Short },
-            { typeof(ushort).FullName, PropertyType.UShort },
-            { typeof(string).FullName, PropertyType.String },
-            { typeof(string[]).FullName, PropertyType.StringArray },
-            { keysType.FullName, PropertyType.XNAKeys }
+            { PropertyType.Bool, (typeof(bool).FullName, i => {
+                if(!bool.TryParse(i,out var o)) return null; return o;
+            }, i => export(i).ToLowerInvariant())},
+
+            { PropertyType.Byte, (typeof(byte).FullName, i => {
+                if(!byte.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.SByte, (typeof(sbyte).FullName, i => {
+                if(!sbyte.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.Char, (typeof(char).FullName, i => {
+                if(!char.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.Decimal, (typeof(decimal).FullName, i => {
+                if(!decimal.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.Double, (typeof(double).FullName, i => {
+                if(!double.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.Float, (typeof(float).FullName, i => {
+                if(!float.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.Int, (typeof(int).FullName, i => {
+                if(!int.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.Uint, (typeof(uint).FullName, i => {
+                if(!uint.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.Long, (typeof(long).FullName, i => {
+                if(!long.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.ULong, (typeof(ulong).FullName, i => {
+                if(!ulong.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.Short, (typeof(short).FullName, i => {
+                if(!short.TryParse(i,out var o)) return null; return o;
+                }, export)},
+
+            { PropertyType.UShort, (typeof(ushort).FullName, i => {
+                if(!ushort.TryParse(i,out var o)) return null; return o;
+            }, export)},
+
+            { PropertyType.String, (typeof(string).FullName, i => {
+                if(string.IsNullOrEmpty(i)) return null; return i;
+            }, export)},
+
+            { PropertyType.StringArray, (typeof(string[]).FullName, parseArray, exportArray)},
+            { PropertyType.XNAKeys, (keysType.FullName, parseKeys, export)}
 
         };
 
-        private readonly Dictionary<PropertyType,Func<string,object>> parsers = new Dictionary<PropertyType,Func<string,object>>() {
+        private static Dictionary<string,PropertyType> getValidTypes() {
+            var validTypes = new Dictionary<string,PropertyType>();
+            foreach(var type in types) {
+                var propertyType = type.Key;
+                var typeName = type.Value.TypeName;
 
-            { PropertyType.Bool, v => { if(!bool.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Byte, v => { if(!byte.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.SByte, v => { if(!sbyte.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Char, v => { if(!char.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Decimal, v => { if(!decimal.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Double, v => { if(!double.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Float, v => { if(!float.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Int, v => { if(!int.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Uint, v => { if(!uint.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Long, v => { if(!long.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.ULong, v => { if(!ulong.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.Short, v => { if(!short.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.UShort, v => { if(!ushort.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.String, v => { if(string.IsNullOrEmpty(v)) return null; return v; }},
-            { PropertyType.StringArray, parseArray },
-            { PropertyType.XNAKeys, parseKeys }
+                validTypes.Add(typeName,propertyType);
+            }
+            return validTypes;
+        }
 
-        };
-
-        private readonly Dictionary<PropertyType,Func<object,string>> exporters = new Dictionary<PropertyType,Func<object,string>>() {
-
-            { PropertyType.Bool, v => export(v).ToLowerInvariant() },
-            { PropertyType.Byte, export},
-            { PropertyType.SByte, export},
-            { PropertyType.Char, export},
-            { PropertyType.Decimal, export},
-            { PropertyType.Double, export},
-            { PropertyType.Float, export},
-            { PropertyType.Int, export},
-            { PropertyType.Uint, export},
-            { PropertyType.Long, export},
-            { PropertyType.ULong, export},
-            { PropertyType.Short, export},
-            { PropertyType.UShort, export},
-            { PropertyType.String, export},
-            { PropertyType.StringArray, exportArray },
-            { PropertyType.XNAKeys, export },
-
-        };
+        private static readonly Dictionary<string,PropertyType> validTypes = getValidTypes();
 
         private static string export(object value) => value.ToString();
-
 
                                                           /* This space is intentional |
                                                                                        V   */
@@ -101,11 +114,11 @@ namespace TwelveEngine.Config {
         }
 
         public object Parse(PropertyType type,string value) {
-            return parsers[type].Invoke(value);
+            return types[type].Objectify(value);
         }
 
         public string Export(PropertyType type,object value) {
-            return exporters[type].Invoke(value);
+            return types[type].Stringify(value);
         }
 
         public bool HasType(string typeName) => validTypes.ContainsKey(typeName);
