@@ -13,7 +13,7 @@ namespace TwelveDesktop {
         internal static void Main() {
             ConfigLoader.LoadEngineConfig();
             using var game = new GameManager();
-            game.OnLoad += game => game.SetState(() => new TileGenViewer());
+            game.OnLoad += game => game.SetState(GetPuzzleGameTest);
             game.Run(GameRunBehavior.Synchronous);
         }
     }

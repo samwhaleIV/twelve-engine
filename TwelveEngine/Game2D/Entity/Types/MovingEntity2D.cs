@@ -5,6 +5,14 @@ using System.Collections.Generic;
 namespace TwelveEngine.Game2D.Entity.Types {
     public abstract class MovingEntity2D:Entity2D {
 
+        public MovingEntity2D() {
+            OnUpdate += MovingEntity2D_OnUpdate;
+        }
+
+        private void MovingEntity2D_OnUpdate(GameTime gameTime) {
+            UpdateMovement(gameTime);
+        }
+
         protected abstract Point GetMovementDelta();
         protected abstract Hitbox GetHitbox();
 
@@ -294,7 +302,5 @@ namespace TwelveEngine.Game2D.Entity.Types {
             updateDirection();
             handleDeltas(distance);
         }
-
-        public abstract void Update(GameTime gameTime);
     }
 }

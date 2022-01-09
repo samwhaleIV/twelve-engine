@@ -162,11 +162,13 @@ namespace TwelveEngine.Game2D {
             }
         }
 
+
         public override void Update(GameTime gameTime) {
-            var updateables = EntityManager.UpdateList;
-            for(var i = 0;i<updateables.Length;i++) {
-                updateables[i].Update(gameTime);
-            }
+            EntityManager.IterateMutable(Entity2D.Update,gameTime);
+        }
+
+        private void renderEntities(GameTime gameTime) {
+            EntityManager.IterateImmutable(Entity2D.Render,gameTime);
         }
 
         private static float cameraBounds(float value,float size,int gridSize) {
@@ -209,13 +211,6 @@ namespace TwelveEngine.Game2D {
 
         public Vector2 GetCoordinate(Point position) {
             return GetCoordinate(ScreenSpace,position);
-        }
-
-        private void renderEntities(GameTime gameTime) {
-            var renderables = EntityManager.RenderList;
-            for(var i = 0;i < renderables.Length;i++) {
-                renderables[i].Render(gameTime);
-            }
         }
 
         private void renderLayers(int start,int length) {

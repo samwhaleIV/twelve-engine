@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
-    public abstract class Entity2D:Entity<Grid2D> {
+    public abstract class Entity2D:Entity<Grid2D>, IUpdateable, IRenderable {
 
         private Vector2 position = Vector2.Zero;
         private Vector2 size = Vector2.One;
@@ -104,5 +104,14 @@ namespace TwelveEngine.Game2D {
             frame.Set(Size);
             frame.Set(Direction);
         }
+
+        public event Action<GameTime> OnUpdate;
+        public event Action<GameTime> OnRender;
+
+        public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
+        public void Render(GameTime gameTime) => OnRender?.Invoke(gameTime);
+
+        public static void Update(Entity2D entity,GameTime gameTime) => entity.Update(gameTime);
+        public static void Render(Entity2D entity,GameTime gameTime) => entity.Render(gameTime);
     }
 }

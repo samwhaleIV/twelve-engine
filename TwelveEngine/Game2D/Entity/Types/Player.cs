@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D.Entity.Types {
-    public sealed class Player:MovingEntity2D, IUpdateable, IRenderable {
+    public sealed class Player:MovingEntity2D {
 
         public Player() {
             MaxSpeed = Constants.Config.PlayerSpeed;
@@ -16,6 +16,20 @@ namespace TwelveEngine.Game2D.Entity.Types {
             OnUnload += Player_OnUnload;
 
             OnMovementStopped += () => movingRenderStart = null;
+
+            OnUpdate += Player_OnUpdate;
+            OnRender += Player_OnRender;
+        }
+
+        private void Player_OnRender(GameTime gameTime) {
+            if(!OnScreen()) {
+                return;
+            }
+            Draw(playerTexure,getTextureSource(gameTime));
+        }
+
+        private void Player_OnUpdate(GameTime gameTime) {
+            Owner.Camera.Position = Position;
         }
 
         private const float FRAME_TIME = 300, BLINK_RATE = 2900, BLINK_TIME = 200;
@@ -66,10 +80,6 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         protected override Point GetMovementDelta() => Game.ImpulseHandler.GetDirectionDelta();
 
-        public override void Update(GameTime gameTime) {
-            UpdateMovement(gameTime);
-            Owner.Camera.Position = Position;
-        }
 
         private bool isBlinking(GameTime gameTime) {
             var currentTime = gameTime.TotalGameTime;
@@ -120,11 +130,5 @@ namespace TwelveEngine.Game2D.Entity.Types {
             return source;
         }
 
-        public void Render(GameTime gameTime) {
-            if(!OnScreen()) {
-                return;
-            }
-            Draw(playerTexure,getTextureSource(gameTime));
-        }
     }
 }

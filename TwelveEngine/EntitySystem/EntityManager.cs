@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.EntitySystem {
     public sealed class EntityManager<TEntity,TOwner>:ISerializable where TEntity:Entity<TOwner> where TOwner:GameState {
+
+        private const string NO_ITERATION_ALLOWED = "Cannot iterate an Entity list recursively!";
+        private const string NO_MUTATION_ALLOWED = "Cannot modify Entity tables during immutable list iteration!";
 
         public EntityManager(TOwner owner,EntityFactory<TEntity,TOwner> factory) {
             entityDictionary = new Dictionary<int,TEntity>();
@@ -21,86 +25,131 @@ namespace TwelveEngine.EntitySystem {
 
         private readonly Dictionary<int,TEntity> entityDictionary;
         private readonly Dictionary<string,TEntity> namedEntities;
+        private TEntity[] entityList;
 
-        private bool updateListQueued = false, renderListQueued = false;
+        private bool entityListQueued = false;
 
-        public IRenderable[] RenderList { get; private set; }
-        public IUpdateable[] UpdateList { get; private set; }
+        public bool Locked { get; private set; } = false;
+        public bool Paused { get; private set; } = false;
+        public bool Iterating { get; private set; } = false;
 
-        public Type[] GetAllOfType<Type>() {
-            var queue = new Queue<Type>();
-            foreach(var entity in entityDictionary.Values) {
-                if(entity is Type typeCast) {
-                    queue.Enqueue(typeCast);
+        private void pauseChanges() {
+            if(Paused) {
+                return;
+            }
+            Paused = true;
+        }
+        private void resumeChanges() {
+            if(!Paused) {
+                return;
+            }
+            Paused = false;
+            if(entityListQueued) {
+                entityListChanged();
+            }
+        }
+
+        private void assertIteration() {
+            if(Iterating) {
+                throw new InvalidOperationException(NO_ITERATION_ALLOWED);
+            }
+        }
+        private void assertMutation() {
+            if(Locked) {
+                throw new InvalidOperationException(NO_MUTATION_ALLOWED);
+            }
+        }
+
+        public void IterateImmutable(Action<TEntity> action) {
+            assertIteration();
+            Iterating = true;
+
+            Locked = true;
+            for(var i = 0;i<entityList.Length;i++) {
+                action(entityList[i]);
+            }
+            Locked = false;
+
+            Iterating = false;
+        }
+
+        public void IterateMutable(Action<TEntity> action) {
+            assertIteration();
+            Iterating = true;
+
+            pauseChanges();
+            for(var i = 0;i<entityList.Length;i++) {
+                var entity = entityList[i];
+                if(entity.Deleted) {
+                    continue;
                 }
+                action(entityList[i]);
             }
-            return queue.ToArray();
+            resumeChanges();
+
+            Iterating = false;
         }
 
-        private IRenderable[] getRenderList() {
-            return GetAllOfType<IRenderable>();
-        }
-        private IUpdateable[] getUpdateList() {
-            return GetAllOfType<IUpdateable>();
+
+        #region COPY PASTA BULLSHIT
+
+        /* These had to be copy pasted because we can't make a super duper generic TAction, but by God, I tried. */
+
+        public void IterateImmutable<TData>(Action<TEntity,TData> action,TData data) {
+            assertIteration();
+            Iterating = true;
+
+            Locked = true;
+            for(var i = 0;i<entityList.Length;i++) {
+                action(entityList[i],data);
+            }
+            Locked = false;
+
+            Iterating = false;
         }
 
-        private bool listChangesPaused = false;
-        public bool Paused => listChangesPaused;
-        
-        public void PauseListChanges() {
-            if(listChangesPaused) {
-                return;
+        public void IterateMutable<TData>(Action<TEntity,TData> action,TData data) {
+            assertIteration();
+            Iterating = true;
+
+            pauseChanges();
+            for(var i = 0;i<entityList.Length;i++) {
+                var entity = entityList[i];
+                if(entity.Deleted) {
+                    continue;
+                }
+                action(entityList[i],data);
             }
-            listChangesPaused = true;
+            resumeChanges();
+
+            Iterating = false;
         }
-        public void ResumeListChanges() {
-            if(!listChangesPaused) {
-                return;
-            }
-            listChangesPaused = false;
-            if(renderListQueued) {
-                renderListChanged();
-            }
-            if(updateListQueued) {
-                updateListChanged();
-            }
-        }
+        #endregion
 
         public TEntity Get(string name) {
-            TEntity entity;
-            if(namedEntities.TryGetValue(name,out entity)) {
-                return entity;
+            if(!namedEntities.TryGetValue(name,out var entity)) {
+                return null;
             }
-            return null;
+            return entity;
         }
-        public TEntity[] GetAll() {
-            return entityDictionary.Values.ToArray();
-        }
-        public TEntity[] GetAllOfType(int type) {
-            var queue = new Queue<TEntity>();
-            foreach(var entity in entityDictionary.Values) {
-                if(entity.Type == type) {
-                    queue.Enqueue(entity);
+        public TEntity[] GetAll() => getEntityList();
+
+        public IEnumerable<TEntity> GetAllOfType(int type) {
+            foreach(var entity in getEntityList()) {
+                if(entity.Type != type) {
+                    continue;
                 }
+                yield return entity;
             }
-            return queue.ToArray();
         }
 
-        private void renderListChanged() {
-            if(listChangesPaused) {
-                renderListQueued = true;
+        private void entityListChanged() {
+            if(Paused) {
+                entityListQueued = true;
                 return;
             }
-            RenderList = getRenderList();
-            renderListQueued = false;
-        }
-        private void updateListChanged() {
-            if(listChangesPaused) {
-                updateListQueued = true;
-                return;
-            }
-            UpdateList = getUpdateList();
-            updateListQueued = false;
+            entityList = getEntityList();
+            entityListQueued = false;
         }
 
         private void Entity_OnNameChanged(int ID,string oldName) {
@@ -109,6 +158,7 @@ namespace TwelveEngine.EntitySystem {
             namedEntities.Remove(oldName);
             namedEntities.Add(newName,source);
         }
+
         private bool hasName(TEntity entity) {
             return string.IsNullOrWhiteSpace(entity.Name);
         }
@@ -121,19 +171,48 @@ namespace TwelveEngine.EntitySystem {
 
         private void addToLists(TEntity entity) {
             entityDictionary.Add(entity.ID,entity);
-            if(hasName(entity)) addNamedEntity(entity);
-            if(entity is IRenderable) renderListChanged();
-            if(entity is IUpdateable) updateListChanged();
+            entity.Deleted = false;
+            if(hasName(entity)) {
+                addNamedEntity(entity);
+            }
+            entityListChanged();
         }
 
-        private void removeFromList(TEntity entity) {
+        private void removeFromLists(TEntity entity) {
             entityDictionary.Remove(entity.ID);
-            if(hasName(entity)) removeNamedEntity(entity);
-            if(entity is IRenderable) renderListChanged();
-            if(entity is IUpdateable) updateListChanged();
+            entity.Deleted = true;
+            if(hasName(entity)) {
+                removeNamedEntity(entity);
+            }
+            entityListChanged();
+        }
+
+        private TEntity[] getEntityList() => entityDictionary.Values.ToArray();
+
+        private void clearEntities(bool checkForStateLock = false) {
+            var entityList = getEntityList();
+            var entityCount = entityList.Length;
+            for(var i = 0;i < entityCount;i++) {
+                var entity = entityList[i];
+                if(checkForStateLock && entity.StateLock) {
+                    continue;
+                }
+                RemoveEntity(entity);
+            }
+        }
+
+        private IEnumerable<TEntity> getSerializableEntities() {
+            foreach(var entity in getEntityList()) {
+                if(entity.StateLock) {
+                    continue;
+                }
+                yield return entity;
+            }
         }
 
         public void AddEntity(TEntity entity) {
+            assertMutation();
+
             var ID = getNextID();
             entity.Register(ID,owner);
 
@@ -142,51 +221,45 @@ namespace TwelveEngine.EntitySystem {
             entity.Load(); //Stage 3
         }
 
+        public void AddEntities(params TEntity[] entities) {
+            assertMutation();
+            pauseChanges();
+            foreach(var entity in entities) {
+                AddEntity(entity);
+            }
+            resumeChanges();
+        }
+
         public void RemoveEntity(TEntity entity) {
+            assertMutation();
             /* Stage 1 and 2 are in reverse order for entity removal */
             entity.OnNameChanged -= Entity_OnNameChanged; //Stage 1
-            removeFromList(entity); //Stage 2
+            removeFromLists(entity); //Stage 2
             entity.Unload(); //Stage 3
         }
 
-        public void Unload() => clearEntities();
-
-        private void clearEntities(bool checkForStateLock = false) {
-            bool startedPaused = Paused;
-            PauseListChanges();
-            var entities = entityDictionary.Values.ToArray();
-            for(var i = 0;i < entities.Length;i++) {
-                var entity = entities[i];
-                if(checkForStateLock && entity.StateLock) {
-                    continue;
-                }
-                RemoveEntity(entity);
-            }
-            if(startedPaused) {
-                return;
-            }
-            ResumeListChanges();
-        }
-
-        private TEntity[] getSerializableEntities() {
-            return entityDictionary.Values.Where(x => !x.StateLock).ToArray();
+        public void Unload() {
+            assertMutation();
+            pauseChanges();
+            clearEntities();
+            resumeChanges();
         }
 
         public void Export(SerialFrame frame) {
-            var entities = getSerializableEntities();
-            var entityCount = entities.Length;
-            frame.Set(entityCount);
+            var entityList = getSerializableEntities().ToArray();
+            var entityCount = entityList.Length;
+            frame.Set(entityList.Length);
             for(var i = 0;i<entityCount;i++) {
-                var entity = entities[i];
+                var entity = entityList[i];
                 frame.Set(entity.Type);
                 frame.Set(entity);
             }
         }
 
         public void Import(SerialFrame frame) {
-            bool startedPaused = Paused;
-            PauseListChanges();
+            assertMutation();
 
+            pauseChanges();
             if(IDCounter > 0) {
                 clearEntities(checkForStateLock: true);
             }
@@ -199,11 +272,7 @@ namespace TwelveEngine.EntitySystem {
                 frame.Get(entity);
                 AddEntity(entity);
             }
-
-            if(startedPaused) {
-                return;
-            }
-            ResumeListChanges();
+            resumeChanges();
         }
     }
 }

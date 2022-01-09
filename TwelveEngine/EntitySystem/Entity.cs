@@ -10,7 +10,9 @@ namespace TwelveEngine.EntitySystem {
         private string name = string.Empty;
 
         /* int: ID, string: NewName */
-        internal event Action<int,string> OnNameChanged; 
+        internal event Action<int,string> OnNameChanged;
+
+        public bool Deleted { get; internal set; }
 
         private int id = 0;
         public int ID => id;
@@ -51,8 +53,8 @@ namespace TwelveEngine.EntitySystem {
             set => setName(value);
         }
 
-        public virtual void Export(SerialFrame frame) => frame.Set(name);
 
+        public virtual void Export(SerialFrame frame) => frame.Set(name);
         public virtual void Import(SerialFrame frame) => name = frame.GetString();
     }
 }

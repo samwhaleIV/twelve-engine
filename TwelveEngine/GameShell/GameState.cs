@@ -4,7 +4,7 @@ using TwelveEngine.Input;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine {
-    public abstract class GameState:ISerializable {
+    public abstract class GameState:ISerializable, IUpdateable, IRenderable {
         public GameManager Game { get; private set; } = null;
         public ImpulseHandler Input => Game.ImpulseHandler;
 

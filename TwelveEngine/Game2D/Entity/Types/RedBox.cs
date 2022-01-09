@@ -2,11 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game2D.Entity.Types {
-    public sealed class RedBox:Entity2D, IRenderable {
+    public sealed class RedBox:Entity2D {
 
         public RedBox() {
             OnLoad += RedBox_OnLoad;
             OnUnload += RedBox_OnUnload;
+            OnRender += RedBox_OnRender;
         }
 
         private void RedBox_OnLoad() {
@@ -22,13 +23,11 @@ namespace TwelveEngine.Game2D.Entity.Types {
         private Texture2D texture;
         private Rectangle source = new Rectangle(0,0,1,1);
 
-
-        public void Render(GameTime gameTime) {
+        private void RedBox_OnRender(GameTime gameTime) {
             if(!OnScreen()) {
                 return;
             }
             Draw(texture,source);
         }
-
     }
 }
