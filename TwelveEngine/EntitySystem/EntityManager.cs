@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using TwelveEngine.Serial;
 
 namespace TwelveEngine.EntitySystem {
     public sealed class EntityManager<TEntity,TOwner>:ISerializable where TEntity:Entity<TOwner> where TOwner:GameState {

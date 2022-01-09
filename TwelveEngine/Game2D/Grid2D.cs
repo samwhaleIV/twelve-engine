@@ -6,6 +6,7 @@ using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Collision;
 using TwelveEngine.Game2D.Entity;
 using TwelveEngine.GameUI;
+using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
     public sealed class Grid2D:GameState {

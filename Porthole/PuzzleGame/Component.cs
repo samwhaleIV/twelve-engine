@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TwelveEngine;
+using TwelveEngine.Serial;
 
 namespace Porthole.PuzzleGame {
     public abstract class Component:ISerializable {

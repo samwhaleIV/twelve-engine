@@ -22,7 +22,6 @@ namespace TwelveEngine.Config {
         public Keys Cancel = Keys.Escape;
     }
 }
-
 namespace TwelveEngine.Input {
     public sealed partial class KeyBinds {
         private static Dictionary<Impulse,Keys> GetBinds(KeyBindSet keyBindSet) => new Dictionary<Impulse,Keys>() {
@@ -36,3 +35,4 @@ namespace TwelveEngine.Input {
         };
     }
 }
+

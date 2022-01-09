@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TwelveEngine;
+using TwelveEngine.Serial;
 using TwelveEngine.Game2D;
 
 namespace Porthole.PuzzleGame {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace TwelveEngine {
+namespace TwelveEngine.GameShell {
     internal sealed class ProxyGameTime:GameTime {
 
         private readonly TimeSpan MAX_ELAPSED_TIME = TimeSpan.FromMilliseconds(Constants.MaxFrameDelta);

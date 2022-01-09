@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TwelveEngine {
+namespace TwelveEngine.GameShell {
     internal sealed class TimeoutManager {
         private readonly struct Set {
 

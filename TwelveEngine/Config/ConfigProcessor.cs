@@ -3,11 +3,10 @@ using System.Text;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
+using TwelveEngine.Serial.String;
 
 namespace TwelveEngine.Config {
     public sealed class ConfigProcessor<TPropertySet> where TPropertySet : new() {
-
-        private readonly TypeParser typeParser = new TypeParser();
 
         private readonly Type propertySetType;
         private readonly FieldInfo[] propertyFields;
@@ -64,11 +63,11 @@ namespace TwelveEngine.Config {
         private void applyProperty(TPropertySet set,FieldInfo field,string propertyValue) {
             var typeName = field.FieldType.FullName;
 
-            if(!typeParser.TryGetType(typeName,out var type)) {
+            if(!TypeParser.TryGetType(typeName,out var type)) {
                 return;
             }
 
-            object boxedValue = typeParser.Parse(type,propertyValue);
+            object boxedValue = TypeParser.Parse(type,propertyValue);
             if(boxedValue == null) {
                 return;
             }
@@ -83,7 +82,7 @@ namespace TwelveEngine.Config {
         }
 
         private bool tryGetValue(TPropertySet propertySet,FieldInfo field,out string value) {
-            if(!typeParser.TryGetType(field.FieldType.FullName,out var type)) {
+            if(!TypeParser.TryGetType(field.FieldType.FullName,out var type)) {
                 value = null;
                 return false;
             }
@@ -93,7 +92,7 @@ namespace TwelveEngine.Config {
                 value = null;
                 return false;
             }
-            value = typeParser.Export(type,fieldValue);
+            value = TypeParser.Export(type,fieldValue);
             return true;
         }
 

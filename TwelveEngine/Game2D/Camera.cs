@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
     public class Camera:ISerializable {

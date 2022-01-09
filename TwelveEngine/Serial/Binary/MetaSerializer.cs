@@ -1,9 +1,8 @@
-﻿using TwelveEngine.Serial;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using static System.BitConverter;
 using static System.Array;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Serial.Binary {
     public sealed class MetaSerializer {
 
         private readonly bool requiresByteFlip;

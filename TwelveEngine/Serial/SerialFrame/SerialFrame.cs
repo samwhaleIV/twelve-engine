@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using TwelveEngine.Serial;
+using TwelveEngine.Serial.Binary;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Serial {
     public sealed partial class SerialFrame {
 
         private readonly int subframeSize;

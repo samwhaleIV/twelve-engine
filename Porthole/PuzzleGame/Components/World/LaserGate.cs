@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D;
-using Porthole;
 
 namespace Porthole.PuzzleGame.Components {
     public sealed class LaserGate:WorldComponent {

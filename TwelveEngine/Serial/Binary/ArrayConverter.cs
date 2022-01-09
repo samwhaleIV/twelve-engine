@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwelveEngine.Serial {
+namespace TwelveEngine.Serial.Binary {
     internal static class ArrayConverter {
         internal static byte[] ToBytes(int[] array) {
             var byteArray = new byte[array.Length * sizeof(int)];

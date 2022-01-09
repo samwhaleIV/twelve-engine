@@ -1,6 +1,6 @@
-﻿using TwelveEngine.Serial;
+﻿using TwelveEngine.Serial.Binary;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Serial {
     public sealed partial class SerialFrame {
         public void Set(bool value) => set(new Value(value));
         public void Set(byte value) => set(new Value(value));

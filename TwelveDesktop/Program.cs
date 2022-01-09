@@ -6,7 +6,6 @@ using TwelveEngine.TileGen;
 
 namespace TwelveDesktop {
 
-    using static TwelveEngine.Program;
     using static Porthole.Program;
 
     internal static class Program {

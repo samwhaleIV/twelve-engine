@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace TwelveEngine.Automation {
+namespace TwelveEngine.GameShell.Automation {
     internal static class IO {
         private static InputFrame[] readFileData(BinaryReader reader) {
             var frameCount = reader.ReadInt32();

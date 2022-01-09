@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Input {
+    using static ControllerBinds;
+
     internal static class ControllerBinds {
         public const Buttons Up = Buttons.DPadUp;
         public const Buttons Down = Buttons.DPadDown;
@@ -11,9 +13,7 @@ namespace TwelveEngine {
         public const Buttons Accept = Buttons.A;
         public const Buttons Cancel = Buttons.B;
     }
-}
-namespace TwelveEngine.Input {
-    using static ControllerBinds;
+
     public sealed partial class ImpulseHandler {
         private static Dictionary<Impulse,Buttons> GetControllerBinds() => new Dictionary<Impulse,Buttons>() {
             { Impulse.Up, Up },

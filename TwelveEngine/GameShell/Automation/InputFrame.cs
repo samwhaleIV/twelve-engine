@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Automation {
+namespace TwelveEngine.GameShell.Automation {
     internal struct InputFrame {
         internal InputFrame(SerialInputFrame frame) {
             var pressedKeys = frame.pressedKeys;

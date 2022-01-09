@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TwelveEngine.Automation {
+namespace TwelveEngine.GameShell.Automation {
     internal sealed class VCRDisplay {
 
         private const int RENDER_SIZE = 60;

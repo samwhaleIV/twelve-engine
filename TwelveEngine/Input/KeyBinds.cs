@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Config;
 using TwelveEngine.Input.Glyphs;
+using TwelveEngine.Serial;
 
 namespace TwelveEngine.Input {
     public sealed partial class KeyBinds:ISerializable {

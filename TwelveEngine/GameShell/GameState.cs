@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Input;
+using TwelveEngine.Serial;
 
 namespace TwelveEngine {
     public abstract class GameState:ISerializable {

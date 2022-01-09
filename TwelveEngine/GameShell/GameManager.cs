@@ -3,9 +3,11 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Automation;
 using TwelveEngine.Config;
 using TwelveEngine.Input;
+using TwelveEngine.GameShell;
+using TwelveEngine.GameShell.Automation;
+using TwelveEngine.Serial;
 
 namespace TwelveEngine {
     public sealed partial class GameManager:Game {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using TwelveEngine;
 using TwelveEngine.Game2D;
+using TwelveEngine.Serial;
 
 namespace Porthole.PuzzleGame.Components {
     public sealed class Switch:WorldComponent, IInteract {

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Config {
-    internal sealed class TypeParser {
+namespace TwelveEngine.Serial.String {
+    public static class TypeParser {
 
         private static readonly Type keysType = typeof(Keys);
 
@@ -113,17 +113,17 @@ namespace TwelveEngine.Config {
             return items;
         }
 
-        public object Parse(PropertyType type,string value) {
+        public static object Parse(PropertyType type,string value) {
             return types[type].Objectify(value);
         }
 
-        public string Export(PropertyType type,object value) {
+        public static string Export(PropertyType type,object value) {
             return types[type].Stringify(value);
         }
 
-        public bool HasType(string typeName) => validTypes.ContainsKey(typeName);
+        public static bool HasType(string typeName) => validTypes.ContainsKey(typeName);
 
-        public bool TryGetType(string typeName,out PropertyType type) {
+        public static bool TryGetType(string typeName,out PropertyType type) {
             if(validTypes.ContainsKey(typeName)) {
                 type = validTypes[typeName];
                 return true;
@@ -132,14 +132,14 @@ namespace TwelveEngine.Config {
             return false;
         }
 
-        public object TryParse(string typeName,string value) {
+        public static object TryParse(string typeName,string value) {
             if(!TryGetType(typeName,out var type)) {
                 return null;
             }
             return Parse(type,value);
         }
 
-        public string TryExport(string typeName,object value) {
+        public static string TryExport(string typeName,object value) {
             if(!TryGetType(typeName,out var type)) {
                 return null;
             }

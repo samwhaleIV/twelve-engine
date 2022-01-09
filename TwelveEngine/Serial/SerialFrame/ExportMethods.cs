@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine {
+﻿namespace TwelveEngine.Serial {
     public sealed partial class SerialFrame {
         public bool GetBool() => get().Bool();
         public byte GetByte() => get().Byte();

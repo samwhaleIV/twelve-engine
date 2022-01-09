@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace TwelveEngine.Automation {
+namespace TwelveEngine.GameShell.Automation {
 
     public sealed class AutomationAgent {
         private int frameNumber = 0;

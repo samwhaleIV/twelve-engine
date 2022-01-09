@@ -1,8 +1,8 @@
 ﻿using static System.BitConverter;
-using static TwelveEngine.Serial.ArrayConverter;
+using static TwelveEngine.Serial.Binary.ArrayConverter;
 using static System.Text.Encoding;
 
-namespace TwelveEngine.Serial {
+namespace TwelveEngine.Serial.Binary {
     internal readonly struct Value {
 
         public readonly Type Type;

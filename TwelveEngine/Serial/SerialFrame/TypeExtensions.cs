@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Serial {
     public sealed partial class SerialFrame {
         public void Set(Direction direction) => Set((byte)direction);
         public Direction GetDirection() => (Direction)GetByte();
