@@ -9,6 +9,8 @@
     <Import_RootNamespace>TwelveEngine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\TwelveConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\TwelveConfigSet.cs" />
@@ -35,9 +37,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseEndpoints.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Constants\KeyBinds.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\KeyBindSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CPUTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameUI\ImpulseGuide.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReflectionTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\MatrixMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\Mirroring.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\Painter.cs" />
@@ -76,7 +79,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\SerialInputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\Automation\VCRDisplay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameState\ProxyGametime.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBindSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\MouseHandler.cs" />

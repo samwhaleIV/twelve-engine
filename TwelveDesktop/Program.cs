@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using TwelveEngine;
+using TwelveEngine.Config;
 using TwelveEngine.TileGen;
 
 namespace TwelveDesktop {
@@ -11,7 +12,7 @@ namespace TwelveDesktop {
     internal static class Program {
         [STAThread]
         internal static void Main() {
-            LoadEngineConfig();
+            ConfigLoader.LoadEngineConfig();
             using var game = new GameManager();
             game.OnLoad += game => game.SetState(() => new TileGenViewer());
             game.Run(GameRunBehavior.Synchronous);

@@ -3,6 +3,8 @@
 namespace TwelveEngine.Config {
     public sealed class TwelveConfig {
 
+        /* This exists to serve as a readonly interface for Constants.Config */
+
         private static PlayerIndex gamePadIndex;
         public PlayerIndex GamePadIndex => gamePadIndex;
         private void setGamePadIndex(int value) {
@@ -52,6 +54,9 @@ namespace TwelveEngine.Config {
         private float playerSpeed;
         public float PlayerSpeed => playerSpeed;
 
+        private string keyBindsFile;
+        public string KeyBindsFile => keyBindsFile;
+
         private string[] cpuTextures;
         public string[] CPUTextures {
             get {
@@ -61,7 +66,9 @@ namespace TwelveEngine.Config {
             }
         }
 
-        internal void ApplyProperties(TwelveConfigSet set) {
+        public void Save(string path = null) => ConfigWriter.SaveEngineConfig(path);
+
+        internal void Import(TwelveConfigSet set) {
             renderScale = set.RenderScale;
             tileSize = set.TileSize;
             setGamePadIndex(set.GamePadIndex);
@@ -79,6 +86,34 @@ namespace TwelveEngine.Config {
 
             cpuTextures = set.CPUTextures;
             showCollision = set.ShowCollision;
+
+            keyBindsFile = set.KeyBindsFile;
+        }
+
+        internal TwelveConfigSet Export() {
+            var set = new TwelveConfigSet();
+
+            set.RenderScale = renderScale;
+            set.TileSize = tileSize;
+            set.GamePadIndex = (int)gamePadIndex;
+
+            set.PlayerSpeed = playerSpeed;
+            set.PlayerAccel = playerAccel;
+            set.PlayerDeaccel = playerDeaccel;
+            set.InteractSize = interactSize;
+
+            set.PlaybackFolder = playbackFolder;
+            set.DefaultPlaybackFile = defaultPlaybackFile;
+            set.ContentDirectory = contentDirectory;
+            set.PlayerImage = playerImage;
+            set.Tileset = tileset;
+
+            set.CPUTextures = cpuTextures;
+            set.ShowCollision = showCollision;
+
+            set.KeyBindsFile = keyBindsFile;
+
+            return set;
         }
     }
 }

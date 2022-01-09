@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Config {
     internal sealed class TypeParser {
@@ -8,8 +9,12 @@ namespace TwelveEngine.Config {
 
         public TypeParser(char arraySeperator) {
             seperator = arraySeperator;
+
             parsers[PropertyType.StringArray] = parseStringArray;
+            parsers[PropertyType.XNAKeys] = parseKeys;
         }
+
+        private static readonly Type keysType = typeof(Keys);
 
         private readonly Dictionary<string,PropertyType> validTypes = new Dictionary<string,PropertyType>() {
 
@@ -27,7 +32,8 @@ namespace TwelveEngine.Config {
             { typeof(short).FullName, PropertyType.Short },
             { typeof(ushort).FullName, PropertyType.UShort },
             { typeof(string).FullName, PropertyType.String },
-            { typeof(string[]).FullName, PropertyType.StringArray }
+            { typeof(string[]).FullName, PropertyType.StringArray },
+            { keysType.FullName, PropertyType.XNAKeys }
 
         };
 
@@ -46,11 +52,17 @@ namespace TwelveEngine.Config {
             { PropertyType.ULong, v => { if(!ulong.TryParse(v,out var cast)) return null; return cast; }},
             { PropertyType.Short, v => { if(!short.TryParse(v,out var cast)) return null; return cast; }},
             { PropertyType.UShort, v => { if(!ushort.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.String, v => { if(string.IsNullOrEmpty(v)) return null; return v; }},
-
+            { PropertyType.String, v => { if(string.IsNullOrEmpty(v)) return null; return v; }}
         };
 
-        private string[] parseStringArray(string value) {
+        private object parseKeys(string value) {
+            if(!Enum.TryParse(keysType,value,out object cast)) {
+                return null;
+            }
+            return cast;
+        }
+
+        private object parseStringArray(string value) {
             if(string.IsNullOrEmpty(value)) {
                 return null;
             }

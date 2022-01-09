@@ -8,13 +8,15 @@
         public float PlayerSpeed = 2.5f;
         public float PlayerAccel = 200;
         public float PlayerDeaccel = 100;
-        public float InteractSize = 2.5f;
+        public float InteractSize = 0.25f;
 
         public string PlaybackFolder = "playback";
         public string DefaultPlaybackFile = "default" + '.' + Constants.PlaybackFileExt;
         public string ContentDirectory = "Content";
         public string PlayerImage = "player";
         public string Tileset = Constants.DefaultTileset;
+
+        public string KeyBindsFile = Constants.DefaultKeyBindsFile;
 
         public string[] CPUTextures = new string[] { Constants.DefaultTileset, Constants.PatternsImage };
 

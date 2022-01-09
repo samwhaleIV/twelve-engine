@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Automation;
+using TwelveEngine.Config;
 using TwelveEngine.Input;
 
 namespace TwelveEngine {
@@ -26,23 +26,20 @@ namespace TwelveEngine {
             automationAgent.PlaybackStarted += AutomationAgent_PlaybackStarted;
             automationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
 
-            keyWatcherSet = new KeyWatcherSet(getDebugControls());
-
-            /* TODO: Load KeyBinds from a file */
-
-            impulseHandler = new ImpulseHandler(keyBindSet);
+            keyBinds = KeyBinds.Load(out KeyBindSet keyBindSet);
+            keyWatcherSet = new KeyWatcherSet(getDebugControls(keyBindSet));
+            impulseHandler = new ImpulseHandler(keyBinds);
         }
 
-        private (Keys key, Action action)[] getDebugControls() => new (Keys, Action)[]{
+        private (Keys key, Action action)[] getDebugControls(KeyBindSet keyBindSet) => new (Keys, Action)[]{
+            (keyBindSet.Playback, automationAgent.TogglePlayback),
+            (keyBindSet.Recording, automationAgent.ToggleRecording),
 
-            (KeyBinds.Playback, automationAgent.TogglePlayback),
-            (KeyBinds.Recording, automationAgent.ToggleRecording),
+            (keyBindSet.PauseGame, togglePaused),
+            (keyBindSet.AdvanceFrame, queueAdvanceFrame),
 
-            (KeyBinds.PauseGame, togglePaused),
-            (KeyBinds.AdvanceFrame, queueAdvanceFrame),
-
-            (KeyBinds.SaveState, saveSerialState),
-            (KeyBinds.LoadState, loadSerialState)
+            (keyBindSet.SaveState, saveSerialState),
+            (keyBindSet.LoadState, loadSerialState)
         };
 
         private void AutomationAgent_PlaybackStopped() {
@@ -81,8 +78,8 @@ namespace TwelveEngine {
         private readonly VCRDisplay vcrDisplay;
         private readonly KeyWatcherSet keyWatcherSet;
         private readonly ImpulseHandler impulseHandler;
+        private readonly KeyBinds keyBinds;
         private readonly AutomationAgent automationAgent = new AutomationAgent();
-        private readonly KeyBindSet keyBindSet = new KeyBindSet();
         private readonly MouseHandler mouseHandler = new MouseHandler();
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
         private readonly TimeoutManager timeout = new TimeoutManager();
@@ -93,7 +90,7 @@ namespace TwelveEngine {
         public AutomationAgent AutomationAgent => automationAgent;
         public ImpulseHandler ImpulseHandler => impulseHandler;
         public MouseHandler MouseHandler => mouseHandler;
-        public KeyBindSet KeyBindSet => keyBindSet;
+        public KeyBinds KeyBinds => keyBinds;
         public SpriteFont DefaultFont => spriteFont;
 
         public KeyboardState KeyboardState => keyboardState;

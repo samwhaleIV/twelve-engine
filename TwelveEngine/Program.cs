@@ -38,25 +38,5 @@ namespace TwelveEngine {
                 panel2.panel.AddChild(panel3.frame);
             });
         }
-
-        public static TPropertySet LoadEngineConfig<TPropertySet>(string file = null) where TPropertySet:TwelveConfigSet, new() {
-            if(file == null) {
-                file = Constants.EngineConfigFile;
-            }
-            if(!File.Exists(file)) {
-                Constants.Config = new TwelveConfig();
-                return new TPropertySet();
-            }
-            var processor = new ConfigProcessor<TPropertySet>();
-            var propertySet = processor.Load(file);
-
-            var engineConfig = new TwelveConfig();
-            engineConfig.ApplyProperties(propertySet);
-            Constants.Config = engineConfig;
-
-            return propertySet;
-        }
-
-        public static void LoadEngineConfig(string file = null) => LoadEngineConfig<TwelveConfigSet>(file);
     }
 }

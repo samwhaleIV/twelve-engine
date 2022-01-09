@@ -10,33 +10,16 @@ namespace TwelveEngine {
 
         public const int ObjectLayerIndex = 1;
         public const int CollisionLayerIndex = 2;
-
         public const int ShiftFrameSkip = 30;
-
         public const int ScreenEdgePadding = 8;
 
         public const string PlaybackFileExt = "teinp"; /* Twelve Engine (Playback) Input (File) */
-
         public const string EngineConfigFile = "twelve.config";
-
         public const string DefaultFont = "default-font";
-
         public const string PatternsImage = "patterns";
-
         public const string DefaultTileset = "tileset";
+        public const string DefaultKeyBindsFile = "keybinds.config";
 
-        private static bool loadedConfigFile = false;
-
-        private static TwelveConfig config = null;
-        public static TwelveConfig Config {
-            get => config;
-            internal set {
-                if(loadedConfigFile) {
-                    throw new Exception("A config file intended for constant use has already been loaded!");
-                }
-                loadedConfigFile = true;
-                config = value;
-            }
-        }
+        public static TwelveConfig Config { get; internal set; }
     }
 }

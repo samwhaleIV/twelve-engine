@@ -6,7 +6,8 @@ namespace TwelveEngine.Input.Glyphs {
             GlyphSize = 16;
             BlockColumns = 8;
         }
-        protected override Keys[] GetList() => new Keys[] {
+        protected override Keys[] GetList() => GetKeys();
+        public static Keys[] GetKeys() => new Keys[] {
             Keys.OemTilde,
             Keys.D1,
             Keys.D2,

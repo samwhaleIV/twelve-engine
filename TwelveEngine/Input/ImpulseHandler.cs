@@ -7,8 +7,8 @@ namespace TwelveEngine.Input {
 
     public sealed partial class ImpulseHandler {
 
-        public ImpulseHandler(KeyBindSet keyBindSet) {
-            this.keyBindSet = keyBindSet;
+        internal ImpulseHandler(KeyBinds keyBinds) {
+            this.keyBinds = keyBinds;
 
             impulses = (Impulse[])Enum.GetValues(typeof(Impulse));
 
@@ -23,20 +23,20 @@ namespace TwelveEngine.Input {
         private readonly Impulse[] impulses;
 
         private readonly Dictionary<Impulse,KeyState> impulseStates;
-        private Dictionary<Impulse,(Action Down, Action Up)> endpoints;
+        private readonly Dictionary<Impulse,(Action Down, Action Up)> endpoints;
 
-        private readonly KeyBindSet keyBindSet;
-        private Dictionary<Impulse,Buttons> gamePadBinds = GetControllerBinds();
+        private readonly KeyBinds keyBinds;
+        private readonly Dictionary<Impulse,Buttons> gamePadBinds = GetControllerBinds();
 
         public Buttons GetGamePadBind(Impulse impulse) {
             return gamePadBinds[impulse];
         }
 
         public Keys GetKeyboardBind(Impulse impulse) {
-            return keyBindSet[impulse];
+            return keyBinds[impulse];
         }
 
-        public KeyBindSet KeyBindSet => keyBindSet;
+        public KeyBinds KeyBinds => keyBinds;
 
         public InputMethod InputMethod { get; private set; } = InputMethod.Unknown;
         public GamePadType GamePadType { get; set; } = GamePadType.Default;
@@ -44,7 +44,7 @@ namespace TwelveEngine.Input {
         private KeyState getImpulseState(
             Impulse impulse,KeyboardState keyboardState,GamePadState gamePadState
         ) {
-            bool keyboard = keyboardState.IsKeyDown(keyBindSet[impulse]);
+            bool keyboard = keyboardState.IsKeyDown(keyBinds[impulse]);
             if(keyboard) {
                 return KeyState.Down;
             }

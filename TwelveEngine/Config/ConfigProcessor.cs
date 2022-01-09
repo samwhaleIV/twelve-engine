@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
@@ -6,12 +7,12 @@ using System.Reflection;
 namespace TwelveEngine.Config {
     public sealed class ConfigProcessor<TPropertySet> where TPropertySet : new() {
 
-        private const char SPLIT_CHARACTER = '=', ARRAY_CHARACTER = ',';
+        public const char VALUE_OPERAND = '=', ARRAY_DELIMITER = ',';
 
-        private readonly TypeParser typeParser = new TypeParser(ARRAY_CHARACTER);
+        private readonly TypeParser typeParser = new TypeParser(ARRAY_DELIMITER);
 
-        private Type propertySetType;
-        private FieldInfo[] propertyFields;
+        private readonly Type propertySetType;
+        private readonly FieldInfo[] propertyFields;
 
         public ConfigProcessor() {
             propertySetType = typeof(TPropertySet);
@@ -21,7 +22,7 @@ namespace TwelveEngine.Config {
         private Dictionary<string,string> getFileProperties(string[] lines) {
             var dictionary = new Dictionary<string,string>();
             foreach(var line in lines) {
-                int splitIndex = line.IndexOf(SPLIT_CHARACTER);
+                int splitIndex = line.IndexOf(VALUE_OPERAND);
                 if(splitIndex < 0) {
                     continue;
                 }
@@ -93,6 +94,26 @@ namespace TwelveEngine.Config {
             var propertySet = getPropertySet(fileProperties);
 
             return propertySet;
+        }
+
+        public void Save(string path,TPropertySet propertySet) {
+            var builder = new StringBuilder();
+
+            foreach(var field in propertyFields) {
+                var propertyName = field.Name;
+                builder.Append(propertyName);
+                builder.Append(' ');
+                builder.Append(VALUE_OPERAND);
+                builder.Append(' ');
+                builder.Append(field.GetValue(propertySet).ToString());
+                builder.Append(Environment.NewLine);
+            }
+            builder.Remove(builder.Length-1,1);
+
+            var contents = builder.ToString();
+            builder.Clear();
+
+            File.WriteAllText(path,contents);
         }
     }
 }
