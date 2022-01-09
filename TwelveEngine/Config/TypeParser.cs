@@ -5,15 +5,6 @@ using Microsoft.Xna.Framework.Input;
 namespace TwelveEngine.Config {
     internal sealed class TypeParser {
 
-        private readonly char seperator;
-
-        public TypeParser(char arraySeperator) {
-            seperator = arraySeperator;
-
-            parsers[PropertyType.StringArray] = parseStringArray;
-            parsers[PropertyType.XNAKeys] = parseKeys;
-        }
-
         private static readonly Type keysType = typeof(Keys);
 
         private readonly Dictionary<string,PropertyType> validTypes = new Dictionary<string,PropertyType>() {
@@ -52,21 +43,57 @@ namespace TwelveEngine.Config {
             { PropertyType.ULong, v => { if(!ulong.TryParse(v,out var cast)) return null; return cast; }},
             { PropertyType.Short, v => { if(!short.TryParse(v,out var cast)) return null; return cast; }},
             { PropertyType.UShort, v => { if(!ushort.TryParse(v,out var cast)) return null; return cast; }},
-            { PropertyType.String, v => { if(string.IsNullOrEmpty(v)) return null; return v; }}
+            { PropertyType.String, v => { if(string.IsNullOrEmpty(v)) return null; return v; }},
+            { PropertyType.StringArray, parseArray },
+            { PropertyType.XNAKeys, parseKeys }
+
         };
 
-        private object parseKeys(string value) {
+        private readonly Dictionary<PropertyType,Func<object,string>> exporters = new Dictionary<PropertyType,Func<object,string>>() {
+
+            { PropertyType.Bool, v => export(v).ToLowerInvariant() },
+            { PropertyType.Byte, export},
+            { PropertyType.SByte, export},
+            { PropertyType.Char, export},
+            { PropertyType.Decimal, export},
+            { PropertyType.Double, export},
+            { PropertyType.Float, export},
+            { PropertyType.Int, export},
+            { PropertyType.Uint, export},
+            { PropertyType.Long, export},
+            { PropertyType.ULong, export},
+            { PropertyType.Short, export},
+            { PropertyType.UShort, export},
+            { PropertyType.String, export},
+            { PropertyType.StringArray, exportArray },
+            { PropertyType.XNAKeys, export },
+
+        };
+
+        private static string export(object value) => value.ToString();
+
+
+                                                          /* This space is intentional |
+                                                                                       V   */
+        private static readonly string ARRAY_JOINT = $"{Constants.ConfigArrayDelimiter} "; 
+
+        private static string exportArray(object value) {
+            object[] array = value as object[];
+            return string.Join(ARRAY_JOINT,array);
+        }
+
+        private static object parseKeys(string value) {
             if(!Enum.TryParse(keysType,value,out object cast)) {
                 return null;
             }
             return cast;
         }
 
-        private object parseStringArray(string value) {
+        private static object parseArray(string value) {
             if(string.IsNullOrEmpty(value)) {
                 return null;
             }
-            var items = value.Split(seperator,StringSplitOptions.RemoveEmptyEntries);
+            var items = value.Split(Constants.ConfigArrayDelimiter,StringSplitOptions.RemoveEmptyEntries);
             for(int i = 0;i<items.Length;i++) {
                 items[i] = items[i].Trim();
             }
@@ -76,15 +103,34 @@ namespace TwelveEngine.Config {
         public object Parse(PropertyType type,string value) {
             return parsers[type].Invoke(value);
         }
-        public bool HasType(PropertyType type) {
-            return parsers.ContainsKey(type);
-        }
-        public bool HasType(string typeName) {
-            return validTypes.ContainsKey(typeName);
-        }
-        public PropertyType GetType(string typeName) {
-            return validTypes[typeName];
+
+        public string Export(PropertyType type,object value) {
+            return exporters[type].Invoke(value);
         }
 
+        public bool HasType(string typeName) => validTypes.ContainsKey(typeName);
+
+        public bool TryGetType(string typeName,out PropertyType type) {
+            if(validTypes.ContainsKey(typeName)) {
+                type = validTypes[typeName];
+                return true;
+            }
+            type = PropertyType.Invalid;
+            return false;
+        }
+
+        public object TryParse(string typeName,string value) {
+            if(!TryGetType(typeName,out var type)) {
+                return null;
+            }
+            return Parse(type,value);
+        }
+
+        public string TryExport(string typeName,object value) {
+            if(!TryGetType(typeName,out var type)) {
+                return null;
+            }
+            return Export(type,value);
+        }
     }
 }

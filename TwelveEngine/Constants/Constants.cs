@@ -1,5 +1,4 @@
-﻿using System;
-using TwelveEngine.Config;
+﻿using TwelveEngine.Config;
 
 namespace TwelveEngine {
     public static partial class Constants {
@@ -19,6 +18,9 @@ namespace TwelveEngine {
         public const string PatternsImage = "patterns";
         public const string DefaultTileset = "tileset";
         public const string DefaultKeyBindsFile = "keybinds.config";
+
+        public const char ConfigValueOperand = '=';
+        public const char ConfigArrayDelimiter = ',';
 
         public static TwelveConfig Config { get; internal set; }
     }

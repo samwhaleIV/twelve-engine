@@ -7,9 +7,7 @@ using System.Reflection;
 namespace TwelveEngine.Config {
     public sealed class ConfigProcessor<TPropertySet> where TPropertySet : new() {
 
-        public const char VALUE_OPERAND = '=', ARRAY_DELIMITER = ',';
-
-        private readonly TypeParser typeParser = new TypeParser(ARRAY_DELIMITER);
+        private readonly TypeParser typeParser = new TypeParser();
 
         private readonly Type propertySetType;
         private readonly FieldInfo[] propertyFields;
@@ -22,7 +20,7 @@ namespace TwelveEngine.Config {
         private Dictionary<string,string> getFileProperties(string[] lines) {
             var dictionary = new Dictionary<string,string>();
             foreach(var line in lines) {
-                int splitIndex = line.IndexOf(VALUE_OPERAND);
+                int splitIndex = line.IndexOf(Constants.ConfigValueOperand);
                 if(splitIndex < 0) {
                     continue;
                 }
@@ -53,6 +51,7 @@ namespace TwelveEngine.Config {
                 if(!nameTable.ContainsKey(propertyName)) {
                     continue;
                 }
+
                 var propertyValue = item.Value;
                 var fieldIndex = nameTable[propertyName];
                 var field = propertyFields[fieldIndex];
@@ -63,15 +62,13 @@ namespace TwelveEngine.Config {
         }
 
         private void applyProperty(TPropertySet set,FieldInfo field,string propertyValue) {
-            var typeString = field.FieldType.FullName;
+            var typeName = field.FieldType.FullName;
 
-            if(!typeParser.HasType(typeString)) {
+            if(!typeParser.TryGetType(typeName,out var type)) {
                 return;
             }
 
-            var type = typeParser.GetType(typeString);
-
-            object boxedValue = getPropertyValue(type,propertyValue);
+            object boxedValue = typeParser.Parse(type,propertyValue);
             if(boxedValue == null) {
                 return;
             }
@@ -79,35 +76,48 @@ namespace TwelveEngine.Config {
             field.SetValue(set,boxedValue);
         }
 
-        private object getPropertyValue(PropertyType type,string value) {
-            if(!typeParser.HasType(type)) {
-                throw new Exception($"Missing PropertyType parser for type '{Enum.GetName(typeof(PropertyType),type)}'!");
-            }
-            return typeParser.Parse(type,value);
-        }
-
         public TPropertySet Load(string path) {
             var lines = File.ReadAllLines(path);
-
             var fileProperties = getFileProperties(lines);
+            return getPropertySet(fileProperties);
+        }
 
-            var propertySet = getPropertySet(fileProperties);
+        private bool tryGetValue(TPropertySet propertySet,FieldInfo field,out string value) {
+            if(!typeParser.TryGetType(field.FieldType.FullName,out var type)) {
+                value = null;
+                return false;
+            }
+            var fieldValue = field.GetValue(propertySet);
 
-            return propertySet;
+            if(fieldValue == null) {
+                value = null;
+                return false;
+            }
+            value = typeParser.Export(type,fieldValue);
+            return true;
         }
 
         public void Save(string path,TPropertySet propertySet) {
             var builder = new StringBuilder();
 
             foreach(var field in propertyFields) {
+
+                if(!tryGetValue(propertySet,field,out string value)) continue;
+
                 var propertyName = field.Name;
                 builder.Append(propertyName);
                 builder.Append(' ');
-                builder.Append(VALUE_OPERAND);
+                builder.Append(Constants.ConfigValueOperand);
                 builder.Append(' ');
-                builder.Append(field.GetValue(propertySet).ToString());
+                builder.Append(value);
                 builder.Append(Environment.NewLine);
             }
+
+            if(builder.Length < 1) {
+                File.WriteAllText(path,string.Empty);
+                return;
+            }
+
             builder.Remove(builder.Length-1,1);
 
             var contents = builder.ToString();
