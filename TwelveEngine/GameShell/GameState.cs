@@ -9,7 +9,7 @@ namespace TwelveEngine {
 
         public ImpulseHandler Input {
             get {
-                if(!IsLoaded) {
+                if(!IsLoaded && !IsLoading) {
                     throw new InvalidOperationException("Input cannot be accessed before loading.");
                 }
                 return Game.ImpulseHandler;
@@ -22,11 +22,14 @@ namespace TwelveEngine {
         public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
 
         public bool IsLoaded { get; private set; } = false;
+        public bool IsLoading { get; private set; } = false;
 
         internal void Load(GameManager game) {
+            IsLoading = true;
             Game = game;
             OnLoad?.Invoke();
             IsLoaded = true;
+            IsLoading = false;
         }
 
         internal void Unload() {
