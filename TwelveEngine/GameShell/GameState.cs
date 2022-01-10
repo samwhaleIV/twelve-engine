@@ -4,14 +4,22 @@ using TwelveEngine.Input;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine {
-    public abstract class GameState:ISerializable, IUpdateable, IRenderable {
+    public class GameState:ISerializable {
         public GameManager Game { get; private set; } = null;
-        public ImpulseHandler Input => Game.ImpulseHandler;
+
+        public ImpulseHandler Input {
+            get {
+                if(!IsLoaded) {
+                    throw new InvalidOperationException("Input cannot be accessed before loading.");
+                }
+                return Game.ImpulseHandler;
+            }
+        }
 
         public event Action OnLoad, OnUnload;
 
         public Action<SerialFrame> OnExport, OnImport;
-        protected event Action<GameTime> OnPreRender;
+        public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
 
         public bool IsLoaded { get; private set; } = false;
 
@@ -24,12 +32,12 @@ namespace TwelveEngine {
         internal void Unload() {
             OnUnload?.Invoke();
             Game = null;
+            IsLoaded = false;
         }
 
-        public abstract void Render(GameTime gameTime);
-        public abstract void Update(GameTime gameTime);
-
-        public void PreRender(GameTime gameTime) => OnPreRender?.Invoke(gameTime);
+        internal void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
+        internal void Render(GameTime gameTime) => OnRender?.Invoke(gameTime);
+        internal void PreRender(GameTime gameTime) => OnPreRender?.Invoke(gameTime);
 
         public void Export(SerialFrame frame) => OnExport?.Invoke(frame);
         public void Import(SerialFrame frame) => OnImport?.Invoke(frame);

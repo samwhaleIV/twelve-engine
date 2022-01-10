@@ -9,6 +9,8 @@ namespace TwelveEngine.UI {
         public UIGameState() {
             OnUnload += UIGameState_OnUnload;
             OnPreRender += UIGameState_OnPreRender;
+            OnRender += render;
+            OnUpdate += update;
         }
 
         private void UIGameState_OnPreRender(GameTime gameTime) {
@@ -33,12 +35,12 @@ namespace TwelveEngine.UI {
             }
         }
 
-        public override void Render(GameTime gameTime) {
+        private void render(GameTime gameTime) {
             Game.GraphicsDevice.Clear(Color.Black);
             state?.Render(gameTime);
         }
 
-        public override void Update(GameTime gameTime) => state?.Update(gameTime);
+        private void update(GameTime gameTime) => state?.Update(gameTime);
 
         public static GameState Create(Action<UIState> generateState) {
 

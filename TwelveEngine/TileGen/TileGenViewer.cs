@@ -18,6 +18,7 @@ namespace TwelveEngine.TileGen {
         public TileGenViewer() {
             OnLoad += TileGenViewer_OnLoad;
             OnUnload += TileGenViewer_OnUnload;
+            OnRender += render;
         }
 
         private void generatePatterns() {
@@ -57,9 +58,7 @@ namespace TwelveEngine.TileGen {
 
         private void ImpulseHandler_OnAcceptDown() => generatePatterns();
 
-        public override void Update(GameTime gameTime) {}
-
-        public override void Render(GameTime gameTime) {
+        private void render(GameTime gameTime) {
             Game.GraphicsDevice.Clear(Color.Black);
             if(texture == null) {
                 Game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);

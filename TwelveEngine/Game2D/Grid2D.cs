@@ -30,6 +30,9 @@ namespace TwelveEngine.Game2D {
 
             OnImport += Grid2D_OnImport;
             OnExport += Grid2D_OnExport;
+
+            OnRender += render;
+            OnUpdate += update;
         }
 
         public ImpulseGuide ImpulseGuide { get; private set; }
@@ -163,7 +166,7 @@ namespace TwelveEngine.Game2D {
         }
 
 
-        public override void Update(GameTime gameTime) {
+        private void update(GameTime gameTime) {
             EntityManager.IterateMutable(Entity2D.Update,gameTime);
         }
 
@@ -248,7 +251,7 @@ namespace TwelveEngine.Game2D {
             endSpriteBatch();
         }
 
-        public override void Render(GameTime gameTime) {
+        private void render(GameTime gameTime) {
             ScreenSpace = getScreenSpace(Game.GraphicsDevice.Viewport);
             tileRenderer.CacheArea(ScreenSpace);
 

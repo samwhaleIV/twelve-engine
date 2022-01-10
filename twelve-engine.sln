@@ -21,10 +21,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Map Encoding", "Map Encodin
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Porthole", "Porthole\Porthole.shproj", "{8E5E3DD6-2B80-4BF8-9755-BA8A8E4C59A2}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ElfGame", "ElfGame\ElfGame.shproj", "{365C0711-BC1F-4B64-B2D6-EF9A21B28150}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ElfGame\ElfGame.projitems*{365c0711-bc1f-4b64-b2d6-ef9a21b28150}*SharedItemsImports = 13
+		ElfGame\ElfGame.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		MapEncoder\MapEncoder.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
-		Porthole\Porthole.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		TwelveEngine\TwelveEngine.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		Porthole\Porthole.projitems*{8e5e3dd6-2b80-4bf8-9755-ba8a8e4c59a2}*SharedItemsImports = 13
 		TwelveEngine\TwelveEngine.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
