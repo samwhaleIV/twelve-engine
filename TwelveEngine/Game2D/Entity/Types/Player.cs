@@ -5,6 +5,24 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game2D.Entity.Types {
     public sealed class Player:MovingEntity2D {
 
+        private const float FRAME_TIME = 300, BLINK_RATE = 2900, BLINK_TIME = 200;
+
+        private const float VERTICAL_HITBOX_X = 1 / 16f; /* Notice: Hitbox math expects a symmetrical, entity-center aligned hitbox */
+        private const float VERTICAL_HITBOX_WIDTH = 14 / 16f;
+
+        private const float HORIZONTAL_HITBOX_X = 2 / 16f;
+        private const float HORIZONTAL_HITBOX_WIDTH = 12 / 16f;
+
+        private const float ORIENTATION_OFFSET = HORIZONTAL_HITBOX_X - VERTICAL_HITBOX_X;
+
+        private const float ANIM_JUMP_START = 0.5f;
+        private const int ANIM_ROWS = 4;
+
+        private TimeSpan lastBlink;
+        private TimeSpan? movingRenderStart = null;
+
+        private Texture2D playerTexure;
+
         public Player() {
             MaxSpeed = Constants.Config.PlayerSpeed;
             AccelRate = Constants.Config.PlayerAccel;
@@ -32,17 +50,6 @@ namespace TwelveEngine.Game2D.Entity.Types {
             Owner.Camera.Position = Position;
         }
 
-        private const float FRAME_TIME = 300, BLINK_RATE = 2900, BLINK_TIME = 200;
-
-        /* Notice: Hitbox math expects a symmetrical, entity-center aligned hitbox */
-        private const float VERTICAL_HITBOX_X = 1 / 16f;
-        private const float VERTICAL_HITBOX_WIDTH = 14 / 16f;
-
-        private const float HORIZONTAL_HITBOX_X = 2 / 16f;
-        private const float HORIZONTAL_HITBOX_WIDTH = 12 / 16f;
-
-        private const float ORIENTATION_OFFSET = HORIZONTAL_HITBOX_X - VERTICAL_HITBOX_X;
-
         protected override int GetEntityType() => Entity2DType.Player;
 
         private void Player_OnLoad() {
@@ -53,14 +60,6 @@ namespace TwelveEngine.Game2D.Entity.Types {
         public void Player_OnUnload() {
             Game.ImpulseHandler.OnAcceptDown -= QueueInteraction;
         }
-
-        private const float ANIM_JUMP_START = 0.5f;
-        private const int ANIM_ROWS = 4;
-
-        private TimeSpan lastBlink;
-        private TimeSpan? movingRenderStart = null;
-
-        private Texture2D playerTexure;
 
         protected override Hitbox GetHitbox() {
             /* Notice: This hitbox does not scale with Entity Width and Height properties */
@@ -79,7 +78,6 @@ namespace TwelveEngine.Game2D.Entity.Types {
         }
 
         protected override Point GetMovementDelta() => Game.ImpulseHandler.GetDirectionDelta();
-
 
         private bool isBlinking(GameTime gameTime) {
             var currentTime = gameTime.TotalGameTime;

@@ -84,7 +84,6 @@ namespace TwelveEngine {
         private readonly AutomationAgent automationAgent = new AutomationAgent();
         private readonly MouseHandler mouseHandler = new MouseHandler();
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
-        private readonly TimeoutManager timeout = new TimeoutManager();
 
         /* Public access */
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
@@ -94,17 +93,12 @@ namespace TwelveEngine {
         public MouseHandler MouseHandler => mouseHandler;
         public KeyBinds KeyBinds => keyBinds;
         public SpriteFont DefaultFont => spriteFont;
+        public GameTime Time => proxyGameTime;
 
         public KeyboardState KeyboardState => keyboardState;
         public MouseState MouseState => mouseState;
         public GamePadState GamePadState => gamePadState;
 
-        public bool CancelTimeout(int ID) {
-            return timeout.Remove(ID);
-        }
-        public int SetTimeout(Action action,TimeSpan timeout) {
-            return this.timeout.Add(action,timeout,proxyGameTime.TotalGameTime);
-        }
         public bool IsPaused {
             get => gamePaused;
             set => setPaused(value);
@@ -263,7 +257,6 @@ namespace TwelveEngine {
             impulseHandler.Update(keyboardState,gamePadState);
             mouseHandler.Update(mouseState);
 
-            timeout.Update(proxyGameTime.TotalGameTime);
             gameState.Update(proxyGameTime);
 
             automationAgent.EndUpdate();

@@ -1,11 +1,26 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using TwelveEngine.GameShell;
 using TwelveEngine.Input;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine {
     public class GameState:ISerializable {
+
+        private readonly TimeoutManager timeoutManager;
         public GameManager Game { get; private set; } = null;
+
+        public GameState() {
+            timeoutManager = new TimeoutManager();
+            OnUpdate += gameTime => timeoutManager.Update(gameTime.TotalGameTime);
+        }
+
+        public bool ClearTimeout(int ID) {
+            return timeoutManager.Remove(ID);
+        }
+        public int SetTimeout(Action action,TimeSpan delay) {
+            return timeoutManager.Add(action,delay,Game.Time.TotalGameTime);
+        }
 
         public ImpulseHandler Input {
             get {

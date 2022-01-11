@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameShell\TimeoutThread.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\String\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\TwelveConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\TwelveConfigSet.cs" />

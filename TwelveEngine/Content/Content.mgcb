@@ -37,6 +37,30 @@
 /processorParam:TextureFormat=Color
 /build:../../Content/controller-glyphs.png;controller-glyphs.png
 
+#begin ../../Content/elf-body.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../../Content/elf-body.png;elf-body.png
+
+#begin ../../Content/elf-face.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../../Content/elf-face.png;elf-face.png
+
 #begin ../../Content/hello-world.png
 /importer:TextureImporter
 /processor:TextureProcessor

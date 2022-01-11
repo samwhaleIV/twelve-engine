@@ -19,7 +19,7 @@ namespace TwelveEngine.GameShell {
 
         private readonly Dictionary<int,Set> sets = new Dictionary<int,Set>();
 
-        private int idCounter = 0;
+        private int idCounter = 1;
         private Set[] list = new Set[0];
 
         private bool listFrozen = false;
