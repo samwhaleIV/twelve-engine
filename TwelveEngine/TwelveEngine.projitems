@@ -42,6 +42,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseEndpoints.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Impulse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\KeyBindSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CPUTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameUI\ImpulseGuide.cs" />
@@ -57,7 +58,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\Rotation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\TileGenViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\TileGenSettings.cs" />
-    <Compile Include="..\TwelveEngine\Input\Impulse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IUpdateable.cs" />
@@ -124,9 +124,5 @@
     <Folder Include="$(MSBuildThisFileDirectory)Input\Watcher\" />
     <Folder Include="$(MSBuildThisFileDirectory)Serial\Binary\" />
     <Folder Include="$(MSBuildThisFileDirectory)Serial\String\" />
-  </ItemGroup>
-  <ItemGroup>
-    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
 </Project>
