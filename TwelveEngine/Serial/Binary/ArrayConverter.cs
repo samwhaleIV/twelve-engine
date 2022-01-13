@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace TwelveEngine.Serial.Binary {
-    internal static class ArrayConverter {
+    public static class ArrayConverter {
         internal static byte[] ToBytes(int[] array) {
             var byteArray = new byte[array.Length * sizeof(int)];
             Buffer.BlockCopy(array,0,byteArray,0,byteArray.Length);

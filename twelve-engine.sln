@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineCMD", "EngineCMD\Engi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledCompiler", "TiledCompiler\TiledCompiler.csproj", "{CE78CDD9-8CD2-407A-B5EB-832C4837D3BD}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MapFormat", "MapEncoder\MapFormat.shproj", "{E56962AA-CB12-4CE6-B75E-3D14382B4110}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Map Encoding", "Map Encoding", "{0F5445DA-1493-4E8B-B024-3CC428C94E31}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Porthole", "Porthole\Porthole.shproj", "{8E5E3DD6-2B80-4BF8-9755-BA8A8E4C59A2}"
@@ -27,12 +25,9 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ElfGame\ElfGame.projitems*{365c0711-bc1f-4b64-b2d6-ef9a21b28150}*SharedItemsImports = 13
 		ElfGame\ElfGame.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
-		MapEncoder\MapEncoder.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		TwelveEngine\TwelveEngine.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		Porthole\Porthole.projitems*{8e5e3dd6-2b80-4bf8-9755-ba8a8e4c59a2}*SharedItemsImports = 13
 		TwelveEngine\TwelveEngine.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
-		MapEncoder\MapEncoder.projitems*{ce78cdd9-8cd2-407a-b5eb-832c4837d3bd}*SharedItemsImports = 5
-		MapEncoder\MapEncoder.projitems*{e56962aa-cb12-4ce6-b75e-3d14382b4110}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,7 +117,6 @@ Global
 		{ACFBF054-13A9-423D-A02C-EC04F48BAB64} = {3011F088-EB04-438A-9014-1D539CFD9163}
 		{EA5B3977-98E9-4901-BFE9-BFDE345A8521} = {3011F088-EB04-438A-9014-1D539CFD9163}
 		{CE78CDD9-8CD2-407A-B5EB-832C4837D3BD} = {0F5445DA-1493-4E8B-B024-3CC428C94E31}
-		{E56962AA-CB12-4CE6-B75E-3D14382B4110} = {0F5445DA-1493-4E8B-B024-3CC428C94E31}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8D402DC-B34B-4D03-9F18-84DA46695DB2}

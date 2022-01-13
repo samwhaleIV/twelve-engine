@@ -9,6 +9,4 @@
     <PackageReference Include="TiledCS" Version="2.4.2" />
   </ItemGroup>
 
-  <Import Project="..\MapEncoder\MapEncoder.projitems" Label="Shared" />
-
 </Project>

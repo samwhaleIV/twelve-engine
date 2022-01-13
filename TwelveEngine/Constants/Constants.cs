@@ -1,4 +1,5 @@
-﻿using TwelveEngine.Config;
+﻿using System.Text;
+using TwelveEngine.Config;
 
 namespace TwelveEngine {
     public static partial class Constants {
@@ -21,6 +22,10 @@ namespace TwelveEngine {
 
         public const char ConfigValueOperand = '=';
         public const char ConfigArrayDelimiter = ',';
+
+        public const string MapDatabaseExtension = "temdb"; /* Twelve Engine Map Database */
+        public const string MapDatabase = "maps." + MapDatabaseExtension;
+        public static readonly Encoding MapStringEncoding = Encoding.UTF8;
 
         public static TwelveConfig Config { get; internal set; }
     }

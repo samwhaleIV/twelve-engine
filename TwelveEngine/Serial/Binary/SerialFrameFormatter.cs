@@ -3,13 +3,13 @@ using static System.BitConverter;
 using static System.Array;
 
 namespace TwelveEngine.Serial.Binary {
-    public sealed class MetaSerializer {
+    public sealed class SerialFrameFormatter {
 
         private readonly bool requiresByteFlip;
-        public MetaSerializer() {
+        public SerialFrameFormatter() {
             requiresByteFlip = !IsLittleEndian;
         }
-        public MetaSerializer(bool flipEndianness) {
+        public SerialFrameFormatter(bool flipEndianness) {
             requiresByteFlip = flipEndianness;
         }
 

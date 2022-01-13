@@ -29,6 +29,5 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
   </ItemGroup>
   <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
-  <Import Project="..\MapEncoder\MapEncoder.projitems" Label="Shared" />
   <Import Project="..\ElfGame\ElfGame.projitems" Label="Shared" />
 </Project>

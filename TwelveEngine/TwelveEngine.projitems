@@ -12,6 +12,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameShell\TimeoutThread.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\LayerEncodingMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\Map.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapDecoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapEncoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\String\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\TwelveConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\TwelveConfigSet.cs" />
@@ -68,7 +72,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\ArrayConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\ExportMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\ImportMethods.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\MetaSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\SerialFrameFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\Type.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\Value.cs" />
@@ -119,14 +123,10 @@
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\" />
     <Folder Include="$(MSBuildThisFileDirectory)Input\Watcher\" />
     <Folder Include="$(MSBuildThisFileDirectory)Serial\Binary\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Serial\Map\" />
     <Folder Include="$(MSBuildThisFileDirectory)Serial\String\" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
     <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\maps.temdb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>
