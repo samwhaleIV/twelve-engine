@@ -367,3 +367,9 @@ FodyWeavers.xsd
 
 # Map database
 *.temdb
+
+
+#Auto-Generated MGCB files
+Content/*.mgcb
+Output/bin/*
+Output/obj/*

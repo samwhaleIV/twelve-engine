@@ -9,6 +9,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <StartupObject>TwelveDesktop.Program</StartupObject>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />
@@ -26,4 +27,7 @@
   </ItemGroup>
   <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
   <Import Project="..\ElfGame\ElfGame.projitems" Label="Shared" />
+  <ItemGroup>
+    <MonoGameContentReference Include="..\Content\ElfGame.mgcb" />
+  </ItemGroup>
 </Project>
