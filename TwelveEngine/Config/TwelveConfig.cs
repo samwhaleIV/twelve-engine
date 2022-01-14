@@ -84,7 +84,7 @@ namespace TwelveEngine.Config {
             playerImage = set.PlayerImage;
             tileset = set.Tileset;
 
-            cpuTextures = set.CPUTextures;
+            cpuTextures = set.CPUTextures != null ? set.CPUTextures : new string[0];
             showCollision = set.ShowCollision;
 
             keyBindsFile = set.KeyBindsFile;

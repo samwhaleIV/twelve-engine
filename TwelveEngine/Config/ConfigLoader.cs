@@ -19,6 +19,15 @@ namespace TwelveEngine.Config {
             return keyBindSet;
         }
 
+        public static TPropertySet LoadEngineConfig<TPropertySet>(TPropertySet propertySet) where TPropertySet : TwelveConfigSet, new() {
+
+            var engineConfig = new TwelveConfig();
+            engineConfig.Import(propertySet);
+            Constants.Config = engineConfig;
+
+            return propertySet;
+        }
+
         public static TPropertySet LoadEngineConfig<TPropertySet>(string path = null) where TPropertySet : TwelveConfigSet, new() {
             if(path == null) {
                 path = Constants.EngineConfigFile;
@@ -33,11 +42,7 @@ namespace TwelveEngine.Config {
                 propertySet = processor.Load(lines);
             }
 
-            var engineConfig = new TwelveConfig();
-            engineConfig.Import(propertySet);
-            Constants.Config = engineConfig;
-
-            return propertySet;
+            return LoadEngineConfig(propertySet);
         }
 
         public static void LoadEngineConfig(string path = null) => LoadEngineConfig<TwelveConfigSet>(path);
