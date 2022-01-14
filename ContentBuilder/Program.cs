@@ -7,11 +7,10 @@ using System.Linq;
 namespace ContentBuilder {
     internal static class Program {
 
+        private static string Platform, GraphicsProfile;
+
         private const string ENGINE_FOLDER = "TwelveEngine";
         private const string CONTENT_FOLDER = "Content";
-
-        private const string PLATFORM = "DesktopGL";
-        private const string GRAPHICS_PROFILE = "Reach";
 
         private const string CHROMA_KEY = "255,0,255,255";
 
@@ -87,8 +86,8 @@ namespace ContentBuilder {
         }
 
         private static void AddGeneratorSettings(StringBuilder builder) {
-            builder.AppendLine($"/platform:{PLATFORM}");
-            builder.AppendLine($"/profile:{GRAPHICS_PROFILE}");
+            builder.AppendLine($"/platform:{Platform}");
+            builder.AppendLine($"/profile:{GraphicsProfile}");
             builder.AppendLine("/compress:False");
             builder.AppendLine();
         }
@@ -135,6 +134,10 @@ namespace ContentBuilder {
         }
 
         internal static void Main(string[] args) {
+
+            Platform = Environment.GetEnvironmentVariable("platform");
+            GraphicsProfile = Environment.GetEnvironmentVariable("profile");
+
             var rootPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),@"..\..\..\..\"));
             var contentFolder = Path.Combine(rootPath,CONTENT_FOLDER);
 

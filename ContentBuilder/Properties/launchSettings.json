@@ -1,7 +1,11 @@
 {
   "profiles": {
     "Build MGCB Files": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+        "platform": "DesktopGL",
+        "profile": "Reach"
+      }
     }
   }
 }
