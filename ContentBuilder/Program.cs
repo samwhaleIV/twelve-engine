@@ -41,7 +41,7 @@ namespace ContentBuilder {
             builder.AppendLine("/processorParam:ResizeToPowerOfTwo=False");
             builder.AppendLine("/processorParam:MakeSquare=False");
             builder.AppendLine("/processorParam:TextureFormat=Color");
-            builder.AppendLine($"/build:../{path};Content/{Path.GetFileName(path)}");
+            builder.AppendLine($"/build:../{path};{Path.GetFileName(path)}");
             builder.AppendLine();
         }
 
@@ -51,7 +51,7 @@ namespace ContentBuilder {
 
             builder.AppendLine("/processorParam:PremultiplyAlpha=True");
             builder.AppendLine("/processorParam:TextureFormat=Compressed");
-            builder.AppendLine($"/build:../{path};Content/{Path.GetFileName(path)}");
+            builder.AppendLine($"/build:../{path};{Path.GetFileName(path)}");
             builder.AppendLine();
         }
 
@@ -88,17 +88,15 @@ namespace ContentBuilder {
 
         private static void AddGeneratorSettings(StringBuilder builder) {
             builder.AppendLine($"/platform:{PLATFORM}");
-            builder.AppendLine("/outputDir:Output/obj/$(Platform)");
-            builder.AppendLine("/intermediateDir:Output/bin/$(Platform)");
-            builder.AppendLine("/config:");
             builder.AppendLine($"/profile:{GRAPHICS_PROFILE}");
             builder.AppendLine("/compress:False");
-            //builder.AppendLine("/incremental");
             builder.AppendLine();
         }
 
         private static void CreateMGCBFile(string path,string defaultContent,string folder) {
             var builder = new StringBuilder();
+            builder.AppendLine("# DO NOT EXECUTE OUTSIDE OF A BUILD PROCESS #");
+            builder.AppendLine();
 
             builder.AppendLine("# ---- Start Auto-Generated MGCB File ---- #");
             builder.AppendLine();
@@ -136,29 +134,31 @@ namespace ContentBuilder {
             return builder.ToString();
         }
 
-        internal static void Main() {
-
+        internal static void Main(string[] args) {
             var rootPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),@"..\..\..\..\"));
             var contentFolder = Path.Combine(rootPath,CONTENT_FOLDER);
 
             var engineContentFolder = Path.Combine(contentFolder,ENGINE_FOLDER);
-
             var defaultContent = CreateDefaultContent(engineContentFolder);
 
             var contentDirectories = Directory.GetDirectories(contentFolder).ToList();
-            contentDirectories.Remove(engineContentFolder);
 
-            var badFolders = new List<string>() { "bin", "obj", "Output" };
+            var badFolders = new List<string>() { "bin", "obj" };
 
             foreach(var folder in contentDirectories) {
                 var name = GetTopLevelName(folder);
                 if(badFolders.Contains(name)) {
                     continue;
                 }
+                string content;
+                if(folder == engineContentFolder) {
+                    content = string.Empty;
+                } else {
+                    content = defaultContent;
+                }
                 var outputFile = Path.Combine(contentFolder,name) + ".mgcb";
-                CreateMGCBFile(outputFile,defaultContent,folder);
+                CreateMGCBFile(outputFile,content,folder);
             }
-
         }
     }
 }
