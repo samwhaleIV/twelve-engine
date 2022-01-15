@@ -107,7 +107,7 @@ namespace TwelveEngine.Config {
                 builder.Append(Constants.ConfigValueOperand);
                 builder.Append(' ');
                 builder.Append(value);
-                builder.Append(Environment.NewLine);
+                builder.AppendLine();
             }
 
             if(builder.Length < 1) {

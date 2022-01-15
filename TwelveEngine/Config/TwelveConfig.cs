@@ -3,10 +3,25 @@
 namespace TwelveEngine.Config {
     public sealed class TwelveConfig {
 
-        /* This exists to serve as a readonly interface for Constants.Config */
+        /* This exists to serve as a readonly interface for Constants.Config.
+         * In addition, it allows conversions from binary types to engine types */
 
-        private static PlayerIndex gamePadIndex;
-        public PlayerIndex GamePadIndex => gamePadIndex;
+        public int RenderScale { get; private set; }
+        public float InteractSize { get; private set; }
+        public int TileSize { get; private set; }
+        public bool ShowCollision { get; private set; }
+        public string Tileset { get; private set; }
+        public string PlayerImage { get; private set; }
+        public string PlaybackFolder { get; private set; }
+        public string DefaultPlaybackFile { get; private set; }
+        public float PlayerAccel { get; private set; }
+        public float PlayerDeaccel { get; private set; }
+        public float PlayerSpeed { get; private set; }
+        public string KeyBindsFile { get; private set; }
+
+        private static PlayerIndex _gamePadIndex;
+        public PlayerIndex GamePadIndex => _gamePadIndex;
+
         private void setGamePadIndex(int value) {
             var minValue = (int)PlayerIndex.One;
             var maxValue = (int)PlayerIndex.Four;
@@ -15,103 +30,66 @@ namespace TwelveEngine.Config {
             } else if(value > maxValue) {
                 value = maxValue;
             }
-            gamePadIndex = (PlayerIndex)value;
+            _gamePadIndex = (PlayerIndex)value;
         }
 
-        private int renderScale;
-        public int RenderScale => renderScale;
+        private static T[] getArrayCopy<T>(T[] array) {
+            var copy = new T[array.Length];
+            array.CopyTo(copy,0);
+            return copy;
+        }
 
-        private float interactSize;
-        public float InteractSize => interactSize;
+        private string[] _cpuTextures = new string[0];
+        public string[] CPUTextures => getArrayCopy(_cpuTextures);
 
-        private string contentDirectory;
-        public string ContentDirectory => contentDirectory;
-
-        private int tileSize;
-        public int TileSize => tileSize;
-
-        private bool showCollision;
-        public bool ShowCollision => showCollision;
-
-        private string tileset;
-        public string Tileset => tileset;
-
-        private string playerImage;
-        public string PlayerImage => playerImage;
-
-        private string playbackFolder;
-        public string PlaybackFolder => playbackFolder;
-
-        private string defaultPlaybackFile;
-        public string DefaultPlaybackFile => defaultPlaybackFile;
-
-        private float playerAccel;
-        public float PlayerAccel => playerAccel;
-
-        private float playerDeaccel;
-        public float PlayerDeaccel => playerDeaccel;
-
-        private float playerSpeed;
-        public float PlayerSpeed => playerSpeed;
-
-        private string keyBindsFile;
-        public string KeyBindsFile => keyBindsFile;
-
-        private string[] cpuTextures;
-        public string[] CPUTextures {
-            get {
-                var copy = new string[cpuTextures.Length];
-                cpuTextures.CopyTo(copy,0);
-                return copy;
-            }
+        private void setCPUTextures(string[] textures) {
+            if(textures != null) _cpuTextures = textures;
         }
 
         public void Save(string path = null) => ConfigWriter.SaveEngineConfig(path);
 
         internal void Import(TwelveConfigSet set) {
-            renderScale = set.RenderScale;
-            tileSize = set.TileSize;
+            RenderScale = set.RenderScale;
+            TileSize = set.TileSize;
             setGamePadIndex(set.GamePadIndex);
 
-            playerSpeed = set.PlayerSpeed;
-            playerAccel = set.PlayerAccel;
-            playerDeaccel = set.PlayerDeaccel;
-            interactSize = set.InteractSize;
+            PlayerSpeed = set.PlayerSpeed;
+            PlayerAccel = set.PlayerAccel;
+            PlayerDeaccel = set.PlayerDeaccel;
+            InteractSize = set.InteractSize;
 
-            playbackFolder = set.PlaybackFolder;
-            defaultPlaybackFile = set.DefaultPlaybackFile;
-            contentDirectory = set.ContentDirectory;
-            playerImage = set.PlayerImage;
-            tileset = set.Tileset;
+            PlaybackFolder = set.PlaybackFolder;
+            DefaultPlaybackFile = set.DefaultPlaybackFile;
+            PlayerImage = set.PlayerImage;
+            Tileset = set.Tileset;
 
-            cpuTextures = set.CPUTextures != null ? set.CPUTextures : new string[0];
-            showCollision = set.ShowCollision;
+            setCPUTextures(set.CPUTextures);
+            ShowCollision = set.ShowCollision;
 
-            keyBindsFile = set.KeyBindsFile;
+            KeyBindsFile = set.KeyBindsFile;
         }
 
         internal TwelveConfigSet Export() {
             var set = new TwelveConfigSet();
 
-            set.RenderScale = renderScale;
-            set.TileSize = tileSize;
-            set.GamePadIndex = (int)gamePadIndex;
+            set.RenderScale = RenderScale;
+            set.TileSize = TileSize;
+            set.GamePadIndex = (int)GamePadIndex;
 
-            set.PlayerSpeed = playerSpeed;
-            set.PlayerAccel = playerAccel;
-            set.PlayerDeaccel = playerDeaccel;
-            set.InteractSize = interactSize;
+            set.PlayerSpeed = PlayerSpeed;
+            set.PlayerAccel = PlayerAccel;
+            set.PlayerDeaccel = PlayerDeaccel;
+            set.InteractSize = InteractSize;
 
-            set.PlaybackFolder = playbackFolder;
-            set.DefaultPlaybackFile = defaultPlaybackFile;
-            set.ContentDirectory = contentDirectory;
-            set.PlayerImage = playerImage;
-            set.Tileset = tileset;
+            set.PlaybackFolder = PlaybackFolder;
+            set.DefaultPlaybackFile = DefaultPlaybackFile;
+            set.PlayerImage = PlayerImage;
+            set.Tileset = Tileset;
 
-            set.CPUTextures = cpuTextures;
-            set.ShowCollision = showCollision;
+            set.CPUTextures = CPUTextures;
+            set.ShowCollision = ShowCollision;
 
-            set.KeyBindsFile = keyBindsFile;
+            set.KeyBindsFile = KeyBindsFile;
 
             return set;
         }

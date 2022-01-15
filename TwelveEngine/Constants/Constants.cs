@@ -13,9 +13,11 @@ namespace TwelveEngine {
         public const int ShiftFrameSkip = 30;
         public const int ScreenEdgePadding = 8;
 
+        public const string ContentDirectory = "Content";
+
         public const string PlaybackFileExt = "teinp"; /* Twelve Engine (Playback) Input (File) */
         public const string EngineConfigFile = "twelve.config";
-        public const string DefaultFont = "default-font";
+        public const string DebugFont = "debug-font";
         public const string PatternsImage = "patterns";
         public const string DefaultTileset = "tileset";
         public const string DefaultKeyBindsFile = "keybinds.config";

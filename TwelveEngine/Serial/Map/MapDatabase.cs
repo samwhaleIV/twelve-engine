@@ -23,9 +23,8 @@ namespace TwelveEngine.Serial.Map {
             return File.Open(path,FileMode.Open,FileAccess.Read,FileShare.Read);
         }
 
-        public static void LoadMaps() {
-            var path = $"{Constants.Config.ContentDirectory}/{Constants.MapDatabase}";
-            using(var file = getDatabaseReadStream(path)) {
+        public static void LoadMaps(string mapDatabase) {
+            using(FileStream file = getDatabaseReadStream(mapDatabase)) {
                 var decoder = new MapDecoder(file);
                 decoder.ReadDatabase(addMap);
             }

@@ -12,7 +12,6 @@
 
         public string PlaybackFolder = "playback";
         public string DefaultPlaybackFile = "default" + '.' + Constants.PlaybackFileExt;
-        public string ContentDirectory = "Content";
         public string PlayerImage = "player";
         public string Tileset = Constants.DefaultTileset;
 

@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Build MGCB Files": {
+    "Bake MGCB Files": {
       "commandName": "Project",
       "environmentVariables": {
         "platform": "DesktopGL",

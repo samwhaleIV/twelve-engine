@@ -14,7 +14,7 @@ namespace TwelveEngine {
 
         public GameManager() {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
-            Content.RootDirectory = Constants.Config.ContentDirectory;
+            Content.RootDirectory = Constants.ContentDirectory;
             IsMouseVisible = true;
 
             graphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
@@ -186,6 +186,8 @@ namespace TwelveEngine {
         }
 
         public void SetState(GameState state) => SetState(() => state);
+        public void SetState<TState>() where TState : GameState, new() => SetState(new TState());
+        public void SetState<TState,TData>(TData data) where TState : DynamicGameState<TData> => SetState(new DynamicGameState<TData>(data));
 
         protected override void Initialize() {
             Window.AllowUserResizing = true;
@@ -201,7 +203,7 @@ namespace TwelveEngine {
                 CPUTexture.LoadDictionary(Content,cpuTextures);
             }
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteFont = Content.Load<SpriteFont>(Constants.DefaultFont);
+            spriteFont = Content.Load<SpriteFont>(Constants.DebugFont);
             vcrDisplay.Load();
             initialized = true;
             OnLoad?.Invoke(this);

@@ -8,13 +8,16 @@ using TwelveEngine.Input.Glyphs;
 namespace TwelveEngine.GameUI {
     public sealed class ImpulseGuide {
 
+        private const string GAMEPAD_GLYPHS = "ImpulseGuide/controller-glyphs";
+        private const string KEYBOARD_GLYPHS = "ImpulseGuide/keyboard-glyphs";
+        private const string GUIDE_FONT = "ImpulseGuide/impulse-guide-font";
+
         public int GlyphScale { get; set; } = 2;
 
         public int ScreenEdgePadding { get; set; } = Constants.ScreenEdgePadding;
         public int VerticalPadding { get; set; } = 4;
         public int TextPadding { get; set; } = 4;
 
-        private const string GAMEPAD_GLYPHS = "controller-glyphs", KEYBOARD_GLYPHS = "keyboard-glyphs", GUIDE_FONT = "guide-font";
         private Texture2D gamePadTexture, keyboardTexture;
 
         private readonly ImpulseHandler impulseHandler;
