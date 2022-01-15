@@ -2,35 +2,40 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ContentBuilder {
     internal static class Program {
 
-        private static string Platform, GraphicsProfile;
-
         private const string ENGINE_FOLDER = "TwelveEngine";
         private const string CONTENT_FOLDER = "Content";
-
         private const string CHROMA_KEY = "255,0,255,255";
+        private const string MGCB_EXTENSION = ".mgcb";
 
-        private static readonly Dictionary<string,Action<StringBuilder,string>> FileProcessors = new Dictionary<string,Action<StringBuilder,string>>() {
-            { ".jpg", ImageProcessor },
-            { ".jpeg", ImageProcessor },
-            { ".png", ImageProcessor },
-            { ".spritefont", SpriteFontProcessor }
-        };
+        /* Is Path.Combine'ed to Directory.GetCurrentDirectory() */
+        private const string ENGINE_ROOT_RESOLVER = @"..\..\..\..\"; 
 
-        private static string GetRelativePathName(string file) {
-            var fileSplit = file.Split(Path.DirectorySeparatorChar);
+        private static readonly string Platform, GraphicsProfile;
 
-            var contentStart = Array.IndexOf(fileSplit,CONTENT_FOLDER);
-            var path = string.Join('/',fileSplit,contentStart,fileSplit.Length-contentStart);
-
-            return path;
+        static Program() {
+            Platform = Environment.GetEnvironmentVariable("platform");
+            GraphicsProfile = Environment.GetEnvironmentVariable("profile");
         }
 
-        private static void ImageProcessor(StringBuilder builder,string path) {
+        private static readonly Dictionary<string,Action<StringBuilder,string>> Preprocessors = new Dictionary<string,Action<StringBuilder,string>>() {
+            { ".jpg", AddImage },
+            { ".jpeg", AddImage },
+            { ".png", AddImage },
+            { ".spritefont", AddSpriteFont }
+        };
+
+        private static string GetFileName(string path) {
+            string[] segments = path.Split(Path.DirectorySeparatorChar);
+            int contentStart = Array.IndexOf(segments,CONTENT_FOLDER);
+            string fileName = string.Join('/',segments,contentStart,segments.Length-contentStart);
+            return fileName;
+        }
+
+        private static void AddImage(StringBuilder builder,string path) {
             builder.AppendLine("/importer:TextureImporter");
             builder.AppendLine("/processor:TextureProcessor");
             builder.AppendLine($"/processorParam:ColorKeyColor={CHROMA_KEY}");
@@ -44,7 +49,7 @@ namespace ContentBuilder {
             builder.AppendLine();
         }
 
-        private static void SpriteFontProcessor(StringBuilder builder,string path) {
+        private static void AddSpriteFont(StringBuilder builder,string path) {
             builder.AppendLine("/importer:FontDescriptionImporter");
             builder.AppendLine("/processor:FontDescriptionProcessor");
 
@@ -54,113 +59,95 @@ namespace ContentBuilder {
             builder.AppendLine();
         }
 
-        private static void AddFile(StringBuilder builder,string file) {
-            var extension = Path.GetExtension(file);
-
-            if(!FileProcessors.ContainsKey(extension)) {
-                Console.WriteLine($"No file processor for type '{extension}'");
+        private static void AddFile(StringBuilder builder,string path) {
+            string extension = Path.GetExtension(path);
+            string name = GetFileName(path);
+            if(!Preprocessors.ContainsKey(extension)) {
+                Console.WriteLine($"No file processor for '{name}' of type '{extension}'");
                 return;
             } else {
-                FileProcessors[extension].Invoke(builder,GetRelativePathName(file));
-                Console.WriteLine($"'{Path.GetFileName(file)}' added to manifest");
+                Preprocessors[extension].Invoke(builder,name);
+                Console.WriteLine($"'{name}' added to manifest");
             }
         }
 
-        private static void SymbolizeFolder(StringBuilder builder,string folder) {
-
-            var directories = Directory.GetDirectories(folder,"*",SearchOption.AllDirectories);
-            var files = Directory.GetFiles(folder,"*",SearchOption.TopDirectoryOnly).ToList();
-
-            foreach(var directory in directories) {
-                files.AddRange(Directory.GetFiles(directory,"*",SearchOption.TopDirectoryOnly));
-            }
-
-            foreach(var file in files) {
-                AddFile(builder,file);
-            }
+        private static string GetContentDirectoryName(string directory) {
+            string[] segments = directory.Split(Path.DirectorySeparatorChar);
+            return segments[segments.Length - 1];
         }
 
-        private static string GetTopLevelName(string folder) {
-            var path = folder.Split(Path.DirectorySeparatorChar);
-            return path[path.Length - 1];
-        }
-
-        private static void AddGeneratorSettings(StringBuilder builder) {
+        private static void AddMGCBSettings(StringBuilder builder) {
             builder.AppendLine($"/platform:{Platform}");
             builder.AppendLine($"/profile:{GraphicsProfile}");
             builder.AppendLine("/compress:False");
             builder.AppendLine();
         }
 
-        private static void CreateMGCBFile(string path,string defaultContent,string folder) {
-            var builder = new StringBuilder();
+        private static string GetMGCBFile(string directory,string defaultContent) {
+            StringBuilder builder = new StringBuilder();
             builder.AppendLine("# DO NOT EXECUTE OUTSIDE OF A BUILD PROCESS #");
             builder.AppendLine();
-
             builder.AppendLine("# ---- Start Auto-Generated MGCB File ---- #");
             builder.AppendLine();
 
-            AddGeneratorSettings(builder);
-
+            AddMGCBSettings(builder);
             builder.Append(defaultContent);
-
-            AddFolder(builder,folder);
+            AddDirectory(builder,directory);
 
             builder.AppendLine("# ---- End Auto-Generated MGCB File ---- #");
-
-            File.WriteAllText(path,builder.ToString());
-        }
-
-        private static void AddFolder(StringBuilder builder,string folder) {
-            var topLevelName = GetTopLevelName(folder);
-
-            builder.Append("# ---- Start ");
-            builder.Append(topLevelName);
-            builder.AppendLine(" ---- #");
-            builder.AppendLine();
-
-            SymbolizeFolder(builder,folder);
-
-            builder.Append("# ---- End ");
-            builder.Append(topLevelName);
-            builder.AppendLine(" ---- #");
-            builder.AppendLine();
-        }
-
-        private static string CreateDefaultContent(string folder) {
-            var builder = new StringBuilder();
-            AddFolder(builder,folder);
+            
             return builder.ToString();
         }
 
-        internal static void Main(string[] args) {
+        private static void AddDirectory(StringBuilder builder,string directory) {
+            string name = GetContentDirectoryName(directory);
 
-            Platform = Environment.GetEnvironmentVariable("platform");
-            GraphicsProfile = Environment.GetEnvironmentVariable("profile");
+            builder.Append("# ---- Start ");
+            builder.Append(name);
+            builder.AppendLine(" ---- #");
+            builder.AppendLine();
 
-            var rootPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),@"..\..\..\..\"));
-            var contentFolder = Path.Combine(rootPath,CONTENT_FOLDER);
+            string[] files = Directory.GetFiles(directory,"*",SearchOption.AllDirectories);
+            foreach(string file in files) AddFile(builder,file);
 
-            var engineContentFolder = Path.Combine(contentFolder,ENGINE_FOLDER);
-            var defaultContent = CreateDefaultContent(engineContentFolder);
+            builder.Append("# ---- End ");
+            builder.Append(name);
+            builder.AppendLine(" ---- #");
+            builder.AppendLine();
+        }
 
-            var contentDirectories = Directory.GetDirectories(contentFolder).ToList();
+        private static string GetDirectoryContent(string directory) {
+            StringBuilder builder = new StringBuilder();
+            AddDirectory(builder,directory);
+            return builder.ToString();
+        }
 
-            var badFolders = new List<string>() { "bin", "obj" };
+        private static string GetContentRoot() {
+            string twelveEnginePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(),ENGINE_ROOT_RESOLVER));
+            return Path.Combine(twelveEnginePath,CONTENT_FOLDER);
+        }
 
-            foreach(var folder in contentDirectories) {
-                var name = GetTopLevelName(folder);
-                if(badFolders.Contains(name)) {
-                    continue;
-                }
-                string content;
-                if(folder == engineContentFolder) {
-                    content = string.Empty;
-                } else {
-                    content = defaultContent;
-                }
-                var outputFile = Path.Combine(contentFolder,name) + ".mgcb";
-                CreateMGCBFile(outputFile,content,folder);
+        private static string GetEngineContent(string contentRoot) {
+            string directory = Path.Combine(contentRoot,ENGINE_FOLDER);
+            return GetDirectoryContent(directory);
+        }
+
+        internal static void Main() {
+            string contentRoot = GetContentRoot();
+            string[] contentDirectories = Directory.GetDirectories(contentRoot);
+
+            HashSet<string> badDirectories = new HashSet<string>() { "bin", "obj", ENGINE_FOLDER };
+
+            string defaultContent = GetEngineContent(contentRoot);
+
+            foreach(string directory in contentDirectories) {
+                string name = GetContentDirectoryName(directory);
+                if(badDirectories.Contains(name)) continue;
+
+                string outputFile = Path.Combine(contentRoot,name) + MGCB_EXTENSION;
+                string fileContents = GetMGCBFile(directory,defaultContent);
+
+                File.WriteAllText(outputFile,fileContents);
             }
         }
     }
