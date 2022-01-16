@@ -103,18 +103,10 @@ namespace TwelveEngine.Input {
         public Point GetDirectionDelta() {
             var delta = Point.Zero;
 
-            if(IsKeyDown(Impulse.Up)) {
-                delta.Y--;
-            }
-            if(IsKeyDown(Impulse.Down)) {
-                delta.Y++;
-            }
-            if(IsKeyDown(Impulse.Left)) {
-                delta.X--;
-            }
-            if(IsKeyDown(Impulse.Right)) {
-                delta.X++;
-            }
+            if(IsKeyDown(Impulse.Up)) delta.Y--;
+            if(IsKeyDown(Impulse.Down)) delta.Y++;
+            if(IsKeyDown(Impulse.Left)) delta.X--;
+            if(IsKeyDown(Impulse.Right)) delta.X++;
 
             return delta;
         }

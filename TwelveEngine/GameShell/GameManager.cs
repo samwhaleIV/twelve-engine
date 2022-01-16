@@ -29,8 +29,8 @@ namespace TwelveEngine {
             automationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
 
             keyBinds = KeyBinds.Load(out KeyBindSet keyBindSet);
-            keyWatcherSet = new KeyWatcherSet(getDebugControls(keyBindSet));
             impulseHandler = new ImpulseHandler(keyBinds);
+            keyWatcherSet = new KeyWatcherSet(getDebugControls(keyBindSet));
         }
 
         private (Keys key, Action action)[] getDebugControls(KeyBindSet keyBindSet) => new (Keys, Action)[]{
@@ -185,9 +185,21 @@ namespace TwelveEngine {
             pendingGameState = newGameState;
         }
 
+        
         public void SetState(GameState state) => SetState(() => state);
+
         public void SetState<TState>() where TState : GameState, new() => SetState(new TState());
-        public void SetState<TState,TData>(TData data) where TState : DynamicGameState<TData> => SetState(new DynamicGameState<TData>(data));
+
+        public void SetState<TState,TData>(TData data) where TState : DynamicGameState<TData>, new() {
+            Func<GameState> load = () => {
+                var state = new TState();
+                state.SetData(data);
+                return state;
+            };
+            SetState(load);
+        }
+
+        public void SetState<TState>(string data) where TState : DynamicGameState<string>, new() => SetState<TState,string>(data);
 
         protected override void Initialize() {
             Window.AllowUserResizing = true;

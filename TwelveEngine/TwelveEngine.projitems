@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\ModelTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameShell\DynamicGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameShell\TimeoutThread.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\LayerEncodingMode.cs" />
@@ -119,11 +120,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\RenderElementSorter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIState.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Input\Watcher\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Serial\Binary\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Serial\String\" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\ArrayConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\SerialFrameFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\Type.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\Value.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\String\PropertyType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serial\String\TypeParser.cs" />
   </ItemGroup>
 </Project>

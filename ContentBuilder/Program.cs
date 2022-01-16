@@ -13,6 +13,8 @@ namespace ContentBuilder {
         private const string CHROMA_KEY = "255,0,255,255";
         private const string TEXTURE_FORMAT = "Color";
 
+        private const bool COMPRESS_CONTENT = false;
+
         /* Is Path.Combine'ed to Directory.GetCurrentDirectory() */
         private const string ENGINE_ROOT_RESOLVER = @"..\..\..\..\";
         private const bool PREFIX_ENGINE_NAMESPACE = false;
@@ -73,7 +75,10 @@ namespace ContentBuilder {
             builder.AppendLine($"/platform:{Platform}");
             builder.AppendLine("/config:");
             builder.AppendLine($"/profile:{GraphicsProfile}");
-            builder.AppendLine("/compress:False");
+
+            string compress = COMPRESS_CONTENT ? "True" : "False";
+            builder.AppendLine($"/compress:{compress}");
+
             builder.AppendLine("/clean");
             builder.AppendLine();
         }

@@ -12,6 +12,9 @@ namespace TwelveEngine.Input {
 
         public const Buttons Accept = Buttons.A;
         public const Buttons Cancel = Buttons.B;
+
+        public const Buttons Add = Buttons.LeftShoulder;
+        public const Buttons Subtract = Buttons.RightShoulder;
     }
 
     public sealed partial class ImpulseHandler {
@@ -21,7 +24,9 @@ namespace TwelveEngine.Input {
             { Impulse.Left, Left },
             { Impulse.Right, Right },
             { Impulse.Accept, Accept },
-            { Impulse.Cancel, Cancel }
+            { Impulse.Cancel, Cancel },
+            { Impulse.Add, Add },
+            { Impulse.Subtract, Subtract }
         };
     }
 }

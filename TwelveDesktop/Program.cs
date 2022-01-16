@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using TwelveEngine;
 using TwelveEngine.Config;
 using TwelveEngine.TileGen;
+using TwelveEngine.Game3D;
 
 namespace TwelveDesktop {
 
@@ -13,8 +14,12 @@ namespace TwelveDesktop {
                 CPUTextures = new string[] { "patterns" }
             });
             using var game = new GameManager();
-            game.OnLoad += game => game.SetState<TileGenViewer>();
+            game.OnLoad += Game_OnLoad;
             game.Run(GameRunBehavior.Synchronous);
+        }
+
+        private static void Game_OnLoad(GameManager game) {
+            game.SetState<ModelTest>("ModelTest/VCR-Tape");
         }
     }
 }
