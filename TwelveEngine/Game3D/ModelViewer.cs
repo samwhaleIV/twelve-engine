@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using TwelveEngine.Serial;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D.Camera;
 
@@ -14,6 +16,19 @@ namespace TwelveEngine.Game3D {
             camera.NearPlane = 0.1f;
             camera.Position = new Vector3(0,0,-0.25f);
             camera.Target = Vector3.Zero;
+
+            OnImport += ModelViewer_OnImport;
+            OnExport += ModelViewer_OnExport;
+        }
+
+        private void ModelViewer_OnExport(SerialFrame frame) => frame.Set(angle);
+
+        private void ModelViewer_OnImport(SerialFrame frame) {
+            var startAngle = angle;
+            angle = frame.GetVector3();
+            if(startAngle != angle) {
+                UpdateModelMatrix();
+            }
         }
 
         public float RotationSpeed { get; set; } = 0.05f;
@@ -40,6 +55,10 @@ namespace TwelveEngine.Game3D {
             return (float)gameTime.ElapsedGameTime.TotalMilliseconds * VELOCITY_BASE * RotationSpeed;
         }
 
+        private void UpdateModelMatrix() {
+            modelMatrix = originMatrix * Matrix.CreateFromYawPitchRoll(angle.X,angle.Y,angle.Z);
+        }
+
         private void ModelTest_OnUpdate(GameTime gameTime) {
             camera.UpdateMatrices(Game.GraphicsDevice.Viewport.AspectRatio);
 
@@ -51,7 +70,7 @@ namespace TwelveEngine.Game3D {
             float velocity = GetRotationVelocity(gameTime);
             angle += rotationDelta * new Vector3(velocity);
 
-            modelMatrix = originMatrix * Matrix.CreateFromYawPitchRoll(angle.X,angle.Y,angle.Z);
+            UpdateModelMatrix();
         }
 
         private void UpdateMeshEffect(BasicEffect effect) {

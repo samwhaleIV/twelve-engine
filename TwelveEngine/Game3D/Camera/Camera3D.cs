@@ -39,7 +39,6 @@ namespace TwelveEngine.Game3D.Camera {
             lastFarPlane = FarPlane;
         }
 
-        /* Warning: The matrices are not updated automatically after Import(SerialFrame) */
         public void UpdateMatrices(float aspectRatio) {
             if(!hasProjectionMatrix || IsProjectionMatrixStale(aspectRatio)) {
                 ProjectionMatrix = GetProjectionMatrix(aspectRatio);

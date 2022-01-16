@@ -33,7 +33,7 @@ namespace TwelveEngine {
 
         public event Action OnLoad, OnUnload;
 
-        public Action<SerialFrame> OnExport, OnImport;
+        public event Action<SerialFrame> OnExport, OnImport;
         public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
 
         public bool IsLoaded { get; private set; } = false;
