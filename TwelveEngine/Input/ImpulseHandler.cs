@@ -110,5 +110,18 @@ namespace TwelveEngine.Input {
 
             return delta;
         }
+
+        public Vector3 Get3DRotationDelta() {
+            int x = 0, y = 0, z = 0;
+
+            if(IsKeyDown(Impulse.Left)) x--;
+            if(IsKeyDown(Impulse.Right)) x++;
+            if(IsKeyDown(Impulse.Up)) y--;
+            if(IsKeyDown(Impulse.Down)) y++;
+            if(IsKeyDown(Impulse.Subtract)) z--;
+            if(IsKeyDown(Impulse.Add)) z++;
+
+            return new Vector3(x,y,z);
+        }
     }
 }

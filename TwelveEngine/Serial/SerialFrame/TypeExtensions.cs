@@ -20,14 +20,25 @@ namespace TwelveEngine.Serial {
             Set(point.X);
             Set(point.Y);
         }
+        public void Set(Vector3 vector) {
+            Set(vector.X);
+            Set(vector.Y);
+            Set(vector.Z);
+        }
 
         public Vector2 GetVector2() {
             float x = GetFloat(), y = GetFloat();
             return new Vector2(x,y);
         }
+
         public Point GetPoint() {
             int x = GetInt(), y = GetInt();
             return new Point(x,y);
+        }
+
+        public Vector3 GetVector3() {
+            float x = GetFloat(), y = GetFloat(), z = GetFloat();
+            return new Vector3(x,y,z);
         }
     }
 }

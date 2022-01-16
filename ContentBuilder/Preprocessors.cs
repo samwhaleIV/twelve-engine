@@ -25,7 +25,7 @@ namespace ContentBuilder {
             builder.AppendLine("/processorParam:PremultiplyAlpha=True");
             builder.AppendLine("/processorParam:ResizeToPowerOfTwo=False");
             builder.AppendLine("/processorParam:MakeSquare=False");
-            builder.AppendLine($"/processorParam:TextureFormat={ TextureFormat }");
+            builder.AppendLine($"/processorParam:TextureFormat={TextureFormat}");
         }
 
         private void AddSpriteFont(StringBuilder builder) {
@@ -51,7 +51,7 @@ namespace ContentBuilder {
             builder.AppendLine("/processorParam:RotationZ=0");
             builder.AppendLine("/processorParam:Scale=1");
             builder.AppendLine("/processorParam:SwapWindingOrder=False");
-            builder.AppendLine("/processorParam:TextureFormat=Compressed");
+            builder.AppendLine("/processorParam:TextureFormat=Color");
         }
 
     }

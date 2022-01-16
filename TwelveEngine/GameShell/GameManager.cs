@@ -190,7 +190,7 @@ namespace TwelveEngine {
 
         public void SetState<TState>() where TState : GameState, new() => SetState(new TState());
 
-        public void SetState<TState,TData>(TData data) where TState : DynamicGameState<TData>, new() {
+        public void SetState<TState,TData>(TData data) where TState : DataGameState<TData>, new() {
             Func<GameState> load = () => {
                 var state = new TState();
                 state.SetData(data);
@@ -199,7 +199,7 @@ namespace TwelveEngine {
             SetState(load);
         }
 
-        public void SetState<TState>(string data) where TState : DynamicGameState<string>, new() => SetState<TState,string>(data);
+        public void SetState<TState>(string data) where TState : DataGameState<string>, new() => SetState<TState,string>(data);
 
         protected override void Initialize() {
             Window.AllowUserResizing = true;
