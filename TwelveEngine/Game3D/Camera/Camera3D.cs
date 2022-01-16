@@ -15,9 +15,8 @@ namespace TwelveEngine.Game3D.Camera {
 
         private float GetFieldOfView() => MathHelper.ToRadians(FieldOfView);
 
-        private float lastAspectRatio = 0f;
-
-        private bool hasViewMatrix = false;
+        private float lastAspectRatio, lastFieldOfView, lastNearPlane, lastFarPlane;
+        private bool hasProjectionMatrix = false, hasViewMatrix = false;
 
         private Matrix GetProjectionMatrix(float aspectRatio) {
             return Matrix.CreatePerspectiveFieldOfView(GetFieldOfView(),aspectRatio,NearPlane,FarPlane);
@@ -26,11 +25,26 @@ namespace TwelveEngine.Game3D.Camera {
         protected abstract Matrix GetViewMatrix();
         protected abstract bool IsViewMatrixStale();
 
+        private bool IsProjectionMatrixStale(float aspectRatio) {
+            return !(aspectRatio == lastAspectRatio &&
+                FieldOfView == lastFieldOfView &&
+                NearPlane == lastNearPlane &&
+                FarPlane == lastFarPlane);
+        }
+
+        private void UpdateProjectionData(float aspectRatio) {
+            lastAspectRatio = aspectRatio;
+            lastFieldOfView = FieldOfView;
+            lastNearPlane = NearPlane;
+            lastFarPlane = FarPlane;
+        }
+
         /* Warning: The matrices are not updated automatically after Import(SerialFrame) */
         public void UpdateMatrices(float aspectRatio) {
-            if(aspectRatio != lastAspectRatio) {
+            if(!hasProjectionMatrix || IsProjectionMatrixStale(aspectRatio)) {
                 ProjectionMatrix = GetProjectionMatrix(aspectRatio);
-                lastAspectRatio = aspectRatio;
+                UpdateProjectionData(aspectRatio);
+                hasProjectionMatrix = true;
             }
 
             if(!hasViewMatrix || IsViewMatrixStale()) {
