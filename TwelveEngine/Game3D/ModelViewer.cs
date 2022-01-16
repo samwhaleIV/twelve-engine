@@ -3,22 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D.Camera;
 
 namespace TwelveEngine.Game3D {
-    public sealed class ModelTest:DataGameState<string> {
+    public sealed class ModelViewer:DataGameState<string> {
 
-        public float RotationSpeed { get; set; } = 0.05f;
-
-        private const float VELOCITY_BASE = 1f / (1000f / 60f);
-
-        private Model model;
-
-        private readonly TargetCamera camera = new TargetCamera();
-
-        private Vector3 angle = Vector3.Zero;
-
-        private readonly Matrix originMatrix = Matrix.CreateWorld(Vector3.Zero, Vector3.Forward, Vector3.Up);
-        private Matrix modelMatrix;
-
-        public ModelTest() {
+        public ModelViewer() {
             OnLoad += ModelTest_OnLoad;
 
             OnUpdate += ModelTest_OnUpdate;
@@ -29,9 +16,25 @@ namespace TwelveEngine.Game3D {
             camera.Target = Vector3.Zero;
         }
 
-        private void ModelTest_OnLoad() {
-            model = Game.Content.Load<Model>(Data);
+        public float RotationSpeed { get; set; } = 0.05f;
+        private const float VELOCITY_BASE = 1f / (1000f / 60f);
+
+        private Model model;
+
+        private readonly TargetCamera camera = new TargetCamera();
+
+        private static Matrix GetOriginMatrix() {
+            return Matrix.CreateWorld(Vector3.Zero,Vector3.Forward,Vector3.Up);
         }
+
+        private readonly Matrix originMatrix = GetOriginMatrix();
+
+        public TargetCamera Camera => camera;
+
+        private Vector3 angle = Vector3.Zero;
+        private Matrix modelMatrix = GetOriginMatrix();
+
+        private void ModelTest_OnLoad() => model = Game.Content.Load<Model>(Data);
 
         private float GetRotationVelocity(GameTime gameTime) {
             return (float)gameTime.ElapsedGameTime.TotalMilliseconds * VELOCITY_BASE * RotationSpeed;
@@ -41,6 +44,9 @@ namespace TwelveEngine.Game3D {
             camera.UpdateMatrices(Game.GraphicsDevice.Viewport.AspectRatio);
 
             var rotationDelta = Input.Get3DRotationDelta();
+            if(rotationDelta == Vector3.Zero) {
+                return;
+            }
 
             float velocity = GetRotationVelocity(gameTime);
             angle += rotationDelta * new Vector3(velocity);
