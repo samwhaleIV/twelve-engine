@@ -124,14 +124,8 @@ namespace TwelveEngine.Game2D {
             EntityManager = entityManager;
         }
 
-        private void loadImpulseGuide() {
-            var impulseGuide = new ImpulseGuide(Game);
-            impulseGuide.Load();
-            ImpulseGuide = impulseGuide;
-        }
-
         private void Grid2D_OnLoad() {
-            loadImpulseGuide();          
+            ImpulseGuide = new ImpulseGuide(Game);
             collisionInterface.Types.LoadTypes();
             loadEntityManager();
             if(pendingTileRenderer != null) {

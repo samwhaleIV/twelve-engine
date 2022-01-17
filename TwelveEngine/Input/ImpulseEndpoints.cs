@@ -36,28 +36,20 @@ namespace TwelveEngine.Input {
                 () => OnDirectionUp?.Invoke(Direction.Right)
             )},
 
-            {Impulse.Add,(
-                () => OnAddDown?.Invoke(),
-                () => OnAddUp?.Invoke()
-            )},
-
-            {Impulse.Subtract,(
-                () => OnSubtractDown?.Invoke(),
-                () => OnSubtractUp?.Invoke()
+            {Impulse.Toggle,(
+                () => OnToggleDown?.Invoke(),
+                () => OnToggleUp?.Invoke()
             )},
         };
+
+        public event Action OnToggleDown;
+        public event Action OnToggleUp;
 
         public event Action OnAcceptDown;
         public event Action OnAcceptUp;
 
         public event Action OnCancelDown;
         public event Action OnCancelUp;
-
-        public event Action OnAddDown;
-        public event Action OnAddUp;
-
-        public event Action OnSubtractDown;
-        public event Action OnSubtractUp;
 
         public event Action<Direction> OnDirectionUp;
         public event Action<Direction> OnDirectionDown;

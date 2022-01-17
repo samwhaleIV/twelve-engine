@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ElfGame {
+﻿namespace ElfGame {
     internal static class Constants {
         public const string ElfFaceImage = "elf-face";
         public const double ElfBlinkDuration = 250;

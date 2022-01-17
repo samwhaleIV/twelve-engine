@@ -13,8 +13,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\AngleCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\Camera3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\GridLines.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\ModelViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Orientation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameShell\DataGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameShell\TimeoutThread.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\LayerEncodingMode.cs" />

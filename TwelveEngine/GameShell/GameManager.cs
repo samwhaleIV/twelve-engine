@@ -53,51 +53,41 @@ namespace TwelveEngine {
             IsFixedTimeStep = true;
         }
 
-        /* Runtime state variables */
+        /* State fields */
         private GameState gameState = null;
         private SerialFrame savedState = null;
 
-        private KeyboardState keyboardState;
-        private MouseState mouseState;
-        private GamePadState gamePadState;
-
         /* Loading, automation, and time maniuplation state */
-        private bool initialized = false;
-        private bool fastForwarding = false;
-        private bool shouldAdvanceFrame = false;
+        private bool initialized = false, gamePaused = false, updating = false, rendering = false;
+
+        private bool fastForwarding = false, shouldAdvanceFrame = false;
         private int framesToSkip = 0;
-        private bool gamePaused = false;
 
-        private bool updating = false;
-        private bool rendering = false;
-
-        /* Runtime fixed variables (These should not be updated after initialization) */
-        private SpriteBatch spriteBatch;
-        private SpriteFont spriteFont;
-
-        /* GameManager, "God class", extensions */
+        /* God class extensions */
         private readonly GraphicsDeviceManager graphicsDeviceManager;
         private readonly VCRDisplay vcrDisplay;
         private readonly KeyWatcherSet keyWatcherSet;
         private readonly ImpulseHandler impulseHandler;
         private readonly KeyBinds keyBinds;
+
         private readonly AutomationAgent automationAgent = new AutomationAgent();
         private readonly MouseHandler mouseHandler = new MouseHandler();
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
 
         /* Public access */
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
-        public SpriteBatch SpriteBatch => spriteBatch;
         public AutomationAgent AutomationAgent => automationAgent;
         public ImpulseHandler ImpulseHandler => impulseHandler;
         public MouseHandler MouseHandler => mouseHandler;
         public KeyBinds KeyBinds => keyBinds;
-        public SpriteFont DefaultFont => spriteFont;
         public GameTime Time => proxyGameTime;
 
-        public KeyboardState KeyboardState => keyboardState;
-        public MouseState MouseState => mouseState;
-        public GamePadState GamePadState => gamePadState;
+        public SpriteBatch SpriteBatch { get; private set; }
+        public SpriteFont DebugFont { get; private set; }
+
+        public KeyboardState KeyboardState { get; private set; }
+        public MouseState MouseState { get; private set; }
+        public GamePadState GamePadState { get; private set; }
 
         public bool IsPaused {
             get => gamePaused;
@@ -214,8 +204,8 @@ namespace TwelveEngine {
             if(cpuTextures.Length > 0) {
                 CPUTexture.LoadDictionary(Content,cpuTextures);
             }
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteFont = Content.Load<SpriteFont>(Constants.DebugFont);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            DebugFont = Content.Load<SpriteFont>(Constants.DebugFont);
             vcrDisplay.Load();
             initialized = true;
             OnLoad?.Invoke(this);
@@ -264,12 +254,12 @@ namespace TwelveEngine {
                 automationAgent.UpdateRecordingFrame(proxyGameTime);
             }
 
-            keyboardState = getKeyboardState();
-            mouseState = getMouseState();
-            gamePadState = getGamePadState();
+            KeyboardState = getKeyboardState();
+            MouseState = getMouseState();
+            GamePadState = getGamePadState();
 
-            impulseHandler.Update(keyboardState,gamePadState);
-            mouseHandler.Update(mouseState);
+            impulseHandler.Update(KeyboardState,GamePadState);
+            mouseHandler.Update(MouseState);
 
             gameState.Update(proxyGameTime);
 

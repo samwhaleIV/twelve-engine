@@ -19,22 +19,22 @@ namespace TwelveEngine {
         }
 
         private void renderGameTime() {
-            int lineHeight = 24;
+            int lineHeight = DebugFont.LineSpacing;
             Vector2 position = new Vector2 {
                 X = Constants.ScreenEdgePadding,
-                Y = GraphicsDevice.Viewport.Height - lineHeight * 4 - 2
+                Y = GraphicsDevice.Viewport.Height - lineHeight * 4 - Constants.ScreenEdgePadding * 0.5f
             };
             SpriteBatch.Begin();
 
             updateTime.TotalMilliseconds.ToString();
-            spriteBatch.DrawString(spriteFont,proxyGameTime.TotalGameTime.ToString("hh\\:mm\\:ss\\:ff"),position,Color.White);
+            SpriteBatch.DrawString(DebugFont,proxyGameTime.TotalGameTime.ToString("hh\\:mm\\:ss\\:ff"),position,Color.White);
             position.Y += lineHeight;
-            spriteBatch.DrawString(spriteFont,$"FPS: {getFps():F}",position,Color.White);
+            SpriteBatch.DrawString(DebugFont,$"FPS: {getFps():F}",position,Color.White);
             position.Y += lineHeight;
-            spriteBatch.DrawString(spriteFont,$"Update: {string.Format("{0:0.00}",updateTime.TotalMilliseconds)}ms",position,Color.White);
+            SpriteBatch.DrawString(DebugFont,$"Update: {string.Format("{0:0.00}",updateTime.TotalMilliseconds)}ms",position,Color.White);
             position.Y += lineHeight;
-            spriteBatch.DrawString(spriteFont,$"Render: {string.Format("{0:0.00}",renderTime.TotalMilliseconds)}ms",position,Color.White);
-            spriteBatch.End();
+            SpriteBatch.DrawString(DebugFont,$"Render: {string.Format("{0:0.00}",renderTime.TotalMilliseconds)}ms",position,Color.White);
+            SpriteBatch.End();
         }
     }
 }

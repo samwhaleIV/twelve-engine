@@ -31,12 +31,11 @@ namespace TwelveEngine.GameUI {
 
         public ImpulseGuide(GameManager game) {
             this.game = game;
+
             impulseHandler = game.ImpulseHandler;
             gamePadMap.LoadGlyphs();
             keyboardMap.LoadGlyphs();
-        }
 
-        public void Load() {
             gamePadTexture = game.Content.Load<Texture2D>(GAMEPAD_GLYPHS);
             keyboardTexture = game.Content.Load<Texture2D>(KEYBOARD_GLYPHS);
             guideFont = game.Content.Load<SpriteFont>(GUIDE_FONT);

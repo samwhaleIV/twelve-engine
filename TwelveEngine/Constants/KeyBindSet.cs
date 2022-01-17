@@ -21,8 +21,10 @@ namespace TwelveEngine.Config {
         public Keys Accept = Keys.E;
         public Keys Cancel = Keys.Escape;
 
-        public Keys Add = Keys.OemPlus;
-        public Keys Subtract = Keys.OemMinus;
+        public Keys Ascend = Keys.Space;
+        public Keys Descend = Keys.LeftControl;
+
+        public Keys Toggle = Keys.Tab;
     }
 }
 namespace TwelveEngine.Input {
@@ -36,9 +38,10 @@ namespace TwelveEngine.Input {
             { Impulse.Accept, keyBindSet.Accept },
             { Impulse.Cancel, keyBindSet.Cancel },
 
-            { Impulse.Add, keyBindSet.Add },
-            { Impulse.Subtract, keyBindSet.Subtract }
+            { Impulse.Ascend, keyBindSet.Ascend },
+            { Impulse.Descend, keyBindSet.Descend },
+
+            { Impulse.Toggle, keyBindSet.Toggle }
         };
     }
 }
-

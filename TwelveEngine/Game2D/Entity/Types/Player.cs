@@ -77,7 +77,7 @@ namespace TwelveEngine.Game2D.Entity.Types {
             return new Hitbox(location,size);
         }
 
-        protected override Point GetMovementDelta() => Game.ImpulseHandler.GetDirectionDelta();
+        protected override Point GetMovementDelta() => Game.ImpulseHandler.GetDelta2D();
 
         private bool isBlinking(GameTime gameTime) {
             var currentTime = gameTime.TotalGameTime;

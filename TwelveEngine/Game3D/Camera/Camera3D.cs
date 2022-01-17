@@ -1,7 +1,7 @@
 ﻿using TwelveEngine.Serial;
 using Microsoft.Xna.Framework;
 
-namespace TwelveEngine.Game3D.Camera {
+namespace TwelveEngine.Game3D {
     public abstract class Camera3D:ISerializable {
 
         public Vector3 Position { get; set; } = Vector3.Zero;

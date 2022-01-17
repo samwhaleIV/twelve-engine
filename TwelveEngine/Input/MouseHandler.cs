@@ -8,15 +8,22 @@ namespace TwelveEngine.Input {
         public event Action<Point> OnMouseDown, OnMouseUp, OnMouseMove;
         public event Action<Point,ScrollDirection> OnMouseScroll;
 
-        private MouseState? lastState;
+        private MouseState? lastState = null;
 
-        private bool mouseIsDown = false;
-        public bool Capturing => mouseIsDown;
+        public bool Capturing { get; private set; }
 
-        private Point position;
+        public Point Position { get; private set; }
+        public Point Delta { get; private set; }
 
-        public int X => position.X;
-        public int Y => position.Y;
+        public int X => Position.X;
+        public int Y => Position.Y;
+
+        public int XDelta => Delta.X;
+        public int YDelta => Delta.Y;
+
+        private void FireScrollEvent(int delta) {
+            OnMouseScroll?.Invoke(Position,delta > 0 ? ScrollDirection.Up : ScrollDirection.Down);
+        }
 
         public void Update(MouseState mouseState) {
             if(!this.lastState.HasValue) {
@@ -24,26 +31,27 @@ namespace TwelveEngine.Input {
             }
             var lastState = this.lastState.Value;
 
-            position = mouseState.Position;
+            Position = mouseState.Position;
+            Delta = lastState.Position - Position;
 
             if(mouseState.LeftButton != lastState.LeftButton) {
                 if(mouseState.LeftButton == ButtonState.Pressed) {
-                    mouseIsDown = true;
-                    OnMouseDown?.Invoke(position);
+                    Capturing = true;
+                    OnMouseDown?.Invoke(Position);
                 } else {
-                    mouseIsDown = false;
-                    OnMouseUp?.Invoke(position);
+                    Capturing = false;
+                    OnMouseUp?.Invoke(Position);
                 }
             }
 
             int scrollDelta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
 
             if(scrollDelta != 0) {
-                OnMouseScroll?.Invoke(position,scrollDelta > 0 ? ScrollDirection.Up : ScrollDirection.Down);
+                FireScrollEvent(scrollDelta);
             }
 
-            if(position != lastState.Position) {
-                OnMouseMove?.Invoke(position);
+            if(Position != lastState.Position) {
+                OnMouseMove?.Invoke(Position);
             }
 
             this.lastState = mouseState;

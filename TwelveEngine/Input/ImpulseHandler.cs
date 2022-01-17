@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using TwelveEngine.Game3D;
 
 namespace TwelveEngine.Input {
 
@@ -72,6 +73,11 @@ namespace TwelveEngine.Input {
                 }
 
                 impulseStates[impulse] = newState;
+
+                if(!endpoints.TryGetValue(impulse,out var endpoint)) {
+                    continue;
+                }
+
                 if(newState == KeyState.Down) {
                     endpoints[impulse].Down();
                 } else {
@@ -100,7 +106,7 @@ namespace TwelveEngine.Input {
             return impulseStates[impulse] == KeyState.Up;
         }
 
-        public Point GetDirectionDelta() {
+        public Point GetDelta2D() {
             var delta = Point.Zero;
 
             if(IsKeyDown(Impulse.Up)) delta.Y--;
@@ -111,15 +117,15 @@ namespace TwelveEngine.Input {
             return delta;
         }
 
-        public Vector3 Get3DRotationDelta() {
+        public Vector3 GetDelta3D() {
             int x = 0, y = 0, z = 0;
 
             if(IsKeyDown(Impulse.Left)) x--;
             if(IsKeyDown(Impulse.Right)) x++;
             if(IsKeyDown(Impulse.Up)) y--;
             if(IsKeyDown(Impulse.Down)) y++;
-            if(IsKeyDown(Impulse.Subtract)) z--;
-            if(IsKeyDown(Impulse.Add)) z++;
+            if(IsKeyDown(Impulse.Ascend)) z--;
+            if(IsKeyDown(Impulse.Descend)) z++;
 
             return new Vector3(x,y,z);
         }

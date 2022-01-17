@@ -35,7 +35,6 @@ namespace TwelveEngine.TileGen {
             generatePatterns();
 
             impulseGuide = new ImpulseGuide(Game);
-            impulseGuide.Load();
 
             impulseGuide.SetDescriptions(
                 (Impulse.Accept, "Generate Tiles"),
