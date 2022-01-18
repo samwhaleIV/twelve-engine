@@ -7,9 +7,43 @@ namespace TwelveEngine.Game3D {
         private static readonly Color X_AXIS_COLOR = Color.Red;
         private static readonly Color Y_AXIS_COLOR = Color.GreenYellow;
         private static readonly Color Z_AXIS_COLOR = Color.Blue;
+        private static readonly Color GRID_COLOR = Color.DarkGray;
+
+        private float cellSize = 1f;
+        private int gridSize = 40;
+
+        public float CellSize {
+            get => cellSize;
+            set {
+                if(cellSize == value) {
+                    return;
+                }
+                cellSize = value;
+                if(!loaded) {
+                    return;
+                }
+                UpdateVertices();
+            }
+        }
+
+        public int GridSize {
+            get => gridSize;
+            set {
+                if(gridSize == value) {
+                    return;
+                }
+                gridSize = value;
+                if(!loaded) {
+                    return;
+                }
+                UpdateVertices();
+            }
+        }
 
         private BasicEffect effect;
         private GraphicsDevice graphicsDevice;
+
+        private bool loaded = false;
 
         public void Load(GraphicsDevice graphicsDevice) {
             effect = new BasicEffect(graphicsDevice) {
@@ -17,6 +51,7 @@ namespace TwelveEngine.Game3D {
                 TextureEnabled = false
             };
             this.graphicsDevice = graphicsDevice;
+            UpdateVertices();
         }
         public void Unload() {
             effect?.Dispose();
@@ -26,10 +61,6 @@ namespace TwelveEngine.Game3D {
             return new VertexPositionColor(position,color);
         }
 
-        private static VertexPositionColor[] GetVertices(Vector3 start,Vector3 end,Color color) {
-            return new[] { GetVertexPosition(start,color), GetVertexPosition(end,color) };
-        }
-
         private void UpdateEffect(Camera3D camera) {
             effect.View = camera.ViewMatrix;
             effect.Projection = camera.ProjectionMatrix;
@@ -37,38 +68,39 @@ namespace TwelveEngine.Game3D {
 
         private VertexPositionColor[] vertices;
 
-        private void UpdateVertices(Camera3D camera) {
+        private void UpdateVertices() {
+            var lineCount = gridSize + 1;
 
-            var length = camera.FarPlane;
-            var position = Vector3.Zero;
+            vertices = new VertexPositionColor[lineCount * 4 + 2];
 
-            var xAxis = GetVertices(
-                new Vector3(-length + position.X,0,0),
-                new Vector3(length + position.X,0,0),
-                X_AXIS_COLOR
-            );
-            var yAxis = GetVertices(
-                new Vector3(0,-length + position.Y,0),
-                new Vector3(0,length + position.Y,0),
-                Y_AXIS_COLOR
-            );
-            var zAxis = GetVertices(
-                new Vector3(0,0,-length + position.Z),
-                new Vector3(0,0,length + position.Z),
-                Z_AXIS_COLOR
-            );
+            var length = gridSize * cellSize;
+            var gridStart = gridSize * -0.5f;
 
-            vertices = new VertexPositionColor[] {
-                xAxis[0], xAxis[1],
-                yAxis[0], yAxis[1],
-                zAxis[0], zAxis[1]
-            };
+            int index = 0;
+
+            for(int i = 0;i<lineCount;i++) {
+                var axisStart = gridStart + i * cellSize;
+                Color xColor = GRID_COLOR, yColor = GRID_COLOR;
+
+                if(axisStart == 0) {
+                    xColor = X_AXIS_COLOR;
+                    yColor = Y_AXIS_COLOR;
+                }
+
+                vertices[index++] = GetVertexPosition(new Vector3(axisStart,gridStart,0),xColor);
+                vertices[index++] = GetVertexPosition(new Vector3(axisStart,gridStart+length,0),xColor);
+
+
+                vertices[index++] = GetVertexPosition(new Vector3(gridStart,axisStart,0),yColor);
+                vertices[index++] = GetVertexPosition(new Vector3(gridStart+length,axisStart,0),yColor);
+            }
+
+            var halfLength = length * 0.5f;
+            vertices[index++] = GetVertexPosition(new Vector3(0,0,-halfLength),Z_AXIS_COLOR);
+            vertices[index++] = GetVertexPosition(new Vector3(0,0,halfLength),Z_AXIS_COLOR);
         }
 
-        public void Update(Camera3D camera) {
-            UpdateEffect(camera);
-            UpdateVertices(camera);
-        }
+        public void Update(Camera3D camera) => UpdateEffect(camera);
 
         public void Render() {
             effect.CurrentTechnique.Passes[0].Apply();

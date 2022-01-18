@@ -6,16 +6,19 @@ using TwelveEngine.GameUI;
 namespace TwelveEngine.Game3D {
     public sealed class ModelViewer:DataGameState<string> {
 
+        private const float VELOCITY_BASE = 1f / (1000f / 60f);
+        public const float MOUSE_SPEED = 0.15f;
+
+        public float ModelRotationSpeed { get; set; } = 0.05f;
+        public float FreeCamSpeed { get; set; } = 0.05f;
+
         private ImpulseGuide ImpulseGuide { get; set; }
-
-        public const float MOUSE_SPEED = 0.1f;
-
         private readonly GridLines gridLines = new GridLines();
 
         private void UpdateImpulseGuide() {
             if(ControlModel) {
                 ImpulseGuide.SetDescriptions(
-                    (Impulse.Toggle, "Control Mode"),
+                    (Impulse.Toggle, "Control Mode (Model)"),
                     (Impulse.Up, "-Y"),
                     (Impulse.Down, "+Y"),
                     (Impulse.Left, "-X"),
@@ -25,7 +28,7 @@ namespace TwelveEngine.Game3D {
                 );
             } else {
                 ImpulseGuide.SetDescriptions(
-                    (Impulse.Toggle, "Control Mode"),
+                    (Impulse.Toggle, "Control Mode (Camera)"),
                     (Impulse.Up, "Forward"),
                     (Impulse.Down, "Reverse"),
                     (Impulse.Left, "Left"),
@@ -72,11 +75,6 @@ namespace TwelveEngine.Game3D {
             frame.Get(camera);
         }
 
-        public float RotationSpeed { get; set; } = 0.05f;
-        public float FreeCamSpeed { get; set; } = 0.01f;
-
-        private const float VELOCITY_BASE = 1f / (1000f / 60f);
-
         private Model model;
 
         private readonly AngleCamera camera;
@@ -98,6 +96,11 @@ namespace TwelveEngine.Game3D {
 
         private void ModelTest_OnLoad() {
             model = Game.Content.Load<Model>(Data);
+            foreach(var mesh in model.Meshes) {
+                foreach(BasicEffect effect in mesh.Effects) {
+                    effect.EnableDefaultLighting();
+                }
+            }
             gridLines.Load(Game.GraphicsDevice);
             Input.OnToggleDown += Input_OnToggleDown;
             ImpulseGuide = new ImpulseGuide(Game);
@@ -108,7 +111,7 @@ namespace TwelveEngine.Game3D {
             return (float)gameTime.ElapsedGameTime.TotalMilliseconds * VELOCITY_BASE * velocity;
         }
 
-        private float GetRotationVelocity(GameTime gameTime) => GetVelocity(gameTime,RotationSpeed);
+        private float GetRotationVelocity(GameTime gameTime) => GetVelocity(gameTime,ModelRotationSpeed);
         private float GetFreeCamVelocity(GameTime gameTime) => GetVelocity(gameTime,FreeCamSpeed);
 
         private void UpdateModelMatrix() {
