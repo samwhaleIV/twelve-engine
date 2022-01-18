@@ -56,6 +56,22 @@ namespace TwelveEngine.Game3D {
             OnExport += ModelViewer_OnExport;
         }
 
+        private void Camera_OnViewMatrixChanged(Matrix viewMatrix) {
+            foreach(var mesh in model.Meshes) {
+                foreach(BasicEffect effect in mesh.Effects) {
+                    effect.View = viewMatrix;
+                }
+            }
+        }
+
+        private void Camera_OnProjectionMatrixChanged(Matrix projectionMatrix) {
+            foreach(var mesh in model.Meshes) {
+                foreach(BasicEffect effect in mesh.Effects) {
+                    effect.Projection = projectionMatrix;
+                }
+            }
+        }
+
         private void ModelViewer_OnUnload() {
             gridLines.Unload();
             Input.OnToggleDown -= Input_OnToggleDown;
@@ -92,7 +108,6 @@ namespace TwelveEngine.Game3D {
         private readonly Matrix originMatrix = GetOriginMatrix();
 
         private Vector3 angle = Vector3.Zero;
-        private Matrix modelMatrix = GetOriginMatrix();
 
         private void ModelTest_OnLoad() {
             model = Game.Content.Load<Model>(Data);
@@ -101,7 +116,10 @@ namespace TwelveEngine.Game3D {
                     effect.EnableDefaultLighting();
                 }
             }
-            gridLines.Load(Game.GraphicsDevice);
+            UpdateModelMatrix();
+            camera.OnProjectionMatrixChanged += Camera_OnProjectionMatrixChanged;
+            camera.OnViewMatrixChanged += Camera_OnViewMatrixChanged;
+            gridLines.Load(Game.GraphicsDevice,camera);
             Input.OnToggleDown += Input_OnToggleDown;
             ImpulseGuide = new ImpulseGuide(Game);
             UpdateImpulseGuide();
@@ -115,7 +133,12 @@ namespace TwelveEngine.Game3D {
         private float GetFreeCamVelocity(GameTime gameTime) => GetVelocity(gameTime,FreeCamSpeed);
 
         private void UpdateModelMatrix() {
-            modelMatrix = originMatrix * Matrix.CreateFromYawPitchRoll(angle.X,angle.Y,angle.Z);
+            var modelMatrix = originMatrix * Matrix.CreateFromYawPitchRoll(angle.X,angle.Y,angle.Z);
+            foreach(var mesh in model.Meshes) {
+                foreach(BasicEffect effect in mesh.Effects) {
+                    effect.World = modelMatrix;
+                }
+            }
         }
 
         private void RotateModel(GameTime gameTime) {
@@ -143,18 +166,11 @@ namespace TwelveEngine.Game3D {
             if(!ControlModel) {
                 UpdateCamera(gameTime);
             }
-            camera.UpdateMatrices(Game.GraphicsDevice.Viewport.AspectRatio);
-            gridLines.Update(camera);
+            camera.Update(Game.GraphicsDevice.Viewport.AspectRatio);
 
             if(ControlModel) {
                 RotateModel(gameTime);
             }
-        }
-
-        private void UpdateMeshEffect(BasicEffect effect) {
-            effect.Projection = camera.ProjectionMatrix;
-            effect.View = camera.ViewMatrix;
-            effect.World = modelMatrix;
         }
 
         private void ConfigureSamplerState() {
@@ -177,9 +193,6 @@ namespace TwelveEngine.Game3D {
             gridLines.Render();
             ConfigureSamplerState();
             foreach(var mesh in model.Meshes) {
-                foreach(BasicEffect effect in mesh.Effects) {
-                    UpdateMeshEffect(effect);
-                }
                 mesh.Draw();
             }
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);

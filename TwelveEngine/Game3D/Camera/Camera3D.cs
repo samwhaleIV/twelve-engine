@@ -1,4 +1,5 @@
-﻿using TwelveEngine.Serial;
+﻿using System;
+using TwelveEngine.Serial;
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game3D {
@@ -60,6 +61,8 @@ namespace TwelveEngine.Game3D {
         public Matrix ViewMatrix { get; private set; }
         public Matrix ProjectionMatrix { get; private set; }
 
+        public event Action<Matrix> OnViewMatrixChanged, OnProjectionMatrixChanged;
+
         private float GetFieldOfView() => MathHelper.ToRadians(FieldOfView);
 
         private Matrix GetProjectionMatrix(float aspectRatio) {
@@ -68,15 +71,24 @@ namespace TwelveEngine.Game3D {
 
         private float lastAspectRatio = 0f;
 
-        public void UpdateMatrices(float aspectRatio) {
+        public void Update(float aspectRatio) {
+            bool viewMatrixChanged = false, projectionMatrixChanged = false;
             if(aspectRatio != lastAspectRatio || !IsProjectionMatrixValid) {
                 ProjectionMatrix = GetProjectionMatrix(aspectRatio);
-                ValidateProjectionMatrix();
                 lastAspectRatio = aspectRatio;
+                ValidateProjectionMatrix();
+                projectionMatrixChanged = true;
             }
             if(!IsViewMatrixValid) {
                 ViewMatrix = GetViewMatrix();
                 ValidateViewMatrix();
+                viewMatrixChanged = true;
+            }
+            if(projectionMatrixChanged) {
+                OnProjectionMatrixChanged?.Invoke(ProjectionMatrix);
+            }
+            if(viewMatrixChanged) {
+                OnViewMatrixChanged?.Invoke(ViewMatrix);
             }
         }
 

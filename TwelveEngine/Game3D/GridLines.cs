@@ -45,15 +45,31 @@ namespace TwelveEngine.Game3D {
 
         private bool loaded = false;
 
-        public void Load(GraphicsDevice graphicsDevice) {
+        private Camera3D camera;
+
+        public void Load(GraphicsDevice graphicsDevice,Camera3D camera) {
             effect = new BasicEffect(graphicsDevice) {
                 VertexColorEnabled = true,
                 TextureEnabled = false
             };
             this.graphicsDevice = graphicsDevice;
             UpdateVertices();
+            camera.OnViewMatrixChanged += Camera_OnViewMatrixChanged;
+            camera.OnProjectionMatrixChanged += Camera_OnProjectionMatrixChanged;
+            this.camera = camera;
         }
+
+        private void Camera_OnProjectionMatrixChanged(Matrix projectionMatrix) {
+            effect.Projection = projectionMatrix;
+        }
+        private void Camera_OnViewMatrixChanged(Matrix viewMatrix) {
+            effect.View = viewMatrix;
+        }
+
         public void Unload() {
+            camera.OnViewMatrixChanged -= Camera_OnViewMatrixChanged;
+            camera.OnProjectionMatrixChanged -= Camera_OnProjectionMatrixChanged;
+            camera = null;
             effect?.Dispose();
         }
 
@@ -61,10 +77,6 @@ namespace TwelveEngine.Game3D {
             return new VertexPositionColor(position,color);
         }
 
-        private void UpdateEffect(Camera3D camera) {
-            effect.View = camera.ViewMatrix;
-            effect.Projection = camera.ProjectionMatrix;
-        }
 
         private VertexPositionColor[] vertices;
 
@@ -99,8 +111,6 @@ namespace TwelveEngine.Game3D {
             vertices[index++] = GetVertexPosition(new Vector3(0,0,-halfLength),Z_AXIS_COLOR);
             vertices[index++] = GetVertexPosition(new Vector3(0,0,halfLength),Z_AXIS_COLOR);
         }
-
-        public void Update(Camera3D camera) => UpdateEffect(camera);
 
         public void Render() {
             effect.CurrentTechnique.Passes[0].Apply();
