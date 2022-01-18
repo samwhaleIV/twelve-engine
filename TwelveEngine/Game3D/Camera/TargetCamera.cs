@@ -4,21 +4,18 @@ using TwelveEngine.Serial;
 namespace TwelveEngine.Game3D {
     public class TargetCamera:Camera3D {
 
-        public Vector3 Target { get; set; } = Vector3.Zero;
+        private Vector3 target = Vector3.Zero;
 
-        private Vector3 lastPosition, lastTarget;
-
-        protected override bool IsViewMatrixStale() {
-            return lastPosition != Position || lastTarget != Target;
+        public Vector3 Target {
+            get => target;
+            set {
+                target = value;
+                InvalidateViewMatrix();
+            }
         }
 
         protected override Matrix GetViewMatrix() {
-            var viewMatrix = Matrix.CreateLookAt(Position,Target,Orientation.CameraUp);
-
-            lastPosition = Position;
-            lastTarget = Target;
-
-            return viewMatrix;
+            return Matrix.CreateLookAt(Position,Target,Orientation.CameraUp);
         }
 
         public override void Export(SerialFrame frame) {

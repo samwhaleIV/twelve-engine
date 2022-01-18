@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using TwelveEngine;
 using TwelveEngine.Config;
@@ -10,6 +11,7 @@ namespace TwelveDesktop {
     internal static class Program {
         [STAThread]
         internal static void Main() {
+
             ConfigLoader.LoadEngineConfig(new TwelveConfigSet() {
                 CPUTextures = new string[] { "patterns" }
             });

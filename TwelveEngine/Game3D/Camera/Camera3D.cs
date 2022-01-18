@@ -4,56 +4,94 @@ using Microsoft.Xna.Framework;
 namespace TwelveEngine.Game3D {
     public abstract class Camera3D:ISerializable {
 
-        public Vector3 Position { get; set; } = Vector3.Zero;
+        private Vector3 position = Vector3.Zero;
+        private float fieldOfView = 75f, nearPlane = 1f, farPlane = 1000f;
 
-        public float FieldOfView { get; set; } = 75f;
-        public float NearPlane { get; set; } = 1f;
-        public float FarPlane { get; set; } = 1000f;
+        public Vector3 Position {
+            get => position;
+            set {
+                position = value;
+                InvalidateViewMatrix();
+            }
+        }
+
+        public float FieldOfView {
+            get => fieldOfView;
+            set {
+                fieldOfView = value;
+                InvalidateProjectionMatrix();
+            }
+        }
+
+        public float NearPlane {
+            get => nearPlane;
+            set {
+                nearPlane = value;
+                InvalidateProjectionMatrix();
+            }
+        }
+
+        public float FarPlane {
+            get => farPlane;
+            set {
+                farPlane = value;
+                InvalidateProjectionMatrix();
+            }
+        }
+
+        public bool IsProjectionMatrixValid { get; private set; } = false;
+        public bool IsViewMatrixValid { get; private set; } = false;
+
+        private void InvalidateProjectionMatrix() {
+            IsProjectionMatrixValid = false;
+        }
+        protected void InvalidateViewMatrix() {
+            IsViewMatrixValid = false;
+        }
+        private void ValidateProjectionMatrix() {
+            IsProjectionMatrixValid = true;
+        }
+        private void ValidateViewMatrix() {
+            IsViewMatrixValid = true;
+        }
+
+        protected abstract Matrix GetViewMatrix();
 
         public Matrix ViewMatrix { get; private set; }
         public Matrix ProjectionMatrix { get; private set; }
 
         private float GetFieldOfView() => MathHelper.ToRadians(FieldOfView);
 
-        private float lastAspectRatio, lastFieldOfView, lastNearPlane, lastFarPlane;
-        private bool hasProjectionMatrix = false, hasViewMatrix = false;
-
         private Matrix GetProjectionMatrix(float aspectRatio) {
             return Matrix.CreatePerspectiveFieldOfView(GetFieldOfView(),aspectRatio,NearPlane,FarPlane);
         }
 
-        protected abstract Matrix GetViewMatrix();
-        protected abstract bool IsViewMatrixStale();
-
-        private bool IsProjectionMatrixStale(float aspectRatio) {
-            return !(aspectRatio == lastAspectRatio &&
-                FieldOfView == lastFieldOfView &&
-                NearPlane == lastNearPlane &&
-                FarPlane == lastFarPlane);
-        }
-
-        private void UpdateProjectionData(float aspectRatio) {
-            lastAspectRatio = aspectRatio;
-            lastFieldOfView = FieldOfView;
-            lastNearPlane = NearPlane;
-            lastFarPlane = FarPlane;
-        }
+        private float lastAspectRatio = 0f;
 
         public void UpdateMatrices(float aspectRatio) {
-            if(!hasProjectionMatrix || IsProjectionMatrixStale(aspectRatio)) {
+            if(aspectRatio != lastAspectRatio || !IsProjectionMatrixValid) {
                 ProjectionMatrix = GetProjectionMatrix(aspectRatio);
-                UpdateProjectionData(aspectRatio);
-                hasProjectionMatrix = true;
+                ValidateProjectionMatrix();
+                lastAspectRatio = aspectRatio;
             }
-
-            if(!hasViewMatrix || IsViewMatrixStale()) {
+            if(!IsViewMatrixValid) {
                 ViewMatrix = GetViewMatrix();
-                hasViewMatrix = true;
+                ValidateViewMatrix();
             }
         }
 
-        public virtual void Export(SerialFrame frame) => frame.Set(Position);
+        public virtual void Export(SerialFrame frame) {
+            frame.Set(Position);
+            frame.Set(FieldOfView);
+            frame.Set(NearPlane);
+            frame.Set(FarPlane);
+        }
 
-        public virtual void Import(SerialFrame frame) => Position = frame.GetVector3();
+        public virtual void Import(SerialFrame frame) {
+            Position = frame.GetVector3();
+            FieldOfView = frame.GetFloat();
+            NearPlane = frame.GetFloat();
+            FarPlane = frame.GetFloat();
+        }
     }
 }

@@ -91,8 +91,7 @@ namespace TwelveEngine.Serial.String {
         private static readonly string ARRAY_JOINT = $"{Constants.ConfigArrayDelimiter} "; 
 
         private static string exportArray(object value) {
-            object[] array = value as object[];
-            return string.Join(ARRAY_JOINT,array);
+            return string.Join(ARRAY_JOINT,(object[])value);
         }
 
         private static object parseKeys(string value) {

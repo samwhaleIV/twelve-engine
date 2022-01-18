@@ -220,6 +220,12 @@ namespace TwelveEngine {
                 pendingGameState.Unload();
                 pendingGameState = null;
             }
+            Content.Dispose();
+            if(SpriteBatch != null) {
+                SpriteBatch.Dispose();
+                SpriteBatch = null;
+            }
+            graphicsDeviceManager.Dispose();
         }
 
         private bool advanceFrameQueued = false;
@@ -306,14 +312,14 @@ namespace TwelveEngine {
                 watch.Stop();
                 updateTime = watch.Elapsed;
                 watch.Reset();
-
+#endif
                 if(pendingGameState != null) {
                     var newState = pendingGameState;
                     pendingGameState = null;
                     gameState = newState;
                     Update(gameTime);
                 }
-#endif
+
                 updating = false;
                 return;
             }

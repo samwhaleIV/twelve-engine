@@ -1,10 +1,17 @@
-﻿using TwelveEngine.Serial;
+﻿using System;
+using TwelveEngine.Serial;
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game3D {
     public class AngleCamera:Camera3D {
 
-        public AngleCamera() => SetRotation(0,0);
+        private const float YawOffset = Orientation.YawOffsetAngle;
+        private const float PitchOffset = Orientation.PitchOffsetAngle;
+
+        private const float MinPitch = Orientation.MinPitchAngle;
+        private const float MaxPitch = Orientation.MaxPitchAngle;
+
+        public AngleCamera() => SetAngle(YawOffset,PitchOffset);
 
         public Vector3 Up { get; private set; }
         public Vector3 Forward { get; private set; }
@@ -12,78 +19,114 @@ namespace TwelveEngine.Game3D {
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
 
+        private bool limitPitch = true;
+        public bool LimitedPitch {
+            get => limitPitch;
+            set {
+                if(value == limitPitch) {
+                    return;
+                }
+                limitPitch = value;
+                if(!limitPitch) {
+                    return;
+                }
+                var newPitch = ClampPitch(Pitch);
+                if(newPitch == Pitch) {
+                    return;
+                }
+                SetAngle(Yaw,newPitch);
+            }
+        }
+
         public Vector2 Angle {
             get => new Vector2(Yaw,Pitch);
-            set => SetRotation(value.X,value.Y);
+            set => SetAngle(value.X,value.Y);
         }
 
-        private void SetYaw(float yaw,float pitch) {
-            Vector3 forward = Vector3.Transform(Orientation.CameraForward,Matrix.CreateFromAxisAngle(Orientation.CameraUp,MathHelper.ToRadians(yaw)));
-            forward.Normalize();
+        private float NormalizeAngle(float degrees) => (degrees % 360 + 360) % 360;
 
-            Forward = forward;
-            Yaw = yaw;
-
-            SetPitch(pitch);
+        private float ClampPitch(float pitch) {
+            return limitPitch ? Math.Clamp(pitch,MinPitch,MaxPitch) : pitch;
         }
 
-        private void SetPitch(float value) {
-            Vector3 cross = Vector3.Cross(Orientation.CameraUp,Forward);
-            cross.Normalize();
+        public void SetAngle(float yaw,float pitch) {
+            Yaw = NormalizeAngle(yaw);
+            Pitch = ClampPitch(NormalizeAngle(pitch));
 
-            Forward = Vector3.Transform(Forward,Matrix.CreateFromAxisAngle(cross,MathHelper.ToRadians(value)));
-            Up = Vector3.Transform(Orientation.CameraUp,Matrix.CreateFromAxisAngle(cross,MathHelper.ToRadians(value)));
+            yaw = MathHelper.ToRadians(Yaw + YawOffset);
+            pitch = MathHelper.ToRadians(Pitch + PitchOffset);
 
-            Pitch = value;
+            Forward = Vector3.Transform(Orientation.CameraForward,Matrix.CreateFromAxisAngle(Orientation.CameraUp,yaw));
+            Forward.Normalize();
+
+            Vector3 left = Vector3.Cross(Orientation.CameraUp,Forward);
+            left.Normalize();
+
+            var angleMatrix = Matrix.CreateFromAxisAngle(left,pitch);
+            Forward = Vector3.Transform(Forward,angleMatrix);
+            Up = Vector3.Transform(Orientation.CameraUp,angleMatrix);
+
+            InvalidateViewMatrix();
         }
 
-        public void UpdateFreeCam(Vector3 delta,float velocity) {
-            if(delta.X != 0) {
-                var cross = Vector3.Cross(Up,Forward);
-                cross.Normalize();
-                Position -= cross * velocity * delta.X;
-            }
-            if(delta.Y != 0) {
-                var forward = Forward;
-                forward.Normalize();
-                Position -= forward * velocity * delta.Y;
-            }
-            if(delta.Z != 0) {
-                var position = Position;
-                position.Z -= velocity * delta.Z;
-                Position = position;
-            }
+        public void AddAngle(float yaw,float pitch) {
+            SetAngle(Yaw+yaw,Pitch+pitch);
         }
-
-        public void AddRotation(float yaw,float pitch) => SetYaw(Yaw+yaw,Pitch+pitch);
-        public void SetRotation(float yaw,float pitch) => SetYaw(yaw,pitch);
-
-        private Vector3 lastPosition, lastForward, lastUp;
-
-        protected override bool IsViewMatrixStale() {
-            return lastPosition != Position || lastForward != Forward || lastUp != Up;
+        public void AddAngle(Vector2 angle) {
+            angle += Angle;
+            SetAngle(angle.X,angle.Y);
+        }
+        public void AddPitch(float degrees) {
+            AddAngle(0f,degrees);
+        }
+        public void AddYaw(float degrees) {
+            AddAngle(degrees,0f);
         }
 
         protected override Matrix GetViewMatrix() {
-            var viewMatrix = Matrix.CreateLookAt(Position,Forward+Position,Up);
+            return Matrix.CreateLookAt(Position,Forward+Position,Up);
+        }
 
-            lastPosition = Position;
-            lastForward = Forward;
-            lastUp = Up;
+        public void MoveLeftRight(float distance) {
+            var left = Vector3.Cross(Up,Forward);
+            left.Normalize();
+            Position -= left * distance;
+        }
 
-            return viewMatrix;
+        public void MoveFrontBack(float distance) {
+            var forward = Forward;
+            forward.Normalize();
+            Position -= forward * distance;
+        }
+
+        public void MoveUpDown(float distance) {
+            var position = Position;
+            position.Z -= distance;
+            Position = position;
+        }
+
+        public void MoveAngleRelative(Vector3 velocity) {
+            MoveLeftRight(velocity.X);
+            MoveFrontBack(velocity.Y);
+            MoveUpDown(velocity.Z);
+        }
+
+        public void UpdateFreeCam(Vector3 delta,float velocity) {
+            if(delta.X != 0) MoveLeftRight(delta.X * velocity);
+            if(delta.Y != 0) MoveFrontBack(delta.Y * velocity);
+            if(delta.Z != 0) MoveUpDown(delta.Z * velocity);
         }
 
         public override void Export(SerialFrame frame) {
             base.Export(frame);
-            frame.Set(Yaw);
-            frame.Set(Pitch);
+            frame.Set(Angle);
+            frame.Set(LimitedPitch);
         }
 
         public override void Import(SerialFrame frame) {
             base.Import(frame);
-            Yaw = frame.GetFloat();
-            Pitch = frame.GetFloat();
+            Angle = frame.GetVector2();
+            LimitedPitch = frame.GetBool();
         }
     }
 }

@@ -46,7 +46,6 @@ namespace TwelveEngine.Game3D {
             camera = new AngleCamera() {
                 NearPlane = 0.1f,
                 FieldOfView = 75f,
-                Angle = new Vector2(350.1f,34.6f),
                 Position = new Vector3(-0.05f,-0.25f,0.17f)
             };
 
@@ -130,10 +129,10 @@ namespace TwelveEngine.Game3D {
 
         private void UpdateCamera(GameTime gameTime) {
             var mouseDelta = Game.MouseHandler.Delta;
-            if(Game.MouseHandler.Capturing && mouseDelta != Point.Zero) camera.AddRotation(
-                mouseDelta.X * MOUSE_SPEED,
-                -mouseDelta.Y * MOUSE_SPEED /* INVERTED Y AXIS??? >:( */
-            );
+            if(Game.MouseHandler.Capturing && mouseDelta != Point.Zero) {
+                mouseDelta.Y = -mouseDelta.Y;
+                camera.AddAngle(mouseDelta.ToVector2() * MOUSE_SPEED);
+            }
             camera.UpdateFreeCam(Input.GetDelta3D(),GetFreeCamVelocity(gameTime));
         }
 
@@ -182,7 +181,9 @@ namespace TwelveEngine.Game3D {
             }
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             ImpulseGuide.Render();
+#if DEBUG
             DrawCameraData();
+#endif
             Game.SpriteBatch.End();
         }
 
