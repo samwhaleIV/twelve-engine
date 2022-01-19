@@ -53,8 +53,15 @@ namespace TwelveEngine.EntitySystem {
             set => setName(value);
         }
 
+        protected event Action<SerialFrame> OnExport, OnImport;
 
-        public virtual void Export(SerialFrame frame) => frame.Set(name);
-        public virtual void Import(SerialFrame frame) => name = frame.GetString();
+        public void Export(SerialFrame frame) {
+            frame.Set(name);
+            OnExport?.Invoke(frame);
+        }
+        public void Import(SerialFrame frame) {
+            name = frame.GetString();
+            OnImport?.Invoke(frame);
+        }
     }
 }

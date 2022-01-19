@@ -14,7 +14,8 @@ namespace TwelveEngine.Game2D {
         public Grid2D(
             int? tileSize = null,
             LayerMode? layerMode = null,
-            CollisionTypes collisionTypes = null
+            CollisionTypes collisionTypes = null,
+            EntityFactory<Entity2D,Grid2D> entityFactory = null
         ) {
             if(!tileSize.HasValue) {
                 tileSize = Constants.Config.TileSize;
@@ -25,6 +26,11 @@ namespace TwelveEngine.Game2D {
             collisionInterface = new CollisionInterface(this);
             collisionInterface.Types = collisionTypes;
 
+            if(entityFactory == null) {
+                entityFactory = Entity2DType.GetFactory();
+            }
+            this.entityFactory = entityFactory;
+
             OnLoad += Grid2D_OnLoad;
             OnUnload += Grid2D_OnUnload;
 
@@ -34,6 +40,8 @@ namespace TwelveEngine.Game2D {
             OnRender += render;
             OnUpdate += update;
         }
+
+        private readonly EntityFactory<Entity2D,Grid2D> entityFactory;
 
         public ImpulseGuide ImpulseGuide { get; private set; }
 
@@ -115,19 +123,10 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private void loadEntityManager() {
-            var entityManager = new EntityManager<Entity2D,Grid2D>(this,Entity2DType.GetFactory());
-
-            OnImport += entityManager.Import;
-            OnExport += entityManager.Export;
-
-            EntityManager = entityManager;
-        }
-
         private void Grid2D_OnLoad() {
             ImpulseGuide = new ImpulseGuide(Game);
             collisionInterface.Types.LoadTypes();
-            loadEntityManager();
+            EntityManager = new EntityManager<Entity2D,Grid2D>(this,entityFactory);
             if(pendingTileRenderer != null) {
                 tileRenderer = pendingTileRenderer;
                 pendingTileRenderer = null;
@@ -139,7 +138,6 @@ namespace TwelveEngine.Game2D {
             if(hasTileRenderer()) {
                 tileRenderer.Unload();
             }
-            EntityManager.Unload();
         }
 
         private PanZoom panZoom = null;

@@ -40,43 +40,42 @@ namespace TwelveEngine.Game3D {
             }
         }
 
-        private BasicEffect effect;
-        private GraphicsDevice graphicsDevice;
-
         private bool loaded = false;
 
-        private Camera3D camera;
+        private BasicEffect effect;
+        private World world;
 
-        public void Load(GraphicsDevice graphicsDevice,Camera3D camera) {
-            effect = new BasicEffect(graphicsDevice) {
+        public void Load(World world) {
+            effect = new BasicEffect(world.Game.GraphicsDevice) {
                 VertexColorEnabled = true,
-                TextureEnabled = false
+                TextureEnabled = false,
+                Projection = world.ProjectionMatrix,
+                View = world.ViewMatrix
             };
-            this.graphicsDevice = graphicsDevice;
             UpdateVertices();
-            camera.OnViewMatrixChanged += Camera_OnViewMatrixChanged;
-            camera.OnProjectionMatrixChanged += Camera_OnProjectionMatrixChanged;
-            this.camera = camera;
+            this.world = world;
+            world.OnViewMatrixChanged += World_OnViewMatrixChanged;
+            world.OnProjectionMatrixChanged += World_OnProjectionMatrixChanged;
+            loaded = true;
         }
 
-        private void Camera_OnProjectionMatrixChanged(Matrix projectionMatrix) {
+        private void World_OnProjectionMatrixChanged(Matrix projectionMatrix) {
             effect.Projection = projectionMatrix;
         }
-        private void Camera_OnViewMatrixChanged(Matrix viewMatrix) {
+        private void World_OnViewMatrixChanged(Matrix viewMatrix) {
             effect.View = viewMatrix;
         }
 
         public void Unload() {
-            camera.OnViewMatrixChanged -= Camera_OnViewMatrixChanged;
-            camera.OnProjectionMatrixChanged -= Camera_OnProjectionMatrixChanged;
-            camera = null;
+            world.OnViewMatrixChanged -= World_OnViewMatrixChanged;
+            world.OnProjectionMatrixChanged -= World_OnProjectionMatrixChanged;
+            world = null;
             effect?.Dispose();
         }
 
         private static VertexPositionColor GetVertexPosition(Vector3 position,Color color) {
             return new VertexPositionColor(position,color);
         }
-
 
         private VertexPositionColor[] vertices;
 
@@ -114,7 +113,7 @@ namespace TwelveEngine.Game3D {
 
         public void Render() {
             effect.CurrentTechnique.Passes[0].Apply();
-            graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList,vertices,0,vertices.Length / 2);
+            effect.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList,vertices,0,vertices.Length / 2);
         }
     }
 }

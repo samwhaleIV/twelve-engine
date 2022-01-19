@@ -61,7 +61,7 @@ namespace TwelveEngine.Game3D {
         public Matrix ViewMatrix { get; private set; }
         public Matrix ProjectionMatrix { get; private set; }
 
-        public event Action<Matrix> OnViewMatrixChanged, OnProjectionMatrixChanged;
+        internal event Action<Matrix> OnViewMatrixChanged, OnProjectionMatrixChanged;
 
         private float GetFieldOfView() => MathHelper.ToRadians(FieldOfView);
 

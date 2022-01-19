@@ -21,7 +21,7 @@ namespace TwelveDesktop {
         }
 
         private static void Game_OnLoad(GameManager game) {
-            game.SetState<ModelViewer>("ModelTest/HelloWorld");
+            game.SetState(new ModelViewer("ModelTest/HelloWorld"));
         }
     }
 }

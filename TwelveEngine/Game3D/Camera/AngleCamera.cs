@@ -3,7 +3,7 @@ using TwelveEngine.Serial;
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game3D {
-    public class AngleCamera:Camera3D {
+    public sealed class AngleCamera:Camera3D {
 
         private const float YawOffset = Orientation.YawOffsetAngle;
         private const float PitchOffset = Orientation.PitchOffsetAngle;

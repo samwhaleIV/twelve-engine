@@ -264,8 +264,8 @@ namespace TwelveEngine {
             MouseState = getMouseState();
             GamePadState = getGamePadState();
 
-            impulseHandler.Update(KeyboardState,GamePadState);
             mouseHandler.Update(MouseState);
+            impulseHandler.Update(KeyboardState,GamePadState);
 
             gameState.Update(proxyGameTime);
 

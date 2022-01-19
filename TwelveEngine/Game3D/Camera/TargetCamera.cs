@@ -2,7 +2,7 @@
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game3D {
-    public class TargetCamera:Camera3D {
+    public sealed class TargetCamera:Camera3D {
 
         private Vector3 target = Vector3.Zero;
 

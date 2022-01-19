@@ -5,7 +5,24 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
-    public abstract class Entity2D:Entity<Grid2D>, IUpdateable, IRenderable {
+    public abstract class Entity2D:Entity<Grid2D> {
+
+        public Entity2D() {
+            OnExport += Entity2D_OnExport;
+            OnImport += Entity2D_OnImport;
+        }
+
+        private void Entity2D_OnImport(SerialFrame frame) {
+            Position = frame.GetVector2();
+            Size = frame.GetVector2();
+            Direction = frame.GetDirection();
+        }
+
+        private void Entity2D_OnExport(SerialFrame frame) {
+            frame.Set(Position);
+            frame.Set(Size);
+            frame.Set(Direction);
+        }
 
         private Vector2 position = Vector2.Zero;
         private Vector2 size = Vector2.One;
@@ -92,21 +109,7 @@ namespace TwelveEngine.Game2D {
             );
         }
 
-
-        public override void Import(SerialFrame frame) {
-            Position = frame.GetVector2();
-            Size = frame.GetVector2();
-            Direction = frame.GetDirection();
-        }
-
-        public override void Export(SerialFrame frame) {
-            frame.Set(Position);
-            frame.Set(Size);
-            frame.Set(Direction);
-        }
-
-        public event Action<GameTime> OnUpdate;
-        public event Action<GameTime> OnRender;
+        public event Action<GameTime> OnUpdate, OnRender;
 
         public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
         public void Render(GameTime gameTime) => OnRender?.Invoke(gameTime);

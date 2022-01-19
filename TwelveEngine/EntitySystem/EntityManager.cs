@@ -4,7 +4,7 @@ using System.Linq;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.EntitySystem {
-    public sealed class EntityManager<TEntity,TOwner>:ISerializable where TEntity:Entity<TOwner> where TOwner:GameState {
+    public sealed class EntityManager<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {
 
         private const string NO_ITERATION_ALLOWED = "Cannot iterate an Entity list recursively!";
         private const string NO_MUTATION_ALLOWED = "Cannot modify Entity tables during immutable list iteration!";
@@ -15,6 +15,10 @@ namespace TwelveEngine.EntitySystem {
 
             this.owner = owner;
             this.factory = factory;
+
+            owner.OnExport += Owner_Export;
+            owner.OnImport += Owner_Import;
+            owner.OnUnload += Owner_Unload;
         }
 
         private readonly TOwner owner;
@@ -160,7 +164,7 @@ namespace TwelveEngine.EntitySystem {
         }
 
         private bool hasName(TEntity entity) {
-            return string.IsNullOrWhiteSpace(entity.Name);
+            return !string.IsNullOrWhiteSpace(entity.Name);
         }
         private void removeNamedEntity(TEntity entity) {
             namedEntities.Remove(entity.Name);
@@ -238,14 +242,18 @@ namespace TwelveEngine.EntitySystem {
             entity.Unload(); //Stage 3
         }
 
-        public void Unload() {
+        public void RemoveEntity(string name) {
+            RemoveEntity(Get(name));
+        }
+
+        private void Owner_Unload() {
             assertMutation();
             pauseChanges();
             clearEntities();
             resumeChanges();
         }
 
-        public void Export(SerialFrame frame) {
+        private void Owner_Export(SerialFrame frame) {
             var entityList = getSerializableEntities().ToArray();
             var entityCount = entityList.Length;
             frame.Set(entityList.Length);
@@ -256,7 +264,7 @@ namespace TwelveEngine.EntitySystem {
             }
         }
 
-        public void Import(SerialFrame frame) {
+        private void Owner_Import(SerialFrame frame) {
             assertMutation();
 
             pauseChanges();

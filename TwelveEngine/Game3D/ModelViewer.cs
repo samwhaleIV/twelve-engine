@@ -1,10 +1,18 @@
-﻿using TwelveEngine.Serial;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.GameUI;
+using TwelveEngine.Game3D.Entity;
+using TwelveEngine.EntitySystem;
 
 namespace TwelveEngine.Game3D {
-    public sealed class ModelViewer:DataGameState<string> {
+    public sealed class ModelViewer:World {
+
+        private const string EntityName = "ModelViewerTarget";
+        private const int FactoryID = 0;
+
+        private readonly string modelName;
+        private AngleCamera camera;
+        private ModelEntity modelEntity;
 
         private const float VELOCITY_BASE = 1f / (1000f / 60f);
         public const float MOUSE_SPEED = 0.15f;
@@ -14,6 +22,22 @@ namespace TwelveEngine.Game3D {
 
         private ImpulseGuide ImpulseGuide { get; set; }
         private readonly GridLines gridLines = new GridLines();
+
+
+        public ModelViewer(string modelName) : base(new EntityFactory<Entity3D,World>(
+            (0,() => new ModelEntity(modelName) {
+                FactoryID = FactoryID,
+                Name = EntityName
+            })
+        )) {
+            this.modelName = modelName;
+
+            OnLoad += ModelTest_OnLoad;
+            OnUnload += ModelViewer_OnUnload;
+
+            OnUpdate += ModelTest_OnUpdate;
+            OnRender += ModelTest_OnRender;
+        }
 
         private void UpdateImpulseGuide() {
             if(ControlModel) {
@@ -39,61 +63,10 @@ namespace TwelveEngine.Game3D {
             }
         }
 
-        public ModelViewer() {
-            OnLoad += ModelTest_OnLoad;
-            OnUnload += ModelViewer_OnUnload;
-
-            OnUpdate += ModelTest_OnUpdate;
-            OnRender += ModelTest_OnRender;
-
-            camera = new AngleCamera() {
-                NearPlane = 0.1f,
-                FieldOfView = 75f,
-                Position = new Vector3(-0.05f,-0.25f,0.17f)
-            };
-
-            OnImport += ModelViewer_OnImport;
-            OnExport += ModelViewer_OnExport;
-        }
-
-        private void Camera_OnViewMatrixChanged(Matrix viewMatrix) {
-            foreach(var mesh in model.Meshes) {
-                foreach(BasicEffect effect in mesh.Effects) {
-                    effect.View = viewMatrix;
-                }
-            }
-        }
-
-        private void Camera_OnProjectionMatrixChanged(Matrix projectionMatrix) {
-            foreach(var mesh in model.Meshes) {
-                foreach(BasicEffect effect in mesh.Effects) {
-                    effect.Projection = projectionMatrix;
-                }
-            }
-        }
-
         private void ModelViewer_OnUnload() {
             gridLines.Unload();
             Input.OnToggleDown -= Input_OnToggleDown;
         }
-
-        private void ModelViewer_OnExport(SerialFrame frame) {
-            frame.Set(angle);
-            frame.Set(camera);
-        }
-
-        private void ModelViewer_OnImport(SerialFrame frame) {
-            var startAngle = angle;
-            angle = frame.GetVector3();
-            if(startAngle != angle) {
-                UpdateModelMatrix();
-            }
-            frame.Get(camera);
-        }
-
-        private Model model;
-
-        private readonly AngleCamera camera;
 
         private bool ControlModel = false;
         private void Input_OnToggleDown() {
@@ -101,27 +74,29 @@ namespace TwelveEngine.Game3D {
             UpdateImpulseGuide();
         }
 
-        private static Matrix GetOriginMatrix() {
-            return Matrix.CreateWorld(Vector3.Zero,Orientation.WorldForward,Orientation.WorldUp);
-        }
-
-        private readonly Matrix originMatrix = GetOriginMatrix();
-
-        private Vector3 angle = Vector3.Zero;
-
         private void ModelTest_OnLoad() {
-            model = Game.Content.Load<Model>(Data);
-            foreach(var mesh in model.Meshes) {
-                foreach(BasicEffect effect in mesh.Effects) {
-                    effect.EnableDefaultLighting();
-                }
-            }
-            UpdateModelMatrix();
-            camera.OnProjectionMatrixChanged += Camera_OnProjectionMatrixChanged;
-            camera.OnViewMatrixChanged += Camera_OnViewMatrixChanged;
-            gridLines.Load(Game.GraphicsDevice,camera);
+            camera = new AngleCamera() {
+                NearPlane = 0.1f,
+                FieldOfView = 75f,
+                Angle = new Vector2(219.75f,215.10f),
+                Position = new Vector3(1.24f,-1.4f,1.34f)
+            };
+            Camera = camera;
+
+            modelEntity = new ModelEntity(modelName) {
+                FactoryID = FactoryID,
+                Name = EntityName
+            };
+            OnImport += frame => {
+                var reloadedModel = (ModelEntity)EntityManager.Get(EntityName);
+                modelEntity = reloadedModel;
+            };
+
+            EntityManager.AddEntity(modelEntity);
+            gridLines.Load(this);
             Input.OnToggleDown += Input_OnToggleDown;
             ImpulseGuide = new ImpulseGuide(Game);
+
             UpdateImpulseGuide();
         }
 
@@ -132,15 +107,6 @@ namespace TwelveEngine.Game3D {
         private float GetRotationVelocity(GameTime gameTime) => GetVelocity(gameTime,ModelRotationSpeed);
         private float GetFreeCamVelocity(GameTime gameTime) => GetVelocity(gameTime,FreeCamSpeed);
 
-        private void UpdateModelMatrix() {
-            var modelMatrix = originMatrix * Matrix.CreateFromYawPitchRoll(angle.X,angle.Y,angle.Z);
-            foreach(var mesh in model.Meshes) {
-                foreach(BasicEffect effect in mesh.Effects) {
-                    effect.World = modelMatrix;
-                }
-            }
-        }
-
         private void RotateModel(GameTime gameTime) {
             var rotationDelta = Input.GetDelta3D();
             if(rotationDelta == Vector3.Zero) {
@@ -148,9 +114,7 @@ namespace TwelveEngine.Game3D {
             }
 
             float velocity = GetRotationVelocity(gameTime);
-            angle += rotationDelta * new Vector3(velocity);
-
-            UpdateModelMatrix();
+            modelEntity.Rotation += rotationDelta * new Vector3(velocity);
         }
 
         private void UpdateCamera(GameTime gameTime) {
@@ -192,9 +156,7 @@ namespace TwelveEngine.Game3D {
             Game.GraphicsDevice.Clear(Color.Gray);
             gridLines.Render();
             ConfigureSamplerState();
-            foreach(var mesh in model.Meshes) {
-                mesh.Draw();
-            }
+            RenderEntities(gameTime);
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             ImpulseGuide.Render();
 #if DEBUG
