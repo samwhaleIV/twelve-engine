@@ -133,20 +133,20 @@ namespace TwelveEngine.EntitySystem {
         }
         #endregion
 
-        public TEntity GetName(string name) {
+        public TEntity OfName(string name) {
             if(!namedEntities.TryGetValue(name,out var entity)) {
                 return null;
             }
             return entity;
         }
 
-        public IEnumerable<TEntity> GetComponent(int componentType) {
+        public IEnumerable<TEntity> OfComponent(int componentType) {
             foreach(var ID in componentTable[componentType]) {
                 yield return entityDictionary[ID];
             }
         }
 
-        public IEnumerable<TEntity> GetComponent(HashSet<int> componentTypes) {
+        public IEnumerable<TEntity> OfComponents(HashSet<int> componentTypes) {
             if(componentTypes.Count == 0) {
                 yield break;
             }
@@ -159,7 +159,7 @@ namespace TwelveEngine.EntitySystem {
             }
         }
 
-        public IEnumerable<TEntity> GetType(int entityType) {
+        public IEnumerable<TEntity> OfType(int entityType) {
             if(!typeTable.ContainsKey(entityType)) {
                 yield break;
             }
@@ -198,6 +198,7 @@ namespace TwelveEngine.EntitySystem {
             HashSet<int> hashSet;
             if(!typeTable.TryGetValue(tableID,out hashSet)) {
                 hashSet = new HashSet<int>();
+                typeTable[tableID] = hashSet;
             }
             hashSet.Add(hashID);
         }
@@ -311,7 +312,7 @@ namespace TwelveEngine.EntitySystem {
             entity.Unload(); //Stage 3
         }
 
-        public void RemoveEntity(string name) => RemoveEntity(GetName(name));
+        public void RemoveEntity(string name) => RemoveEntity(OfName(name));
 
         private void Owner_Unload() {
             assertMutation();
