@@ -1,8 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.EntitySystem {
     public abstract class Entity<TOwner>:ISerializable where TOwner:GameState {
+
+        protected internal HashSet<int> ComponentTypes { get; protected set; }
+        private Dictionary<int,Component> components = new Dictionary<int,Component>();
+
+        public void AddComponent(Component component) {
+            components[component.Type] = component;
+            ComponentTypes.Add(component.Type);
+        }
 
         protected abstract int GetEntityType();
         public int Type => GetEntityType();
@@ -55,12 +64,32 @@ namespace TwelveEngine.EntitySystem {
 
         protected event Action<SerialFrame> OnExport, OnImport;
 
+        private void exportComponents(SerialFrame frame) {
+            var componentCount = components.Count;
+            frame.Set(componentCount);
+            foreach(var component in components.Values) {
+                frame.Set(component.Type);
+                frame.Set(component.Value);
+            }
+        }
+        private void importComponents(SerialFrame frame) {
+            var componentCount = frame.GetInt();
+            for(int i = 0;i<componentCount;i++) {
+                AddComponent(new Component() {
+                    Type = frame.GetInt(),
+                    Value = frame.GetIntArray()
+                });
+            }
+        }
+
         public void Export(SerialFrame frame) {
             frame.Set(name);
+            exportComponents(frame);
             OnExport?.Invoke(frame);
         }
         public void Import(SerialFrame frame) {
             name = frame.GetString();
+            importComponents(frame);
             OnImport?.Invoke(frame);
         }
     }

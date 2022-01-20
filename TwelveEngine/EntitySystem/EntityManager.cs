@@ -10,9 +10,6 @@ namespace TwelveEngine.EntitySystem {
         private const string NO_MUTATION_ALLOWED = "Cannot modify Entity tables during immutable list iteration!";
 
         public EntityManager(TOwner owner,EntityFactory<TEntity,TOwner> factory) {
-            entityDictionary = new Dictionary<int,TEntity>();
-            namedEntities = new Dictionary<string,TEntity>();
-
             this.owner = owner;
             this.factory = factory;
 
@@ -27,10 +24,13 @@ namespace TwelveEngine.EntitySystem {
         private int IDCounter = 0;
         private int getNextID() => IDCounter++;
 
-        private readonly Dictionary<int,TEntity> entityDictionary;
-        private readonly Dictionary<string,TEntity> namedEntities;
-        private TEntity[] entityList;
+        private readonly Dictionary<int,TEntity> entityDictionary = new Dictionary<int,TEntity>();
+        private readonly Dictionary<string,TEntity> namedEntities = new Dictionary<string,TEntity>();
 
+        private readonly Dictionary<int,HashSet<int>> typeTable = new Dictionary<int,HashSet<int>>();
+        private readonly Dictionary<int,HashSet<int>> componentTable = new Dictionary<int,HashSet<int>>();
+
+        private TEntity[] entityList;
         private bool entityListQueued = false;
 
         public bool Locked { get; private set; } = false;
@@ -130,20 +130,38 @@ namespace TwelveEngine.EntitySystem {
         }
         #endregion
 
-        public TEntity Get(string name) {
+        public TEntity GetName(string name) {
             if(!namedEntities.TryGetValue(name,out var entity)) {
                 return null;
             }
             return entity;
         }
-        public TEntity[] GetAll() => getEntityList();
 
-        public IEnumerable<TEntity> GetAllOfType(int type) {
-            foreach(var entity in getEntityList()) {
-                if(entity.Type != type) {
+        public IEnumerable<TEntity> GetComponent(int componentType) {
+            foreach(var ID in componentTable[componentType]) {
+                yield return entityDictionary[ID];
+            }
+        }
+
+        public IEnumerable<TEntity> GetComponent(HashSet<int> componentTypes) {
+            if(componentTypes.Count == 0) {
+                yield break;
+            }
+            foreach(var ID in componentTable[componentTypes.First()]) {
+                var entity = entityDictionary[ID];
+                if(!componentTypes.IsSubsetOf(entity.ComponentTypes)) {
                     continue;
                 }
                 yield return entity;
+            }
+        }
+
+        public IEnumerable<TEntity> GetType(int entityType) {
+            if(!typeTable.ContainsKey(entityType)) {
+                yield break;
+            }
+            foreach(var ID in typeTable[entityType]) {
+                yield return entityDictionary[ID];
             }
         }
 
@@ -173,8 +191,42 @@ namespace TwelveEngine.EntitySystem {
             namedEntities.Add(entity.Name,entity);
         }
 
+        private void addToTable(int tableID,int hashID,Dictionary<int,HashSet<int>> table) {
+            HashSet<int> hashSet;
+            if(!typeTable.TryGetValue(tableID,out hashSet)) {
+                hashSet = new HashSet<int>();
+            }
+            hashSet.Add(hashID);
+        }
+
+        private void removeFromTable(int tableID,int hashID,Dictionary<int,HashSet<int>> table) {
+            typeTable[tableID].Remove(hashID);
+        }
+
+        private void addToComponentTable(TEntity entity) {
+            foreach(var componentType in entity.ComponentTypes) {
+                addToTable(componentType,entity.ID,componentTable);
+            }
+        }
+
+        private void removeFromComponentTable(TEntity entity) {
+            foreach(var componentType in entity.ComponentTypes) {
+                removeFromTable(componentType,entity.ID,componentTable);
+            }
+        }
+
+        private void addToTypeTable(TEntity entity) {
+            addToTable(entity.Type,entity.ID,typeTable);
+        }
+
+        private void removeFromTypeTable(TEntity entity) {
+            removeFromTable(entity.Type,entity.ID,typeTable);
+        }
+
         private void addToLists(TEntity entity) {
             entityDictionary.Add(entity.ID,entity);
+            addToComponentTable(entity);
+            addToTypeTable(entity);
             entity.Deleted = false;
             if(hasName(entity)) {
                 addNamedEntity(entity);
@@ -184,6 +236,8 @@ namespace TwelveEngine.EntitySystem {
 
         private void removeFromLists(TEntity entity) {
             entityDictionary.Remove(entity.ID);
+            removeFromComponentTable(entity);
+            removeFromTypeTable(entity);
             entity.Deleted = true;
             if(hasName(entity)) {
                 removeNamedEntity(entity);
@@ -242,9 +296,7 @@ namespace TwelveEngine.EntitySystem {
             entity.Unload(); //Stage 3
         }
 
-        public void RemoveEntity(string name) {
-            RemoveEntity(Get(name));
-        }
+        public void RemoveEntity(string name) => RemoveEntity(GetName(name));
 
         private void Owner_Unload() {
             assertMutation();
