@@ -11,6 +11,10 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainerHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityComponents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\ContainerExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\AngleCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\Camera3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\CameraSerializer.cs" />

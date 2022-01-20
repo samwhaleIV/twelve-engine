@@ -74,8 +74,6 @@ namespace TwelveEngine.Game2D {
 
         public EntityManager<Entity2D,Grid2D> EntityManager { get; private set; }
 
-        public void AddEntity(Entity2D entity) => EntityManager.AddEntity(entity);
-
         private int[][,] layers;
         private TileRenderer tileRenderer = null;
         private TileRenderer pendingTileRenderer = null;

@@ -1,54 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.EntitySystem {
     public abstract class Entity<TOwner>:ISerializable where TOwner:GameState {
 
-        private readonly HashSet<int> componentTypes = new HashSet<int>();
-        private readonly Dictionary<int,int[]> components = new Dictionary<int,int[]>();
+        private readonly EntityComponents components = new EntityComponents();
+        public EntityComponents Components => components;
 
-        internal HashSet<int> ComponentTypes => componentTypes;
-        /* Fire event nulling isn't strictly required, but it is included as a fail safe in the 'event' that EntityManager is flawed */
-        private void SetComponent(int componentType,int[] value,bool fireEvent = false) {
-            components[componentType] = value;
-            if(ComponentTypes.Add(componentType) && fireEvent) {
-                OnComponentAdded?.Invoke(ID,componentType);
-            }
+        internal event Action<int,int> OnComponentAdded, OnComponentRemoved;
+
+        public Entity() {
+            Components.OnAdded += Components_OnComponentAdded;
+            Components.OnRemoved += Components_OnComponentRemoved;
         }
 
-        public void RemoveComponent(int componentType) {
-            components.Remove(componentType);
-            if(ComponentTypes.Remove(componentType)) {
-                OnComponentRemoved?.Invoke(ID,componentType);
-            }
+        private void Components_OnComponentAdded(int componentType) {
+            OnComponentAdded?.Invoke(ID,componentType);
         }
 
-        public void SetComponent(int componentType,int[] value) {
-            SetComponent(componentType,value,fireEvent: true);
+        private void Components_OnComponentRemoved(int componentType) {
+            OnComponentRemoved?.Invoke(ID,componentType);
         }
 
-        public int[] GetComponent(int componentType) {
-            if(!components.TryGetValue(componentType,out var component)) {
-                return null;
-            }
-            return component;
-        }
-
-        public bool TryGetComponent(int componentType,out int[] componentValue) {
-            return components.TryGetValue(componentType,out componentValue);
-        }
-
-        public bool HasComponent(int componentType) {
-            return components.ContainsKey(componentType);
-        }
-
-        internal event Action<int,int> OnComponentRemoved, OnComponentAdded;
+        private const int DEFAULT_ID = EntityManager.START_ID - 1;
 
         protected abstract int GetEntityType();
-        public int Type { get; set; }
+        public int Type => GetEntityType();
 
-        private string name = string.Empty;
+        private string _name = string.Empty;
+        private void SetName(string newName) {
+            var oldName = _name;
+            _name = newName;
+            if(newName != oldName) {
+                OnNameChanged?.Invoke(ID,oldName);
+            }
+        }
+        public string Name {
+            get => _name;
+            set => SetName(value);
+        }
+
+        public bool HasName => !string.IsNullOrEmpty(_name);
 
         /* int: ID, string: NewName */
         internal event Action<int,string> OnNameChanged;
@@ -75,51 +67,23 @@ namespace TwelveEngine.EntitySystem {
 
         internal void Unload() {
             OnUnload?.Invoke();
-            ID = EntityManager.START_ID - 1;
+            ID = DEFAULT_ID;
             owner = null;
             game = null;
         }
 
         public bool StateLock { get; set; } = false;
 
-        private void setName(string newName) {
-            var oldName = name;
-            name = newName;
-            if(newName != oldName) {
-                OnNameChanged?.Invoke(ID,oldName);
-            }
-        }
-
-        public string Name {
-            get => name;
-            set => setName(value);
-        }
-
         protected event Action<SerialFrame> OnExport, OnImport;
 
-        private void exportComponents(SerialFrame frame) {
-            var componentCount = components.Count;
-            frame.Set(componentCount);
-            foreach(var component in components) {
-                frame.Set(component.Key);
-                frame.Set(component.Value);
-            }
-        }
-        private void importComponents(SerialFrame frame) {
-            var componentCount = frame.GetInt();
-            for(int i = 0;i<componentCount;i++) {
-                SetComponent(frame.GetInt(),frame.GetIntArray());
-            }
-        }
-
         public void Export(SerialFrame frame) {
-            frame.Set(name);
-            exportComponents(frame);
+            frame.Set(Name);
+            Components.Export(frame);
             OnExport?.Invoke(frame);
         }
         public void Import(SerialFrame frame) {
-            name = frame.GetString();
-            importComponents(frame);
+            Name = frame.GetString();
+            Components.Import(frame);
             OnImport?.Invoke(frame);
         }
     }

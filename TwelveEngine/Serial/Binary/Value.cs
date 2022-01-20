@@ -72,11 +72,21 @@ namespace TwelveEngine.Serial.Binary {
         }
 
         public Value(string value) {
+            if(value == null) {
+                value = string.Empty;
+            }
             Type = Type.String;
             Bytes = UTF8.GetBytes(value);
         }
         public string String() {
-            return Type == Type.String ? UTF8.GetString(Bytes) : null;
+            if(Type != Type.String) {
+                return string.Empty;
+            }
+            var newString = UTF8.GetString(Bytes);
+            if(string.IsNullOrEmpty(newString)) {
+                return string.Empty;
+            }
+            return newString;
         }
     }
 }

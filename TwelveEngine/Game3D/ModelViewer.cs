@@ -83,16 +83,12 @@ namespace TwelveEngine.Game3D {
             };
             Camera = camera;
 
-            modelEntity = new ModelEntity(modelName) {
-                FactoryID = FactoryID,
-                Name = EntityName
-            };
+            modelEntity = EntityManager.Create<ModelEntity>(FactoryID);
             OnImport += frame => {
-                var reloadedModel = EntityManager.OfName<ModelEntity>(EntityName);
+                var reloadedModel = EntityManager.Get<ModelEntity>(EntityName);
                 modelEntity = reloadedModel;
             };
 
-            EntityManager.AddEntity(modelEntity);
             gridLines.Load(this);
             Input.OnToggleDown += Input_OnToggleDown;
             ImpulseGuide = new ImpulseGuide(Game);
