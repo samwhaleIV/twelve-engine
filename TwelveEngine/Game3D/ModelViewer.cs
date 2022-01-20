@@ -88,7 +88,7 @@ namespace TwelveEngine.Game3D {
                 Name = EntityName
             };
             OnImport += frame => {
-                var reloadedModel = (ModelEntity)EntityManager.OfName(EntityName);
+                var reloadedModel = EntityManager.OfName<ModelEntity>(EntityName);
                 modelEntity = reloadedModel;
             };
 

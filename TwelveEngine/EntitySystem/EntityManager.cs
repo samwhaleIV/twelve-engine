@@ -133,11 +133,30 @@ namespace TwelveEngine.EntitySystem {
         }
         #endregion
 
+        public TEntity OfID(int ID) {
+            if(!entityDictionary.TryGetValue(ID,out var entity)) {
+                return null;
+            }
+            return entity;
+        }
+        public TEntity OfID<TType>(int ID) where TType:TEntity {
+            if(!entityDictionary.TryGetValue(ID,out var entity)) {
+                return null;
+            }
+            return entity as TType;
+        }
+
         public TEntity OfName(string name) {
             if(!namedEntities.TryGetValue(name,out var entity)) {
                 return null;
             }
             return entity;
+        }
+        public TType OfName<TType>(string name) where TType:TEntity {
+            if(!namedEntities.TryGetValue(name,out var entity)) {
+                return null;
+            }
+            return entity as TType;
         }
 
         public IEnumerable<TEntity> OfComponent(int componentType) {
@@ -165,6 +184,15 @@ namespace TwelveEngine.EntitySystem {
             }
             foreach(var ID in typeTable[entityType]) {
                 yield return entityDictionary[ID];
+            }
+        }
+
+        public IEnumerable<TType> OfType<TType>(int entityType) where TType:TEntity {
+            if(!typeTable.ContainsKey(entityType)) {
+                yield break;
+            }
+            foreach(var ID in typeTable[entityType]) {
+                yield return entityDictionary[ID] as TType;
             }
         }
 
@@ -311,8 +339,8 @@ namespace TwelveEngine.EntitySystem {
             removeFromLists(entity); //Stage 2
             entity.Unload(); //Stage 3
         }
-
         public void RemoveEntity(string name) => RemoveEntity(OfName(name));
+        public void RemoveEntity(int ID) => RemoveEntity(entityDictionary[ID]);
 
         private void Owner_Unload() {
             assertMutation();

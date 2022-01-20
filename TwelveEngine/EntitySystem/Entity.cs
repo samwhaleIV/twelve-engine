@@ -35,6 +35,10 @@ namespace TwelveEngine.EntitySystem {
             return component;
         }
 
+        public bool TryGetComponent(int componentType,out int[] componentValue) {
+            return components.TryGetValue(componentType,out componentValue);
+        }
+
         public bool HasComponent(int componentType) {
             return components.ContainsKey(componentType);
         }
@@ -81,7 +85,9 @@ namespace TwelveEngine.EntitySystem {
         private void setName(string newName) {
             var oldName = name;
             name = newName;
-            OnNameChanged?.Invoke(ID,oldName);
+            if(newName != oldName) {
+                OnNameChanged?.Invoke(ID,oldName);
+            }
         }
 
         public string Name {
