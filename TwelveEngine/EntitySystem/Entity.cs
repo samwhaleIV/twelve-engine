@@ -8,10 +8,28 @@ namespace TwelveEngine.EntitySystem {
         protected internal HashSet<int> ComponentTypes { get; protected set; }
         private Dictionary<int,Component> components = new Dictionary<int,Component>();
 
-        public void AddComponent(Component component) {
-            components[component.Type] = component;
-            ComponentTypes.Add(component.Type);
+        /* Fire event nulling isn't strictly required, but it is included as a fail safe in the 'event' that EntityManager is flawed */
+        private void AddComponent(Component component,bool fireEvent = false) {
+            var type = component.Type;
+            components[type] = component;
+            ComponentTypes.Add(type);
+            if(fireEvent) {
+                OnComponentAdded?.Invoke(ID,type);
+            }
         }
+
+        public void AddComponent(Component component) {
+            AddComponent(component,fireEvent: true);
+        }
+
+        public void RemoveComponent(Component component) {
+            var type = component.Type;
+            components.Remove(type);
+            ComponentTypes.Remove(type);
+            OnComponentRemoved?.Invoke(ID,type);
+        }
+
+        internal event Action<int,int> OnComponentRemoved, OnComponentAdded;
 
         protected abstract int GetEntityType();
         public int Type => GetEntityType();
@@ -23,8 +41,7 @@ namespace TwelveEngine.EntitySystem {
 
         public bool Deleted { get; internal set; }
 
-        private int id = 0;
-        public int ID => id;
+        public int ID { get; private set; }
 
         private GameManager game = null;
         private TOwner owner = null;
@@ -32,8 +49,8 @@ namespace TwelveEngine.EntitySystem {
         protected GameManager Game => game;
         protected TOwner Owner => owner;
 
-        internal void Register(int id,TOwner owner) {
-            this.id = id;
+        internal void Register(int ID,TOwner owner) {
+            this.ID = ID;
             this.owner = owner;
             game = owner.Game;
         }
@@ -44,7 +61,7 @@ namespace TwelveEngine.EntitySystem {
 
         internal void Unload() {
             OnUnload?.Invoke();
-            id = 0;
+            ID = EntityManager.START_ID - 1;
             owner = null;
             game = null;
         }
@@ -78,7 +95,7 @@ namespace TwelveEngine.EntitySystem {
                 AddComponent(new Component() {
                     Type = frame.GetInt(),
                     Value = frame.GetIntArray()
-                });
+                },fireEvent: false);
             }
         }
 

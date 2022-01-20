@@ -4,31 +4,34 @@ using System.Linq;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.EntitySystem {
+    public static class EntityManager {
+        internal const int START_ID = 0;
+    }
     public sealed class EntityManager<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {
 
         private const string NO_ITERATION_ALLOWED = "Cannot iterate an Entity list recursively!";
         private const string NO_MUTATION_ALLOWED = "Cannot modify Entity tables during immutable list iteration!";
 
         public EntityManager(TOwner owner,EntityFactory<TEntity,TOwner> factory) {
-            this.owner = owner;
-            this.factory = factory;
-
             owner.OnExport += Owner_Export;
             owner.OnImport += Owner_Import;
             owner.OnUnload += Owner_Unload;
+
+            this.owner = owner;
+            this.factory = factory;
         }
 
         private readonly TOwner owner;
         private readonly EntityFactory<TEntity,TOwner> factory;
 
-        private int IDCounter = 0;
+        private int IDCounter = EntityManager.START_ID;
         private int getNextID() => IDCounter++;
 
         private readonly Dictionary<int,TEntity> entityDictionary = new Dictionary<int,TEntity>();
         private readonly Dictionary<string,TEntity> namedEntities = new Dictionary<string,TEntity>();
 
-        private readonly Dictionary<int,HashSet<int>> typeTable = new Dictionary<int,HashSet<int>>();
-        private readonly Dictionary<int,HashSet<int>> componentTable = new Dictionary<int,HashSet<int>>();
+        /* Be warned: HashSet is unordered. Entites are not supposed to be dependent on creation/insertion order */
+        private readonly Dictionary<int,HashSet<int>> typeTable = new Dictionary<int,HashSet<int>>(), componentTable = new Dictionary<int,HashSet<int>>();
 
         private TEntity[] entityList;
         private bool entityListQueued = false;
@@ -276,7 +279,17 @@ namespace TwelveEngine.EntitySystem {
 
             addToLists(entity); //Stage 1
             entity.OnNameChanged += Entity_OnNameChanged; //Stage 2
+            entity.OnComponentAdded += Entity_OnComponentAdded;
+            entity.OnComponentRemoved += Entity_OnComponentRemoved;
             entity.Load(); //Stage 3
+        }
+
+        private void Entity_OnComponentRemoved(int ID,int componentType) {
+            removeFromTable(componentType,ID,componentTable);
+        }
+
+        private void Entity_OnComponentAdded(int ID,int componentType) {
+            addToTable(componentType,ID,componentTable);
         }
 
         public void AddEntities(params TEntity[] entities) {
@@ -292,6 +305,8 @@ namespace TwelveEngine.EntitySystem {
             assertMutation();
             /* Stage 1 and 2 are in reverse order for entity removal */
             entity.OnNameChanged -= Entity_OnNameChanged; //Stage 1
+            entity.OnComponentAdded -= Entity_OnComponentAdded;
+            entity.OnComponentRemoved -= Entity_OnComponentRemoved;
             removeFromLists(entity); //Stage 2
             entity.Unload(); //Stage 3
         }
