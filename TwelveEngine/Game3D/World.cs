@@ -8,7 +8,10 @@ namespace TwelveEngine.Game3D {
 
         private readonly EntityFactory<Entity3D,World> entityFactory;
 
-        public World(EntityFactory<Entity3D,World> entityFactory) {
+        public World(EntityFactory<Entity3D,World> entityFactory = null) {
+            if(entityFactory == null ) {
+                entityFactory = Entity3DType.GetFactory();
+            }
             this.entityFactory = entityFactory;
 
             OnLoad += SetupEntityFactory;
@@ -20,12 +23,12 @@ namespace TwelveEngine.Game3D {
         }
 
         private void World_OnUpdate(GameTime gameTime) {
-            EntityManager.IterateMutable(Entity3D.Update,gameTime);
+            Entities.IterateMutable(Entity3D.Update,gameTime);
             _camera?.Update(GetAspectRatio());
         }
 
         public void RenderEntities(GameTime gameTime) {
-            EntityManager.IterateImmutable(Entity3D.Render,gameTime);
+            Entities.IterateImmutable(Entity3D.Render,gameTime);
         }
 
         private readonly CameraSerializer cameraSerializer;
@@ -45,9 +48,9 @@ namespace TwelveEngine.Game3D {
             OnViewMatrixChanged?.Invoke(viewMatrix);
         }
 
-        public EntityManager<Entity3D,World> EntityManager { get; private set; }
+        public EntityManager<Entity3D,World> Entities { get; private set; }
         private void SetupEntityFactory() {
-            EntityManager = new EntityManager<Entity3D,World>(this,entityFactory);
+            Entities = new EntityManager<Entity3D,World>(this,entityFactory);
         }
 
         public float GetAspectRatio() => Game.GraphicsDevice.Viewport.AspectRatio;

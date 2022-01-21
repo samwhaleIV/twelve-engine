@@ -11,15 +11,17 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainerHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityComponents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\ContainerExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\EntityContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\AngleCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\Camera3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\CameraSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Entity3D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\ModelEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Entity3DType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\ModelEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\WorldMatrixEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\GridLines.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\ModelViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
@@ -131,5 +133,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\RenderElementSorter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIState.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\" />
   </ItemGroup>
 </Project>

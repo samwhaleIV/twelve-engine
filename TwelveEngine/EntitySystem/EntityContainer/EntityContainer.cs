@@ -1,12 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace TwelveEngine.EntitySystem {
-    public sealed class EntityContainer<TEntity,TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
+namespace TwelveEngine.EntitySystem.EntityContainer {
+    internal sealed class EntityContainer<TEntity,TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
+
+        public EntityContainer() {
+            containerWriter = new ContainerWriter<TEntity,TOwner>(this);
+        }
 
         private readonly Dictionary<int,TEntity> entityDictionary = new Dictionary<int,TEntity>();
         private readonly Dictionary<string,TEntity> namedEntities = new Dictionary<string,TEntity>();
 
         private readonly Dictionary<int,HashSet<int>> typeTable = new Dictionary<int,HashSet<int>>();
+
+                                                                      /* Component Type|  Entity ID|
+                                                                                       V           V     */
         private readonly Dictionary<int,HashSet<int>> componentTable = new Dictionary<int,HashSet<int>>();
 
         internal Dictionary<int,TEntity> IDs => entityDictionary;
@@ -14,5 +21,9 @@ namespace TwelveEngine.EntitySystem {
 
         internal Dictionary<int,HashSet<int>> Types => typeTable;
         internal Dictionary<int,HashSet<int>> Components => componentTable;
+
+        private readonly ContainerWriter<TEntity,TOwner> containerWriter;
+
+        public ContainerWriter<TEntity,TOwner> Writer => containerWriter;
     }
 }

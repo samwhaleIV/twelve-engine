@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace TwelveEngine.EntitySystem {
     public sealed partial class EntityManager<TEntity, TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
+
         public TEntity Get(int ID) {
             if(!container.IDs.TryGetValue(ID,out var entity)) {
                 return null;
@@ -71,6 +72,28 @@ namespace TwelveEngine.EntitySystem {
         }
         public bool Has(int ID) {
             return container.IDs.ContainsKey(ID);
+        }
+
+        public bool TryGet(int ID,out TEntity entity) {
+            return container.IDs.TryGetValue(ID,out entity);
+        }
+
+        public bool TryGet(string name,out TEntity entity) {
+            return container.Names.TryGetValue(name,out entity);
+        }
+
+        public bool TryGet<TType>(int ID,out TType entity) where TType:TEntity {
+            TEntity _entity;
+            var result = container.IDs.TryGetValue(ID,out _entity);
+            entity = (TType)_entity;
+            return result;
+        }
+
+        public bool TryGet<TType>(string name,out TType entity) where TType : TEntity {
+            TEntity _entity;
+            var result = container.Names.TryGetValue(name,out _entity);
+            entity = (TType)_entity;
+            return result;
         }
     }
 }

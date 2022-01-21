@@ -44,10 +44,12 @@ namespace TwelveEngine.EntitySystem {
 
         /* int: ID, string: NewName */
         internal event Action<int,string> OnNameChanged;
-
-        public bool Deleted { get; internal set; }
-
         public int ID { get; private set; }
+
+        public bool IsDeleted { get; internal set; } = false;
+
+        public bool IsLoaded { get; private set; } = false;
+        public bool IsLoading { get; private set; } = false;
 
         private GameManager game = null;
         private TOwner owner = null;
@@ -63,13 +65,19 @@ namespace TwelveEngine.EntitySystem {
 
         protected event Action OnLoad, OnUnload;
 
-        internal void Load() => OnLoad?.Invoke();
+        internal void Load() {
+            IsLoading = true;
+            OnLoad?.Invoke();
+            IsLoaded = true;
+            IsLoading = false;
+        }
 
         internal void Unload() {
             OnUnload?.Invoke();
             ID = DEFAULT_ID;
             owner = null;
             game = null;
+            IsLoaded = false;
         }
 
         public bool StateLock { get; set; } = false;

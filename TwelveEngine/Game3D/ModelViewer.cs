@@ -1,18 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.GameUI;
-using TwelveEngine.Game3D.Entity;
 using TwelveEngine.EntitySystem;
+using TwelveEngine.Game3D.Entity.Types;
 
 namespace TwelveEngine.Game3D {
     public sealed class ModelViewer:World {
 
         private const string EntityName = "ModelViewerTarget";
-        private const int FactoryID = 0;
-
         private readonly string modelName;
-        private AngleCamera camera;
-        private ModelEntity modelEntity;
 
         private const float VELOCITY_BASE = 1f / (1000f / 60f);
         public const float MOUSE_SPEED = 0.15f;
@@ -23,13 +19,7 @@ namespace TwelveEngine.Game3D {
         private ImpulseGuide ImpulseGuide { get; set; }
         private readonly GridLines gridLines = new GridLines();
 
-
-        public ModelViewer(string modelName) : base(new EntityFactory<Entity3D,World>(
-            (0,() => new ModelEntity(modelName) {
-                FactoryID = FactoryID,
-                Name = EntityName
-            })
-        )) {
+        public ModelViewer(string modelName) {
             this.modelName = modelName;
 
             OnLoad += ModelTest_OnLoad;
@@ -75,7 +65,7 @@ namespace TwelveEngine.Game3D {
         }
 
         private void ModelTest_OnLoad() {
-            camera = new AngleCamera() {
+            var camera = new AngleCamera() {
                 NearPlane = 0.1f,
                 FieldOfView = 75f,
                 Angle = new Vector2(219.75f,215.10f),
@@ -83,11 +73,10 @@ namespace TwelveEngine.Game3D {
             };
             Camera = camera;
 
-            modelEntity = EntityManager.Create<ModelEntity>(FactoryID);
-            OnImport += frame => {
-                var reloadedModel = EntityManager.Get<ModelEntity>(EntityName);
-                modelEntity = reloadedModel;
-            };
+            Entities.Add(new ModelEntity() {
+                Name = EntityName,
+                ModelName = modelName
+            });
 
             gridLines.Load(this);
             Input.OnToggleDown += Input_OnToggleDown;
@@ -103,17 +92,25 @@ namespace TwelveEngine.Game3D {
         private float GetRotationVelocity(GameTime gameTime) => GetVelocity(gameTime,ModelRotationSpeed);
         private float GetFreeCamVelocity(GameTime gameTime) => GetVelocity(gameTime,FreeCamSpeed);
 
+        private ModelEntity GetModelEntity() {
+            return Entities.Get<ModelEntity>(EntityName);
+        }
+
         private void RotateModel(GameTime gameTime) {
             var rotationDelta = Input.GetDelta3D();
             if(rotationDelta == Vector3.Zero) {
                 return;
             }
-
             float velocity = GetRotationVelocity(gameTime);
-            modelEntity.Rotation += rotationDelta * new Vector3(velocity);
+            
+            GetModelEntity().Rotation += rotationDelta * new Vector3(velocity);
         }
 
         private void UpdateCamera(GameTime gameTime) {
+            var camera = Camera as AngleCamera;
+            if(camera == null) {
+                return;
+            }
             var mouseDelta = Game.MouseHandler.Delta;
             if(Game.MouseHandler.Capturing && mouseDelta != Point.Zero) {
                 mouseDelta.Y = -mouseDelta.Y;
@@ -126,7 +123,7 @@ namespace TwelveEngine.Game3D {
             if(!ControlModel) {
                 UpdateCamera(gameTime);
             }
-            camera.Update(Game.GraphicsDevice.Viewport.AspectRatio);
+            Camera.Update(Game.GraphicsDevice.Viewport.AspectRatio);
 
             if(ControlModel) {
                 RotateModel(gameTime);
@@ -138,6 +135,9 @@ namespace TwelveEngine.Game3D {
         }
 
         private void DrawCameraData() {
+            var camera = Camera as AngleCamera;
+            if(camera == null) return;
+
             var position1 = new Point(Constants.ScreenEdgePadding,Constants.ScreenEdgePadding);
             var text1 = $"Yaw {string.Format("{0:0.00}",camera.Yaw)}  Pitch {string.Format("{0:0.00}",camera.Pitch)}";
 

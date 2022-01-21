@@ -59,13 +59,13 @@ namespace ElfGame {
         }
 
         private void FacialAnimationViewer_OnPreRender(GameTime gameTime) {
-            Game.GraphicsDevice.SetRenderTarget(renderBuffer);
+            Game.SetRenderTarget(renderBuffer);
 
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred);
             elfFace.Renderer.Render(Game.SpriteBatch,Point.Zero);
             Game.SpriteBatch.End();
 
-            Game.GraphicsDevice.SetRenderTarget(null);
+            Game.RestoreRenderTarget();
         }
 
         private void FacialAnimationViewer_OnRender(GameTime gameTime) {

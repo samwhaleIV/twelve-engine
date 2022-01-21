@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace TwelveEngine.EntitySystem {
-    internal sealed class EntityContainerHandler<TEntity, TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
+namespace TwelveEngine.EntitySystem.EntityContainer {
+    internal sealed class ContainerWriter<TEntity, TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
 
-        public EntityContainer<TEntity,TOwner> Container { get; set; }
+        private readonly EntityContainer<TEntity,TOwner> container;
+        public ContainerWriter(EntityContainer<TEntity,TOwner> container) {
+            this.container = container;
+        }
 
         private static void AddToTable(Dictionary<int,HashSet<int>> table,int entityID,int tableID) {
             HashSet<int> hashSet;
@@ -23,35 +26,35 @@ namespace TwelveEngine.EntitySystem {
 
         private void AddToComponentTable(TEntity entity) {
             foreach(var componentType in entity.Components.Types) {
-                AddToTable(Container.Components,entity.ID,componentType);
+                AddToTable(container.Components,entity.ID,componentType);
             }
         }
 
         private void RemoveFromComponentTable(TEntity entity) {
             foreach(var componentType in entity.Components.Types) {
-                RemoveFromTable(Container.Components,entity.ID,componentType);
+                RemoveFromTable(container.Components,entity.ID,componentType);
             }
         }
 
         private void AddToTypeTable(TEntity entity) {
-            AddToTable(Container.Types,entity.ID,entity.Type);
+            AddToTable(container.Types,entity.ID,entity.Type);
         }
         private void RemoveFromTypeTable(TEntity entity) {
-            RemoveFromTable(Container.Types,entity.ID,entity.Type);
+            RemoveFromTable(container.Types,entity.ID,entity.Type);
         }
 
         private void AddToLists(TEntity entity) {
-            Container.IDs.Add(entity.ID,entity);
+            container.IDs.Add(entity.ID,entity);
             if(entity.HasName) {
-                Container.Names.Add(entity.Name,entity);
+                container.Names.Add(entity.Name,entity);
             }
             AddToTypeTable(entity);
             AddToComponentTable(entity);
         }
         private void RemoveFromLists(TEntity entity) {
-            Container.IDs.Remove(entity.ID);
+            container.IDs.Remove(entity.ID);
             if(entity.HasName) {
-                Container.Names.Remove(entity.Name);
+                container.Names.Remove(entity.Name);
             }
             RemoveFromTypeTable(entity);
             RemoveFromComponentTable(entity);
@@ -70,17 +73,17 @@ namespace TwelveEngine.EntitySystem {
         }
 
         private void Entity_OnComponentAdded(int entityID,int componentType) {
-            AddToTable(Container.Components,entityID,componentType);
+            AddToTable(container.Components,entityID,componentType);
         }
 
         private void Entity_OnComponentRemoved(int entityID,int componentType) {
-            RemoveFromTable(Container.Components,entityID,componentType);
+            RemoveFromTable(container.Components,entityID,componentType);
         }
 
         private void Entity_OnNameChanged(int entityID,string oldName) {
-            var entity = Container.IDs[entityID];
-            Container.Names.Remove(oldName);
-            Container.Names[entity.Name] = entity;
+            var entity = container.IDs[entityID];
+            container.Names.Remove(oldName);
+            container.Names[entity.Name] = entity;
         }
 
         internal void AddEntity(TEntity entity) {

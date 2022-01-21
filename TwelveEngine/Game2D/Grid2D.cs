@@ -72,7 +72,7 @@ namespace TwelveEngine.Game2D {
 
         public InteractionLayer Interaction { get; set; }
 
-        public EntityManager<Entity2D,Grid2D> EntityManager { get; private set; }
+        public EntityManager<Entity2D,Grid2D> Entities { get; private set; }
 
         private int[][,] layers;
         private TileRenderer tileRenderer = null;
@@ -124,7 +124,7 @@ namespace TwelveEngine.Game2D {
         private void Grid2D_OnLoad() {
             ImpulseGuide = new ImpulseGuide(Game);
             collisionInterface.Types.LoadTypes();
-            EntityManager = new EntityManager<Entity2D,Grid2D>(this,entityFactory);
+            Entities = new EntityManager<Entity2D,Grid2D>(this,entityFactory);
             if(pendingTileRenderer != null) {
                 tileRenderer = pendingTileRenderer;
                 pendingTileRenderer = null;
@@ -157,11 +157,11 @@ namespace TwelveEngine.Game2D {
 
 
         private void update(GameTime gameTime) {
-            EntityManager.IterateMutable(Entity2D.Update,gameTime);
+            Entities.IterateMutable(Entity2D.Update,gameTime);
         }
 
         private void renderEntities(GameTime gameTime) {
-            EntityManager.IterateImmutable(Entity2D.Render,gameTime);
+            Entities.IterateImmutable(Entity2D.Render,gameTime);
         }
 
         private static float cameraBounds(float value,float size,int gridSize) {

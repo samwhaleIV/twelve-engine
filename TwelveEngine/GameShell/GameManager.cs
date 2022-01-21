@@ -8,6 +8,7 @@ using TwelveEngine.Input;
 using TwelveEngine.GameShell;
 using TwelveEngine.GameShell.Automation;
 using TwelveEngine.Serial;
+using System.Collections.Generic;
 
 namespace TwelveEngine {
     public sealed partial class GameManager:Game {
@@ -300,6 +301,21 @@ namespace TwelveEngine {
                 return;
             }
             framesToSkip = count;
+        }
+
+        private readonly Stack<RenderTarget2D> renderTargets = new Stack<RenderTarget2D>();
+
+        public void SetRenderTarget(RenderTarget2D renderTarget) {
+            renderTargets.Push(renderTarget);
+            GraphicsDevice.SetRenderTarget(renderTarget);
+        }
+
+        public void RestoreRenderTarget() {
+            if(!renderTargets.TryPop(out var renderTarget)) {
+                GraphicsDevice.SetRenderTarget(null);
+            } else {
+                GraphicsDevice.SetRenderTarget(renderTarget);
+            }
         }
 
         protected override void Update(GameTime gameTime) {

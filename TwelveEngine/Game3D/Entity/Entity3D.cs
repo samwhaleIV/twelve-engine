@@ -14,23 +14,31 @@ namespace TwelveEngine.Game3D.Entity {
         private void Entity3D_OnExport(SerialFrame frame) {
             frame.Set(Position);
             frame.Set(Rotation);
+            frame.Set(Scale);
         }
 
         private void Entity3D_OnImport(SerialFrame frame) {
             Position = frame.GetVector3();
             Rotation = frame.GetVector3();
+            Scale = frame.GetVector3();
         }
+
+        protected bool WorldMatrixValid { get; set; } = false;
 
         protected bool PositionValid { get; set; } = false;
         protected bool RotationValid { get; set; } = false;
+        protected bool ScaleValid { get; set; } = false;
 
-        private Vector3 _position, _rotation;
+        private Vector3 _position = Vector3.Zero;
+        private Vector3 _rotation = Vector3.Zero;
+        private Vector3 _scale = Vector3.One;
 
         public Vector3 Position {
             get => _position;
             set {
                 _position = value;
                 PositionValid = false;
+                WorldMatrixValid = false;
             }
         }
 
@@ -39,6 +47,16 @@ namespace TwelveEngine.Game3D.Entity {
             set {
                 _rotation = value;
                 RotationValid = false;
+                WorldMatrixValid = false;
+            }
+        }
+
+        public Vector3 Scale {
+            get => _scale;
+            set {
+                _scale = value;
+                ScaleValid = false;
+                WorldMatrixValid = false;
             }
         }
 

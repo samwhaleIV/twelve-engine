@@ -92,9 +92,10 @@ namespace TwelveEngine.UI.Elements {
                 return;
             }
             renderCache.PreRender(gameTime);
-            game.GraphicsDevice.SetRenderTarget(renderTarget);
+
+            game.SetRenderTarget(renderTarget);
             renderCache.Render(game.SpriteBatch,gameTime);
-            game.GraphicsDevice.SetRenderTarget(null);
+            game.RestoreRenderTarget();
         }
 
         private void RenderFrame_OnUpdate(GameTime gameTime) {

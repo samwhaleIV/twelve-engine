@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TwelveEngine.Serial;
+using TwelveEngine.EntitySystem.EntityContainer;
 
 namespace TwelveEngine.EntitySystem {
     public static class EntityManager {
@@ -15,8 +16,7 @@ namespace TwelveEngine.EntitySystem {
         private readonly TOwner owner;
         private readonly EntityFactory<TEntity,TOwner> factory;
 
-        private readonly EntityContainer<TEntity,TOwner> container = new EntityContainer<TEntity,TOwner>(); /* Data */
-        private readonly EntityContainerHandler<TEntity,TOwner> containerHandler = new EntityContainerHandler<TEntity,TOwner>(); /* View */
+        private readonly EntityContainer<TEntity,TOwner> container = new EntityContainer<TEntity,TOwner>();
 
         public EntityManager(TOwner owner,EntityFactory<TEntity,TOwner> factory) {
 
@@ -26,8 +26,6 @@ namespace TwelveEngine.EntitySystem {
 
             this.owner = owner;
             this.factory = factory;
-
-            containerHandler.Container = container;
         }
 
         private int IDCounter = EntityManager.START_ID;
@@ -87,7 +85,7 @@ namespace TwelveEngine.EntitySystem {
             PauseChanges();
             for(var i = 0;i<_entityList.Length;i++) {
                 var entity = _entityList[i];
-                if(entity.Deleted) {
+                if(entity.IsDeleted) {
                     continue;
                 }
                 action(_entityList[i]);
@@ -117,7 +115,7 @@ namespace TwelveEngine.EntitySystem {
             PauseChanges();
             for(var i = 0;i<_entityList.Length;i++) {
                 var entity = _entityList[i];
-                if(entity.Deleted) {
+                if(entity.IsDeleted) {
                     continue;
                 }
                 action(_entityList[i],data);
@@ -165,18 +163,18 @@ namespace TwelveEngine.EntitySystem {
         private void _addEntity(TEntity entity) {
             var ID = GetNextID();
             entity.Register(ID,owner);
-            containerHandler.AddEntity(entity);
+            container.Writer.AddEntity(entity);
             TryUpdateList();
             entity.Load();
-            entity.Deleted = false;
+            entity.IsDeleted = false;
         }
 
         /* Non-asserted version */
         private void _removeEntity(TEntity entity) {
-            containerHandler.RemoveEntity(entity);
+            container.Writer.RemoveEntity(entity);
             TryUpdateList();
             entity.Unload();
-            entity.Deleted = true;
+            entity.IsDeleted = true;
         }
 
         public void Add(TEntity entity) {
