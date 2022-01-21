@@ -8,12 +8,22 @@ namespace TwelveEngine.Game3D.Entity {
 
         private Matrix originMatrix, rotationMatrix, scaleMatrix, worldMatrix;
 
-        protected void UpdateWorldMatrix(Action<Matrix> onMatrixChanged) {
-
-            if(Billboard && Owner.Camera.Position != lastCameraPosition) {
-                PositionValid = false;
-                WorldMatrixValid = false;
+        private void ValidateBillboard() {
+            var camera = Owner.Camera;
+            if(camera == null) {
+                return;
             }
+            var cameraPosition = camera.Position;
+            if(!(Billboard && cameraPosition != lastCameraPosition)) {
+                return;
+            }
+            PositionValid = false;
+            WorldMatrixValid = false;
+            lastCameraPosition = cameraPosition;
+        }
+
+        protected void UpdateWorldMatrix(Action<Matrix> onMatrixChanged) {
+            ValidateBillboard();
 
             if(WorldMatrixValid) {
                 return;
@@ -30,7 +40,7 @@ namespace TwelveEngine.Game3D.Entity {
         private Matrix GetWorldMatrix() {
             var matrix = originMatrix * scaleMatrix;
             if(!Billboard) {
-                matrix = matrix * rotationMatrix;
+                matrix *= rotationMatrix;
             }
             return matrix;
         }
@@ -44,23 +54,14 @@ namespace TwelveEngine.Game3D.Entity {
         }
 
         private Matrix GetWorldOriginMatrix() {
-            return Matrix.CreateWorld(Position,Orientation.Forward,Orientation.Up);
+            return Matrix.CreateWorld(Position,Orientation.Forward,Orientation.Up );
         }
 
         private Matrix GetBillboardOriginMatrix() {
-            var camera = Owner.Camera as AngleCamera;
-            if(camera == null) return GetWorldMatrix();
-
             var rotationAxis = new Vector3(0,0,1);
-
-            lastCameraPosition = camera.Position;
-
             return Matrix.CreateConstrainedBillboard(
-                Position,
-                camera.Position,
-                rotationAxis,
-                camera.Forward,
-                Orientation.Forward
+                Position,Owner.Camera.Position,rotationAxis,
+                Orientation.Forward,Orientation.Forward
             );
         }
 

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 namespace TwelveEngine.Game3D.Entity.Types {
     public class ModelEntity:WorldMatrixEntity {
 
-        /* Does not update live */
         private string _modelName;
         public string ModelName {
             get => _modelName;

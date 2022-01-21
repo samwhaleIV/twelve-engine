@@ -76,11 +76,10 @@ namespace TwelveEngine.Game3D {
             };
             Camera = camera;
 
-            //Entities.Add(new ModelEntity() {
-            //    Name = EntityName,
-            //     ModelName = modelName
-            //});
-            Entities.Add(new TextureEntity("Test/cat-test-picture") {Name = EntityName, Billboard = false, Rotation = new Vector3(0,0,0)});
+            Entities.Add(new ModelEntity() {
+                Name = EntityName,
+                 ModelName = modelName
+            });
 
             gridLines.Load(this);
             Input.OnToggleDown += Input_OnToggleDown;
