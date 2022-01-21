@@ -112,8 +112,10 @@ namespace TwelveEngine.Game3D {
         }
 
         public void Render() {
-            effect.CurrentTechnique.Passes[0].Apply();
-            effect.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList,vertices,0,vertices.Length / 2);
+            foreach(var pass in effect.CurrentTechnique.Passes) {
+                pass.Apply();
+                effect.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList,vertices,0,vertices.Length / 2);
+            }
         }
     }
 }

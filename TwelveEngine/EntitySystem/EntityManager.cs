@@ -31,7 +31,7 @@ namespace TwelveEngine.EntitySystem {
         private int IDCounter = EntityManager.START_ID;
         private int GetNextID() => IDCounter++;
 
-        private TEntity[] _entityList;
+        private TEntity[] _entityList = new TEntity[0];
         private bool entityListQueued = false;
 
         public bool Locked { get; private set; } = false;

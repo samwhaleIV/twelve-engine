@@ -5,11 +5,11 @@ using Microsoft.Xna.Framework;
 namespace TwelveEngine.Game3D {
     public sealed class AngleCamera:Camera3D {
 
-        private const float YawOffset = Orientation.YawOffsetAngle;
-        private const float PitchOffset = Orientation.PitchOffsetAngle;
+        private const float YawOffset = Orientation.CamYawOffset;
+        private const float PitchOffset = Orientation.CamPitchOffset;
 
-        private const float MinPitch = Orientation.MinPitchAngle;
-        private const float MaxPitch = Orientation.MaxPitchAngle;
+        private const float MinPitch = Orientation.CamMinPitch;
+        private const float MaxPitch = Orientation.CamMaxPitch;
 
         public AngleCamera() => SetAngle(YawOffset,PitchOffset);
 
@@ -56,15 +56,15 @@ namespace TwelveEngine.Game3D {
             yaw = MathHelper.ToRadians(Yaw + YawOffset);
             pitch = MathHelper.ToRadians(Pitch + PitchOffset);
 
-            Forward = Vector3.Transform(Orientation.CameraForward,Matrix.CreateFromAxisAngle(Orientation.CameraUp,yaw));
+            Forward = Vector3.Transform(Orientation.Forward,Matrix.CreateFromAxisAngle(Orientation.Up,yaw));
             Forward.Normalize();
 
-            Vector3 left = Vector3.Cross(Orientation.CameraUp,Forward);
+            Vector3 left = Vector3.Cross(Orientation.Up,Forward);
             left.Normalize();
 
             var angleMatrix = Matrix.CreateFromAxisAngle(left,pitch);
             Forward = Vector3.Transform(Forward,angleMatrix);
-            Up = Vector3.Transform(Orientation.CameraUp,angleMatrix);
+            Up = Vector3.Transform(Orientation.Up,angleMatrix);
 
             InvalidateViewMatrix();
         }

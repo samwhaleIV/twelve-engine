@@ -111,6 +111,7 @@ namespace TwelveEngine.Input {
 
             if(IsKeyDown(Impulse.Up)) delta.Y--;
             if(IsKeyDown(Impulse.Down)) delta.Y++;
+
             if(IsKeyDown(Impulse.Left)) delta.X--;
             if(IsKeyDown(Impulse.Right)) delta.X++;
 
@@ -120,10 +121,12 @@ namespace TwelveEngine.Input {
         public Vector3 GetDelta3D() {
             int x = 0, y = 0, z = 0;
 
-            if(IsKeyDown(Impulse.Left)) x--;
-            if(IsKeyDown(Impulse.Right)) x++;
             if(IsKeyDown(Impulse.Up)) y--;
             if(IsKeyDown(Impulse.Down)) y++;
+
+            if(IsKeyDown(Impulse.Left)) x--;
+            if(IsKeyDown(Impulse.Right)) x++;
+
             if(IsKeyDown(Impulse.Ascend)) z--;
             if(IsKeyDown(Impulse.Descend)) z++;
 

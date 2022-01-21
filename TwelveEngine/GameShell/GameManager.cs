@@ -305,8 +305,20 @@ namespace TwelveEngine {
 
         private readonly Stack<RenderTarget2D> renderTargets = new Stack<RenderTarget2D>();
 
+        public Rectangle Bounds {
+            get {
+                if(renderTargets.Count == 0) {
+                    return GraphicsDevice.Viewport.Bounds;
+                } else {
+                    return renderTargets.Peek().Bounds;
+                }
+            }
+        }
+
         public void SetRenderTarget(RenderTarget2D renderTarget) {
-            renderTargets.Push(renderTarget);
+            if(renderTargets.Count > 0) {
+                renderTargets.Push(renderTarget);
+            }
             GraphicsDevice.SetRenderTarget(renderTarget);
         }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace TwelveEngine.EntitySystem.EntityContainer {
-    internal sealed class ContainerWriter<TEntity, TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
+    internal sealed class ContainerWriter<TEntity,TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
 
         private readonly EntityContainer<TEntity,TOwner> container;
         public ContainerWriter(EntityContainer<TEntity,TOwner> container) {

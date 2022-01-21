@@ -4,9 +4,17 @@ using Microsoft.Xna.Framework;
 namespace TwelveEngine.Game3D.Entity {
     public abstract class WorldMatrixEntity:Entity3D {
 
+        private Vector3? lastCameraPosition = null;
+
         private Matrix originMatrix, rotationMatrix, scaleMatrix, worldMatrix;
 
         protected void UpdateWorldMatrix(Action<Matrix> onMatrixChanged) {
+
+            if(Billboard && Owner.Camera.Position != lastCameraPosition) {
+                PositionValid = false;
+                WorldMatrixValid = false;
+            }
+
             if(WorldMatrixValid) {
                 return;
             }
@@ -20,20 +28,54 @@ namespace TwelveEngine.Game3D.Entity {
         }
 
         private Matrix GetWorldMatrix() {
-            return originMatrix * scaleMatrix * rotationMatrix;
+            var matrix = originMatrix * scaleMatrix;
+            if(!Billboard) {
+                matrix = matrix * rotationMatrix;
+            }
+            return matrix;
         }
 
         private void UpdateVectorMatrices() {
+            if(!Billboard) {
+                UpdateRotationMatrix();
+            }
             UpdateOriginMatrix();
             UpdateScaleMatrix();
-            UpdateRotationMatrix();
+        }
+
+        private Matrix GetWorldOriginMatrix() {
+            return Matrix.CreateWorld(Position,Orientation.Forward,Orientation.Up);
+        }
+
+        private Matrix GetBillboardOriginMatrix() {
+            var camera = Owner.Camera as AngleCamera;
+            if(camera == null) return GetWorldMatrix();
+
+            var rotationAxis = new Vector3(0,0,1);
+
+            lastCameraPosition = camera.Position;
+
+            return Matrix.CreateConstrainedBillboard(
+                Position,
+                camera.Position,
+                rotationAxis,
+                camera.Forward,
+                Orientation.Forward
+            );
+        }
+
+        private Matrix GetOriginMatrix() {
+            if(Billboard) {
+                return GetBillboardOriginMatrix();
+            }
+            return GetWorldOriginMatrix();
         }
 
         private void UpdateOriginMatrix() {
             if(PositionValid) {
                 return;
             }
-            originMatrix = Matrix.CreateWorld(Position,Orientation.WorldForward,Orientation.WorldUp);
+            originMatrix = GetOriginMatrix();
             PositionValid = true;
         }
 
@@ -50,7 +92,11 @@ namespace TwelveEngine.Game3D.Entity {
                 return;
             }
             var rotation = Rotation;
-            rotationMatrix =  Matrix.CreateFromYawPitchRoll(rotation.X,rotation.Y,rotation.Z);
+            rotationMatrix =  Matrix.CreateFromYawPitchRoll(
+                MathHelper.ToRadians(rotation.X + Orientation.WorldYawOffset),
+                MathHelper.ToRadians(rotation.Y + Orientation.WorldPitchOffset),
+                MathHelper.ToRadians(rotation.Z)
+            );
             RotationValid = true;
         }
     }

@@ -31,6 +31,10 @@ namespace TwelveEngine.Game3D {
             Entities.IterateImmutable(Entity3D.Render,gameTime);
         }
 
+        public void PreRenderEntities(GameTime gameTime) {
+            Entities.IterateImmutable(Entity3D.PreRender,gameTime);
+        }
+
         private readonly CameraSerializer cameraSerializer;
 
         private Camera3D _camera;

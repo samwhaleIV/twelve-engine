@@ -1,23 +1,24 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.GameUI;
-using TwelveEngine.EntitySystem;
 using TwelveEngine.Game3D.Entity.Types;
+using TwelveEngine.Game3D.Entity;
 
 namespace TwelveEngine.Game3D {
     public sealed class ModelViewer:World {
 
         private const string EntityName = "ModelViewerTarget";
-        private readonly string modelName;
 
         private const float VELOCITY_BASE = 1f / (1000f / 60f);
         public const float MOUSE_SPEED = 0.15f;
 
-        public float ModelRotationSpeed { get; set; } = 0.05f;
+        public float ModelRotationSpeed { get; set; } = 2.5f;
         public float FreeCamSpeed { get; set; } = 0.05f;
 
         private ImpulseGuide ImpulseGuide { get; set; }
         private readonly GridLines gridLines = new GridLines();
+
+        private readonly string modelName;
 
         public ModelViewer(string modelName) {
             this.modelName = modelName;
@@ -27,18 +28,20 @@ namespace TwelveEngine.Game3D {
 
             OnUpdate += ModelTest_OnUpdate;
             OnRender += ModelTest_OnRender;
+
+            OnPreRender += PreRenderEntities;
         }
 
         private void UpdateImpulseGuide() {
             if(ControlModel) {
                 ImpulseGuide.SetDescriptions(
                     (Impulse.Toggle, "Control Mode (Model)"),
-                    (Impulse.Up, "-Y"),
-                    (Impulse.Down, "+Y"),
-                    (Impulse.Left, "-X"),
-                    (Impulse.Right, "+X"),
-                    (Impulse.Ascend, "+Z"),
-                    (Impulse.Descend, "-Z")
+                    (Impulse.Up, "-Pitch"),
+                    (Impulse.Down, "+Pitch"),
+                    (Impulse.Left, "-Roll"),
+                    (Impulse.Right, "+Roll"),
+                    (Impulse.Ascend, "+Yaw"),
+                    (Impulse.Descend, "-Yaw")
                 );
             } else {
                 ImpulseGuide.SetDescriptions(
@@ -73,10 +76,11 @@ namespace TwelveEngine.Game3D {
             };
             Camera = camera;
 
-            Entities.Add(new ModelEntity() {
-                Name = EntityName,
-                ModelName = modelName
-            });
+            //Entities.Add(new ModelEntity() {
+            //    Name = EntityName,
+            //     ModelName = modelName
+            //});
+            Entities.Add(new TextureEntity("Test/cat-test-picture") {Name = EntityName, Billboard = false, Rotation = new Vector3(0,0,0)});
 
             gridLines.Load(this);
             Input.OnToggleDown += Input_OnToggleDown;
@@ -92,18 +96,23 @@ namespace TwelveEngine.Game3D {
         private float GetRotationVelocity(GameTime gameTime) => GetVelocity(gameTime,ModelRotationSpeed);
         private float GetFreeCamVelocity(GameTime gameTime) => GetVelocity(gameTime,FreeCamSpeed);
 
-        private ModelEntity GetModelEntity() {
-            return Entities.Get<ModelEntity>(EntityName);
+        private WorldMatrixEntity GetMatrixEntity() {
+            return Entities.Get<WorldMatrixEntity>(EntityName);
         }
 
         private void RotateModel(GameTime gameTime) {
+            var matrixEntity = GetMatrixEntity();
+            if(matrixEntity == null) {
+                return;
+            }
+
             var rotationDelta = Input.GetDelta3D();
             if(rotationDelta == Vector3.Zero) {
                 return;
             }
             float velocity = GetRotationVelocity(gameTime);
-            
-            GetModelEntity().Rotation += rotationDelta * new Vector3(velocity);
+
+            matrixEntity.Rotation += rotationDelta * new Vector3(velocity);
         }
 
         private void UpdateCamera(GameTime gameTime) {

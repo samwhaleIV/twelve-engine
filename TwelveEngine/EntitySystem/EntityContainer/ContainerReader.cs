@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace TwelveEngine.EntitySystem {
-    public sealed partial class EntityManager<TEntity, TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
+    public sealed partial class EntityManager<TEntity,TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
 
         public TEntity Get(int ID) {
             if(!container.IDs.TryGetValue(ID,out var entity)) {

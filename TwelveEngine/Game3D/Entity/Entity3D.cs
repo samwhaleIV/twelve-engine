@@ -15,12 +15,14 @@ namespace TwelveEngine.Game3D.Entity {
             frame.Set(Position);
             frame.Set(Rotation);
             frame.Set(Scale);
+            frame.Set(Billboard);
         }
 
         private void Entity3D_OnImport(SerialFrame frame) {
             Position = frame.GetVector3();
             Rotation = frame.GetVector3();
             Scale = frame.GetVector3();
+            Billboard = frame.GetBool();
         }
 
         protected bool WorldMatrixValid { get; set; } = false;
@@ -60,12 +62,40 @@ namespace TwelveEngine.Game3D.Entity {
             }
         }
 
-        public event Action<GameTime> OnUpdate, OnRender;
+        private bool _billboard = false;
+        public bool Billboard {
+            get => _billboard;
+            set {
+                if(_billboard == value) {
+                    return;
+                }
+                _billboard = value;
+                PositionValid = false;
+            }
+        }
+
+        public virtual bool IsVisible() => true;
+
+        public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
 
         public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
-        public void Render(GameTime gameTime) => OnRender?.Invoke(gameTime);
+
+        public void PreRender(GameTime gameTime) {
+            if(!IsVisible()) {
+                return;
+            }
+            OnPreRender?.Invoke(gameTime);
+        }
+
+        public void Render(GameTime gameTime) {
+            if(!IsVisible()) {
+                return;
+            }
+            OnRender?.Invoke(gameTime);
+        }
 
         public static void Update(Entity3D entity,GameTime gameTime) => entity.Update(gameTime);
+        public static void PreRender(Entity3D entity,GameTime gameTime) => entity.PreRender(gameTime);
         public static void Render(Entity3D entity,GameTime gameTime) => entity.Render(gameTime);
     }
 }
