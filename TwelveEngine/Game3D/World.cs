@@ -57,7 +57,7 @@ namespace TwelveEngine.Game3D {
             Entities = new EntityManager<Entity3D,World>(this,entityFactory);
         }
 
-        public float GetAspectRatio() => Game.GraphicsDevice.Viewport.AspectRatio;
+        public float GetAspectRatio() => Game.Viewport.AspectRatio;
 
         private void SetNewCamera(Camera3D newCamera) {
             var oldCamera = _camera;

@@ -71,7 +71,7 @@ namespace ElfGame {
         private void FacialAnimationViewer_OnRender(GameTime gameTime) {
             Game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
 
-            var bounds = Game.GraphicsDevice.Viewport.Bounds;
+            var bounds = Game.Viewport.Bounds;
             var size = new Vector2(Math.Min(bounds.Width,bounds.Height)) * 0.9f;
             var location = bounds.Center.ToVector2() - size * 0.5f;
 

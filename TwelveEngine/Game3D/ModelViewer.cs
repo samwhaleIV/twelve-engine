@@ -131,7 +131,7 @@ namespace TwelveEngine.Game3D {
             if(!ControlModel) {
                 UpdateCamera(gameTime);
             }
-            Camera.Update(Game.GraphicsDevice.Viewport.AspectRatio);
+            Camera.Update(Game.Viewport.AspectRatio);
 
             if(ControlModel) {
                 RotateModel(gameTime);

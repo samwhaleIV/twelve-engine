@@ -78,7 +78,7 @@ namespace TwelveEngine.Game2D {
         private TileRenderer tileRenderer = null;
         private TileRenderer pendingTileRenderer = null;
 
-        public Viewport Viewport => Game.GraphicsDevice.Viewport;
+        public Viewport Viewport => Game.Viewport;
 
         public ScreenSpace ScreenSpace { get; private set; }
         public ScreenSpace GetScreenSpace() => getScreenSpace(Viewport);
@@ -242,7 +242,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void render(GameTime gameTime) {
-            ScreenSpace = getScreenSpace(Game.GraphicsDevice.Viewport);
+            ScreenSpace = getScreenSpace(Viewport);
             tileRenderer.CacheArea(ScreenSpace);
 
             Game.GraphicsDevice.Clear(Color.Black);

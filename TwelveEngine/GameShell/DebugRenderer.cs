@@ -22,7 +22,7 @@ namespace TwelveEngine {
             int lineHeight = DebugFont.LineSpacing;
             Vector2 position = new Vector2 {
                 X = Constants.ScreenEdgePadding,
-                Y = GraphicsDevice.Viewport.Height - lineHeight * 4 - Constants.ScreenEdgePadding * 0.5f
+                Y = Viewport.Height - lineHeight * 4 - Constants.ScreenEdgePadding * 0.5f
             };
             SpriteBatch.Begin();
 

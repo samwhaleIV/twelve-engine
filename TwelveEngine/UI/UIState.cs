@@ -10,7 +10,7 @@ namespace TwelveEngine.UI {
         private readonly RootNode rootNode;
 
         private Point getViewportSize() {
-            return game.GraphicsDevice.Viewport.Bounds.Size;
+            return game.Viewport.Bounds.Size;
         }
 
         private RenderCache renderCache;

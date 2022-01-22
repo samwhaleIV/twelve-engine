@@ -68,7 +68,7 @@ namespace TwelveEngine.GameUI {
 
         private void renderGuide<TKey>(Texture2D texture,GlyphMap<TKey> map,Func<Impulse,TKey> getKey,Point sourceOffset) {
             Point glyphSize = new Point(map.GlyphSize * GlyphScale);
-            Point location = new Point(ScreenEdgePadding,(int)(game.GraphicsDevice.Viewport.Height * 0.5f - calculateStackHeight(glyphSize.Y) * 0.5f));
+            Point location = new Point(ScreenEdgePadding,(int)(game.Viewport.Height * 0.5f - calculateStackHeight(glyphSize.Y) * 0.5f));
 
             for(int i = 0;i<descriptions.Length;i++) {
                 var description = descriptions[i];

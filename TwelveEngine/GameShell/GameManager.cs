@@ -8,13 +8,14 @@ using TwelveEngine.Input;
 using TwelveEngine.GameShell;
 using TwelveEngine.GameShell.Automation;
 using TwelveEngine.Serial;
-using System.Collections.Generic;
 
 namespace TwelveEngine {
     public sealed partial class GameManager:Game {
 
         public GameManager() {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
+            renderTargetStack = new RenderTargetStack(GraphicsDevice);
+
             Content.RootDirectory = Constants.ContentDirectory;
             IsMouseVisible = true;
 
@@ -70,6 +71,7 @@ namespace TwelveEngine {
         private readonly KeyWatcherSet keyWatcherSet;
         private readonly ImpulseHandler impulseHandler;
         private readonly KeyBinds keyBinds;
+        private readonly RenderTargetStack renderTargetStack;
 
         private readonly AutomationAgent automationAgent = new AutomationAgent();
         private readonly MouseHandler mouseHandler = new MouseHandler();
@@ -89,6 +91,10 @@ namespace TwelveEngine {
         public KeyboardState KeyboardState { get; private set; }
         public MouseState MouseState { get; private set; }
         public GamePadState GamePadState { get; private set; }
+
+        public void SetRenderTarget(RenderTarget2D renderTarget) => renderTargetStack.Push(renderTarget);
+        public void RestoreRenderTarget() => renderTargetStack.Pop();
+        public Viewport Viewport => renderTargetStack.GetViewport();
 
         public bool IsPaused {
             get => gamePaused;
@@ -175,7 +181,6 @@ namespace TwelveEngine {
 
             pendingGameState = newGameState;
         }
-
         
         public void SetState(GameState state) => SetState(() => state);
 
@@ -303,33 +308,6 @@ namespace TwelveEngine {
             framesToSkip = count;
         }
 
-        private readonly Stack<RenderTarget2D> renderTargets = new Stack<RenderTarget2D>();
-
-        public Rectangle Bounds {
-            get {
-                if(renderTargets.Count == 0) {
-                    return GraphicsDevice.Viewport.Bounds;
-                } else {
-                    return renderTargets.Peek().Bounds;
-                }
-            }
-        }
-
-        public void SetRenderTarget(RenderTarget2D renderTarget) {
-            if(renderTargets.Count > 0) {
-                renderTargets.Push(renderTarget);
-            }
-            GraphicsDevice.SetRenderTarget(renderTarget);
-        }
-
-        public void RestoreRenderTarget() {
-            if(!renderTargets.TryPop(out var renderTarget)) {
-                GraphicsDevice.SetRenderTarget(null);
-            } else {
-                GraphicsDevice.SetRenderTarget(renderTarget);
-            }
-        }
-
         protected override void Update(GameTime gameTime) {
             updating = true;
 #if DEBUG
@@ -388,7 +366,7 @@ namespace TwelveEngine {
                 gameState.PreRender(proxyGameTime);
                 gameState.Render(proxyGameTime);
             } else {
-                GraphicsDevice.Clear(Color.Black); /* TODO: Retain the back buffer during a loading sequence */
+                GraphicsDevice.Clear(Color.Black);
             }
             vcrDisplay.Render(trueGameTime);
 #if DEBUG

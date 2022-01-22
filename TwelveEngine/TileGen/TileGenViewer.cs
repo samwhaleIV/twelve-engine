@@ -69,7 +69,7 @@ namespace TwelveEngine.TileGen {
             Game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
 
             var size = texture.Bounds.Size.ToVector2() * RenderScale;
-            var location = Game.GraphicsDevice.Viewport.Bounds.Center.ToVector2() - size * 0.5f;
+            var location = Game.Viewport.Bounds.Center.ToVector2() - size * 0.5f;
 
             var destination = new Rectangle(location.ToPoint(),size.ToPoint());
 
