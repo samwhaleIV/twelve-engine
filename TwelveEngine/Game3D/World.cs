@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game3D.Entity;
 
@@ -7,19 +8,55 @@ namespace TwelveEngine.Game3D {
     public class World:GameState {
 
         private readonly EntityFactory<Entity3D,World> entityFactory;
+        private BasicEffect basicEffect;
+
+        public BasicEffect BasicEffect => basicEffect;
+        public GraphicsDevice GraphicsDevice => Game.GraphicsDevice;
 
         public World(EntityFactory<Entity3D,World> entityFactory = null) {
-            if(entityFactory == null ) {
+            if(entityFactory == null) {
                 entityFactory = Entity3DType.GetFactory();
             }
             this.entityFactory = entityFactory;
 
-            OnLoad += SetupEntityFactory;
+            OnLoad += World_OnLoad;
+            OnUnload += World_OnUnload;
             OnUpdate += World_OnUpdate;
 
             cameraSerializer = new CameraSerializer(this);
             OnImport += cameraSerializer.ImportCamera;
             OnExport += cameraSerializer.ExportCamera;
+        }
+
+        private void World_OnUnload() {
+            OnProjectionMatrixChanged -= UpdateEffectProjectionMatrix;
+            OnViewMatrixChanged -= UpdateEffectViewMatrix;
+            basicEffect?.Dispose();
+            basicEffect = null;
+        }
+
+        private void World_OnLoad() {
+            SetupEntityFactory();
+
+            basicEffect = new BasicEffect(Game.GraphicsDevice) {
+                TextureEnabled = true,
+                LightingEnabled = false,
+                VertexColorEnabled = true
+            };
+
+            UpdateEffectProjectionMatrix(ProjectionMatrix);
+            UpdateEffectViewMatrix(ViewMatrix);
+
+            OnProjectionMatrixChanged += UpdateEffectProjectionMatrix;
+            OnViewMatrixChanged += UpdateEffectViewMatrix;
+        }
+
+        private void UpdateEffectViewMatrix(Matrix viewMatrix) {
+            basicEffect.View = viewMatrix;
+        }
+
+        private void UpdateEffectProjectionMatrix(Matrix projectionMatrix) {
+            basicEffect.Projection = projectionMatrix;
         }
 
         private void World_OnUpdate(GameTime gameTime) {
@@ -83,5 +120,8 @@ namespace TwelveEngine.Game3D {
             FireViewMatrixChanged(newCamera.ViewMatrix);
         }
 
+        public BufferSet CreateBufferSet<TVertices>(TVertices[] vertices) where TVertices:struct {
+            return BufferSet.Create(GraphicsDevice,vertices);
+        }
     }
 }

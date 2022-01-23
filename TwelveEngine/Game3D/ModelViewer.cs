@@ -16,7 +16,6 @@ namespace TwelveEngine.Game3D {
         public float FreeCamSpeed { get; set; } = 0.05f;
 
         private ImpulseGuide ImpulseGuide { get; set; }
-        private readonly GridLines gridLines = new GridLines();
 
         private readonly string modelName;
 
@@ -57,7 +56,6 @@ namespace TwelveEngine.Game3D {
         }
 
         private void ModelViewer_OnUnload() {
-            gridLines.Unload();
             Input.OnToggleDown -= Input_OnToggleDown;
         }
 
@@ -76,12 +74,13 @@ namespace TwelveEngine.Game3D {
             };
             Camera = camera;
 
+            Entities.Create(Entity3DType.GridLines);
+
             Entities.Add(new ModelEntity() {
                 Name = EntityName,
-                 ModelName = modelName
+                ModelName = modelName
             });
 
-            gridLines.Load(this);
             Input.OnToggleDown += Input_OnToggleDown;
             ImpulseGuide = new ImpulseGuide(Game);
 
@@ -158,7 +157,7 @@ namespace TwelveEngine.Game3D {
 
         private void ModelTest_OnRender(GameTime gameTime) {
             Game.GraphicsDevice.Clear(Color.Gray);
-            gridLines.Render();
+
             ConfigureSamplerState();
             RenderEntities(gameTime);
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);

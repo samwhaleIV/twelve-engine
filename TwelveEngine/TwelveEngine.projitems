@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityComponents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\EntityContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\BufferSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\AngleCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\Camera3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\CameraSerializer.cs" />
@@ -25,7 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\RenderTargetEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\TextureEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\WorldMatrixEntity.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game3D\GridLines.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\GridLinesEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\ModelViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Orientation.cs" />

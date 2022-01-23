@@ -14,7 +14,6 @@ namespace TwelveEngine {
 
         public GameManager() {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
-            renderTargetStack = new RenderTargetStack(GraphicsDevice);
 
             Content.RootDirectory = Constants.ContentDirectory;
             IsMouseVisible = true;
@@ -71,7 +70,6 @@ namespace TwelveEngine {
         private readonly KeyWatcherSet keyWatcherSet;
         private readonly ImpulseHandler impulseHandler;
         private readonly KeyBinds keyBinds;
-        private readonly RenderTargetStack renderTargetStack;
 
         private readonly AutomationAgent automationAgent = new AutomationAgent();
         private readonly MouseHandler mouseHandler = new MouseHandler();
@@ -87,14 +85,15 @@ namespace TwelveEngine {
 
         public SpriteBatch SpriteBatch { get; private set; }
         public SpriteFont DebugFont { get; private set; }
+        private RenderTargetStack RenderTargets { get; set; }
 
         public KeyboardState KeyboardState { get; private set; }
         public MouseState MouseState { get; private set; }
         public GamePadState GamePadState { get; private set; }
 
-        public void SetRenderTarget(RenderTarget2D renderTarget) => renderTargetStack.Push(renderTarget);
-        public void RestoreRenderTarget() => renderTargetStack.Pop();
-        public Viewport Viewport => renderTargetStack.GetViewport();
+        public void SetRenderTarget(RenderTarget2D renderTarget) => RenderTargets.Push(renderTarget);
+        public void RestoreRenderTarget() => RenderTargets.Pop();
+        public Viewport Viewport => RenderTargets.GetViewport();
 
         public bool IsPaused {
             get => gamePaused;
@@ -211,6 +210,7 @@ namespace TwelveEngine {
                 CPUTexture.LoadDictionary(Content,cpuTextures);
             }
             SpriteBatch = new SpriteBatch(GraphicsDevice);
+            RenderTargets = new RenderTargetStack(GraphicsDevice);
             DebugFont = Content.Load<SpriteFont>(Constants.DebugFont);
             vcrDisplay.Load();
             initialized = true;
