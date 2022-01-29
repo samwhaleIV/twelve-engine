@@ -10,8 +10,5 @@ namespace TwelveEngine.Game3D {
 
         public const float CamMaxPitch = CamPitchOffset + 90f;
         public const float CamMinPitch = CamPitchOffset - 90f;
-
-        public const float WorldYawOffset = -180f;
-        public const float WorldPitchOffset = 180f;
     }
 }

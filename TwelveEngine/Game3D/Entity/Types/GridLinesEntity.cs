@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game3D.Entity.Types {
     public sealed class GridLinesEntity:Entity3D {
+        
+        /* Doesn't support Entity3D grid transformations! */
 
         private static readonly Color X_AXIS_COLOR = Color.Red;
         private static readonly Color Y_AXIS_COLOR = Color.GreenYellow;

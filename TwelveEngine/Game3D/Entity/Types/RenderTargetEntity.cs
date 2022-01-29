@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game3D.Entity.Types {
     public sealed class RenderTargetEntity:TextureRectangle {
 
-        /* DOES NOT WORK WITH SERIALIZER. Create a ID based system for pointer regeneration */
+        /* Does not work with serializer! */
 
         public const int RENDER_TARGET_SIZE = 256;
         protected override int GetEntityType() => Entity3DType.RenderTarget;

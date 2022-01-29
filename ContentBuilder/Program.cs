@@ -15,6 +15,8 @@ namespace ContentBuilder {
 
         private const bool COMPRESS_CONTENT = false;
 
+        private const string ASSEMBLY_REFERENCE_FOLDER = "BuilderAssemblies";
+
         /* Is Path.Combine'ed to Directory.GetCurrentDirectory() */
         private const string ENGINE_ROOT_RESOLVER = @"..\..\..\..\";
         private const bool PREFIX_ENGINE_NAMESPACE = false;
@@ -41,7 +43,7 @@ namespace ContentBuilder {
 
         private static void AddBuildPath(StringBuilder builder,string path,string outputRoot) {
             string outputPath = GetOutputPath(path,outputRoot);
-            builder.AppendLine($"/build:../Content/{path};{outputPath}");
+            builder.AppendLine($"/build:{path};{outputPath}");
         }
 
         private static string GetShortPath(string path) {
@@ -83,6 +85,17 @@ namespace ContentBuilder {
             builder.AppendLine();
         }
 
+        private static void AddBuilderAssemblies(StringBuilder builder) {
+            string assemblyDirectory = Path.Combine(GetContentRoot(),ASSEMBLY_REFERENCE_FOLDER);
+            string[] assemblies = Directory.GetFiles(assemblyDirectory,"*.dll");
+            foreach(string assembly in assemblies) {
+                var fileName = Path.GetFileName(assembly);
+                builder.Append($"/reference:{ASSEMBLY_REFERENCE_FOLDER}/");
+                builder.AppendLine(fileName);
+            }
+            builder.AppendLine();
+        }
+
         private static string GetMGCBFile(string directory,string defaultContent,string outputRoot) {
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("# DO NOT EXECUTE OUTSIDE OF A BUILD PROCESS #");
@@ -91,6 +104,8 @@ namespace ContentBuilder {
             builder.AppendLine();
 
             AddMGCBSettings(builder);
+            AddBuilderAssemblies(builder);
+
             builder.Append(defaultContent);
             AddDirectory(builder,directory,outputRoot);
 
@@ -155,7 +170,7 @@ namespace ContentBuilder {
         }
 
         private static HashSet<string> GetIgnoredDirectories() {
-            return new HashSet<string>() { BIN_FOLDER, OBJ_FOLDER, ENGINE_FOLDER };
+            return new HashSet<string>() { BIN_FOLDER, OBJ_FOLDER, ENGINE_FOLDER, ASSEMBLY_REFERENCE_FOLDER };
         }
 
         internal static void Main() {

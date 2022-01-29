@@ -5,7 +5,17 @@ using TwelveEngine.Game3D.Entity.Types;
 using TwelveEngine.Game3D.Entity;
 
 namespace TwelveEngine.Game3D {
-    public sealed class ModelViewer:World {
+
+    public static class ModelViewer {
+        public static ModelViewer<AnimatedModelEntity> CreateAnimated(string modelName,string textureName = null) {
+            return new ModelViewer<AnimatedModelEntity>(modelName,textureName);
+        }
+        public static ModelViewer<ModelEntity> CreateStatic(string modelName,string textureName = null) {
+            return new ModelViewer<ModelEntity>(modelName,textureName);
+        }
+    }
+
+    public sealed class ModelViewer<TModelEntity>:World where TModelEntity : ModelBase, new() {
 
         private const string EntityName = "ModelViewerTarget";
 
@@ -18,9 +28,11 @@ namespace TwelveEngine.Game3D {
         private ImpulseGuide ImpulseGuide { get; set; }
 
         private readonly string modelName;
+        private readonly string textureName;
 
-        public ModelViewer(string modelName) {
+        internal ModelViewer(string modelName,string textureName) {
             this.modelName = modelName;
+            this.textureName = textureName;
 
             OnLoad += ModelTest_OnLoad;
             OnUnload += ModelViewer_OnUnload;
@@ -76,9 +88,10 @@ namespace TwelveEngine.Game3D {
 
             Entities.Create(Entity3DType.GridLines);
 
-            Entities.Add(new ModelEntity() {
+            Entities.Add(new TModelEntity() {
                 Name = EntityName,
-                ModelName = modelName
+                Texture = textureName,
+                Model = modelName
             });
 
             Input.OnToggleDown += Input_OnToggleDown;
@@ -137,8 +150,10 @@ namespace TwelveEngine.Game3D {
             }
         }
 
-        private void ConfigureSamplerState() {
-            Game.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+        private static void ResetGraphicsDeviceState(GraphicsDevice graphicsDevice) {
+            graphicsDevice.Clear(Color.Gray);
+            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            graphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
         }
 
         private void DrawCameraData() {
@@ -156,9 +171,7 @@ namespace TwelveEngine.Game3D {
         }
 
         private void ModelTest_OnRender(GameTime gameTime) {
-            Game.GraphicsDevice.Clear(Color.Gray);
-
-            ConfigureSamplerState();
+            ResetGraphicsDeviceState(Game.GraphicsDevice);
             RenderEntities(gameTime);
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             ImpulseGuide.Render();

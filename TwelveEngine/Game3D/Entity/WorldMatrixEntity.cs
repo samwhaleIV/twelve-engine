@@ -94,8 +94,8 @@ namespace TwelveEngine.Game3D.Entity {
             }
             var rotation = Rotation;
             rotationMatrix =  Matrix.CreateFromYawPitchRoll(
-                MathHelper.ToRadians(rotation.X + Orientation.WorldYawOffset),
-                MathHelper.ToRadians(rotation.Y + Orientation.WorldPitchOffset),
+                MathHelper.ToRadians(rotation.X),
+                MathHelper.ToRadians(rotation.Y),
                 MathHelper.ToRadians(rotation.Z)
             );
             RotationValid = true;

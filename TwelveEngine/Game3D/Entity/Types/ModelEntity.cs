@@ -3,22 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace TwelveEngine.Game3D.Entity.Types {
-    public class ModelEntity:WorldMatrixEntity {
+    public class ModelEntity:ModelBase {
 
-        private string _modelName;
-        public string ModelName {
-            get => _modelName;
-            set {
-                if(_modelName == value) {
-                    return;
-                }
-                _modelName = value;
-                if(!IsLoaded) {
-                    return;
-                }
-                LoadModel();
-            }
-        }
+        public ModelEntity() => OnRender += ModelEntity_OnRender;
+
+        protected override int GetEntityType() => Entity3DType.Model;
 
         private Model model;
 
@@ -28,49 +17,32 @@ namespace TwelveEngine.Game3D.Entity.Types {
         public ModelMesh[] MeshList => modelMeshList;
         public BasicEffect[] ModelEffects => modelEffectsList;
 
-        protected override int GetEntityType() => Entity3DType.Model;
-
-        public ModelEntity() {
-            OnLoad += ModelEntity_OnLoad;
-            OnUnload += ModelEntity_OnUnload;
-
-            OnUpdate += ModelEntity_OnUpdate;
-            OnRender += ModelEntity_OnRender;
-
-            OnImport += frame => ModelName = frame.GetString();
-            OnExport += frame => frame.Set(ModelName);
-        }
-
-        private void ModelEntity_OnUpdate(GameTime gameTime) {
-            UpdateWorldMatrix(ApplyWorldMatrix);
-        }
-
         private void ModelEntity_OnRender(GameTime gameTime) {
             for(int i = 0;i<modelMeshList.Length;i++) {
                 modelMeshList[i].Draw();
             }
         }
 
-        private void ApplyWorldMatrix(Matrix worldMatrix) {
+        protected override void ApplyWorldMatrix(Matrix worldMatrix) {
             for(int i = 0;i<modelEffectsList.Length;i++) {
-                modelEffectsList[0].World = worldMatrix;
+                modelEffectsList[i].World = worldMatrix;
             }
         }
 
-        private void ApplyViewMatrix(Matrix viewMatrix) {
+        protected override void ApplyViewMatrix(Matrix viewMatrix) {
             for(int i = 0;i<modelEffectsList.Length;i++) {
-                modelEffectsList[0].View = viewMatrix;
+                modelEffectsList[i].View = viewMatrix;
             }
         }
 
-        private void ApplyProjectionMatrix(Matrix projectionMatrix) {
+        protected override void ApplyProjectionMatrix(Matrix projectionMatrix) {
             for(int i = 0;i<modelEffectsList.Length;i++) {
-                modelEffectsList[0].Projection = projectionMatrix;
+                modelEffectsList[i].Projection = projectionMatrix;
             }
         }
 
-        private void LoadModel() {
-            model = Game.Content.Load<Model>(ModelName);
+        protected override void LoadModel() {
+            model = Game.Content.Load<Model>(Model);
 
             var modelMeshList = new Queue<ModelMesh>();
             var modelEffectsList = new Queue<BasicEffect>();
@@ -85,20 +57,12 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
             this.modelMeshList = modelMeshList.ToArray();
             this.modelEffectsList = modelEffectsList.ToArray();
-
-            ApplyProjectionMatrix(Owner.ProjectionMatrix);
-            ApplyViewMatrix(Owner.ViewMatrix);
         }
 
-        private void ModelEntity_OnLoad() {
-            LoadModel();
-            Owner.OnProjectionMatrixChanged += ApplyProjectionMatrix;
-            Owner.OnViewMatrixChanged += ApplyViewMatrix;
-        }
-
-        private void ModelEntity_OnUnload() {
-            Owner.OnProjectionMatrixChanged -= ApplyProjectionMatrix;
-            Owner.OnViewMatrixChanged -= ApplyViewMatrix;
+        protected override void ApplyTexture(Texture2D texture) {
+            for(int i = 0;i<modelEffectsList.Length;i++) {
+                modelEffectsList[i].Texture = texture;
+            }
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Xna.Framework;
 using TwelveEngine;
 using TwelveEngine.Config;
-using TwelveEngine.TileGen;
 using TwelveEngine.Game3D;
 
 namespace TwelveDesktop {
@@ -21,7 +19,7 @@ namespace TwelveDesktop {
         }
 
         private static void Game_OnLoad(GameManager game) {
-            game.SetState(new ModelViewer("ModelTest/HelloWorld"));
+            game.SetState(ModelViewer.CreateAnimated("ModelTest/CubeWorm","DebugTexture"));
         }
     }
 }

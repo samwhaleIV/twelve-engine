@@ -14,12 +14,13 @@ namespace ContentBuilder {
             Add(".png", AddImage);
             Add(".spritefont", AddSpriteFont);
             Add(".dae", AddModel);
+            Add(".fbx", AddAnimatedModel);
         }
 
         private void AddImage(StringBuilder builder) {
             builder.AppendLine("/importer:TextureImporter");
             builder.AppendLine("/processor:TextureProcessor");
-            builder.AppendLine($"/processorParam:ColorKeyColor={ ChromaKey }");
+            builder.AppendLine($"/processorParam:ColorKeyColor={ChromaKey}");
             builder.AppendLine("/processorParam:ColorKeyEnabled=True");
             builder.AppendLine("/processorParam:GenerateMipmaps=False");
             builder.AppendLine("/processorParam:PremultiplyAlpha=True");
@@ -36,7 +37,7 @@ namespace ContentBuilder {
         }
 
         private void AddModel(StringBuilder builder) {
-            builder.AppendLine("/importer:FbxImporter"); /* Why MONOGAME? FOR THE LOVE OF GOD WHY. IT'S NOT EVEN AN FBX FILE */
+            builder.AppendLine("/importer:FbxImporter");
             builder.AppendLine("/processor:ModelProcessor");
             builder.AppendLine("/processorParam:ColorKeyColor=0,0,0,0");
             builder.AppendLine("/processorParam:ColorKeyEnabled=True");
@@ -54,5 +55,10 @@ namespace ContentBuilder {
             builder.AppendLine("/processorParam:TextureFormat=Color");
         }
 
+        private void AddAnimatedModel(StringBuilder builder) {
+            builder.AppendLine("/importer:SkinnedMeshImporter");
+            builder.AppendLine("/processor:SkinnedMeshProcessor");
+            builder.AppendLine("/processorParam:KeyframeDecimalPlaceRounding=5");
+        }
     }
 }

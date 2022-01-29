@@ -9,6 +9,7 @@ namespace TwelveEngine.Game3D.Entity {
         public const int Texture = 2;
         public const int RenderTarget = 3;
         public const int GridLines = 4;
+        public const int AnimatedModel = 5;
 
         public static EntityFactory<Entity3D,World> GetFactory() => new EntityFactory<Entity3D,World>(
 
@@ -16,8 +17,9 @@ namespace TwelveEngine.Game3D.Entity {
             (Model, () => new ModelEntity()),
             (Texture, () => new TextureEntity()),
             (RenderTarget,() => new RenderTargetEntity()),
-            (GridLines,() => new GridLinesEntity())
-            
+            (GridLines,() => new GridLinesEntity()),
+            (AnimatedModel,() => new AnimatedModelEntity())
+
         );
     }
 }
