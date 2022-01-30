@@ -177,12 +177,13 @@ namespace TwelveEngine.EntitySystem {
             entity.IsDeleted = true;
         }
 
-        public void Add(TEntity entity) {
+        public TEntity Add(TEntity entity) {
             if(entity == null) {
                 throw new ArgumentNullException("entity");
             }
             AssertMutation();
             _addEntity(entity);
+            return entity;
         }
         public void Remove(TEntity entity) {
             if(entity == null) {

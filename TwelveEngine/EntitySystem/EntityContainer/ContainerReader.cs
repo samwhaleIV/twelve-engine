@@ -10,7 +10,7 @@ namespace TwelveEngine.EntitySystem {
             }
             return entity;
         }
-        public TEntity Get<TType>(int ID) where TType : TEntity {
+        public TType Get<TType>(int ID) where TType : TEntity {
             if(!container.IDs.TryGetValue(ID,out var entity)) {
                 return null;
             }

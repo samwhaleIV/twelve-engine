@@ -54,7 +54,7 @@ namespace TwelveEngine.Game3D.Entity {
         }
 
         private Matrix GetWorldOriginMatrix() {
-            return Matrix.CreateWorld(Position,Orientation.Forward,Orientation.Up );
+            return Matrix.CreateWorld(Position,Vector3.Forward,Vector3.Up);
         }
 
         private Matrix GetBillboardOriginMatrix() {

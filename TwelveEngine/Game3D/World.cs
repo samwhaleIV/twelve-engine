@@ -8,9 +8,7 @@ namespace TwelveEngine.Game3D {
     public class World:GameState {
 
         private readonly EntityFactory<Entity3D,World> entityFactory;
-        private BasicEffect basicEffect;
 
-        public BasicEffect BasicEffect => basicEffect;
         public GraphicsDevice GraphicsDevice => Game.GraphicsDevice;
 
         public World(EntityFactory<Entity3D,World> entityFactory = null) {
@@ -19,44 +17,12 @@ namespace TwelveEngine.Game3D {
             }
             this.entityFactory = entityFactory;
 
-            OnLoad += World_OnLoad;
-            OnUnload += World_OnUnload;
+            OnLoad += SetupEntityManager;
             OnUpdate += World_OnUpdate;
 
             cameraSerializer = new CameraSerializer(this);
             OnImport += cameraSerializer.ImportCamera;
             OnExport += cameraSerializer.ExportCamera;
-        }
-
-        private void World_OnUnload() {
-            OnProjectionMatrixChanged -= UpdateEffectProjectionMatrix;
-            OnViewMatrixChanged -= UpdateEffectViewMatrix;
-            basicEffect?.Dispose();
-            basicEffect = null;
-        }
-
-        private void World_OnLoad() {
-            SetupEntityFactory();
-
-            basicEffect = new BasicEffect(Game.GraphicsDevice) {
-                TextureEnabled = true,
-                LightingEnabled = false,
-                VertexColorEnabled = true
-            };
-
-            UpdateEffectProjectionMatrix(ProjectionMatrix);
-            UpdateEffectViewMatrix(ViewMatrix);
-
-            OnProjectionMatrixChanged += UpdateEffectProjectionMatrix;
-            OnViewMatrixChanged += UpdateEffectViewMatrix;
-        }
-
-        private void UpdateEffectViewMatrix(Matrix viewMatrix) {
-            basicEffect.View = viewMatrix;
-        }
-
-        private void UpdateEffectProjectionMatrix(Matrix projectionMatrix) {
-            basicEffect.Projection = projectionMatrix;
         }
 
         private void World_OnUpdate(GameTime gameTime) {
@@ -90,7 +56,7 @@ namespace TwelveEngine.Game3D {
         }
 
         public EntityManager<Entity3D,World> Entities { get; private set; }
-        private void SetupEntityFactory() {
+        private void SetupEntityManager() {
             Entities = new EntityManager<Entity3D,World>(this,entityFactory);
         }
 

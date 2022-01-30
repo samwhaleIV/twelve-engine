@@ -4,7 +4,19 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game3D.Entity {
     public abstract class TextureRectangle:WorldMatrixEntity {
 
-        protected Texture2D Texture { get; set; }
+        private Texture2D _texture;
+        protected Texture2D Texture {
+            get => _texture;
+            set {
+                if(_texture == value) {
+                    return;
+                }
+                _texture = value;
+                effect.Texture = _texture;
+            }
+        }
+
+        private BasicEffect effect;
 
         public TextureRectangle() {
             OnUpdate += TextureRectangle_OnUpdate;
@@ -17,17 +29,38 @@ namespace TwelveEngine.Game3D.Entity {
 
         private void TextureRectangle_OnLoad() {
             bufferSet = Owner.CreateBufferSet(GetVertices());
+            effect = new BasicEffect(Game.GraphicsDevice) {
+                TextureEnabled = true
+            };
+
+            Owner.OnProjectionMatrixChanged += Owner_OnProjectionMatrixChanged;
+            Owner.OnViewMatrixChanged += Owner_OnViewMatrixChanged;
+
+            effect.View = Owner.ViewMatrix;
+            effect.Projection = Owner.ProjectionMatrix;
+        }
+
+        private void TextureRectangle_OnUpdate(GameTime gameTime) {
+            UpdateWorldMatrix(matrix => effect.World = matrix);
+        }
+
+        private void Owner_OnViewMatrixChanged(Matrix viewMatrix) {
+            effect.View = viewMatrix;
+        }
+
+        private void Owner_OnProjectionMatrixChanged(Matrix projectionMatrix) {
+            effect.Projection = projectionMatrix;
         }
 
         private void TextureRectangle_OnUnload() {
             bufferSet?.Dispose();
             bufferSet = null;
-        }
 
-        private Matrix worldMatrix;
+            Owner.OnProjectionMatrixChanged -= Owner_OnProjectionMatrixChanged;
+            Owner.OnViewMatrixChanged -= Owner_OnViewMatrixChanged;
 
-        private void TextureRectangle_OnUpdate(GameTime gameTime) {
-            UpdateWorldMatrix(matrix => worldMatrix = matrix);
+            effect?.Dispose();
+            effect = null;
         }
 
         private static VertexPositionColorTexture[] GetVertices() {
@@ -43,12 +76,6 @@ namespace TwelveEngine.Game3D.Entity {
         }
 
         private void TextureRectangle_OnRender(GameTime gameTime) {
-            var effect = Owner.BasicEffect;
-
-            effect.World = worldMatrix;
-            effect.Texture = Texture;
-            effect.TextureEnabled = true;
-
             bufferSet.Apply();
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();

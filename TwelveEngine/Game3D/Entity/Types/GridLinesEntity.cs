@@ -3,10 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game3D.Entity.Types {
-    public sealed class GridLinesEntity:Entity3D {
+    public sealed class GridLinesEntity:WorldMatrixEntity {
         
-        /* Doesn't support Entity3D grid transformations! */
-
         private static readonly Color X_AXIS_COLOR = Color.Red;
         private static readonly Color Y_AXIS_COLOR = Color.GreenYellow;
         private static readonly Color Z_AXIS_COLOR = Color.Blue;
@@ -17,25 +15,55 @@ namespace TwelveEngine.Game3D.Entity.Types {
         private float cellSize;
         private int gridSize;
 
+        private BufferSet bufferSet;
+        private BasicEffect effect;
+
         public GridLinesEntity(float cellSize = 1f,int gridSize = 40) {
             this.cellSize = cellSize;
             this.gridSize = gridSize;
 
             OnLoad += GridLinesEntity_OnLoad;
             OnUnload += GridLinesEntity_OnUnload;
-
+            OnUpdate += GridLinesEntity_OnUpdate;
             OnRender += GridLinesEntity_OnRender;
             OnImport += GridLinesEntity_OnImport;
             OnExport += GridLinesEntity_OnExport;
         }
 
-        private BufferSet bufferSet;
+        private void GridLinesEntity_OnUpdate(GameTime gameTime) {
+            UpdateWorldMatrix(worldMatrix => effect.World = worldMatrix);
+        }
+        private void UpdateEffectViewMatrix(Matrix viewMatrix) {
+            effect.View = viewMatrix;
+        }
+        private void UpdateEffectProjectionMatrix(Matrix projectionMatrix) {
+            effect.Projection = projectionMatrix;
+        }
 
         private void GridLinesEntity_OnLoad() {
             bufferSet = Owner.CreateBufferSet(GetVertices(cellSize,gridSize));
+
+            effect = new BasicEffect(Game.GraphicsDevice) {
+                TextureEnabled = false,
+                LightingEnabled = false,
+                VertexColorEnabled = true
+            };
+
+            UpdateEffectProjectionMatrix(Owner.ProjectionMatrix);
+            UpdateEffectViewMatrix(Owner.ViewMatrix);
+
+            Owner.OnProjectionMatrixChanged += UpdateEffectProjectionMatrix;
+            Owner.OnViewMatrixChanged += UpdateEffectViewMatrix;
         }
 
+        
         private void GridLinesEntity_OnUnload() {
+            Owner.OnProjectionMatrixChanged -= UpdateEffectProjectionMatrix;
+            Owner.OnViewMatrixChanged -= UpdateEffectViewMatrix;
+
+            effect?.Dispose();
+            effect = null;
+
             bufferSet?.Dispose();
             bufferSet = null;
         }
@@ -51,9 +79,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
         }
 
         private void GridLinesEntity_OnRender(GameTime gameTime) {
-            var effect =  Owner.BasicEffect;
-            effect.World = Matrix.Identity;
-            effect.TextureEnabled = false;
             bufferSet.Apply();
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();

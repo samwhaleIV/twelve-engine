@@ -17,10 +17,13 @@ namespace TwelveEngine.Game3D {
 
     public sealed class ModelViewer<TModelEntity>:World where TModelEntity : ModelBase, new() {
 
-        private const string EntityName = "ModelViewerTarget";
+        private enum ControlMode { Camera, Model, Animation }
+        private ControlMode controlMode = ControlMode.Camera;
 
         private const float VELOCITY_BASE = 1f / (1000f / 60f);
         public const float MOUSE_SPEED = 0.15f;
+
+        public const float ANIMATION_RATE_CHANGE = 0.125f;
 
         public float ModelRotationSpeed { get; set; } = 2.5f;
         public float FreeCamSpeed { get; set; } = 0.05f;
@@ -29,6 +32,8 @@ namespace TwelveEngine.Game3D {
 
         private readonly string modelName;
         private readonly string textureName;
+
+        private int ModelID = EntitySystem.EntityManager.START_ID - 1;
 
         internal ModelViewer(string modelName,string textureName) {
             this.modelName = modelName;
@@ -44,36 +49,108 @@ namespace TwelveEngine.Game3D {
         }
 
         private void UpdateImpulseGuide() {
-            if(ControlModel) {
-                ImpulseGuide.SetDescriptions(
-                    (Impulse.Toggle, "Control Mode (Model)"),
-                    (Impulse.Up, "-Pitch"),
-                    (Impulse.Down, "+Pitch"),
-                    (Impulse.Left, "-Roll"),
-                    (Impulse.Right, "+Roll"),
-                    (Impulse.Ascend, "+Yaw"),
-                    (Impulse.Descend, "-Yaw")
-                );
-            } else {
-                ImpulseGuide.SetDescriptions(
-                    (Impulse.Toggle, "Control Mode (Camera)"),
-                    (Impulse.Up, "Forward"),
-                    (Impulse.Down, "Reverse"),
-                    (Impulse.Left, "Left"),
-                    (Impulse.Right, "Right"),
-                    (Impulse.Ascend, "Up"),
-                    (Impulse.Descend, "Down")
-                );
+            switch(controlMode) {
+                case ControlMode.Camera:
+                    ImpulseGuide.SetDescriptions(
+                        (Impulse.Toggle, "Control Mode (Camera)"),
+                        (Impulse.Up, "Forward"),
+                        (Impulse.Down, "Back"),
+                        (Impulse.Left, "Left"),
+                        (Impulse.Right, "Right"),
+                        (Impulse.Ascend, "Up"),
+                        (Impulse.Descend, "Down")
+                    );
+                    break;
+                case ControlMode.Model:
+                    ImpulseGuide.SetDescriptions(
+                        (Impulse.Toggle, "Control Mode (Model)"),
+                        (Impulse.Up, "-Pitch"),
+                        (Impulse.Down, "+Pitch"),
+                        (Impulse.Left, "-Roll"),
+                        (Impulse.Right, "+Roll"),
+                        (Impulse.Ascend, "+Yaw"),
+                        (Impulse.Descend, "-Yaw")
+                    );
+                    break;
+                case ControlMode.Animation:
+                    ImpulseGuide.SetDescriptions(
+                        (Impulse.Toggle, "Control Mode (Animation)"),
+                        (Impulse.Accept, "Toggle Play"),
+                        (Impulse.Left, "Toggle Looping"),
+                        (Impulse.Right, "Cycle Animation"),
+                        (Impulse.Up, $"Speed (+{ANIMATION_RATE_CHANGE}x)"),
+                        (Impulse.Down, $"Speed (-{ANIMATION_RATE_CHANGE}x)")
+                    );
+                    break;
+            }
+        }
+
+        private SerialAnimationPlayer GetAnimationPlayer() {
+            var entity = Entities.Get<AnimatedModelEntity>(ModelID);
+            var animationPlayer = entity.AnimationPlayer;
+            return animationPlayer;
+        }
+
+        private void Input_OnDirectionDown(Direction direction) {
+            var animationPlayer = GetAnimationPlayer();
+            switch(direction) {
+                case Direction.Up:
+                    animationPlayer.PlaybackSpeed += ANIMATION_RATE_CHANGE;
+                    break;
+                case Direction.Down:
+                    animationPlayer.PlaybackSpeed -= ANIMATION_RATE_CHANGE;
+                    break;
+                case Direction.Left:
+                    animationPlayer.IsLooping = !animationPlayer.IsLooping;
+                    break;
+                case Direction.Right:
+                    animationPlayer.AnimationIndex++;
+                    break;
             }
         }
 
         private void ModelViewer_OnUnload() {
             Input.OnToggleDown -= Input_OnToggleDown;
+            if(controlMode == ControlMode.Animation) {
+                UnbindAnimationController();
+            }
+            Game.OnWriteDebug -= Game_OnWriteDebug;
         }
 
-        private bool ControlModel = false;
+        private void BindAnimationController() {
+            Input.OnDirectionDown += Input_OnDirectionDown;
+            Input.OnAcceptDown += Input_OnAcceptDown;
+        }
+
+        private void UnbindAnimationController() {
+            Input.OnDirectionDown -= Input_OnDirectionDown;
+            Input.OnAcceptDown -= Input_OnAcceptDown;
+        }
+
+        private void Input_OnAcceptDown() {
+            var animationPlayer = GetAnimationPlayer();
+            animationPlayer.IsPlaying = !animationPlayer.IsPlaying;
+        }
+
         private void Input_OnToggleDown() {
-            ControlModel = !ControlModel;
+            switch(controlMode) {
+                case ControlMode.Camera:
+                    controlMode = ControlMode.Model;
+                    break;
+                case ControlMode.Model:
+                    if(Entities.Get(ModelID) is AnimatedModelEntity) {
+                        controlMode = ControlMode.Animation;
+                        BindAnimationController();
+                    } else {
+                        controlMode = ControlMode.Camera;
+                    }
+                    break;
+                case ControlMode.Animation:
+                    UnbindAnimationController();
+                    controlMode = ControlMode.Camera;
+                    break;
+
+            }
             UpdateImpulseGuide();
         }
 
@@ -88,16 +165,17 @@ namespace TwelveEngine.Game3D {
 
             Entities.Create(Entity3DType.GridLines);
 
-            Entities.Add(new TModelEntity() {
-                Name = EntityName,
+            ModelID = Entities.Add(new TModelEntity() {
                 Texture = textureName,
                 Model = modelName
-            });
+            }).ID;
 
             Input.OnToggleDown += Input_OnToggleDown;
             ImpulseGuide = new ImpulseGuide(Game);
 
             UpdateImpulseGuide();
+
+            Game.OnWriteDebug += Game_OnWriteDebug;
         }
 
         private float GetVelocity(GameTime gameTime,float velocity) {
@@ -108,7 +186,7 @@ namespace TwelveEngine.Game3D {
         private float GetFreeCamVelocity(GameTime gameTime) => GetVelocity(gameTime,FreeCamSpeed);
 
         private WorldMatrixEntity GetMatrixEntity() {
-            return Entities.Get<WorldMatrixEntity>(EntityName);
+            return Entities.Get<WorldMatrixEntity>(ModelID);
         }
 
         private void RotateModel(GameTime gameTime) {
@@ -127,25 +205,23 @@ namespace TwelveEngine.Game3D {
         }
 
         private void UpdateCamera(GameTime gameTime) {
-            var camera = Camera as AngleCamera;
-            if(camera == null) {
+            if(!(Camera is AngleCamera angleCamera)) {
                 return;
             }
             var mouseDelta = Game.MouseHandler.Delta;
             if(Game.MouseHandler.Capturing && mouseDelta != Point.Zero) {
                 mouseDelta.Y = -mouseDelta.Y;
-                camera.AddAngle(mouseDelta.ToVector2() * MOUSE_SPEED);
+                angleCamera.AddAngle(mouseDelta.ToVector2() * MOUSE_SPEED);
             }
-            camera.UpdateFreeCam(Input.GetDelta3D(),GetFreeCamVelocity(gameTime));
+            angleCamera.UpdateFreeCam(Input.GetDelta3D(),GetFreeCamVelocity(gameTime));
         }
 
         private void ModelTest_OnUpdate(GameTime gameTime) {
-            if(!ControlModel) {
+            if(controlMode == ControlMode.Camera) {
                 UpdateCamera(gameTime);
             }
             Camera.Update(Game.Viewport.AspectRatio);
-
-            if(ControlModel) {
+            if(controlMode == ControlMode.Model) {
                 RotateModel(gameTime);
             }
         }
@@ -156,18 +232,37 @@ namespace TwelveEngine.Game3D {
             graphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
         }
 
-        private void DrawCameraData() {
-            var camera = Camera as AngleCamera;
-            if(camera == null) return;
+        private void DrawAnimationDebug(DebugWriter writer) {
+            var animationPlayer = GetAnimationPlayer();
 
-            var position1 = new Point(Constants.ScreenEdgePadding,Constants.ScreenEdgePadding);
-            var text1 = $"Yaw {string.Format("{0:0.00}",camera.Yaw)}  Pitch {string.Format("{0:0.00}",camera.Pitch)}";
+            writer.Write(animationPlayer.AnimationName,"Name");
 
-            var position2 = position1 + new Point(0,Game.DebugFont.LineSpacing);
-            var text2 = $"X {string.Format("{0:0.00}",camera.Position.X)}  Y {string.Format("{0:0.00}",camera.Position.Y)}  Z {string.Format("{0:0.00}",camera.Position.Z)}";
+            if(animationPlayer.AnimationCount > 1) {
+                var endAnimation = animationPlayer.AnimationCount - 1;
+                var currentAnimation = animationPlayer.AnimationIndex;
+                writer.WriteRange(currentAnimation,endAnimation,"Index");
+            }
 
-            Game.SpriteBatch.DrawString(Game.DebugFont,text1,position1.ToVector2(),Color.White);
-            Game.SpriteBatch.DrawString(Game.DebugFont,text2,position2.ToVector2(),Color.White);
+            writer.Write(animationPlayer.PlaybackSpeed,"Playback Speed");
+            writer.WriteRange(animationPlayer.CurrentTime,animationPlayer.Animation.DurationInSeconds,"Time");
+            writer.Write(animationPlayer.IsLooping,"Looping");
+        }
+
+        private void DrawDefaultDebug(DebugWriter writer) {
+            if(!(Camera is AngleCamera angleCamera)) {
+                return;
+            }
+            writer.WriteXY(angleCamera.Yaw,angleCamera.Pitch,"Yaw","Pitch");
+            writer.Write(angleCamera.Position);
+        }
+
+        private void Game_OnWriteDebug(DebugWriter writer) {
+            writer.ToTopLeft();
+            if(controlMode == ControlMode.Animation) {
+                DrawAnimationDebug(writer);
+            } else {
+                DrawDefaultDebug(writer);
+            }
         }
 
         private void ModelTest_OnRender(GameTime gameTime) {
@@ -175,9 +270,6 @@ namespace TwelveEngine.Game3D {
             RenderEntities(gameTime);
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             ImpulseGuide.Render();
-#if DEBUG
-            DrawCameraData();
-#endif
             Game.SpriteBatch.End();
         }
 

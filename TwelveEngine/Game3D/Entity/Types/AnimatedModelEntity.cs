@@ -1,8 +1,7 @@
-﻿using System;
-using Liru3D.Animations;
-using Liru3D.Models;
+﻿using Liru3D.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game3D.Entity.Types {
     public class AnimatedModelEntity:ModelBase {
@@ -12,12 +11,23 @@ namespace TwelveEngine.Game3D.Entity.Types {
         private SkinnedModel model;
         private SkinnedEffect skinnedEffect;
 
-        public AnimationPlayer AnimationPlayer { get; private set; }
+        public SerialAnimationPlayer AnimationPlayer { get; private set; }
 
         public AnimatedModelEntity() {
             OnUnload += AnimatedModel_OnUnload;
             OnUpdate += AnimatedModel_OnUpdate;
             OnRender += AnimatedModel_OnRender;
+            OnExport += AnimatedModelEntity_OnExport;
+            OnImport += AnimatedModelEntity_OnImport;
+        }
+
+        private void AnimatedModelEntity_OnImport(SerialFrame frame) {
+            AnimationPlayer = new SerialAnimationPlayer(model);
+            AnimationPlayer.Import(frame);
+        }
+
+        private void AnimatedModelEntity_OnExport(SerialFrame frame) {
+            AnimationPlayer.Export(frame);
         }
 
         private void AnimatedModel_OnUpdate(GameTime gameTime) {
@@ -39,18 +49,24 @@ namespace TwelveEngine.Game3D.Entity.Types {
             }
         }
 
-        private void SetDefaultAnimation() {
-            AnimationPlayer.Animation = model.Animations[0];
-            AnimationPlayer.IsLooping = false;
+        private void LoadAnimationPlayer() {
+            AnimationPlayer = new SerialAnimationPlayer(model);
+        }
+
+        private static SkinnedEffect GetSkinnedEffect(GraphicsDevice graphicsDevice) {
+            var skinnedEffect = new SkinnedEffect(graphicsDevice) {
+                AmbientLightColor = Color.White.ToVector3()
+            };
+            skinnedEffect.EnableDefaultLighting();
+            return skinnedEffect;
         }
 
         protected override void LoadModel() {
             model = Game.Content.Load<SkinnedModel>(Model);
-            skinnedEffect = new SkinnedEffect(Game.GraphicsDevice);
-            skinnedEffect.EnableDefaultLighting();
-            skinnedEffect.AmbientLightColor = Color.White.ToVector3();
-            AnimationPlayer = new AnimationPlayer(model);
-            SetDefaultAnimation();
+
+            skinnedEffect = GetSkinnedEffect(Game.GraphicsDevice);
+
+            LoadAnimationPlayer();
         }
 
         protected override void ApplyTexture(Texture2D texture) {

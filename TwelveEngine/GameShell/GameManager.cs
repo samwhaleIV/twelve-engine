@@ -8,6 +8,7 @@ using TwelveEngine.Input;
 using TwelveEngine.GameShell;
 using TwelveEngine.GameShell.Automation;
 using TwelveEngine.Serial;
+using TwelveEngine.GameUI;
 
 namespace TwelveEngine {
     public sealed partial class GameManager:Game {
@@ -30,9 +31,38 @@ namespace TwelveEngine {
             automationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
 
             keyBinds = KeyBinds.Load(out KeyBindSet keyBindSet);
+
             impulseHandler = new ImpulseHandler(keyBinds);
             keyWatcherSet = new KeyWatcherSet(getDebugControls(keyBindSet));
+
+            debugWriter = new DebugWriter(this);
+#if DEBUG
+            OnWriteDebug += DrawGameTimeDebug;
+#endif
         }
+
+#if DEBUG
+        private readonly Stopwatch watch = new Stopwatch();
+        private TimeSpan updateTime, renderTime;
+
+        private double GetFps() {
+            var totalSeconds = proxyGameTime.ElapsedGameTime.TotalSeconds;
+            if(totalSeconds == 0d) {
+                return 0d;
+            }
+            return 1d / totalSeconds;
+        }
+
+        private void DrawGameTimeDebug(DebugWriter writer) {
+            writer.ToBottomLeft();
+
+            writer.WriteTimeMS(renderTime,"Render");
+            writer.WriteTimeMS(updateTime,"Update");
+
+            writer.WriteFPS(GetFps());
+            writer.Write(proxyGameTime.TotalGameTime);
+        }
+#endif
 
         private (Keys key, Action action)[] getDebugControls(KeyBindSet keyBindSet) => new (Keys, Action)[]{
             (keyBindSet.Playback, automationAgent.TogglePlayback),
@@ -74,6 +104,9 @@ namespace TwelveEngine {
         private readonly AutomationAgent automationAgent = new AutomationAgent();
         private readonly MouseHandler mouseHandler = new MouseHandler();
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
+
+        private readonly DebugWriter debugWriter;
+        public event Action<DebugWriter> OnWriteDebug;
 
         /* Public access */
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
@@ -373,8 +406,12 @@ namespace TwelveEngine {
             watch.Stop();
             renderTime = watch.Elapsed;
             watch.Reset();
-            renderGameTime();
+
+            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.AnisotropicClamp,DepthStencilState.None);
+            OnWriteDebug?.Invoke(debugWriter);
+            SpriteBatch.End();
 #endif
+
             rendering = false;
         }
     }
