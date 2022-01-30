@@ -232,34 +232,18 @@ namespace TwelveEngine.Game3D {
             graphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
         }
 
-        private void DrawAnimationDebug(DebugWriter writer) {
-            var animationPlayer = GetAnimationPlayer();
-
-            writer.Write(animationPlayer.AnimationName,"Name");
-
-            if(animationPlayer.AnimationCount > 1) {
-                var endAnimation = animationPlayer.AnimationCount - 1;
-                var currentAnimation = animationPlayer.AnimationIndex;
-                writer.WriteRange(currentAnimation,endAnimation,"Index");
-            }
-
-            writer.Write(animationPlayer.PlaybackSpeed,"Playback Speed");
-            writer.WriteRange(animationPlayer.CurrentTime,animationPlayer.Animation.DurationInSeconds,"Time");
-            writer.Write(animationPlayer.IsLooping,"Looping");
-        }
-
         private void DrawDefaultDebug(DebugWriter writer) {
+            writer.Write(Camera.Position);
             if(!(Camera is AngleCamera angleCamera)) {
                 return;
             }
             writer.WriteXY(angleCamera.Yaw,angleCamera.Pitch,"Yaw","Pitch");
-            writer.Write(angleCamera.Position);
         }
 
         private void Game_OnWriteDebug(DebugWriter writer) {
             writer.ToTopLeft();
             if(controlMode == ControlMode.Animation) {
-                DrawAnimationDebug(writer);
+                GetAnimationPlayer().WriteDebug(writer);
             } else {
                 DrawDefaultDebug(writer);
             }

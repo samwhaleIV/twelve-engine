@@ -1,6 +1,7 @@
 ﻿using TwelveEngine.Serial;
 using Liru3D.Animations;
 using Liru3D.Models;
+using TwelveEngine.GameUI;
 
 namespace TwelveEngine.Game3D {
     public sealed class SerialAnimationPlayer:AnimationPlayer, ISerializable {
@@ -81,6 +82,20 @@ namespace TwelveEngine.Game3D {
             frame.Set(PlaybackSpeed);
 
             frame.Set(AnimationName);
+        }
+
+        public void WriteDebug(DebugWriter writer) {
+            writer.Write(AnimationName,"Name");
+
+            if(AnimationCount > 1) {
+                var endAnimation = AnimationCount - 1;
+                var currentAnimation = AnimationIndex;
+                writer.WriteRange(currentAnimation,endAnimation,"Index");
+            }
+
+            writer.Write(PlaybackSpeed,"Playback Speed");
+            writer.WriteRange(CurrentTime,Animation.DurationInSeconds,"Time");
+            writer.Write(IsLooping,"Looping");
         }
 
     }
