@@ -111,10 +111,17 @@ namespace TwelveEngine.Game3D {
             MoveUpDown(velocity.Z);
         }
 
-        public void UpdateFreeCam(Vector3 delta,float velocity) {
-            if(delta.X != 0) MoveLeftRight(delta.X * velocity);
-            if(delta.Y != 0) MoveFrontBack(delta.Y * velocity);
-            if(delta.Z != 0) MoveUpDown(delta.Z * velocity);
+        public void Debug_UpdateFreeCam(GameManager game,float lookSpeed,float moveSpeed) {
+            var mouseDelta = game.MouseHandler.Delta;
+            if(game.MouseHandler.Capturing && mouseDelta != Point.Zero) {
+                mouseDelta.Y = -mouseDelta.Y;
+                AddAngle(mouseDelta.ToVector2() * lookSpeed);
+            }
+
+            var delta = game.ImpulseHandler.GetDelta3D();
+            if(delta.X != 0) MoveLeftRight(delta.X * moveSpeed);
+            if(delta.Y != 0) MoveFrontBack(delta.Y * moveSpeed);
+            if(delta.Z != 0) MoveUpDown(delta.Z * moveSpeed);
         }
 
         public override void Export(SerialFrame frame) {

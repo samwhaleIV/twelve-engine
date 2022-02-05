@@ -204,32 +204,14 @@ namespace TwelveEngine.Game3D {
             matrixEntity.Rotation += rotationDelta * new Vector3(velocity);
         }
 
-        private void UpdateCamera(GameTime gameTime) {
-            if(!(Camera is AngleCamera angleCamera)) {
-                return;
-            }
-            var mouseDelta = Game.MouseHandler.Delta;
-            if(Game.MouseHandler.Capturing && mouseDelta != Point.Zero) {
-                mouseDelta.Y = -mouseDelta.Y;
-                angleCamera.AddAngle(mouseDelta.ToVector2() * MOUSE_SPEED);
-            }
-            angleCamera.UpdateFreeCam(Input.GetDelta3D(),GetFreeCamVelocity(gameTime));
-        }
-
         private void ModelTest_OnUpdate(GameTime gameTime) {
-            if(controlMode == ControlMode.Camera) {
-                UpdateCamera(gameTime);
+            if(controlMode == ControlMode.Camera && Camera is AngleCamera angleCamera) {
+                angleCamera.Debug_UpdateFreeCam(Game,MOUSE_SPEED,GetFreeCamVelocity(gameTime));
             }
             Camera.Update(Game.Viewport.AspectRatio);
             if(controlMode == ControlMode.Model) {
                 RotateModel(gameTime);
             }
-        }
-
-        private static void ResetGraphicsDeviceState(GraphicsDevice graphicsDevice) {
-            graphicsDevice.Clear(Color.Gray);
-            graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            graphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
         }
 
         private void DrawDefaultDebug(DebugWriter writer) {
@@ -250,7 +232,6 @@ namespace TwelveEngine.Game3D {
         }
 
         private void ModelTest_OnRender(GameTime gameTime) {
-            ResetGraphicsDeviceState(Game.GraphicsDevice);
             RenderEntities(gameTime);
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             ImpulseGuide.Render();

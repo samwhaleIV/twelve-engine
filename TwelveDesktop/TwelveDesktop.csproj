@@ -22,14 +22,14 @@
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Lovebirb.MonoGame.SkinnedMeshImporter" Version="1.0.2" />
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
-  </ItemGroup>
   <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
   <Import Project="..\ElfGame\ElfGame.projitems" Label="Shared" />
   <ItemGroup>
     <MonoGameContentReference Include="..\Content\ElfGame.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Lovebirb.MonoGame.SkinnedMeshImporter" Version="1.0.2" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
   </ItemGroup>
 </Project>

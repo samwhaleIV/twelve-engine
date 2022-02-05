@@ -19,10 +19,15 @@ namespace TwelveEngine.Game3D {
 
             OnLoad += SetupEntityManager;
             OnUpdate += World_OnUpdate;
+            OnRender += World_OnRender;
 
             cameraSerializer = new CameraSerializer(this);
             OnImport += cameraSerializer.ImportCamera;
             OnExport += cameraSerializer.ExportCamera;
+        }
+
+        private void World_OnRender(GameTime gameTime) {
+            ResetGraphicsDeviceState(Game.GraphicsDevice);
         }
 
         private void World_OnUpdate(GameTime gameTime) {
@@ -88,6 +93,12 @@ namespace TwelveEngine.Game3D {
 
         public BufferSet CreateBufferSet<TVertices>(TVertices[] vertices) where TVertices:struct {
             return BufferSet.Create(GraphicsDevice,vertices);
+        }
+
+        protected virtual void ResetGraphicsDeviceState(GraphicsDevice graphicsDevice) {
+            graphicsDevice.Clear(Color.Gray);
+            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            graphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
         }
     }
 }

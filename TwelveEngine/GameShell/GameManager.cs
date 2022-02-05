@@ -335,7 +335,7 @@ namespace TwelveEngine {
         }
 
         public void FastForward(int count) {
-            if(!automationAgent.PlaybackActive) { /* Confused? See above. */
+            if(!automationAgent.PlaybackActive) {
                 return;
             }
             framesToSkip = count;
@@ -407,7 +407,7 @@ namespace TwelveEngine {
             renderTime = watch.Elapsed;
             watch.Reset();
 
-            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.AnisotropicClamp,DepthStencilState.None);
+            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp,DepthStencilState.None);
             OnWriteDebug?.Invoke(debugWriter);
             SpriteBatch.End();
 #endif

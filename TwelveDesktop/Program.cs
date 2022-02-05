@@ -5,7 +5,7 @@ using TwelveEngine.Config;
 using TwelveEngine.Game3D;
 
 namespace TwelveDesktop {
-
+        
     internal static class Program {
         [STAThread]
         internal static void Main() {
@@ -19,7 +19,7 @@ namespace TwelveDesktop {
         }
 
         private static void Game_OnLoad(GameManager game) {
-            game.SetState(ModelViewer.CreateAnimated("ModelTest/CubeWorm","DebugTexture"));
+            game.SetState(new CRTTest());
         }
     }
 }

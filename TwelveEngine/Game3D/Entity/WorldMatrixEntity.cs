@@ -38,11 +38,11 @@ namespace TwelveEngine.Game3D.Entity {
         }
 
         private Matrix GetWorldMatrix() {
-            var matrix = originMatrix * scaleMatrix;
-            if(!Billboard) {
-                matrix *= rotationMatrix;
+            if(Billboard) {
+                return scaleMatrix * originMatrix;
+            } else {
+                return scaleMatrix * rotationMatrix * originMatrix;
             }
-            return matrix;
         }
 
         private void UpdateVectorMatrices() {

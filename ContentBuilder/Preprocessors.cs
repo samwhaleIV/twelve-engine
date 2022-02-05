@@ -15,6 +15,7 @@ namespace ContentBuilder {
             Add(".spritefont", AddSpriteFont);
             Add(".dae", AddModel);
             Add(".fbx", AddAnimatedModel);
+            Add(".fx", AddEffect);
         }
 
         private void AddImage(StringBuilder builder) {
@@ -59,6 +60,12 @@ namespace ContentBuilder {
             builder.AppendLine("/importer:SkinnedMeshImporter");
             builder.AppendLine("/processor:SkinnedMeshProcessor");
             builder.AppendLine("/processorParam:KeyframeDecimalPlaceRounding=5");
+        }
+
+        private void AddEffect(StringBuilder builder) {
+            builder.AppendLine("/importer:EffectImporter");
+            builder.AppendLine("/processor:EffectProcessor");
+            builder.AppendLine("/processorParam:DebugMode=Auto");
         }
     }
 }
