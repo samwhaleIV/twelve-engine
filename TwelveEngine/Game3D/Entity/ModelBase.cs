@@ -59,7 +59,7 @@ namespace TwelveEngine.Game3D.Entity {
         }
 
         private void LoadTexture() {
-            if(Texture == null) {
+            if(string.IsNullOrEmpty(Texture)) {
                 return;
             }
             var texture = Game.Content.Load<Texture2D>(Texture);

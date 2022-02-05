@@ -78,13 +78,14 @@ namespace TwelveEngine.Serial.Binary {
             Type = Type.String;
             Bytes = UTF8.GetBytes(value);
         }
+
         public string String() {
             if(Type != Type.String) {
-                return string.Empty;
+                return null;
             }
             var newString = UTF8.GetString(Bytes);
             if(string.IsNullOrEmpty(newString)) {
-                return string.Empty;
+                return null;
             }
             return newString;
         }

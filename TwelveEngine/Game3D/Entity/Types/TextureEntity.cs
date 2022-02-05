@@ -19,20 +19,14 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         public TextureEntity() => BindEvents();
 
-        private string _textureName = string.Empty;
+        private string _textureName = null;
         public string TextureName {
             get => _textureName;
             set {
-                if(string.IsNullOrEmpty(value)) {
-                    value = string.Empty;
-                }
                 if(_textureName == value) {
                     return;
                 }
                 _textureName = value;
-                if(!IsLoaded) {
-                    return;
-                }
             }
         }
 

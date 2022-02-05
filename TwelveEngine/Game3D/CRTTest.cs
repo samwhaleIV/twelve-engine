@@ -11,7 +11,6 @@ namespace TwelveEngine.Game3D {
 
         public CRTTest() {
             OnLoad += CRTTest_OnLoad;
-            OnUnload += CRTTest_OnUnload;
             OnPreRender += PreRenderEntities;
             OnRender += CRTTest_OnRender;
             OnUpdate += CRTTest_OnUpdate;
@@ -91,10 +90,6 @@ namespace TwelveEngine.Game3D {
             graphicsDevice.Clear(Color.LightGray);
             graphicsDevice.DepthStencilState = DepthStencilState.Default;
             graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
-        }
-
-        private void CRTTest_OnUnload() {
-
         }
     }
 }

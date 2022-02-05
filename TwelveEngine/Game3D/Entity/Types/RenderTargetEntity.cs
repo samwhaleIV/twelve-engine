@@ -21,6 +21,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
             OnLoad += RenderTargetEntity_OnLoad;
             OnUnload += RenderTargetEntity_OnUnload;
             OnPreRender += RenderTargetEntity_OnPreRender;
+            StateLock = true;
         }
 
         private void RenderTargetEntity_OnPreRender(GameTime gameTime) {

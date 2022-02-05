@@ -111,7 +111,7 @@ namespace TwelveEngine.Config {
             }
 
             if(builder.Length < 1) {
-                return string.Empty;
+                return null;
             }
 
             builder.Remove(builder.Length-1,1);

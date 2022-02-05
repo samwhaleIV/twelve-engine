@@ -27,7 +27,7 @@ namespace TwelveEngine.EntitySystem {
         protected abstract int GetEntityType();
         public int Type => GetEntityType();
 
-        private string _name = string.Empty;
+        private string _name = null;
         private void SetName(string newName) {
             var oldName = _name;
             _name = newName;
