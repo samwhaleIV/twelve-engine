@@ -8,14 +8,17 @@ namespace TwelveEngine.Game3D {
 
     public static class ModelViewer {
         public static ModelViewer<AnimatedModelEntity> CreateAnimated(string modelName,string textureName = null) {
-            return new ModelViewer<AnimatedModelEntity>(modelName,textureName);
+            return new ModelViewer<AnimatedModelEntity>(modelName,textureName,animatedModel: true);
         }
         public static ModelViewer<ModelEntity> CreateStatic(string modelName,string textureName = null) {
-            return new ModelViewer<ModelEntity>(modelName,textureName);
+            return new ModelViewer<ModelEntity>(modelName,textureName,animatedModel: false);
+        }
+        public static ModelViewer<TextureEntity> CreateTextureTest(string textureName) {
+            return new ModelViewer<TextureEntity>(textureName: textureName, textureTest: true);
         }
     }
 
-    public sealed class ModelViewer<TModelEntity>:World where TModelEntity : ModelBase, new() {
+    public sealed class ModelViewer<TMatrixEntity>:World where TMatrixEntity : WorldMatrixEntity, new() {
 
         private enum ControlMode { Camera, Model, Animation }
         private ControlMode controlMode = ControlMode.Camera;
@@ -30,14 +33,23 @@ namespace TwelveEngine.Game3D {
 
         private ImpulseGuide ImpulseGuide { get; set; }
 
+        private int ModelID = EntitySystem.EntityManager.START_ID - 1;
+
         private readonly string modelName;
         private readonly string textureName;
 
-        private int ModelID = EntitySystem.EntityManager.START_ID - 1;
+        private readonly bool isTextureTest;
+        private readonly bool isAnimatedModel;
 
-        internal ModelViewer(string modelName,string textureName) {
+        internal ModelViewer(
+            string modelName = null,
+            string textureName = null,
+            bool textureTest = false,
+            bool animatedModel = false
+        ) {
             this.modelName = modelName;
             this.textureName = textureName;
+            isTextureTest = textureTest;
 
             OnLoad += ModelTest_OnLoad;
             OnUnload += ModelViewer_OnUnload;
@@ -64,12 +76,12 @@ namespace TwelveEngine.Game3D {
                 case ControlMode.Model:
                     ImpulseGuide.SetDescriptions(
                         (Impulse.Toggle, "Control Mode (Model)"),
-                        (Impulse.Up, "-Pitch"),
-                        (Impulse.Down, "+Pitch"),
-                        (Impulse.Left, "-Roll"),
-                        (Impulse.Right, "+Roll"),
-                        (Impulse.Ascend, "+Yaw"),
-                        (Impulse.Descend, "-Yaw")
+                        (Impulse.Up, "-Z"),
+                        (Impulse.Down, "+Z"),
+                        (Impulse.Left, "-X"),
+                        (Impulse.Right, "+X"),
+                        (Impulse.Ascend, "-Y"),
+                        (Impulse.Descend, "+Y")
                     );
                     break;
                 case ControlMode.Animation:
@@ -154,21 +166,43 @@ namespace TwelveEngine.Game3D {
             UpdateImpulseGuide();
         }
 
+        private static ModelBase GetModel(bool isAnimated) {
+            ModelBase model;
+            if(isAnimated) {
+                model = new AnimatedModelEntity();
+            } else {
+                model = new ModelEntity();
+            }
+            return model;
+        }
+
+        private void AddSubjectEntity() {
+            Entity3D entity;
+
+            if(isTextureTest) {
+                entity = new TextureEntity() { TextureName = textureName };
+            } else {
+                var model = GetModel(isAnimatedModel);
+                model.Texture = textureName;
+                model.Model = modelName;
+                entity = model;
+            }
+
+            ModelID = Entities.Add(entity).ID;
+        }
+
         private void ModelTest_OnLoad() {
             var camera = new AngleCamera() {
                 NearPlane = 0.1f,
                 FieldOfView = 75f,
-                Angle = new Vector2(219.75f,215.10f),
-                Position = new Vector3(1.24f,-1.4f,1.34f)
+                Angle = new Vector2(350f,208f),
+                Position = new Vector3(-0.5f,2.5f,3.9f)
             };
             Camera = camera;
 
             Entities.Create(Entity3DType.GridLines);
 
-            ModelID = Entities.Add(new TModelEntity() {
-                Texture = textureName,
-                Model = modelName
-            }).ID;
+            AddSubjectEntity();
 
             Input.OnToggleDown += Input_OnToggleDown;
             ImpulseGuide = new ImpulseGuide(Game);

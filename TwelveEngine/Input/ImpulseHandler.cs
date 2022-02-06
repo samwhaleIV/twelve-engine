@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Game3D;
 
 namespace TwelveEngine.Input {
 
@@ -121,14 +120,14 @@ namespace TwelveEngine.Input {
         public Vector3 GetDelta3D() {
             int x = 0, y = 0, z = 0;
 
-            if(IsKeyDown(Impulse.Up)) y--;
-            if(IsKeyDown(Impulse.Down)) y++;
+            if(IsKeyDown(Impulse.Left)) x--; //Strafe Left
+            if(IsKeyDown(Impulse.Right)) x++; //Strafe Right
 
-            if(IsKeyDown(Impulse.Left)) x--;
-            if(IsKeyDown(Impulse.Right)) x++;
+            if(IsKeyDown(Impulse.Ascend)) y--; //Straight up
+            if(IsKeyDown(Impulse.Descend)) y++; //Straight down
 
-            if(IsKeyDown(Impulse.Ascend)) z--;
-            if(IsKeyDown(Impulse.Descend)) z++;
+            if(IsKeyDown(Impulse.Up)) z--; //Forward 
+            if(IsKeyDown(Impulse.Down)) z++; //Backwards
 
             return new Vector3(x,y,z);
         }

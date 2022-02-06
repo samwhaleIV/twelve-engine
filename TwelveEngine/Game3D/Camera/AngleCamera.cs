@@ -5,13 +5,12 @@ using Microsoft.Xna.Framework;
 namespace TwelveEngine.Game3D {
     public sealed class AngleCamera:Camera3D {
 
-        private const float YawOffset = Orientation.CamYawOffset;
-        private const float PitchOffset = Orientation.CamPitchOffset;
+        public const float PitchOffset = 180f;
 
-        private const float MinPitch = Orientation.CamMinPitch;
-        private const float MaxPitch = Orientation.CamMaxPitch;
+        public const float MaxPitch = PitchOffset + 90f;
+        public const float MinPitch = PitchOffset - 90f;
 
-        public AngleCamera() => SetAngle(YawOffset,PitchOffset);
+        public AngleCamera() => SetAngle(0f,PitchOffset);
 
         public Vector3 Up { get; private set; }
         public Vector3 Forward { get; private set; }
@@ -53,18 +52,18 @@ namespace TwelveEngine.Game3D {
             Yaw = NormalizeAngle(yaw);
             Pitch = ClampPitch(NormalizeAngle(pitch));
 
-            yaw = MathHelper.ToRadians(Yaw + YawOffset);
+            yaw = MathHelper.ToRadians(Yaw);
             pitch = MathHelper.ToRadians(Pitch + PitchOffset);
 
-            Forward = Vector3.Transform(Orientation.Forward,Matrix.CreateFromAxisAngle(Orientation.Up,yaw));
+            Forward = Vector3.Transform(Vector3.Forward,Matrix.CreateFromAxisAngle(Vector3.Up,yaw));
             Forward.Normalize();
 
-            Vector3 left = Vector3.Cross(Orientation.Up,Forward);
+            Vector3 left = Vector3.Cross(Vector3.Up,Forward);
             left.Normalize();
 
             var angleMatrix = Matrix.CreateFromAxisAngle(left,pitch);
             Forward = Vector3.Transform(Forward,angleMatrix);
-            Up = Vector3.Transform(Orientation.Up,angleMatrix);
+            Up = Vector3.Transform(Vector3.Up,angleMatrix);
 
             InvalidateViewMatrix();
         }
@@ -101,7 +100,7 @@ namespace TwelveEngine.Game3D {
 
         public void MoveUpDown(float distance) {
             var position = Position;
-            position.Z -= distance;
+            position.Y -= distance;
             Position = position;
         }
 
@@ -120,8 +119,8 @@ namespace TwelveEngine.Game3D {
 
             var delta = game.ImpulseHandler.GetDelta3D();
             if(delta.X != 0) MoveLeftRight(delta.X * moveSpeed);
-            if(delta.Y != 0) MoveFrontBack(delta.Y * moveSpeed);
-            if(delta.Z != 0) MoveUpDown(delta.Z * moveSpeed);
+            if(delta.Y != 0) MoveUpDown(delta.Y * moveSpeed);
+            if(delta.Z != 0) MoveFrontBack(delta.Z * moveSpeed);
         }
 
         public override void Export(SerialFrame frame) {

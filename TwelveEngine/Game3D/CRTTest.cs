@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D.Entity;
 using TwelveEngine.Game3D.Entity.Types;
@@ -21,55 +18,53 @@ namespace TwelveEngine.Game3D {
                 angleCamera.Debug_UpdateFreeCam(Game,0.05f,0.01f);
             }
             Camera.Update(Game.Viewport.AspectRatio);
+
+            var monitor = Entities.Get<WorldMatrixEntity>("CRT");
+            var renderTarget = Entities.Get<WorldMatrixEntity>("RenderTarget");
+
+            var rotation = new Vector3(0f,0f,0f);
+            var t = (float)(gameTime.TotalGameTime.TotalSeconds / 20f % 1f);
+            rotation.X = t * 360f;
+
+            monitor.Rotation = rotation;
+            renderTarget.Rotation = rotation;
         }
 
         private Effect crtFilter;
+        private Texture2D texture;
 
         private void CRTTest_OnRender(GameTime gameTime) {
             RenderEntities(gameTime);
         }
 
-        private Point CRTSize = new Point(800,600);
+        private RenderTargetEntity GetRenderTargetEntity() {
+            var CRTSize = new Point(800,600);
 
-        private Vector2 CRTTopLeft = new Vector2(-0.766212f,-2.15167f);
-        private Vector2 CRTBottomRight = new Vector2(0.766212f,0.974369f);
+            var topLeft = new Vector2(-0.766212f,2.15167f);
+            var bottomRight = new Vector2(0.766212f,0.974369f);
 
-        private void CRTTest_OnLoad() {
-            crtFilter = Game.Content.Load<Effect>("Shaders/crt-filter");
-            var monitor = new ModelEntity() {Model = "Models/crt-monitor"};
+            var zAxis = 0.965f;
 
-            var faceWidth = Math.Abs(CRTBottomRight.X - CRTTopLeft.X);
-            var faceHeight = Math.Abs(-CRTTopLeft.Y - CRTBottomRight.Y);
-
-            var renderTargetEntity = new RenderTargetEntity() {
+            return new RenderTargetEntity() {
                 Size = CRTSize,
-                Rotation = new Vector3(0f,-90f,180f),
-                Position = new Vector3(0f,-0.965f,1.563035f),
-                Scale = new Vector3(faceWidth,faceHeight,1f)
+                TopLeft = new Vector3(topLeft,zAxis),
+                BottomRight = new Vector3(bottomRight,zAxis),
+                RenderOnTarget = RenderScreen,
+                Name = "RenderTarget"
             };
+        }
 
-            var testTexture = Game.Content.Load<Texture2D>("Test/meta-meme");
-            renderTargetEntity.RenderOnTarget = gameTime => {
-                float t = (float)(gameTime.TotalGameTime.TotalSeconds / 5d % 1d);
-                crtFilter.Parameters["time"].SetValue(t);
+        private void RenderScreen(GameTime gameTime) {
+            float t = (float)(gameTime.TotalGameTime.TotalSeconds / 5d % 1d);
+            crtFilter.Parameters["time"].SetValue(t);
 
-                Game.SpriteBatch.Begin(SpriteSortMode.Deferred,effect: crtFilter,samplerState: SamplerState.LinearWrap);
-                Game.SpriteBatch.Draw(testTexture,Game.Viewport.Bounds,Color.White);
-                Game.SpriteBatch.End();
-            };
+            Game.SpriteBatch.Begin(SpriteSortMode.Deferred,effect: crtFilter,samplerState: SamplerState.LinearWrap);
+            Game.SpriteBatch.Draw(texture,Game.Viewport.Bounds,Color.White);
+            Game.SpriteBatch.End();
+        }
 
-            var camera = new AngleCamera() {
-                NearPlane = 0.1f,
-                FieldOfView = 75f,
-                Angle = new Vector2(180.15f,195.15f),
-                Position = new Vector3(0.08f,-2.47f,1.8f)
-            };
-
-            Entities.Create(Entity3DType.GridLines);
-            Entities.Add(monitor);
-            Entities.Add(renderTargetEntity);
-
-            foreach(var effect in monitor.ModelEffects) {
+        private static void ApplyModelLighting(ModelEntity model) {
+            foreach(var effect in model.ModelEffects) {
                 effect.DirectionalLight0.Enabled = true;
                 effect.DirectionalLight1.Enabled = true;
                 effect.DirectionalLight2.Enabled = false;
@@ -82,8 +77,33 @@ namespace TwelveEngine.Game3D {
                 effect.DirectionalLight1.SpecularColor = Color.Orange.ToVector3();
                 effect.DirectionalLight1.DiffuseColor = new Vector3(0.5f);
             }
+        }
+
+        private void SetupCamera() {
+            var camera = new AngleCamera() {
+                NearPlane = 0.1f,
+                FieldOfView = 75f,
+                Angle = new Vector2(359.19952f,192.00055f),
+                Position = new Vector3(-0.0072858054f,1.7067217f,2.4753852f)
+            };
 
             Camera = camera;
+        }
+
+        private void CRTTest_OnLoad() {
+            crtFilter = Game.Content.Load<Effect>("Shaders/crt-filter");
+            texture = Game.Content.Load<Texture2D>("Test/meta-meme");
+            var monitor = new ModelEntity() {Model = "Models/crt-monitor", Name = "CRT"};
+
+            var renderTargetEntity = GetRenderTargetEntity();
+
+            Entities.Create(Entity3DType.GridLines);
+            Entities.Add(monitor);
+            Entities.Add(renderTargetEntity);
+
+            ApplyModelLighting(monitor);
+
+            SetupCamera();
         }
 
         protected override void ResetGraphicsDeviceState(GraphicsDevice graphicsDevice) {

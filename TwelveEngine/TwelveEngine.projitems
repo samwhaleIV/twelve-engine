@@ -33,7 +33,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\GridLinesEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\ModelViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Orientation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Terrain\TerrainChunk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\World.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameShell\DataGameState.cs" />

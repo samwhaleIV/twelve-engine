@@ -105,21 +105,21 @@ namespace TwelveEngine.Game3D.Entity.Types {
                 Color xColor = GRID_COLOR, yColor = GRID_COLOR;
 
                 if(axisStart == 0) {
-                    xColor = X_AXIS_COLOR;
-                    yColor = Y_AXIS_COLOR;
+                    xColor = Z_AXIS_COLOR;
+                    yColor = X_AXIS_COLOR;
                 }
 
-                vertices[index++] = GetVertexPosition(new Vector3(axisStart,gridStart,0),xColor);
-                vertices[index++] = GetVertexPosition(new Vector3(axisStart,gridStart+length,0),xColor);
+                vertices[index++] = GetVertexPosition(new Vector3(axisStart,0,gridStart),xColor);
+                vertices[index++] = GetVertexPosition(new Vector3(axisStart,0,gridStart+length),xColor);
 
 
-                vertices[index++] = GetVertexPosition(new Vector3(gridStart,axisStart,0),yColor);
-                vertices[index++] = GetVertexPosition(new Vector3(gridStart+length,axisStart,0),yColor);
+                vertices[index++] = GetVertexPosition(new Vector3(gridStart,0,axisStart),yColor);
+                vertices[index++] = GetVertexPosition(new Vector3(gridStart+length,0,axisStart),yColor);
             }
 
             var halfLength = length * 0.5f;
-            vertices[index++] = GetVertexPosition(new Vector3(0,0,-halfLength),Z_AXIS_COLOR);
-            vertices[index++] = GetVertexPosition(new Vector3(0,0,halfLength),Z_AXIS_COLOR);
+            vertices[index++] = GetVertexPosition(new Vector3(0,-halfLength,0),Y_AXIS_COLOR);
+            vertices[index++] = GetVertexPosition(new Vector3(0,halfLength,0),Y_AXIS_COLOR);
 
             return vertices;
         }

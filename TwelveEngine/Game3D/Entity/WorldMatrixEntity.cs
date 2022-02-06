@@ -59,10 +59,7 @@ namespace TwelveEngine.Game3D.Entity {
 
         private Matrix GetBillboardOriginMatrix() {
             var rotationAxis = new Vector3(0,0,1);
-            return Matrix.CreateConstrainedBillboard(
-                Position,Owner.Camera.Position,rotationAxis,
-                Orientation.Forward,Orientation.Forward
-            );
+            return Matrix.CreateConstrainedBillboard(Position,Owner.Camera.Position,rotationAxis,null,null);
         }
 
         private Matrix GetOriginMatrix() {

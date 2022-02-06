@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using TwelveEngine.Serial;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game3D.Entity {
@@ -18,17 +19,46 @@ namespace TwelveEngine.Game3D.Entity {
 
         private BasicEffect effect;
 
+        public Vector3 TopLeft { get; set; } = new Vector3(-0.5f,0.5f,0f);
+        public Vector3 BottomRight { get; set; } = new Vector3(0.5f,-0.5f,0f);
+
         public TextureRectangle() {
             OnUpdate += TextureRectangle_OnUpdate;
             OnRender += TextureRectangle_OnRender;
+
             OnLoad += TextureRectangle_OnLoad;
             OnUnload += TextureRectangle_OnUnload;
+
+            OnImport += TextureRectangle_OnImport;
+            OnExport += TextureRectangle_OnExport;
+        }
+
+        private void TextureRectangle_OnImport(SerialFrame frame) {
+            frame.Set(TopLeft);
+            frame.Set(BottomRight);
+        }
+
+        private void TextureRectangle_OnExport(SerialFrame frame) {
+            TopLeft = frame.GetVector3();
+            BottomRight = frame.GetVector3();
         }
 
         private BufferSet bufferSet;
 
+        private static VertexPositionColorTexture[] GetVertices(Vector3 start,Vector3 end) {
+
+            var a = new VertexPositionColorTexture(start,Color.White,new Vector2(0,0));
+
+            var b = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),Color.White,new Vector2(1,0));
+            var c = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),Color.White,new Vector2(0,1));
+
+            var d = new VertexPositionColorTexture(end,Color.White,new Vector2(1,1));
+
+            return new VertexPositionColorTexture[] { a,b,c,b,d,c };
+        }
+
         private void TextureRectangle_OnLoad() {
-            bufferSet = Owner.CreateBufferSet(GetVertices());
+            bufferSet = Owner.CreateBufferSet(GetVertices(TopLeft,BottomRight));
             effect = new BasicEffect(Game.GraphicsDevice) {
                 TextureEnabled = true
             };
@@ -61,18 +91,6 @@ namespace TwelveEngine.Game3D.Entity {
 
             effect?.Dispose();
             effect = null;
-        }
-
-        private static VertexPositionColorTexture[] GetVertices() {
-            float left = -0.5f, top = -0.5f, right = 0.5f, bottom = 0.5f;
-
-            var a = new VertexPositionColorTexture(new Vector3(left,top,0),Color.White,new Vector2(1,1));
-            var b = new VertexPositionColorTexture(new Vector3(right,top,0),Color.White,new Vector2(0,1));
-
-            var c = new VertexPositionColorTexture(new Vector3(left,bottom,0),Color.White,new Vector2(1,0));
-            var d = new VertexPositionColorTexture(new Vector3(right,bottom,0),Color.White,new Vector2(0,0));
-
-            return new VertexPositionColorTexture[] { a,b,c,b,d,c };
         }
 
         private void TextureRectangle_OnRender(GameTime gameTime) {
