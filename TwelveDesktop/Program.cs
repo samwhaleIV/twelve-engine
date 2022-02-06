@@ -19,8 +19,8 @@ namespace TwelveDesktop {
         }
 
         private static void Game_OnLoad(GameManager game) {
-            game.SetState(new CRTTest());
-            //game.SetState(ModelViewer.CreateTextureTest("Test/cat-test-picture"));
+            //game.SetState(new CRTTest());
+            game.SetState(ModelViewer.CreateTextureTest("Test/cat-test-picture"));
         }
     }
 }

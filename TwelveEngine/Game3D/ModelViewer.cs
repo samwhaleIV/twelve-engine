@@ -177,7 +177,7 @@ namespace TwelveEngine.Game3D {
         }
 
         private void AddSubjectEntity() {
-            Entity3D entity;
+            WorldMatrixEntity entity;
 
             if(isTextureTest) {
                 entity = new TextureEntity() { TextureName = textureName };
@@ -187,6 +187,7 @@ namespace TwelveEngine.Game3D {
                 model.Model = modelName;
                 entity = model;
             }
+            entity.Billboard = true;
 
             ModelID = Entities.Add(entity).ID;
         }
