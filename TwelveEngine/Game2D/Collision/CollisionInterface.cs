@@ -5,21 +5,15 @@ namespace TwelveEngine.Game2D.Collision {
     public sealed class CollisionInterface {
 
         private readonly Grid2D grid;
-        public CollisionInterface(Grid2D grid) {
-            this.grid = grid;
-        }
+        public CollisionInterface(Grid2D grid) => this.grid = grid;
 
-        private CollisionTypes collisionTypes;
-        internal CollisionTypes Types {
-            get => collisionTypes;
-            set => collisionTypes = value;
-        }
+        internal CollisionTypes Types { get; set; }
 
         public Hitbox? GetHitbox(int ID,Vector2 location) {
-            return collisionTypes?.GetHitbox(ID,location);
+            return Types?.GetHitbox(ID,location);
         }
         public Hitbox? GetHitbox(int ID,Point location) {
-            return collisionTypes?.GetHitbox(ID,location);
+            return Types?.GetHitbox(ID,location);
         }
 
         private const int MATRIX_SIZE = 9;
@@ -32,7 +26,7 @@ namespace TwelveEngine.Game2D.Collision {
         }
 
         private Hitbox? getTileHitbox(int value,Point location) {
-            return collisionTypes?.GetHitbox(value,location);
+            return Types?.GetHitbox(value,location);
         }
 
         private List<Hitbox> getSurroundingArea(int[,] layer,Hitbox hitbox) {
@@ -68,9 +62,7 @@ namespace TwelveEngine.Game2D.Collision {
             var outputList = new List<Hitbox>();
 
             foreach(Hitbox hitbox in surroundingHitboxes) {
-                if(source.Collides(hitbox)) {
-                    outputList.Add(hitbox);
-                }
+                if(source.Collides(hitbox)) outputList.Add(hitbox);
             }
 
             return outputList;

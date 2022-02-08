@@ -4,16 +4,38 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game2D {
     public sealed class TilesetRenderer:TileRenderer {
 
-        public TilesetRenderer() {
-            OnLoad += TilesetRenderer_OnLoad;
-        }
+        private void initialize() => OnLoad += TilesetRenderer_OnLoad;
 
+        public TilesetRenderer() => initialize();
+
+        private string pendingTileset;
         private Texture2D tileset;
         private SpriteBatch spriteBatch;
         private Rectangle[] textureSources;
 
+        public TilesetRenderer(string tileset) {
+            pendingTileset = tileset;
+            initialize();
+        }
+        public TilesetRenderer(Texture2D tileset) {
+            this.tileset = tileset;
+            initialize();
+        }
+
+        private void loadTileset() {
+            if(tileset != null) {
+                return;
+            }
+            if(pendingTileset == null) {
+                pendingTileset = Constants.Config.Tileset;
+            }
+            tileset = Game.Content.Load<Texture2D>(pendingTileset);
+            pendingTileset = null;
+        }
+
         private void TilesetRenderer_OnLoad() {
-            tileset = Game.Content.Load<Texture2D>(Constants.Config.Tileset);
+            loadTileset();
+
             int tileSize = Grid.TileSize;
             spriteBatch = Game.SpriteBatch;
 

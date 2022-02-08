@@ -123,7 +123,7 @@ namespace TwelveEngine.Game2D {
 
         private void Grid2D_OnLoad() {
             ImpulseGuide = new ImpulseGuide(Game);
-            collisionInterface.Types.LoadTypes();
+            collisionInterface.Types?.LoadTypes();
             Entities = new EntityManager<Entity2D,Grid2D>(this,entityFactory);
             if(pendingTileRenderer != null) {
                 tileRenderer = pendingTileRenderer;
@@ -137,24 +137,6 @@ namespace TwelveEngine.Game2D {
                 tileRenderer.Unload();
             }
         }
-
-        private PanZoom panZoom = null;
-        private bool hasPanZoom() => panZoom != null;
-        public bool PanZoom {
-            get => hasPanZoom();
-            set {
-                if(value) {
-                    if(hasPanZoom()) {
-                        return;
-                    }
-                    camera.SetPadding(false);
-                    panZoom = new PanZoom(this,Game.MouseHandler);
-                } else if(hasPanZoom()) {
-                    panZoom = null;
-                }
-            }
-        }
-
 
         private void update(GameTime gameTime) {
             Entities.IterateMutable(Entity2D.Update,gameTime);
@@ -198,12 +180,12 @@ namespace TwelveEngine.Game2D {
             return new ScreenSpace(position,size,tileSize);
         }
 
-        public Vector2 GetCoordinate(ScreenSpace screenSpace,Point position) {
-            return position.ToVector2() / Viewport.Bounds.Size.ToVector2() * screenSpace.Size;
+        public Vector2 GetCoordinate(ScreenSpace screenSpace,Point screenLocation) {
+            return screenLocation.ToVector2() / Viewport.Bounds.Size.ToVector2() * screenSpace.Size;
         }
 
-        public Vector2 GetCoordinate(Point position) {
-            return GetCoordinate(ScreenSpace,position);
+        public Vector2 GetCoordinate(Point screenLocation) {
+            return GetCoordinate(ScreenSpace,screenLocation);
         }
 
         private void renderLayers(int start,int length) {
@@ -279,7 +261,6 @@ namespace TwelveEngine.Game2D {
             frame.Set(camera);
             frame.Set(LayerMode);
             frame.Set(size);
-            frame.Set(PanZoom);
             frame.Set(layers.Length);
             for(var i = 0;i<layers.Length;i++) {
                 frame.Set(layers[i]);
@@ -290,7 +271,6 @@ namespace TwelveEngine.Game2D {
             frame.Get(camera);
             frame.Get(LayerMode);
             size = frame.GetPoint();
-            PanZoom = frame.GetBool();
             var layerCount = frame.GetInt();
 
             var layers = new int[layerCount][,];

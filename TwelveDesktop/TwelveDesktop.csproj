@@ -24,6 +24,7 @@
   </ItemGroup>
   <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
   <Import Project="..\ElfGame\ElfGame.projitems" Label="Shared" />
+  <Import Project="..\JewelEditor\JewelEditor.projitems" Label="Shared" />
   <ItemGroup>
     <MonoGameContentReference Include="..\Content\ElfGame.mgcb" />
   </ItemGroup>

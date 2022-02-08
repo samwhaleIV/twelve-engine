@@ -116,7 +116,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\MouseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\PanZoom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameShell\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Grid2D.cs" />
