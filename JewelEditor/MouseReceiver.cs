@@ -31,20 +31,47 @@ namespace JewelEditor {
             mouseHandler.OnMouseScroll -= MouseHandler_OnMouseScroll;
         }
 
+        private IMouseTarget target = null;
+
+        private IMouseTarget GetTarget(Point point) {
+            var entity = Owner.Entities.Get<UIEntity>("UIEntity");
+            if(entity != null && entity.Contains(Owner.GetWorldVector(point))) {
+                return entity.MouseTarget;
+            } else {
+                return null;
+            }
+        }
+
         private void MouseHandler_OnMouseScroll(Point point,ScrollDirection direction) {
-            mouseController.Scroll(point,direction);
+            if(target == null) {
+                GetTarget(point)?.Scroll(point,direction);
+            } else {
+                target.Scroll(point,direction);
+            }
         }
 
         private void MouseHandler_OnMouseMove(Point point) {
-            mouseController.MouseMove(point);
+            if(target == null) {
+                GetTarget(point)?.MouseMove(point);
+            } else {
+                target.MouseMove(point);
+            }
         }
 
         private void MouseHandler_OnMouseUp(Point point) {
-            mouseController.MouseUp(point);
+            if(target == null) {
+                return;
+            }
+            target.MouseUp(point);
+            target = null;
         }
 
         private void MouseHandler_OnMouseDown(Point point) {
-            mouseController.MouseDown(point);
+            target = GetTarget(point);
+            if(target == null) {
+                target = mouseController;
+            }
+            target.MouseDown(point);
         }
     }
 }

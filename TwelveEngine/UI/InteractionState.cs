@@ -4,7 +4,7 @@ using TwelveEngine.Input;
 using TwelveEngine.UI.Elements;
 
 namespace TwelveEngine.UI {
-    internal sealed class InteractionState {
+    public sealed class InteractionState:IMouseTarget {
 
         private Func<RenderCache> getCache;
 
@@ -44,11 +44,20 @@ namespace TwelveEngine.UI {
             newElement.Hovered = true;
         }
 
-        public void RefreshElement() {
+        internal void RefreshElement() {
             refreshHoverElement(lastMousePosition);
             if(hoverElement != null && hoverElement is RenderFrame frame) {
                 frame.InteractionState.MouseMove(lastMousePosition - frame.ComputedArea.Location);
             }
+        }
+
+        internal void DropFocus() {
+            if(hoverElement == null) {
+                return;
+            }
+            hoverElement.Hovered = false;
+            hoverElement.MouseLeave();
+            hoverElement = null;
         }
 
         public void Scroll(Point mousePosition,ScrollDirection direction) {
@@ -89,15 +98,6 @@ namespace TwelveEngine.UI {
 
             hoverElement.MouseDown(mousePosition);
             refreshHoverElement(mousePosition);
-        }
-
-        public void DropFocus() {
-            if(hoverElement == null) {
-                return;
-            }
-            hoverElement.Hovered = false;
-            hoverElement.MouseLeave();
-            hoverElement = null;
         }
     }
 }

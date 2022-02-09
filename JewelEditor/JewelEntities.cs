@@ -7,11 +7,13 @@ namespace JewelEditor {
         public const int GridLines = 1;
         public const int MouseReceiver = 2;
         public const int EntityMarker = 3;
+        public const int UIEntity = 4;
 
         public static EntityFactory<Entity2D,Grid2D> GetFactory() => new EntityFactory<Entity2D,Grid2D>(
             (GridLines, () => new GridLines()),
             (MouseReceiver, () => new MouseReceiver()),
-            (EntityMarker, () => new EntityMarker())
+            (EntityMarker, () => new EntityMarker()),
+            (UIEntity, () => new UIEntity())
         );
     }
 }

@@ -39,6 +39,7 @@ namespace JewelEditor {
                 entities.Create(JewelEntities.MouseReceiver);
                 entities.Create(JewelEntities.GridLines);
                 entities.Create(JewelEntities.EntityMarker);
+                entities.Create(JewelEntities.UIEntity,"UIEntity");
             };
 
             return grid2D;

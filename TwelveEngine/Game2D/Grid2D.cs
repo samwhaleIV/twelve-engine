@@ -189,8 +189,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public Point GetScreenPoint(Vector2 worldLocation) {
-            var location = worldLocation * ScreenSpace.TileSize;
-            return ScreenSpace.Location.ToPoint() - location.ToPoint();
+            return ((worldLocation - ScreenSpace.Location) * ScreenSpace.TileSize).ToPoint();
         }
 
         private void renderLayers(int start,int length) {

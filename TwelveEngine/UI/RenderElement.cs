@@ -43,12 +43,9 @@ namespace TwelveEngine.UI {
         private bool hovered = false, pressed = false,
                      isInteractable = false, isScrollable = false;
 
-        protected event Action OnLoad, OnUnload;
-
+        protected event Action OnLoad, OnUnload, OnMouseLeave;
         protected event Action<Point> OnMouseDown, OnMouseUp, OnMouseMove;
-        internal Action OnMouseLeave;
-
-        public event Action<Point,ScrollDirection> OnScroll;
+        protected event Action<Point,ScrollDirection> OnScroll;
         
         public void Load(GameManager game) {
             Game = game;

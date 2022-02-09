@@ -41,6 +41,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GameShell\TimeoutThread.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameUI\DebugWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameUI\Corner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\IMouseTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\LayerEncodingMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\Map.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapDecoder.cs" />
