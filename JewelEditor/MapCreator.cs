@@ -1,17 +1,14 @@
 ﻿using TwelveEngine;
-using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D;
 using TwelveEngine.Serial.Map;
+using Microsoft.Xna.Framework;
 
 namespace JewelEditor {
     public static class MapCreator {
 
-        private const int DefaultSize = 32;
+        public const string TilesetPath = "JewelEditor/MapTiles";
 
-        private static EntityFactory<Entity2D,Grid2D> GetEntityFactory() => new EntityFactory<Entity2D,Grid2D>(
-            ((int)EntityTypes.MapEntity, () => new MapEntity()),
-            ((int)EntityTypes.GridLines, () => new GridLines())
-        );
+        private const int DefaultSize = 32;
 
         public static GameState Create() => Create(DefaultSize,DefaultSize);
 
@@ -20,10 +17,11 @@ namespace JewelEditor {
                 tileSize: 16,
                 layerMode: LayerModes.SingleLayerBackground,
                 collisionTypes: null,
-                entityFactory: GetEntityFactory()
+                entityFactory: JewelEntities.GetFactory()
             ) {
-                TileRenderer = new TilesetRenderer("JewelEditor/MapTiles")
-            }; 
+                TileRenderer = new TilesetRenderer(TilesetPath),
+                BackgroundColor = Color.LightGray
+            };
 
             var layerSize = width * height;
             var layers = new int[1][];
@@ -37,7 +35,10 @@ namespace JewelEditor {
             grid2D.ImportMap(defaultMap);
 
             grid2D.OnLoad += () => {
-                grid2D.Entities.Create((int)EntityTypes.GridLines);
+                var entities = grid2D.Entities;
+                entities.Create(JewelEntities.MouseReceiver);
+                entities.Create(JewelEntities.GridLines);
+                entities.Create(JewelEntities.EntityMarker);
             };
 
             return grid2D;

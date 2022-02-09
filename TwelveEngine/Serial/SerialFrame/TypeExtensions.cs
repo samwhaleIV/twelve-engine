@@ -25,6 +25,12 @@ namespace TwelveEngine.Serial {
             Set(vector.Y);
             Set(vector.Z);
         }
+        public void Set(Color color) {
+            Set(color.R);
+            Set(color.G);
+            Set(color.B);
+            Set(color.A);
+        }
 
         public Vector2 GetVector2() {
             float x = GetFloat(), y = GetFloat();
@@ -39,6 +45,14 @@ namespace TwelveEngine.Serial {
         public Vector3 GetVector3() {
             float x = GetFloat(), y = GetFloat(), z = GetFloat();
             return new Vector3(x,y,z);
+        }
+
+        public Color GetColor() {
+            var r = GetByte();
+            var g = GetByte();
+            var b = GetByte();
+            var a = GetByte();
+            return new Color(r,g,b,a);
         }
     }
 }

@@ -85,8 +85,8 @@ namespace TwelveEngine.Game2D {
         }
 
         public override void CacheArea(ScreenSpace screenSpace) {
-            Point start = screenSpace.Position.ToPoint();
-            Vector2 render = start.ToVector2() - screenSpace.Position;
+            Point start = screenSpace.Location.ToPoint();
+            Vector2 render = start.ToVector2() - screenSpace.Location;
 
             Point size = Vector2.Ceiling(screenSpace.Size - render).ToPoint();
 

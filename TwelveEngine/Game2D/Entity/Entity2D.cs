@@ -109,6 +109,15 @@ namespace TwelveEngine.Game2D {
             );
         }
 
+        public bool Contains(Vector2 location) => Contains(this,location);
+
+        public static bool Contains(Entity2D entity,Vector2 location) {
+            return location.X >= entity.X &&
+                location.X < entity.X + entity.Width &&
+                location.Y >= entity.Y &&
+                location.Y < entity.Y + entity.Height;
+        }
+
         public event Action<GameTime> OnUpdate, OnRender;
 
         public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);

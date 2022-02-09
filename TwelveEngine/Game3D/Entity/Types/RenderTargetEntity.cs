@@ -28,13 +28,13 @@ namespace TwelveEngine.Game3D.Entity.Types {
             if(RenderOnTarget == null) {
                 return;
             }
-            Owner.Game.SetRenderTarget(renderTarget);
+            Game.SetRenderTarget(renderTarget);
             RenderOnTarget.Invoke(gameTime);
-            Owner.Game.RestoreRenderTarget();
+            Game.RestoreRenderTarget();
         }
 
         private void RenderTargetEntity_OnLoad() {
-            renderTarget = new RenderTarget2D(Owner.Game.GraphicsDevice,Size.X,Size.Y);
+            renderTarget = new RenderTarget2D(Game.GraphicsDevice,Size.X,Size.Y);
             Texture = renderTarget;
         }
 

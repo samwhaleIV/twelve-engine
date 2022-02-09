@@ -62,6 +62,8 @@ namespace TwelveEngine.Game2D {
             }
         }
 
+        public Color BackgroundColor { get; set; } = Color.Black;
+
         private readonly int tileSize;
         public int TileSize => tileSize;
 
@@ -180,12 +182,15 @@ namespace TwelveEngine.Game2D {
             return new ScreenSpace(position,size,tileSize);
         }
 
-        public Vector2 GetCoordinate(ScreenSpace screenSpace,Point screenLocation) {
-            return screenLocation.ToVector2() / Viewport.Bounds.Size.ToVector2() * screenSpace.Size;
+        public Vector2 GetWorldVector(Point screenLocation) => GetWorldVector(ScreenSpace,screenLocation);
+
+        public Vector2 GetWorldVector(ScreenSpace screenSpace,Point screenLocation) {
+            return screenSpace.Location + screenLocation.ToVector2() / Viewport.Bounds.Size.ToVector2() * screenSpace.Size;
         }
 
-        public Vector2 GetCoordinate(Point screenLocation) {
-            return GetCoordinate(ScreenSpace,screenLocation);
+        public Point GetScreenPoint(Vector2 worldLocation) {
+            var location = worldLocation * ScreenSpace.TileSize;
+            return ScreenSpace.Location.ToPoint() - location.ToPoint();
         }
 
         private void renderLayers(int start,int length) {
@@ -227,7 +232,7 @@ namespace TwelveEngine.Game2D {
             ScreenSpace = getScreenSpace(Viewport);
             tileRenderer.CacheArea(ScreenSpace);
 
-            Game.GraphicsDevice.Clear(Color.Black);
+            Game.GraphicsDevice.Clear(BackgroundColor);
             
             if(LayerMode.Background) {
                 if(LayerMode.BackgroundLength == 2) {
@@ -258,6 +263,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void Grid2D_OnExport(SerialFrame frame) {
+            frame.Set(BackgroundColor);
             frame.Set(camera);
             frame.Set(LayerMode);
             frame.Set(size);
@@ -268,6 +274,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void Grid2D_OnImport(SerialFrame frame) {
+            BackgroundColor = frame.GetColor();
             frame.Get(camera);
             frame.Get(LayerMode);
             size = frame.GetPoint();

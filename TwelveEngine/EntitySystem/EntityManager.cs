@@ -65,6 +65,46 @@ namespace TwelveEngine.EntitySystem {
             }
         }
 
+        public TEntity Search(Func<TEntity,bool> predicate) {
+            AssertIteration();
+            Iterating = true;
+
+            Locked = true;
+            TEntity entity = null;
+            for(var i = 0;i<_entityList.Length;i++) {
+                var currentEntity = _entityList[i];
+                if(!predicate.Invoke(currentEntity)) {
+                    continue;
+                }
+                entity = currentEntity;
+                break;
+            }
+            Locked = false;
+
+            Iterating = false;
+            return entity;
+        }
+
+        public TEntity Search<TData>(Func<TEntity,TData,bool> predicate,TData data) {
+            AssertIteration();
+            Iterating = true;
+
+            Locked = true;
+            TEntity entity = null;
+            for(var i = 0;i<_entityList.Length;i++) {
+                var currentEntity = _entityList[i];
+                if(!predicate.Invoke(currentEntity,data)) {
+                    continue;
+                }
+                entity = currentEntity;
+                break;
+            }
+            Locked = false;
+
+            Iterating = false;
+            return entity;
+        }
+
         public void IterateImmutable(Action<TEntity> action) {
             AssertIteration();
             Iterating = true;

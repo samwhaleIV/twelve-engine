@@ -39,7 +39,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
         }
 
         private void TextureEntity_OnLoad() {
-            Texture = Owner.Game.Content.Load<Texture2D>(TextureName);
+            Texture = Game.Content.Load<Texture2D>(TextureName);
         }
     }
 }
