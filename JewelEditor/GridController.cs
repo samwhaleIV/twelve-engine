@@ -3,12 +3,12 @@ using TwelveEngine.Game2D;
 using TwelveEngine.Input;
 
 namespace JewelEditor {
-    internal sealed class MouseController:IMouseTarget {
+    internal sealed class GridController:IMouseTarget {
 
         private readonly Grid2D grid;
         private readonly EntityController entityController;
 
-        public MouseController(Grid2D grid) {
+        public GridController(Grid2D grid) {
             this.grid = grid;
             entityController = new EntityController(grid.Entities);
         }

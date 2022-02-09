@@ -10,7 +10,7 @@ namespace JewelEditor {
 
         protected override int GetEntityType() => JewelEntities.UIEntity;
 
-        private const int PanelHeight = 64;
+        private const int PanelHeight = 96;
 
         public UIEntity() {
             OnLoad += UIEntity_OnLoad;
@@ -31,7 +31,7 @@ namespace JewelEditor {
         }
 
         private static void GenerateState(UIState state) {
-            var panel = new Panel(Color.White) {
+            var panel = new Panel(Color.FromNonPremultiplied(255,255,255,127)) {
                 Sizing = Sizing.PercentX,
                 Width = 100,
                 Height = PanelHeight

@@ -4,24 +4,6 @@ using TwelveEngine.Serial;
 namespace TwelveEngine.EntitySystem {
     public abstract class Entity<TOwner>:ISerializable where TOwner:GameState {
 
-        private readonly EntityComponents components = new EntityComponents();
-        public EntityComponents Components => components;
-
-        internal event Action<int,int> OnComponentAdded, OnComponentRemoved;
-
-        public Entity() {
-            Components.OnAdded += Components_OnComponentAdded;
-            Components.OnRemoved += Components_OnComponentRemoved;
-        }
-
-        private void Components_OnComponentAdded(int componentType) {
-            OnComponentAdded?.Invoke(ID,componentType);
-        }
-
-        private void Components_OnComponentRemoved(int componentType) {
-            OnComponentRemoved?.Invoke(ID,componentType);
-        }
-
         private const int DEFAULT_ID = EntityManager.START_ID - 1;
 
         protected abstract int GetEntityType();
@@ -86,12 +68,10 @@ namespace TwelveEngine.EntitySystem {
 
         public void Export(SerialFrame frame) {
             frame.Set(Name);
-            Components.Export(frame);
             OnExport?.Invoke(frame);
         }
         public void Import(SerialFrame frame) {
             Name = frame.GetString();
-            Components.Import(frame);
             OnImport?.Invoke(frame);
         }
     }

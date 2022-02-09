@@ -24,18 +24,6 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
             table[tableID].Remove(entityID);
         }
 
-        private void AddToComponentTable(TEntity entity) {
-            foreach(var componentType in entity.Components.Types) {
-                AddToTable(container.Components,entity.ID,componentType);
-            }
-        }
-
-        private void RemoveFromComponentTable(TEntity entity) {
-            foreach(var componentType in entity.Components.Types) {
-                RemoveFromTable(container.Components,entity.ID,componentType);
-            }
-        }
-
         private void AddToTypeTable(TEntity entity) {
             AddToTable(container.Types,entity.ID,entity.Type);
         }
@@ -49,7 +37,6 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
                 container.Names.Add(entity.Name,entity);
             }
             AddToTypeTable(entity);
-            AddToComponentTable(entity);
         }
         private void RemoveFromLists(TEntity entity) {
             container.IDs.Remove(entity.ID);
@@ -57,27 +44,6 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
                 container.Names.Remove(entity.Name);
             }
             RemoveFromTypeTable(entity);
-            RemoveFromComponentTable(entity);
-        }
-
-        private void AddEventHandlers(TEntity entity) {
-            entity.OnNameChanged += Entity_OnNameChanged;
-            entity.OnComponentAdded += Entity_OnComponentAdded;
-            entity.OnComponentRemoved += Entity_OnComponentRemoved;
-        }
-
-        private void RemoveEventHandlers(TEntity entity) {
-            entity.OnNameChanged -= Entity_OnNameChanged;
-            entity.OnComponentAdded -= Entity_OnComponentAdded;
-            entity.OnComponentRemoved -= Entity_OnComponentRemoved;
-        }
-
-        private void Entity_OnComponentAdded(int entityID,int componentType) {
-            AddToTable(container.Components,entityID,componentType);
-        }
-
-        private void Entity_OnComponentRemoved(int entityID,int componentType) {
-            RemoveFromTable(container.Components,entityID,componentType);
         }
 
         private void Entity_OnNameChanged(int entityID,string oldName) {
@@ -88,11 +54,11 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
 
         internal void AddEntity(TEntity entity) {
             AddToLists(entity);
-            AddEventHandlers(entity);
+            entity.OnNameChanged += Entity_OnNameChanged;
         }
 
         internal void RemoveEntity(TEntity entity) {
-            RemoveEventHandlers(entity);
+            entity.OnNameChanged -= Entity_OnNameChanged;
             RemoveFromLists(entity);
         }
     }

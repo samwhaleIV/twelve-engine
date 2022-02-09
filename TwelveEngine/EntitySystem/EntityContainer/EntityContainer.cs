@@ -12,15 +12,10 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
 
         private readonly Dictionary<int,HashSet<int>> typeTable = new Dictionary<int,HashSet<int>>();
 
-                                                                      /* Component Type|  Entity ID|
-                                                                                       V           V     */
-        private readonly Dictionary<int,HashSet<int>> componentTable = new Dictionary<int,HashSet<int>>();
-
         internal Dictionary<int,TEntity> IDs => entityDictionary;
         internal Dictionary<string,TEntity> Names => namedEntities;
 
         internal Dictionary<int,HashSet<int>> Types => typeTable;
-        internal Dictionary<int,HashSet<int>> Components => componentTable;
 
         private readonly ContainerWriter<TEntity,TOwner> containerWriter;
 

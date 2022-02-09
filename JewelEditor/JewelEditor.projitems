@@ -16,7 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MapCreator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MouseReceiver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MouseController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GridController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIEntity.cs" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@ namespace JewelEditor {
     internal sealed class MouseReceiver:Entity2D {
         protected override int GetEntityType() => JewelEntities.MouseReceiver;
 
-        private MouseController mouseController;
+        private GridController gridController;
 
         public MouseReceiver() {
             OnLoad += MouseReceiver_OnLoad;
@@ -15,7 +15,7 @@ namespace JewelEditor {
 
         private void MouseReceiver_OnLoad() {
             var mouseHandler = Game.MouseHandler;
-            mouseController = new MouseController(Owner);
+            gridController = new GridController(Owner);
 
             mouseHandler.OnMouseDown += MouseHandler_OnMouseDown;
             mouseHandler.OnMouseUp += MouseHandler_OnMouseUp;
@@ -44,7 +44,11 @@ namespace JewelEditor {
 
         private void MouseHandler_OnMouseScroll(Point point,ScrollDirection direction) {
             if(target == null) {
-                GetTarget(point)?.Scroll(point,direction);
+                var tempTarget = GetTarget(point);
+                if(tempTarget == null) {
+                    tempTarget = gridController;
+                }
+                tempTarget.Scroll(point,direction);
             } else {
                 target.Scroll(point,direction);
             }
@@ -69,7 +73,7 @@ namespace JewelEditor {
         private void MouseHandler_OnMouseDown(Point point) {
             target = GetTarget(point);
             if(target == null) {
-                target = mouseController;
+                target = gridController;
             }
             target.MouseDown(point);
         }

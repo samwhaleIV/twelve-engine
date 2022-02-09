@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityComponents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\EntityContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\CRTTest.cs" />

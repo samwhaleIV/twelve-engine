@@ -30,25 +30,6 @@ namespace TwelveEngine.EntitySystem {
             return entity as TType;
         }
 
-        public IEnumerable<TEntity> GetByComponent(int componentType) {
-            foreach(var ID in container.Components[componentType]) {
-                yield return container.IDs[ID];
-            }
-        }
-
-        public IEnumerable<TEntity> GetByComponents(HashSet<int> componentTypes) {
-            if(componentTypes.Count == 0) {
-                yield break;
-            }
-            foreach(var ID in container.Components[componentTypes.First()]) {
-                var entity = container.IDs[ID];
-                if(!componentTypes.IsSubsetOf(entity.Components.Types)) {
-                    continue;
-                }
-                yield return entity;
-            }
-        }
-
         public IEnumerable<TEntity> GetByType(int entityType) {
             if(!container.Types.ContainsKey(entityType)) {
                 yield break;
