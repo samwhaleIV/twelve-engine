@@ -2,20 +2,16 @@
 using TwelveEngine.Game2D;
 using TwelveEngine.Input;
 
-namespace JewelEditor {
-    internal sealed class GridController:IMouseTarget {
+namespace JewelEditor.InputContext.MouseHandlers {
+    internal sealed class Pointer:MouseHandler {
 
-        private readonly Grid2D grid;
-        private readonly EntityController entityController;
+        private readonly EntityMover entityMover;
 
-        public GridController(Grid2D grid) {
-            this.grid = grid;
-            entityController = new EntityController(grid.Entities);
+        public Pointer(Grid2D grid):base(grid) {
+            entityMover = new EntityMover(grid.Entities);
         }
 
         private bool Capturing { get; set; } = false;
-
-        private Vector2 TranslatePoint(Point point) => grid.GetWorldVector(point);
 
         private Point? StartPoint = null;
         private Vector2? CamStart = null;
@@ -26,7 +22,7 @@ namespace JewelEditor {
 
         private void AdjustCameraZoom(ScrollDirection direction) {
             float scaleChange = 1 + -(int)direction * ZoomRate;
-            float startScale = grid.Camera.Scale;
+            float startScale = Grid.Camera.Scale;
             float newScale = startScale;
 
             newScale *= scaleChange;
@@ -35,59 +31,59 @@ namespace JewelEditor {
             } else if(newScale > MaxZoom) {
                 newScale = MaxZoom;
             }
-            grid.Camera.Scale = newScale;
+            Grid.Camera.Scale = newScale;
         }
 
-        public void Scroll(Point point,ScrollDirection direction) {
+        public override void Scroll(Point point,ScrollDirection direction) {
 
-            Vector2 startPosition = grid.GetWorldVector(point);
+            Vector2 startPosition = Grid.GetWorldVector(point);
             Vector2 zoomInTarget = startPosition;
 
-            Vector2 worldCenter = grid.ScreenSpace.GetCenter();
+            Vector2 worldCenter = Grid.ScreenSpace.GetCenter();
             Vector2 distanceToTarget = worldCenter - zoomInTarget;
 
             AdjustCameraZoom(direction);
 
-            ScreenSpace newScreenSpace = grid.GetScreenSpace();
-            zoomInTarget = grid.GetWorldVector(newScreenSpace,point);
+            ScreenSpace newScreenSpace = Grid.GetScreenSpace();
+            zoomInTarget = Grid.GetWorldVector(newScreenSpace,point);
             worldCenter = newScreenSpace.GetCenter();
 
             Vector2 newDistanceToTarget = worldCenter - zoomInTarget;
 
-            grid.Camera.Position += newDistanceToTarget - distanceToTarget;
+            Grid.Camera.Position += newDistanceToTarget - distanceToTarget;
             if(!Capturing) {
                 return;
             }
 
             StartPoint = point;
-            CamStart = grid.Camera.Position;
+            CamStart = Grid.Camera.Position;
 
-            if(!entityController.HasTarget) {
+            if(!entityMover.HasTarget) {
                 return;
             }
 
-            newScreenSpace = grid.GetScreenSpace();
-            zoomInTarget = grid.GetWorldVector(newScreenSpace,point);
-            entityController.MoveTarget(zoomInTarget);
+            newScreenSpace = Grid.GetScreenSpace();
+            zoomInTarget = Grid.GetWorldVector(newScreenSpace,point);
+            entityMover.MoveTarget(zoomInTarget);
         }
 
-        public void MouseDown(Point point) {
+        public override void MouseDown(Point point) {
             if(Capturing) {
                 return;
             }
             Capturing = true;
-            entityController.SearchForTarget(TranslatePoint(point));
+            entityMover.SearchForTarget(TranslatePoint(point));
 
             StartPoint = point;
-            CamStart = grid.Camera.Position;
+            CamStart = Grid.Camera.Position;
         }
 
-        public void MouseUp(Point point) {
+        public override void MouseUp(Point point) {
             if(!Capturing) {
                 return;
             }
-            if(entityController.HasTarget) {
-                entityController.ReleaseTarget(TranslatePoint(point));
+            if(entityMover.HasTarget) {
+                entityMover.ReleaseTarget(TranslatePoint(point));
             }
             StartPoint = null;
             CamStart = null;
@@ -97,15 +93,15 @@ namespace JewelEditor {
 
         private void PanCamera(Point point) {
             var difference = StartPoint.Value - point;
-            grid.Camera.Position = CamStart.Value + difference.ToVector2() / grid.ScreenSpace.TileSize;
+            Grid.Camera.Position = CamStart.Value + difference.ToVector2() / Grid.ScreenSpace.TileSize;
         }
 
-        public void MouseMove(Point point) {
+        public override void MouseMove(Point point) {
             if(!Capturing) {
                 return;
             }
-            if(entityController.HasTarget) {
-                entityController.MoveTarget(TranslatePoint(point));
+            if(entityMover.HasTarget) {
+                entityMover.MoveTarget(TranslatePoint(point));
             } else {
                 PanCamera(point);
             }

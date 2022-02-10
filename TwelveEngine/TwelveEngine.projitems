@@ -123,6 +123,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\IInteract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\SerialFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImageButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImagePanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RootNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBar.cs" />

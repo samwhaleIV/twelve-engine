@@ -16,7 +16,7 @@ namespace JewelEditor {
         }
 
         private void EntityMarker_OnLoad() {
-            texture = Game.Content.Load<Texture2D>(MapCreator.TilesetPath);
+            texture = Game.Content.Load<Texture2D>(Editor.Tileset);
         }
 
         private Rectangle textureSource = new Rectangle(16,32,16,16);

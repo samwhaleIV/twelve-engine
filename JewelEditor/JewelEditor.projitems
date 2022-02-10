@@ -9,14 +9,19 @@
     <Import_RootNamespace>JewelEditor</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)EntityController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\InputMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\MouseHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\MouseHandlers\EntityEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\MouseHandlers\TileEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\SelectorUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\EntityMover.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntityMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GridLines.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JewelEntities.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MapCreator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapValue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MouseReceiver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GridController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UIEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\InputEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\MouseHandlers\Pointer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputContext\UIEntity.cs" />
   </ItemGroup>
 </Project>

@@ -22,6 +22,8 @@ namespace TwelveEngine.UI {
 
         private InteractionState interactionState;
 
+        public void DropFocus() => interactionState.DropFocus();
+
         public UIState(GameManager game) {
             rootNode = new RootNode(getViewportSize);
             this.game = game;

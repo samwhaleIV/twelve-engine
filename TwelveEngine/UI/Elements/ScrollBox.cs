@@ -6,7 +6,7 @@ namespace TwelveEngine.UI.Elements {
     public sealed class ScrollBox:RenderFrame {
 
         private const int SCROLL_AMOUNT = 25;
-        private static TimeSpan SMOOTH_TIME { get => TimeSpan.FromMilliseconds(100); }
+        private static TimeSpan SMOOTH_TIME => TimeSpan.FromMilliseconds(100);
 
         public ScrollBox(UIState state): base(state) {
             IsScrollable = true;

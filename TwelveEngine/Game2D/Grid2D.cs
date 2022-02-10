@@ -9,7 +9,7 @@ using TwelveEngine.GameUI;
 using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
-    public sealed class Grid2D:GameState {
+    public class Grid2D:GameState {
 
         public Grid2D(
             int? tileSize = null,

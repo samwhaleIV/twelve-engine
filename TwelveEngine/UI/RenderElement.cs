@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Input;
 
 namespace TwelveEngine.UI {
-    public abstract class RenderElement:Element {
+    public class RenderElement:Element {
 
         public RenderElement() {
             LayoutUpdated += RenderElement_LayoutUpdated;
@@ -38,7 +38,6 @@ namespace TwelveEngine.UI {
         private Queue<Texture> disposableTextures = new Queue<Texture>();
 
         protected internal Rectangle ScreenArea { get; private set; }
-        private float depth = 0;
 
         private bool hovered = false, pressed = false,
                      isInteractable = false, isScrollable = false;
@@ -92,25 +91,22 @@ namespace TwelveEngine.UI {
         }
 
         protected void Draw(Texture2D texture,Rectangle source,Color color) {
-            Game.SpriteBatch.Draw(texture,ScreenArea,source,color,0f,Vector2.Zero,SpriteEffects.None,depth);
+            Game.SpriteBatch.Draw(texture,ScreenArea,source,color,0f,Vector2.Zero,SpriteEffects.None,Depth);
         }
 
         protected void Draw(Texture2D texture,Rectangle source) {
-            Game.SpriteBatch.Draw(texture,ScreenArea,source,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,depth);
+            Game.SpriteBatch.Draw(texture,ScreenArea,source,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,Depth);
         }
 
         protected void Draw(Texture2D texture,Color color) {
-            Game.SpriteBatch.Draw(texture,ScreenArea,null,color,0f,Vector2.Zero,SpriteEffects.None,depth);
+            Game.SpriteBatch.Draw(texture,ScreenArea,null,color,0f,Vector2.Zero,SpriteEffects.None,Depth);
         }
 
         protected void Draw(Texture2D texture) {
-            Game.SpriteBatch.Draw(texture,ScreenArea,null,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,depth);
+            Game.SpriteBatch.Draw(texture,ScreenArea,null,getRenderColor(),0f,Vector2.Zero,SpriteEffects.None,Depth);
         }
 
-        internal float Depth {
-            get => depth;
-            set => depth = value;
-        }
+        public float Depth { get; internal set; }
 
         public bool Hovered {
             get => hovered;
