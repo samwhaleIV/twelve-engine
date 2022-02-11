@@ -14,7 +14,7 @@ namespace JewelEditor.HistoryActions {
             throw new NotImplementedException();
         }
 
-        public override HistoryAction Recreate(SerialFrame frame) {
+        public override HistoryActionType GetActionType() {
             throw new NotImplementedException();
         }
 

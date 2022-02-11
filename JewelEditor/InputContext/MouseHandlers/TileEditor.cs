@@ -2,7 +2,6 @@
 using JewelEditor.HistoryActions;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D;
-using TwelveEngine.Input;
 
 namespace JewelEditor.InputContext.MouseHandlers {
     internal sealed class TileEditor:MouseHandler {
@@ -21,6 +20,10 @@ namespace JewelEditor.InputContext.MouseHandlers {
 
             var newValue = GetPaintValue();
             var oldValue = layer[tile.X,tile.Y];
+
+            if(newValue == oldValue) {
+                return;
+            }
 
             state.AddEventAction(new SetTile(tile,newValue,oldValue), applyAction: true);
         }

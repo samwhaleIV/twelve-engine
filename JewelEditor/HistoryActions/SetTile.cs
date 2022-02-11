@@ -5,8 +5,9 @@ using TwelveEngine.Serial;
 namespace JewelEditor.HistoryActions {
     internal sealed class SetTile:HistoryAction {
 
-        private Point location;
+        public override HistoryActionType GetActionType() => HistoryActionType.SetTile;
 
+        private Point location;
         private int newValue, oldValue;
 
         public SetTile(Point location,int newValue,int oldValue) {
@@ -15,14 +16,16 @@ namespace JewelEditor.HistoryActions {
             this.oldValue = oldValue;
         }
 
+        public SetTile(SerialFrame frame) {
+            location = frame.GetPoint();
+            newValue = frame.GetInt();
+            oldValue = frame.GetInt();
+        }
+
         public override void Export(SerialFrame frame) {
             frame.Set(location);
             frame.Set(newValue);
             frame.Set(oldValue);
-        }
-
-        public override HistoryAction Recreate(SerialFrame frame) {
-            return new SetTile(frame.GetPoint(),frame.GetInt(),frame.GetInt());
         }
 
         public override void Apply(Grid2D grid) {
