@@ -11,9 +11,7 @@ namespace JewelEditor.InputContext {
         public MouseHandler(Grid2D grid) => _grid = grid;
 
         protected Grid2D Grid => _grid;
-        protected StateEntity State => Grid.Entities.Get<StateEntity>(Editor.State);
-
-        protected Vector2 TranslatePoint(Point point) => Grid.GetWorldVector(point);
+        protected StateEntity GetState() => Grid.Entities.Get<StateEntity>(Editor.State);
 
         public abstract void MouseDown(Point point);
         public abstract void MouseMove(Point point);

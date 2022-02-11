@@ -31,16 +31,16 @@ namespace JewelEditor.InputContext.MouseHandlers {
         }
 
         public override void MouseDown(Point point) {
-            var state = State;
+            var state = GetState();
             eventToken = state.StartHistoryEvent();
             PaintTile(point,state);
         }
         public override void MouseMove(Point point) {
-            PaintTile(point,State);
+            PaintTile(point,GetState());
         }
 
         public override void MouseUp(Point point) {
-            State.EndHistoryEvent(eventToken);
+            GetState().EndHistoryEvent(eventToken);
         }
     }
 }

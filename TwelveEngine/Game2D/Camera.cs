@@ -1,25 +1,82 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
 using TwelveEngine.Serial;
+using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game2D {
     public class Camera:ISerializable {
 
-        public Vector2 Position { get; set; }
-        public Vector2 Offset { get; set; }
+        private Vector2 _position, _offset;
+        private float _scale = Constants.Config.RenderScale;
 
-        public float Scale { get; set; } = Constants.Config.RenderScale;
+        private bool _horizontalPadding = false, _verticalPadding = false;
 
-        public bool HorizontalPadding { get; set; } = false;
-        public bool VerticalPadding { get; set; } = false;
+        public Vector2 Position {
+            get => _position;
+            set {
+                if(value == _position) {
+                    return;
+                }
+                _position = value;
+                Invalidated?.Invoke();
+            }
+        }
+
+        public Vector2 Offset {
+            get => _offset;
+            set {
+                if(value == _offset) {
+                    return;
+                }
+                _offset = value;
+                Invalidated?.Invoke();
+            }
+        }
+
+        public float Scale {
+            get => _scale;
+            set {
+                if(value == _scale) {
+                    return;
+                }
+                _scale = value;
+                Invalidated?.Invoke();
+            }
+        }
+
+        public bool HorizontalPadding {
+            get => _horizontalPadding;
+            set {
+                if(value == _horizontalPadding) {
+                    return;
+                }
+                _horizontalPadding = value;
+                Invalidated?.Invoke();
+            }
+        }
+
+        public bool VerticalPadding {
+            get => _verticalPadding;
+            set {
+                if(value == _verticalPadding) {
+                    return;
+                }
+                _verticalPadding = value;
+                Invalidated?.Invoke();
+            }
+        }
+
+        internal event Action Invalidated;
 
         public void SetPadding(bool horizontal,bool vertical) {
-            HorizontalPadding = horizontal;
-            VerticalPadding = vertical;
+            _horizontalPadding = horizontal;
+            _verticalPadding = vertical;
+            Invalidated?.Invoke();
         }
 
         public void SetPadding(bool all) {
-            HorizontalPadding = all;
-            VerticalPadding = all;
+            _horizontalPadding = all;
+            _verticalPadding = all;
+            Invalidated?.Invoke();
         }
 
         public CameraPadding Padding {
@@ -37,21 +94,25 @@ namespace TwelveEngine.Game2D {
             set {
                 switch(value) {
                     case CameraPadding.All:
-                        HorizontalPadding = true;
-                        VerticalPadding = true;
+                        _horizontalPadding = true;
+                        _verticalPadding = true;
+                        Invalidated?.Invoke();
                         break;
                     case CameraPadding.Horizontal:
-                        HorizontalPadding = true;
-                        VerticalPadding = false;
+                        _horizontalPadding = true;
+                        _verticalPadding = false;
+                        Invalidated?.Invoke();
                         break;
                     case CameraPadding.Vertical:
-                        HorizontalPadding = false;
-                        VerticalPadding = true;
+                        _horizontalPadding = false;
+                        _verticalPadding = true;
+                        Invalidated?.Invoke();
                         break;
                     default:
                     case CameraPadding.None:
-                        HorizontalPadding = false;
-                        VerticalPadding = false;
+                        _horizontalPadding = false;
+                        _verticalPadding = false;
+                        Invalidated?.Invoke();
                         break;
                 }
             }
@@ -66,10 +127,10 @@ namespace TwelveEngine.Game2D {
         }
 
         public void Import(SerialFrame frame) {
-            Position = frame.GetVector2();
-            Offset = frame.GetVector2();
-            HorizontalPadding = frame.GetBool();
-            VerticalPadding = frame.GetBool();
+            _position = frame.GetVector2();
+            _offset = frame.GetVector2();
+            _horizontalPadding = frame.GetBool();
+            _verticalPadding = frame.GetBool();
         }
     }
 }

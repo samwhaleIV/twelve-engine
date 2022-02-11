@@ -184,6 +184,7 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseScroll(Point point,ScrollDirection direction) {
+            Owner.UpdateScreenSpace();
             var target = GetTarget(point);
             if(target == null) {
                 target = pointer;
@@ -192,6 +193,7 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseMove(Point point) {
+            Owner.UpdateScreenSpace();
             if(target == null) {
                 GetTarget(point,dropFocus: true)?.MouseMove(point);
             } else {
@@ -200,6 +202,7 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseUp(Point point) {
+            Owner.UpdateScreenSpace();
             if(target == null) {
                 return;
             }
@@ -208,6 +211,7 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseDown(Point point) {
+            Owner.UpdateScreenSpace();
             target = GetTarget(point);
             if(target == null) {
                 target = GetMouseHandlerTarget();

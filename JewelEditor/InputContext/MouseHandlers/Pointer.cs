@@ -24,7 +24,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
         }
 
         private PanData? panData = null;
-        private bool Capturing => panData != null;
+        private bool Capturing => panData.HasValue;
 
         public float MaxZoom { get; set; } = 10f;
         public float MinZoom { get; set; } = 2f;
@@ -59,7 +59,6 @@ namespace JewelEditor.InputContext.MouseHandlers {
             if(useCapturedPosition) {
                 zoomTarget = panData.Value.World;
             } else {
-                Grid.UpdateScreenSpace();
                 zoomTarget = Grid.GetWorldVector(point);
             }
 
@@ -68,7 +67,6 @@ namespace JewelEditor.InputContext.MouseHandlers {
 
             AdjustCameraZoom(scrollDirection);
 
-            Grid.UpdateScreenSpace();
             zoomTarget = Grid.GetWorldVector(point);
             worldCenter = Grid.GetCenter();
 
@@ -81,8 +79,8 @@ namespace JewelEditor.InputContext.MouseHandlers {
             if(Capturing) {
                 return;
             }
-            var world = TranslatePoint(point);
-            entityMover.SearchForTarget(State,world);
+            var world = Grid.GetWorldVector(point);
+            entityMover.SearchForTarget(GetState(),world);
             panData = new PanData(world,point,Grid.Camera.Position);
         }
 
@@ -91,7 +89,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
                 return;
             }
             if(entityMover.HasTarget) {
-                entityMover.ReleaseTarget(State,TranslatePoint(point));
+                entityMover.ReleaseTarget(GetState(),Grid.GetWorldVector(point));
             }
             panData = null;
         }
@@ -101,7 +99,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
 
             var difference = panData.Screen - point;
 
-            var newPosition = panData.Camera + difference.ToVector2() / Grid.CalculateTileSize();
+            var newPosition = panData.Camera + difference.ToVector2() / Grid.ScreenSpace.TileSize;
 
             Grid.Camera.Position = newPosition;
         }
@@ -111,7 +109,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
                 return;
             }
             if(entityMover.HasTarget) {
-                entityMover.MoveTarget(TranslatePoint(point));
+                entityMover.MoveTarget(Grid.GetWorldVector(point));
             } else {
                 PanCamera(point);
             }
