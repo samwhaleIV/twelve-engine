@@ -10,6 +10,7 @@ namespace JewelEditor {
         public const string State = "State";
         public const string UI = "UI";
         public const int ButtonsPanelHeight = 96;
+        public const int TileLayer = 0;
 
         internal static readonly ButtonData[] Buttons = new ButtonData[] {
             new ButtonData(new Rectangle(16,48,16,16), InputMode.Tile, TileType.Floor),

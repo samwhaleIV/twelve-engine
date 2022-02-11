@@ -9,6 +9,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
 
         public Pointer(Grid2D grid):base(grid) {
             entityMover = new EntityMover(grid.Entities);
+            OnScroll += Pointer_Scroll;
         }
 
         private struct PanData {
@@ -43,7 +44,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
             Grid.Camera.Scale = newScale;
         }
 
-        public override void Scroll(Point point,ScrollDirection direction) {
+        private void Pointer_Scroll(Point point,ScrollDirection direction) {
 
             var panData = this.panData;
 

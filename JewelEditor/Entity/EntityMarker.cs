@@ -19,21 +19,12 @@ namespace JewelEditor.Entity {
         }
 
         private Rectangle textureSource = new Rectangle(32,32,16,16);
-        private Rectangle textureSourceHighlighted = new Rectangle(48,32,16,16);
-
-        private Rectangle GetTextureSource() {
-            if(Highlighted) {
-                return textureSourceHighlighted;
-            } else {
-                return textureSource;
-            }
-        }
 
         private void EntityMarker_OnRender(GameTime gameTime) {
             if(!OnScreen()) {
                 return;
             }
-            Game.SpriteBatch.Draw(texture,GetDestination(),GetTextureSource(),Color.White);
+            Game.SpriteBatch.Draw(texture,GetDestination(),textureSource,Color.White);
         }
     }
 }

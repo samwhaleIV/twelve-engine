@@ -1,4 +1,5 @@
 ﻿using JewelEditor.Entity;
+using JewelEditor.HistoryActions;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D;
 using TwelveEngine.Input;
@@ -8,19 +9,33 @@ namespace JewelEditor.InputContext.MouseHandlers {
 
         public TileEditor(Grid2D grid) : base(grid) { }
 
-        private int GetPaintValue() => (int)Grid.Entities.Get<StateEntity>(Editor.State).TileType;
+        private int GetPaintValue() {
+            return (int)Grid.Entities.Get<StateEntity>(Editor.State).TileType;
+        }
 
-        private void PaintTile(Point screenPoint) {
+        private void PaintTile(Point screenPoint,StateEntity state) {
             if(!Grid.TryGetTile(screenPoint,out var tile)) {
                 return;
             }
-            Grid.GetLayer(0)[tile.X,tile.Y] = GetPaintValue();
+            var layer = Grid.GetLayer(0);
+
+            var newValue = GetPaintValue();
+            var oldValue = layer[tile.X,tile.Y];
+
+            state.AddEventAction(new SetTile(tile,newValue,oldValue), applyAction: true);
         }
 
-        public override void MouseDown(Point point) => PaintTile(point);
-        public override void MouseMove(Point point) => PaintTile(point);
+        public override void MouseDown(Point point) {
+            var state = State;
+            state.StartHistoryEvent();
+            PaintTile(point,state);
+        }
+        public override void MouseMove(Point point) {
+            PaintTile(point,State);
+        }
 
-        public override void MouseUp(Point point) { }
-        public override void Scroll(Point point,ScrollDirection direction) { }
+        public override void MouseUp(Point point) {
+            State.EndHistoryEvent();
+        }
     }
 }
