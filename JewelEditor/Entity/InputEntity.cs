@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using TwelveEngine.Input;
 using JewelEditor.InputContext.MouseHandlers;
 using Microsoft.Xna.Framework.Input;
+using JewelEditor.HistoryActions;
 
 namespace JewelEditor.Entity {
     internal sealed class InputEntity:JewelEntity {
@@ -24,7 +25,7 @@ namespace JewelEditor.Entity {
             if(Owner.Game.KeyboardState.IsKeyDown(Keys.LeftShift)) {
                 return pointer;
             }
-            switch(State.InputMode) {
+            switch(GetState().InputMode) {
                 default:
                 case InputMode.Tile:
                     return tileEditor;
@@ -34,7 +35,7 @@ namespace JewelEditor.Entity {
         }
 
         private void ChangeInput(InputMode inputMode) {
-            var state = State;
+            var state = GetState();
             var oldInput = state.InputMode;
 
             if(oldInput == inputMode) {
@@ -53,11 +54,11 @@ namespace JewelEditor.Entity {
         private readonly KeyWatcherSet keyWatcherSet;
 
         private void SetInput(int index) {
-            if(!UI.TryGetInputMode(index,out var inputMode)) {
+            if(!GetUI().TryGetInputMode(index,out var inputMode)) {
                 return;
             }
             if(inputMode.Type.HasValue) {
-                State.TileType = inputMode.Type.Value;
+                GetState().TileType = inputMode.Type.Value;
             }
             ChangeInput(inputMode.Mode);
         }
@@ -78,13 +79,60 @@ namespace JewelEditor.Entity {
             }
         }
 
+        private void QueueCardinalPoints(Queue<Point> queue,Point origin) {
+            Point N = origin + new Point(0,-1),
+                  E = origin + new Point(-1,0),
+                  S = origin + new Point(0,1),
+                  w = origin + new Point(1,0);
+            if(Owner.TileInRange(N)) queue.Enqueue(N);
+            if(Owner.TileInRange(E)) queue.Enqueue(E);
+            if(Owner.TileInRange(S)) queue.Enqueue(S);
+            if(Owner.TileInRange(w)) queue.Enqueue(w);
+        }
+
+        private void FillArea() {
+            var state = GetState();
+            if(state.InputMode != InputMode.Tile) return;
+            Point point = Game.MouseState.Position;
+
+            Owner.UpdateScreenSpace();
+            if(!Owner.TryGetTile(point,out var tile)) return;
+
+            var layer = Owner.GetLayer(Editor.TileLayer);
+            var newValue = (int)state.TileType;
+
+            var startValue = layer[tile.X,tile.Y];
+            if(startValue == newValue) return;
+
+            var eventToken = state.StartHistoryEvent();
+
+            var queue = new Queue<Point>();
+            queue.Enqueue(tile);
+
+            int value;
+            do {
+                tile = queue.Dequeue();
+                value = layer[tile.X,tile.Y];
+                if(value != startValue) {
+                    continue;
+                }
+                state.AddEventAction(eventToken,new SetTile(tile,newValue,value));
+
+                QueueCardinalPoints(queue,origin: tile);
+            } while(queue.Count > 0);
+
+            state.EndHistoryEvent(eventToken);
+        }
+
         private void InitializeKeyWatchers(Queue<(Keys,Action)> set) {
             AddNumberKeys(set);
 
             set.Enqueue((Keys.E, () => SetInput(Editor.EraserIndex)));
 
-            set.Enqueue((Keys.Z, () => {if (ControlKeyDown) State.Undo(); }));
-            set.Enqueue((Keys.Y, () => {if (ControlKeyDown) State.Redo(); }));
+            set.Enqueue((Keys.Z, () => {if (ControlKeyDown) GetState().Undo(); }));
+            set.Enqueue((Keys.Y, () => {if (ControlKeyDown) GetState().Redo(); }));
+
+            set.Enqueue((Keys.F, () => FillArea()));
         }
 
         public InputEntity() {
@@ -123,6 +171,7 @@ namespace JewelEditor.Entity {
         private IMouseTarget target = null;
 
         private IMouseTarget GetTarget(Point point,bool dropFocus = false) {
+            var UI = GetUI();
             bool inUIArea = UI.Contains(Owner.GetWorldVector(point));
             if(!inUIArea) {
                 if(dropFocus) {

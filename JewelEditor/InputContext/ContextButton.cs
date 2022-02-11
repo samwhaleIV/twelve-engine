@@ -19,7 +19,7 @@ namespace JewelEditor.InputContext {
         }
 
         private void SelectorUI_OnRender(GameTime gameTime) {
-            var state = owner.State;
+            var state = owner.GetState();
             if(state.InputMode != source.InputMode) {
                 return;
             }
@@ -36,7 +36,7 @@ namespace JewelEditor.InputContext {
         }
 
         private void SelectorUI_OnClick(ImageButton _) {
-            var state = owner.State;
+            var state = owner.GetState();
             state.InputMode = source.InputMode;
             var tileType = source.TileType;
             if(!tileType.HasValue) {

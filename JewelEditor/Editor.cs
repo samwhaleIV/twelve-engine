@@ -43,6 +43,9 @@ namespace JewelEditor {
             var defaultMap = new Map(width,height,layers);
             ImportMap(defaultMap);
 
+            Camera.Position = new Point(width,height).ToVector2() / 2f;
+            Camera.Padding = CameraPadding.None;
+
             OnLoad += () => {
                 Entities.Create(JewelEntities.StateEntity,State);
                 Entities.Create(JewelEntities.InputEntity);

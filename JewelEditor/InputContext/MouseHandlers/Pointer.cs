@@ -44,33 +44,37 @@ namespace JewelEditor.InputContext.MouseHandlers {
             Grid.Camera.Scale = newScale;
         }
 
-        private void Pointer_Scroll(Point point,ScrollDirection direction) {
-
-            var panData = this.panData;
-
-            Vector2 startPosition = Capturing && !entityMover.HasTarget ? panData.Value.World : Grid.GetWorldVector(point);
-            Vector2 zoomInTarget = startPosition;
-
-            Vector2 worldCenter = Grid.ScreenSpace.GetCenter();
-            Vector2 distanceToTarget = worldCenter - zoomInTarget;
-
-            AdjustCameraZoom(direction);
-
-            ScreenSpace newScreenSpace = Grid.GetScreenSpace();
-            zoomInTarget = Grid.GetWorldVector(newScreenSpace,point);
-            worldCenter = newScreenSpace.GetCenter();
-
-            Vector2 newDistanceToTarget = worldCenter - zoomInTarget;
-
-            Grid.Camera.Position += newDistanceToTarget - distanceToTarget;
-            if(!Capturing) {
-                return;
-            }
-
-            var newPanData = panData.Value;
+        private void UpdatePanData(Point point) {
+            PanData newPanData = panData.Value;
             newPanData.Camera = Grid.Camera.Position;
             newPanData.Screen = point;
-            this.panData = newPanData;
+            panData = newPanData;
+        }
+
+        private void Pointer_Scroll(Point point,ScrollDirection scrollDirection) {
+
+            bool useCapturedPosition = Capturing && !entityMover.HasTarget;
+
+            Vector2 zoomTarget;
+            if(useCapturedPosition) {
+                zoomTarget = panData.Value.World;
+            } else {
+                Grid.UpdateScreenSpace();
+                zoomTarget = Grid.GetWorldVector(point);
+            }
+
+            Vector2 worldCenter = Grid.GetCenter();
+            Vector2 distanceToTarget = worldCenter - zoomTarget;
+
+            AdjustCameraZoom(scrollDirection);
+
+            Grid.UpdateScreenSpace();
+            zoomTarget = Grid.GetWorldVector(point);
+            worldCenter = Grid.GetCenter();
+
+            Grid.Camera.Position += worldCenter - zoomTarget - distanceToTarget;
+
+            if(Capturing) UpdatePanData(point);
         }
 
         public override void MouseDown(Point point) {
@@ -96,7 +100,10 @@ namespace JewelEditor.InputContext.MouseHandlers {
             var panData = this.panData.Value;
 
             var difference = panData.Screen - point;
-            Grid.Camera.Position = panData.Camera + difference.ToVector2() / Grid.ScreenSpace.TileSize;
+
+            var newPosition = panData.Camera + difference.ToVector2() / Grid.CalculateTileSize();
+
+            Grid.Camera.Position = newPosition;
         }
 
         public override void MouseMove(Point point) {

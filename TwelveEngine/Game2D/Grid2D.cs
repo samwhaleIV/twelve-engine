@@ -54,12 +54,21 @@ namespace TwelveEngine.Game2D {
             return tile.X >= 0 && tile.Y >= 0 && tile.X < Columns && tile.Y < Rows;
         }
 
+        public Point GetTile(Vector2 location) {
+            return Vector2.Floor(location).ToPoint();
+        }
+
         public Point GetTile(Point screenPoint) {
-            return Vector2.Floor(GetWorldVector(screenPoint)).ToPoint();
+            return GetTile(GetWorldVector(screenPoint));
         }
 
         public bool TryGetTile(Point screenPoint,out Point tile) {
             tile = GetTile(screenPoint);
+            return TileInRange(tile);
+        }
+
+        public bool TryGetTile(Vector2 location,out Point tile) {
+            tile = GetTile(location);
             return TileInRange(tile);
         }
 
@@ -96,7 +105,6 @@ namespace TwelveEngine.Game2D {
         public Viewport Viewport => Game.Viewport;
 
         public ScreenSpace ScreenSpace { get; private set; }
-        public ScreenSpace GetScreenSpace() => getScreenSpace(Viewport);
 
         private bool spriteBatchActive = false;
 
@@ -171,7 +179,7 @@ namespace TwelveEngine.Game2D {
             return value;
         }
 
-        private int getTileSize() {
+        public int CalculateTileSize() {
             int tileSize = (int)Math.Round(camera.Scale * this.tileSize);
             if(tileSize % 2 == 1) {
                 tileSize++;
@@ -179,10 +187,14 @@ namespace TwelveEngine.Game2D {
             return tileSize;
         }
 
-        private ScreenSpace getScreenSpace(Viewport viewport) {
-            int tileSize = getTileSize();
+        public void UpdateScreenSpace() => ScreenSpace = getScreenSpace();
 
-            Vector2 size = viewport.Bounds.Size.ToVector2() / tileSize;
+        public Vector2 GetCenter() => ScreenSpace.GetCenter();
+
+        private ScreenSpace getScreenSpace() {
+            int tileSize = CalculateTileSize();
+
+            Vector2 size = Viewport.Bounds.Size.ToVector2() / tileSize;
             Vector2 position = Camera.Position + Camera.Offset - (size * 0.5f) + new Vector2(0.5f);
 
             if(camera.HorizontalPadding) {
@@ -195,10 +207,8 @@ namespace TwelveEngine.Game2D {
             return new ScreenSpace(position,size,tileSize);
         }
 
-        public Vector2 GetWorldVector(Point screenLocation) => GetWorldVector(ScreenSpace,screenLocation);
-
-        public Vector2 GetWorldVector(ScreenSpace screenSpace,Point screenLocation) {
-            return screenSpace.Location + screenLocation.ToVector2() / Viewport.Bounds.Size.ToVector2() * screenSpace.Size;
+        public Vector2 GetWorldVector(Point screenLocation) {
+            return ScreenSpace.Location + screenLocation.ToVector2() / Viewport.Bounds.Size.ToVector2() * ScreenSpace.Size;
         }
 
         public Point GetScreenPoint(Vector2 worldLocation) {
@@ -241,7 +251,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void render(GameTime gameTime) {
-            ScreenSpace = getScreenSpace(Viewport);
+            UpdateScreenSpace();
             tileRenderer.CacheArea(ScreenSpace);
 
             Game.GraphicsDevice.Clear(BackgroundColor);
