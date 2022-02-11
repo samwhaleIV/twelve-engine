@@ -1,10 +1,10 @@
-﻿using TwelveEngine.Game2D;
+﻿using System;
+using System.Collections.Generic;
+using TwelveEngine.Game2D;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Input;
 using JewelEditor.InputContext.MouseHandlers;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
 
 namespace JewelEditor.Entity {
     internal sealed class InputEntity:JewelEntity {
@@ -62,26 +62,37 @@ namespace JewelEditor.Entity {
             ChangeInput(inputMode.Mode);
         }
 
-        public InputEntity() {
-            OnLoad += InputEntity_OnLoad;
-            OnUnload += InputEntity_OnUnload;
+        private bool ControlKeyDown => Game.KeyboardState.IsKeyDown(Keys.LeftControl);
 
+        private void AddNumberKeys(Queue<(Keys,Action)> set) {
             var numberKeys = new Keys[] {
                 Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5,
                 Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0
             };
 
-            var keyWatchers = new Queue<(Keys,Action)>();
-
             for(int i = 0;i<numberKeys.Length;i++) {
                 Func<int,Action> actionGenerator = (int value) => {
                     return () => SetInput(value);
                 };
-                keyWatchers.Enqueue((numberKeys[i],actionGenerator.Invoke(i)));
+                set.Enqueue((numberKeys[i],actionGenerator.Invoke(i)));
             }
+        }
 
-            keyWatchers.Enqueue((Keys.E,()=>SetInput(3)));
+        private void InitializeKeyWatchers(Queue<(Keys,Action)> set) {
+            AddNumberKeys(set);
 
+            set.Enqueue((Keys.E, () => SetInput(Editor.EraserIndex)));
+
+            set.Enqueue((Keys.Z, () => {if (ControlKeyDown) State.Undo(); }));
+            set.Enqueue((Keys.Y, () => {if (ControlKeyDown) State.Redo(); }));
+        }
+
+        public InputEntity() {
+            OnLoad += InputEntity_OnLoad;
+            OnUnload += InputEntity_OnUnload;
+
+            var keyWatchers = new Queue<(Keys,Action)>();
+            InitializeKeyWatchers(keyWatchers);
             keyWatcherSet = new KeyWatcherSet(keyWatchers.ToArray());
         }
 

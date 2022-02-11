@@ -11,12 +11,13 @@ namespace JewelEditor {
         public const string UI = "UI";
         public const int ButtonsPanelHeight = 96;
         public const int TileLayer = 0;
+        public const int EraserIndex = 3; /* See below */
 
         internal static readonly ButtonData[] Buttons = new ButtonData[] {
             new ButtonData(new Rectangle(16,48,16,16), InputMode.Tile, TileType.Floor),
             new ButtonData(new Rectangle(32,48,16,16), InputMode.Tile, TileType.Wall),
             new ButtonData(new Rectangle(48,48,16,16), InputMode.Tile, TileType.Door),
-            new ButtonData(new Rectangle(0,48,16,16), InputMode.Tile, TileType.None),
+            new ButtonData(new Rectangle(0,48,16,16), InputMode.Tile, TileType.None), /* <--  EraserIndex */
             new ButtonData(new Rectangle(16,32,16,16), InputMode.Entity)
         };
 
