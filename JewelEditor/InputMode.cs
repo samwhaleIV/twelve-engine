@@ -1,3 +1,3 @@
 ﻿namespace JewelEditor {
-    internal enum InputMode { Pointer, Entity, Tile }
+    internal enum InputMode { Entity, Tile }
 }

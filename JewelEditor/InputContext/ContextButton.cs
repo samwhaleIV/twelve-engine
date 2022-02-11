@@ -9,21 +9,13 @@ namespace JewelEditor.InputContext {
         private readonly UIEntity owner;
         private readonly ButtonData source;
 
-        private Texture2D texture;
-
-        private static Color OuterColor = Color.FromNonPremultiplied(198,0,49,255);
-        private static Color InnerColor = Color.FromNonPremultiplied(227,0,47,255);
+        private static Rectangle selectionRectangle = new Rectangle(0,32,16,16);
 
         public ContextButton(UIEntity owner,ButtonData source) : base(Editor.Tileset,source.TextureSource) {
             this.owner = owner;
             this.source = source;
             OnClick += SelectorUI_OnClick;
             OnRender += SelectorUI_OnRender;
-            OnLoad += SelectorUI_OnLoad;
-        }
-
-        private void SelectorUI_OnLoad() {
-            texture = GetColoredTexture(Color.White);
         }
 
         private void SelectorUI_OnRender(GameTime gameTime) {
@@ -36,16 +28,11 @@ namespace JewelEditor.InputContext {
             }
 
             var lineArea = ScreenArea;
-            lineArea.Height = 6;
-            lineArea.Width += 4;
-            lineArea.X -= 2;
-            lineArea.Y = ScreenArea.Bottom + 4;
-            Game.SpriteBatch.Draw(texture,lineArea,null,OuterColor,0f,Vector2.Zero,SpriteEffects.None,Depth);
-            lineArea.Width -= 4;
-            lineArea.Height -= 4;
-            lineArea.X += 2;
-            lineArea.Y += 2;
-            Game.SpriteBatch.Draw(texture,lineArea,null,InnerColor,0f,Vector2.Zero,SpriteEffects.None,Depth);
+            lineArea.X -= 4;
+            lineArea.Y -= 4;
+            lineArea.Width += 8;
+            lineArea.Height += 8;
+            Game.SpriteBatch.Draw(Texture,lineArea,selectionRectangle,Color.White,0f,Vector2.Zero,SpriteEffects.None,0.25f);
         }
 
         private void SelectorUI_OnClick(ImageButton _) {

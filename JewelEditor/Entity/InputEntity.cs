@@ -4,6 +4,7 @@ using TwelveEngine.Input;
 using JewelEditor.InputContext.MouseHandlers;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace JewelEditor.Entity {
     internal sealed class InputEntity:JewelEntity {
@@ -20,14 +21,15 @@ namespace JewelEditor.Entity {
         }
 
         private IMouseTarget GetMouseHandlerTarget() {
+            if(Owner.Game.KeyboardState.IsKeyDown(Keys.LeftShift)) {
+                return pointer;
+            }
             switch(State.InputMode) {
                 default:
-                case InputMode.Pointer:
-                    return pointer;
-                case InputMode.Entity:
-                    return entityEditor;
                 case InputMode.Tile:
                     return tileEditor;
+                case InputMode.Entity:
+                    return entityEditor;
             }
         }
 
@@ -69,16 +71,18 @@ namespace JewelEditor.Entity {
                 Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0
             };
 
-            var keyWatchers = new (Keys,Action)[numberKeys.Length];
+            var keyWatchers = new Queue<(Keys,Action)>();
 
             for(int i = 0;i<numberKeys.Length;i++) {
                 Func<int,Action> actionGenerator = (int value) => {
                     return () => SetInput(value);
                 };
-                keyWatchers[i] = (numberKeys[i],actionGenerator.Invoke(i));
+                keyWatchers.Enqueue((numberKeys[i],actionGenerator.Invoke(i)));
             }
 
-            keyWatcherSet = new KeyWatcherSet(keyWatchers);
+            keyWatchers.Enqueue((Keys.E,()=>SetInput(3)));
+
+            keyWatcherSet = new KeyWatcherSet(keyWatchers.ToArray());
         }
 
         private void InputEntity_OnLoad() {
@@ -120,15 +124,11 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseScroll(Point point,ScrollDirection direction) {
+            var target = GetTarget(point);
             if(target == null) {
-                var tempTarget = GetTarget(point);
-                if(tempTarget == null) {
-                    tempTarget = GetMouseHandlerTarget();
-                }
-                tempTarget.Scroll(point,direction);
-            } else {
-                target.Scroll(point,direction);
+                target = pointer;
             }
+            target.Scroll(point,direction);
         }
 
         private void MouseHandler_OnMouseMove(Point point) {

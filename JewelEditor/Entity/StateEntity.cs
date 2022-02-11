@@ -5,8 +5,8 @@ namespace JewelEditor.Entity {
 
         protected override int GetEntityType() => JewelEntities.StateEntity;
 
-        public InputMode InputMode { get; set; } = InputMode.Pointer;
-        public TileType TileType { get; set; } = TileType.None;
+        public InputMode InputMode { get; set; } = InputMode.Tile;
+        public TileType TileType { get; set; } = TileType.Floor;
 
         public StateEntity() {
             OnImport += StateEntity_OnImport;

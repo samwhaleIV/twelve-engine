@@ -20,7 +20,7 @@ namespace JewelEditor.Entity {
         public bool TryGetInputMode(int index,out (InputMode Mode, TileType? Type) mode) {
             var buttonSources = Editor.Buttons;
             if(index < 0 || index >= buttonSources.Length) {
-                mode = (InputMode.Pointer, null);
+                mode = (InputMode.Tile, null);
                 return false;
             }
            (Rectangle _,InputMode Mode,TileType? Type) = buttonSources[index];

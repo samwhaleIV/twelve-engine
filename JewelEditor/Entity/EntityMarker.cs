@@ -1,5 +1,4 @@
-﻿using TwelveEngine.Game2D;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace JewelEditor.Entity {
@@ -19,8 +18,8 @@ namespace JewelEditor.Entity {
             texture = Game.Content.Load<Texture2D>(Editor.Tileset);
         }
 
-        private Rectangle textureSource = new Rectangle(16,32,16,16);
-        private Rectangle textureSourceHighlighted = new Rectangle(32,32,16,16);
+        private Rectangle textureSource = new Rectangle(32,32,16,16);
+        private Rectangle textureSourceHighlighted = new Rectangle(48,32,16,16);
 
         private Rectangle GetTextureSource() {
             if(Highlighted) {

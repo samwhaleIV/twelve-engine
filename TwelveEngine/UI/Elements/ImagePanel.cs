@@ -7,6 +7,8 @@ namespace TwelveEngine.UI.Elements {
         private Texture2D texture;
         private Rectangle source;
 
+        protected Texture2D Texture => texture;
+
         private void AddRenderer(Rectangle? source) {
             if(source.HasValue) {
                 this.source = source.Value;

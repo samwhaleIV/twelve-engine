@@ -31,7 +31,7 @@ namespace JewelEditor.InputContext {
                     Width = panelHeight,
                     Height = panelHeight,
                     X = i * panelHeight,
-                    Padding = 4
+                    Padding = 8
                 };
                 ButtonData button = buttons[i];
 

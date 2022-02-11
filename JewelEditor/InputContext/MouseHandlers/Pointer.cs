@@ -11,14 +11,23 @@ namespace JewelEditor.InputContext.MouseHandlers {
             entityMover = new EntityMover(grid.Entities);
         }
 
-        private bool Capturing { get; set; } = false;
+        private struct PanData {
+            public PanData(Vector2 world,Point screen,Vector2 camera) {
+                World = world;
+                Screen = screen;
+                Camera = camera;
+            }
+            public readonly Vector2 World;
+            public Point Screen;
+            public Vector2 Camera;
+        }
 
-        private Point? StartPoint = null;
-        private Vector2? CamStart = null;
+        private PanData? panData = null;
+        private bool Capturing => panData != null;
 
         public float MaxZoom { get; set; } = 10f;
         public float MinZoom { get; set; } = 2f;
-        public float ZoomRate { get; set; } = 0.25f;
+        public float ZoomRate { get; set; } = 0.2f;
 
         private void AdjustCameraZoom(ScrollDirection direction) {
             float scaleChange = 1 + -(int)direction * ZoomRate;
@@ -36,7 +45,9 @@ namespace JewelEditor.InputContext.MouseHandlers {
 
         public override void Scroll(Point point,ScrollDirection direction) {
 
-            Vector2 startPosition = Grid.GetWorldVector(point);
+            var panData = this.panData;
+
+            Vector2 startPosition = Capturing && !entityMover.HasTarget ? panData.Value.World : Grid.GetWorldVector(point);
             Vector2 zoomInTarget = startPosition;
 
             Vector2 worldCenter = Grid.ScreenSpace.GetCenter();
@@ -55,27 +66,19 @@ namespace JewelEditor.InputContext.MouseHandlers {
                 return;
             }
 
-            StartPoint = point;
-            CamStart = Grid.Camera.Position;
-
-            if(!entityMover.HasTarget) {
-                return;
-            }
-
-            newScreenSpace = Grid.GetScreenSpace();
-            zoomInTarget = Grid.GetWorldVector(newScreenSpace,point);
-            entityMover.MoveTarget(zoomInTarget);
+            var newPanData = panData.Value;
+            newPanData.Camera = Grid.Camera.Position;
+            newPanData.Screen = point;
+            this.panData = newPanData;
         }
 
         public override void MouseDown(Point point) {
             if(Capturing) {
                 return;
             }
-            Capturing = true;
-            entityMover.SearchForTarget(TranslatePoint(point));
-
-            StartPoint = point;
-            CamStart = Grid.Camera.Position;
+            var world = TranslatePoint(point);
+            entityMover.SearchForTarget(world);
+            panData = new PanData(world,point,Grid.Camera.Position);
         }
 
         public override void MouseUp(Point point) {
@@ -85,15 +88,14 @@ namespace JewelEditor.InputContext.MouseHandlers {
             if(entityMover.HasTarget) {
                 entityMover.ReleaseTarget(TranslatePoint(point));
             }
-            StartPoint = null;
-            CamStart = null;
-
-            Capturing = false;
+            panData = null;
         }
 
         private void PanCamera(Point point) {
-            var difference = StartPoint.Value - point;
-            Grid.Camera.Position = CamStart.Value + difference.ToVector2() / Grid.ScreenSpace.TileSize;
+            var panData = this.panData.Value;
+
+            var difference = panData.Screen - point;
+            Grid.Camera.Position = panData.Camera + difference.ToVector2() / Grid.ScreenSpace.TileSize;
         }
 
         public override void MouseMove(Point point) {

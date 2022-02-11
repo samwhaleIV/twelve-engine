@@ -13,19 +13,27 @@ namespace JewelEditor.InputContext {
 
         public bool HasTarget => targetEntity != null;
 
+        private Vector2 offset = Vector2.Zero;
+
+        public float SnapResolution { get; set; } = 2f;
+
         public void SearchForTarget(Vector2 location) {
             foreach(var marker in entityManager.GetByType(JewelEntities.EntityMarker)) {
                 if(!marker.Contains(location)) {
                     continue;
                 }
                 targetEntity = marker;
+                offset = marker.Position - location;
                 (marker as EntityMarker).Highlighted = true;
                 return;
             }
         }
         
-        private void UpdateEntityPosition(Vector2 mouseLocation) {
-            targetEntity.Position = Vector2.Floor(mouseLocation);
+        private Vector2 GetSnappedPosition(Vector2 location,float resolution) {
+            return Vector2.Round((offset + location) * resolution) / resolution;
+        }
+        private Vector2 GetPosition(Vector2 location) {
+            return offset + location;
         }
 
         public void ReleaseTarget(Vector2 location) {
@@ -35,7 +43,7 @@ namespace JewelEditor.InputContext {
             if(targetEntity is EntityMarker marker) {
                 marker.Highlighted = false;
             }
-            UpdateEntityPosition(location);
+            targetEntity.Position = GetSnappedPosition(location,SnapResolution);
             targetEntity = null;
         }
 
@@ -43,7 +51,7 @@ namespace JewelEditor.InputContext {
             if(!HasTarget) {
                 return;
             }
-            UpdateEntityPosition(location);
+            targetEntity.Position = GetPosition(location);
         }
     }
 }

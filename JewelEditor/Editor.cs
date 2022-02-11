@@ -12,13 +12,11 @@ namespace JewelEditor {
         public const int ButtonsPanelHeight = 96;
 
         internal static readonly ButtonData[] Buttons = new ButtonData[] {
-            new ButtonData(new Rectangle(16,16,16,16), InputMode.Pointer),
-            new ButtonData(new Rectangle(16,32,16,16), InputMode.Entity),
-
-            new ButtonData(new Rectangle(16,0,16,16), InputMode.Tile, TileType.None),
-            new ButtonData(new Rectangle(32,0,16,16), InputMode.Tile, TileType.Floor),
-            new ButtonData(new Rectangle(48,0,16,16), InputMode.Tile, TileType.Wall),
-            new ButtonData(new Rectangle(0,16,16,16), InputMode.Tile, TileType.Door)
+            new ButtonData(new Rectangle(16,48,16,16), InputMode.Tile, TileType.Floor),
+            new ButtonData(new Rectangle(32,48,16,16), InputMode.Tile, TileType.Wall),
+            new ButtonData(new Rectangle(48,48,16,16), InputMode.Tile, TileType.Door),
+            new ButtonData(new Rectangle(0,48,16,16), InputMode.Tile, TileType.None),
+            new ButtonData(new Rectangle(16,32,16,16), InputMode.Entity)
         };
 
         public Editor() : base(
