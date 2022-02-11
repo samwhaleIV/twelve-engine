@@ -79,9 +79,6 @@ namespace JewelEditor.InputContext.MouseHandlers {
             }
             var world = TranslatePoint(point);
             entityMover.SearchForTarget(State,world);
-            if(entityMover.HasTarget) {
-                State.StartHistoryEvent();
-            }
             panData = new PanData(world,point,Grid.Camera.Position);
         }
 

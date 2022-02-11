@@ -1,7 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TwelveEngine.Serial;
+using System.Runtime.Serialization;
 
 namespace JewelEditor.Entity {
+
+    internal sealed class HistoryEventToken {}
+
+    [Serializable]
+    internal class InvalidHistoryEventToken:Exception {
+        public InvalidHistoryEventToken() { }
+        public InvalidHistoryEventToken(string message) : base(message) { }
+        public InvalidHistoryEventToken(string message,Exception inner) : base(message,inner) { }
+        protected InvalidHistoryEventToken(SerializationInfo info,StreamingContext context) : base(info,context) { }
+    }
+
     internal sealed class StateEntity:JewelEntity {
 
         protected override int GetEntityType() => JewelEntities.StateEntity;
@@ -17,23 +30,35 @@ namespace JewelEditor.Entity {
 
         private readonly Queue<HistoryAction> ActionBuffer = new Queue<HistoryAction>();
 
-        private bool IsWritingEvent { get; set; } = false;
+        private bool IsWritingEvent => activeToken != null;
+        private HistoryEventToken activeToken = null;
 
-        public void StartHistoryEvent() {
+        private const string BAD_HISTORY_TOKEN = "Provided token is not the active history event token. Did your events get criss-crossed?";
+        private const string CANNOT_START_NEW_EVENT = "Cannot start a new history event while one is already active";
+        private const string CANNOT_END_NON_EVENT = "Cannot end an event because one has not been started";
+
+        public HistoryEventToken StartHistoryEvent() {
             if(IsWritingEvent) {
-                return;
+                throw new InvalidOperationException(CANNOT_START_NEW_EVENT);
             }
-            IsWritingEvent = true;
+            activeToken = new HistoryEventToken();
+            return activeToken;
         }
 
-        public void EndHistoryEvent() {
-            if(!IsWritingEvent) {
-                return;
+        public void EndHistoryEvent(HistoryEventToken token) {
+            if(token == null) {
+                throw new ArgumentNullException("token");
             }
+            if(!IsWritingEvent) {
+                throw new Exception(CANNOT_END_NON_EVENT);
+            }
+            if(!Equals(token,activeToken)) {
+                throw new InvalidHistoryEventToken(BAD_HISTORY_TOKEN);
+            }
+            activeToken = null;
 
             // Write the action queue to an array, clear the action queue, put the array on the undo stack, and clear the redo stack
             if(ActionBuffer.Count <= 0) {
-                IsWritingEvent = false;
                 return;
             }
             var historyActions = ActionBuffer.ToArray();
@@ -42,10 +67,12 @@ namespace JewelEditor.Entity {
             UndoStack.Push(historyActions);
 
             RedoStack.Clear();
-            IsWritingEvent = false;
         }
 
-        public void AddEventAction(HistoryAction historyAction,bool applyAction = true) {
+        public void AddEventAction(HistoryEventToken token,HistoryAction historyAction,bool applyAction = true) {
+            if(!Equals(token,activeToken)) {
+                throw new InvalidHistoryEventToken(BAD_HISTORY_TOKEN);
+            }
             if(!IsWritingEvent) {
                 return;
             }

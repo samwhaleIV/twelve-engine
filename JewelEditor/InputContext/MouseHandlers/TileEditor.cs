@@ -12,6 +12,8 @@ namespace JewelEditor.InputContext.MouseHandlers {
             return (int)Grid.Entities.Get<StateEntity>(Editor.State).TileType;
         }
 
+        private HistoryEventToken eventToken;
+
         private void PaintTile(Point screenPoint,StateEntity state) {
             if(!Grid.TryGetTile(screenPoint,out var tile)) {
                 return;
@@ -25,12 +27,12 @@ namespace JewelEditor.InputContext.MouseHandlers {
                 return;
             }
 
-            state.AddEventAction(new SetTile(tile,newValue,oldValue), applyAction: true);
+            state.AddEventAction(eventToken,new SetTile(tile,newValue,oldValue), applyAction: true);
         }
 
         public override void MouseDown(Point point) {
             var state = State;
-            state.StartHistoryEvent();
+            eventToken = state.StartHistoryEvent();
             PaintTile(point,state);
         }
         public override void MouseMove(Point point) {
@@ -38,7 +40,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
         }
 
         public override void MouseUp(Point point) {
-            State.EndHistoryEvent();
+            State.EndHistoryEvent(eventToken);
         }
     }
 }

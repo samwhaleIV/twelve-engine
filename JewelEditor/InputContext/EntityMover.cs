@@ -20,6 +20,8 @@ namespace JewelEditor.InputContext {
 
         private Vector2 oldPosition;
 
+        private HistoryEventToken eventToken;
+
         public void SearchForTarget(StateEntity state,Vector2 location) {
             foreach(var marker in entityManager.GetByType(JewelEntities.EntityMarker)) {
                 if(!marker.Contains(location)) {
@@ -29,7 +31,7 @@ namespace JewelEditor.InputContext {
                 offset = marker.Position - location;
                 oldPosition = marker.Position;
                 (marker as EntityMarker).Highlighted = true;
-                state.StartHistoryEvent();
+                eventToken = state.StartHistoryEvent();
                 return;
             }
         }
@@ -50,9 +52,9 @@ namespace JewelEditor.InputContext {
             }
             Vector2 newPosition = GetSnappedPosition(location,SnapResolution);
             if(newPosition != oldPosition && targetEntity.HasName) {
-                state.AddEventAction(new MoveEntity(targetEntity.Name,newPosition,oldPosition));
+                state.AddEventAction(eventToken,new MoveEntity(targetEntity.Name,newPosition,oldPosition));
             }
-            state.EndHistoryEvent();
+            state.EndHistoryEvent(eventToken);
             targetEntity.Position = newPosition;
             targetEntity = null;
         }
