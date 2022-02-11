@@ -2,8 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace JewelEditor {
-    internal sealed class EntityMarker:Entity2D {
+namespace JewelEditor.Entity {
+    internal sealed class EntityMarker:JewelEntity {
         protected override int GetEntityType() => JewelEntities.EntityMarker;
 
         public bool Highlighted { get; set; } = false;

@@ -6,8 +6,20 @@ namespace JewelEditor {
     public sealed class Editor:Grid2D {
 
         private const int DefaultSize = 16;
-
         public const string Tileset = "JewelEditor/MapTiles";
+        public const string State = "State";
+        public const string UI = "UI";
+        public const int ButtonsPanelHeight = 96;
+
+        internal static readonly ButtonData[] Buttons = new ButtonData[] {
+            new ButtonData(new Rectangle(16,16,16,16), InputMode.Pointer),
+            new ButtonData(new Rectangle(16,32,16,16), InputMode.Entity),
+
+            new ButtonData(new Rectangle(16,0,16,16), InputMode.Tile, TileType.None),
+            new ButtonData(new Rectangle(32,0,16,16), InputMode.Tile, TileType.Floor),
+            new ButtonData(new Rectangle(48,0,16,16), InputMode.Tile, TileType.Wall),
+            new ButtonData(new Rectangle(0,16,16,16), InputMode.Tile, TileType.Door)
+        };
 
         public Editor() : base(
             tileSize: 16,
@@ -24,7 +36,7 @@ namespace JewelEditor {
             var layers = new int[1][];
             var baseLayer = new int[layerSize];
             for(int i = 0;i<layerSize;i++) {
-                baseLayer[i] = (int)MapValue.None;
+                baseLayer[i] = (int)TileType.None;
             }
             layers[0] = baseLayer;
 
@@ -32,10 +44,11 @@ namespace JewelEditor {
             ImportMap(defaultMap);
 
             OnLoad += () => {
+                Entities.Create(JewelEntities.StateEntity,State);
                 Entities.Create(JewelEntities.InputEntity);
                 Entities.Create(JewelEntities.GridLines);
                 Entities.Create(JewelEntities.EntityMarker);
-                Entities.Create(JewelEntities.UIEntity,"UIEntity");
+                Entities.Create(JewelEntities.UIEntity,UI);
             };
         }
     }

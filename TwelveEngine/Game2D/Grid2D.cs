@@ -50,6 +50,19 @@ namespace TwelveEngine.Game2D {
         public int Columns => size.X;
         public int Rows => size.Y;
 
+        public bool TileInRange(Point tile) {
+            return tile.X >= 0 && tile.Y >= 0 && tile.X < Columns && tile.Y < Rows;
+        }
+
+        public Point GetTile(Point screenPoint) {
+            return Vector2.Floor(GetWorldVector(screenPoint)).ToPoint();
+        }
+
+        public bool TryGetTile(Point screenPoint,out Point tile) {
+            tile = GetTile(screenPoint);
+            return TileInRange(tile);
+        }
+
         private Camera camera = new Camera();
 
         public Camera Camera {

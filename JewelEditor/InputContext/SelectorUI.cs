@@ -1,95 +1,43 @@
 ﻿using TwelveEngine.UI;
 using TwelveEngine.UI.Elements;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
+using JewelEditor.Entity;
 
 namespace JewelEditor.InputContext {
-    internal sealed class SelectorUI {
+    internal static class SelectorUI {
 
-        private UIEntity owner;
-        public SelectorUI(UIEntity owner) => this.owner = owner;
+        private static Color GetBackgroundColor() => Color.FromNonPremultiplied(255,255,255,127);
 
-        private static (Rectangle Area,InputMode InputMode)[] GetButtonSources() => new (Rectangle, InputMode)[] {
-            (new Rectangle(16,16,16,16),InputMode.Pointer),
-            (new Rectangle(16,32,16,16),InputMode.Entity),
-            (new Rectangle(16,0,16,16),InputMode.NoTile),
-            (new Rectangle(32,0,16,16),InputMode.FloorTile),
-            (new Rectangle(48,0,16,16),InputMode.WallTile),
-            (new Rectangle(0,16,16,16),InputMode.DoorTile)
-        };
+        public static void Generate(UIEntity owner) {
+            int panelHeight = Editor.ButtonsPanelHeight;
 
-        private Dictionary<InputMode,ContextButton> buttonDictionary;
-
-        private sealed class ContextButton:ImageButton {
-
-            private readonly InputMode _inputMode;
-            private readonly UIEntity owner;
-
-            private Texture2D texture;
-
-            public ContextButton(UIEntity owner,(Rectangle Area,InputMode InputMode) source):base(Editor.Tileset,source.Area) {
-                this.owner = owner;
-                _inputMode = source.InputMode;
-                OnClick += ContextButton_OnClick;
-                OnRender += ContextButton_OnRender;
-                OnLoad += ContextButton_OnLoad;
-            }
-
-            private void ContextButton_OnLoad() {
-                texture = GetColoredTexture(Color.Black);
-            }
-
-            private void ContextButton_OnRender(GameTime gameTime) {
-                if(owner.InputMode != InputMode) {
-                    return;
-                }
-                var lineArea = ScreenArea;
-                lineArea.Height = 6;
-                lineArea.Width += 4;
-                lineArea.X -= 2;
-                lineArea.Y = ScreenArea.Bottom + 4;
-                Game.SpriteBatch.Draw(texture,lineArea,null,Color.White,0f,Vector2.Zero,SpriteEffects.None,Depth);
-            }
-
-            internal InputMode InputMode => _inputMode;
-
-            private void ContextButton_OnClick(ImageButton self) {
-                owner.InputMode = (self as ContextButton).InputMode;
-            }
-        }
-
-        public void Generate(int panelHeight) {
-            var panel = new Panel(Color.FromNonPremultiplied(255,255,255,127)) {
+            Panel panel = new Panel(GetBackgroundColor()) {
                 Sizing = Sizing.PercentX,
                 Width = 100,
                 Height = panelHeight
             };
 
-            var buttonSources = GetButtonSources();
+            ButtonData[] buttons = Editor.Buttons;
 
-            var buttonGroup = new RenderElement() {
+            RenderElement buttonGroup = new RenderElement() {
                 Sizing = Sizing.Normal,
                 Height = panel.Height,
-                Width = buttonSources.Length * panelHeight,
+                Width = buttons.Length * panelHeight,
                 Positioning = Positioning.CenterParentX
             };
 
-            buttonDictionary = new Dictionary<InputMode,ContextButton>();
-
-            for(int i = 0;i<buttonSources.Length;i++) {
-                var parent = new RenderElement() {
+            for(int i = 0;i<buttons.Length;i++) {
+                RenderElement parent = new RenderElement() {
                     Width = panelHeight,
                     Height = panelHeight,
                     X = i * panelHeight,
                     Padding = 4
                 };
-                var buttonSource = buttonSources[i];
+                ButtonData button = buttons[i];
 
-                var button = new ContextButton(owner,buttonSource) { Sizing = Sizing.Fill };
-                buttonDictionary[buttonSource.InputMode] = button;
+                ContextButton contextButton = new ContextButton(owner,button) { Sizing = Sizing.Fill };
 
-                parent.AddChild(button);
+                parent.AddChild(contextButton);
                 buttonGroup.AddChild(parent);
             }
 

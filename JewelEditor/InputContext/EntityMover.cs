@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using JewelEditor.Entity;
+using Microsoft.Xna.Framework;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D;
 

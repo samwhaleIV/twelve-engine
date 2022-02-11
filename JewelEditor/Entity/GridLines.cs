@@ -2,8 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace JewelEditor {
-    internal sealed class GridLines:Entity2D {
+namespace JewelEditor.Entity {
+    internal sealed class GridLines:JewelEntity {
         protected override int GetEntityType() => JewelEntities.GridLines;
 
         public GridLines() {
