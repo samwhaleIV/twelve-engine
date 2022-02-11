@@ -5,16 +5,10 @@ using TwelveEngine.Serial;
 namespace JewelEditor {
 
     public enum HistoryActionType:int {
-        CreateEntity, DeleteEntity, EditEntity, SetTile
+        CreateEntity, DeleteEntity, MoveEntity, SetTile
     }
 
     internal abstract class HistoryAction {
-        public abstract void Apply(Grid2D grid);
-        public abstract void Undo(Grid2D grid);
-
-        public abstract void Export(SerialFrame frame);
-
-        public abstract HistoryActionType GetActionType();
 
         public static HistoryAction Create(SerialFrame frame,HistoryActionType type) {
             switch(type) {
@@ -24,11 +18,19 @@ namespace JewelEditor {
                     return new CreateEntity();
                 case HistoryActionType.DeleteEntity:
                     return new DeleteEntity();
-                case HistoryActionType.EditEntity:
-                    return null;
+                case HistoryActionType.MoveEntity:
+                    return new MoveEntity(frame);
                 case HistoryActionType.SetTile:
                     return new SetTile(frame);
             }
         }
+
+        public abstract void Apply(Grid2D grid);
+        public abstract void Undo(Grid2D grid);
+
+        public abstract void Export(SerialFrame frame);
+
+        public abstract HistoryActionType GetActionType();
+
     }
 }

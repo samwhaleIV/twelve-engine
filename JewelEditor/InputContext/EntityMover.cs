@@ -1,4 +1,5 @@
 ﻿using JewelEditor.Entity;
+using JewelEditor.HistoryActions;
 using Microsoft.Xna.Framework;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D;
@@ -17,14 +18,18 @@ namespace JewelEditor.InputContext {
 
         public float SnapResolution { get; set; } = 2f;
 
-        public void SearchForTarget(Vector2 location) {
+        private Vector2 oldPosition;
+
+        public void SearchForTarget(StateEntity state,Vector2 location) {
             foreach(var marker in entityManager.GetByType(JewelEntities.EntityMarker)) {
                 if(!marker.Contains(location)) {
                     continue;
                 }
                 targetEntity = marker;
                 offset = marker.Position - location;
+                oldPosition = marker.Position;
                 (marker as EntityMarker).Highlighted = true;
+                state.StartHistoryEvent();
                 return;
             }
         }
@@ -36,14 +41,19 @@ namespace JewelEditor.InputContext {
             return offset + location;
         }
 
-        public void ReleaseTarget(Vector2 location) {
+        public void ReleaseTarget(StateEntity state,Vector2 location) {
             if(!HasTarget) {
                 return;
             }
             if(targetEntity is EntityMarker marker) {
                 marker.Highlighted = false;
             }
-            targetEntity.Position = GetSnappedPosition(location,SnapResolution);
+            Vector2 newPosition = GetSnappedPosition(location,SnapResolution);
+            if(newPosition != oldPosition && targetEntity.HasName) {
+                state.AddEventAction(new MoveEntity(targetEntity.Name,newPosition,oldPosition));
+            }
+            state.EndHistoryEvent();
+            targetEntity.Position = newPosition;
             targetEntity = null;
         }
 

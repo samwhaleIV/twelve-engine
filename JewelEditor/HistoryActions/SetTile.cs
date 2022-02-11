@@ -28,12 +28,11 @@ namespace JewelEditor.HistoryActions {
             frame.Set(oldValue);
         }
 
-        public override void Apply(Grid2D grid) {
-            grid.GetLayer(Editor.TileLayer)[location.X,location.Y] = newValue;
+        private void SetValue(Grid2D grid,int value) {
+            grid.GetLayer(Editor.TileLayer)[location.X,location.Y] = value;
         }
 
-        public override void Undo(Grid2D grid) {
-            grid.GetLayer(Editor.TileLayer)[location.X,location.Y] = oldValue;
-        }
+        public override void Apply(Grid2D grid) => SetValue(grid,newValue);
+        public override void Undo(Grid2D grid) => SetValue(grid,oldValue);
     }
 }

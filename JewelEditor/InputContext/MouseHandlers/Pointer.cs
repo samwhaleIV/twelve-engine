@@ -78,7 +78,10 @@ namespace JewelEditor.InputContext.MouseHandlers {
                 return;
             }
             var world = TranslatePoint(point);
-            entityMover.SearchForTarget(world);
+            entityMover.SearchForTarget(State,world);
+            if(entityMover.HasTarget) {
+                State.StartHistoryEvent();
+            }
             panData = new PanData(world,point,Grid.Camera.Position);
         }
 
@@ -87,7 +90,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
                 return;
             }
             if(entityMover.HasTarget) {
-                entityMover.ReleaseTarget(TranslatePoint(point));
+                entityMover.ReleaseTarget(State,TranslatePoint(point));
             }
             panData = null;
         }

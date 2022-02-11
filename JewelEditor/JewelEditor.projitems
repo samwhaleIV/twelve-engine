@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)HistoryAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HistoryActions\CreateEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HistoryActions\DeleteEntity.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HistoryActions\EditEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HistoryActions\MoveEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HistoryActions\SetTile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputContext\ContextButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputMode.cs" />

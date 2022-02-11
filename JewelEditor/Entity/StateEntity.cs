@@ -9,6 +9,9 @@ namespace JewelEditor.Entity {
         public InputMode InputMode { get; set; } = InputMode.Tile;
         public TileType TileType { get; set; } = TileType.Floor;
 
+        private int entityNameCounter = 1;
+        public string GetNewEntityName() => $"Entity_{entityNameCounter++}";
+
         private readonly Stack<HistoryAction[]> UndoStack = new Stack<HistoryAction[]>();
         private readonly Stack<HistoryAction[]> RedoStack = new Stack<HistoryAction[]>();
 
@@ -30,6 +33,7 @@ namespace JewelEditor.Entity {
 
             // Write the action queue to an array, clear the action queue, put the array on the undo stack, and clear the redo stack
             if(ActionBuffer.Count <= 0) {
+                IsWritingEvent = false;
                 return;
             }
             var historyActions = ActionBuffer.ToArray();
@@ -138,12 +142,14 @@ namespace JewelEditor.Entity {
         private void StateEntity_OnExport(SerialFrame frame) {
             frame.Set((int)InputMode);
             frame.Set((int)TileType);
+            frame.Set(entityNameCounter);
             ExportHistoryStacks(frame);
         }
 
         private void StateEntity_OnImport(SerialFrame frame) {
             InputMode = (InputMode)frame.GetInt();
             TileType = (TileType)frame.GetInt();
+            entityNameCounter = frame.GetInt();
             ImportHistoryStacks(frame);
         }
     }

@@ -47,7 +47,7 @@ namespace JewelEditor {
                 Entities.Create(JewelEntities.StateEntity,State);
                 Entities.Create(JewelEntities.InputEntity);
                 Entities.Create(JewelEntities.GridLines);
-                Entities.Create(JewelEntities.EntityMarker);
+                Entities.Create(JewelEntities.EntityMarker,"DebugMarker");
                 Entities.Create(JewelEntities.UIEntity,UI);
             };
         }
