@@ -36,7 +36,7 @@ namespace TwelveEngine.UI {
         /* Must be accessed after or during a Load event */
         protected GameManager Game { get; private set; }
 
-        private Queue<Texture> disposableTextures = new Queue<Texture>();
+        private readonly Queue<Texture> disposableTextures = new Queue<Texture>();
 
         protected internal Rectangle ScreenArea { get; private set; }
 

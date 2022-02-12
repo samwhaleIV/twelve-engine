@@ -41,13 +41,7 @@ namespace TwelveEngine.UI {
         }
 
         public override int GetHashCode() {
-            /* Auto-Generated Code: Microsoft, buddy. What the fuck, man? */
-            int hashCode = -1217393117;
-            hashCode = hashCode * -1521134295 + Top.GetHashCode();
-            hashCode = hashCode * -1521134295 + Left.GetHashCode();
-            hashCode = hashCode * -1521134295 + Right.GetHashCode();
-            hashCode = hashCode * -1521134295 + Bottom.GetHashCode();
-            return hashCode;
+            return HashCode.Combine(Top,Left,Right,Bottom);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace TwelveEngine.UI.Elements {
         private readonly Element rootNode;
         public Element Target => rootNode;
 
-        private InteractionState interactionState;
+        private readonly InteractionState interactionState;
         internal InteractionState InteractionState => interactionState;
 
         public RenderFrame(UIState state) {

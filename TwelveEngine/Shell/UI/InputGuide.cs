@@ -47,7 +47,7 @@ namespace TwelveEngine.Shell.UI {
             this.descriptions = descriptions;
         }
 
-        private Stack<(Impulse,string)[]> descriptionStack = new Stack<(Impulse,string)[]>();
+        private readonly Stack<(Impulse,string)[]> descriptionStack = new Stack<(Impulse,string)[]>();
 
         public void ClearDescriptions() => descriptions = null;
 

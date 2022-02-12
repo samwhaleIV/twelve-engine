@@ -6,7 +6,7 @@ using TwelveEngine.UI.Elements;
 namespace TwelveEngine.UI {
     public sealed class InteractionState:IMouseTarget {
 
-        private Func<RenderCache> getCache;
+        private readonly Func<RenderCache> getCache;
 
         internal InteractionState(Func<RenderCache> getCache) {
             this.getCache = getCache;

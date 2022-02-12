@@ -72,10 +72,10 @@ namespace JewelEditor.Entity {
             };
 
             for(int i = 0;i<numberKeys.Length;i++) {
-                Func<int,Action> actionGenerator = (int value) => {
+                Action actionGenerator(int value) {
                     return () => SetInput(value);
-                };
-                set.Enqueue((numberKeys[i],actionGenerator.Invoke(i)));
+                }
+                set.Enqueue((numberKeys[i],actionGenerator(i)));
             }
         }
 

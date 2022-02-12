@@ -21,7 +21,7 @@ namespace TwelveEngine.UI {
             renderCache = RenderElementSorter.GenerateCache(rootNode);
         }
 
-        private InteractionState interactionState;
+        private readonly InteractionState interactionState;
 
         public void DropFocus() => interactionState.DropFocus();
 

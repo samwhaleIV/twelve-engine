@@ -10,7 +10,7 @@ namespace TwelveEngine.Shell.Input {
         private bool isPressed = false;
         public bool IsPressed => isPressed;
 
-        private Action action;
+        private readonly Action action;
 
         public KeyWatcher(Keys key,Action action) {
             this.key = key;

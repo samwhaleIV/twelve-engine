@@ -210,11 +210,11 @@ namespace TwelveEngine.Shell {
         public void SetState<TState>() where TState : GameState, new() => SetState(new TState());
 
         public void SetState<TState, TData>(TData data) where TState : DataGameState<TData>, new() {
-            Func<GameState> load = () => {
+            GameState load() {
                 var state = new TState();
                 state.SetData(data);
                 return state;
-            };
+            }
             SetState(load);
         }
 
@@ -391,15 +391,15 @@ namespace TwelveEngine.Shell {
             }
             vcrDisplay.Render(trueGameTime);
 #if DEBUG
-            if(hasState()) {
-                watch.Stop();
-                renderTime = watch.Elapsed;
-                watch.Reset();
 
-                SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp,DepthStencilState.None);
-                gameState.WriteDebug(debugWriter);
-                SpriteBatch.End();
-            }
+            watch.Stop();
+            renderTime = watch.Elapsed;
+            watch.Reset();
+
+            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp,DepthStencilState.None);
+            DrawGameTimeDebug(debugWriter);
+            gameState?.WriteDebug(debugWriter);
+            SpriteBatch.End();
 #endif
 
             rendering = false;

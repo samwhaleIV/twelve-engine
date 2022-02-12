@@ -13,7 +13,7 @@ namespace TwelveEngine.Serial.Binary {
             requiresByteFlip = flipEndianness;
         }
 
-        private static Dictionary<Type,int> typeSizes = new Dictionary<Type,int>() {
+        private static readonly Dictionary<Type,int> typeSizes = new Dictionary<Type,int>() {
             { Type.Byte, sizeof(byte) },
             { Type.Bool, sizeof(bool) },
             { Type.Int, sizeof(int) },
