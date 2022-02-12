@@ -1,4 +1,5 @@
 ﻿using System;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.Game2D {
     public abstract class TileRenderer {

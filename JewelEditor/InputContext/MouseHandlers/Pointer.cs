@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D;
-using TwelveEngine.Input;
+using TwelveEngine.Shell.Input;
 
 namespace JewelEditor.InputContext.MouseHandlers {
     internal sealed class Pointer:MouseHandler {

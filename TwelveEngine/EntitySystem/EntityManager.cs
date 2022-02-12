@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TwelveEngine.Serial;
 using TwelveEngine.EntitySystem.EntityContainer;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
     public static class EntityManager {

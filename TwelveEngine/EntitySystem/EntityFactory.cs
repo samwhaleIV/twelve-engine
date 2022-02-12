@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
     public sealed class EntityFactory<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {

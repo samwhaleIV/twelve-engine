@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using TwelveEngine.Game2D;
 using TwelveEngine.Serial;
 

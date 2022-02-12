@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using TwelveEngine.Game2D;
-using TwelveEngine.Input;
+using TwelveEngine.Shell.Input;
 
 namespace JewelEditor.InputContext {
     internal abstract class MouseHandler:IMouseTarget {

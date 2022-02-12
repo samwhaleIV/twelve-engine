@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using TwelveEngine.Config;
+using TwelveEngine.Shell.Config;
 
-namespace TwelveEngine.Config {
+namespace TwelveEngine.Shell.Config {
     public sealed class KeyBindSet {
         public Keys Recording = Keys.F3;
         public Keys Playback = Keys.F4;
@@ -27,7 +27,7 @@ namespace TwelveEngine.Config {
         public Keys Toggle = Keys.Tab;
     }
 }
-namespace TwelveEngine.Input {
+namespace TwelveEngine.Shell.Input {
     public sealed partial class KeyBinds {
         private static Dictionary<Impulse,Keys> GetBinds(KeyBindSet keyBindSet) => new Dictionary<Impulse,Keys>() {
             { Impulse.Up, keyBindSet.Up },

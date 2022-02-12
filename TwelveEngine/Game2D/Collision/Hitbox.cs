@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.Game2D {
     public readonly struct Hitbox {

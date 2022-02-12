@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.Game2D.Entity.Types {
     public sealed class Player:MovingEntity2D {
@@ -54,11 +55,11 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         private void Player_OnLoad() {
             playerTexure = Game.Content.Load<Texture2D>(Constants.Config.PlayerImage);
-            Game.ImpulseHandler.OnAcceptDown += QueueInteraction;
+            Owner.Input.OnAcceptDown += QueueInteraction;
         }
 
         public void Player_OnUnload() {
-            Game.ImpulseHandler.OnAcceptDown -= QueueInteraction;
+            Owner.Input.OnAcceptDown -= QueueInteraction;
         }
 
         protected override Hitbox GetHitbox() {
@@ -77,7 +78,7 @@ namespace TwelveEngine.Game2D.Entity.Types {
             return new Hitbox(location,size);
         }
 
-        protected override Point GetMovementDelta() => Game.ImpulseHandler.GetDelta2D();
+        protected override Point GetMovementDelta() => Owner.Input.GetDelta2D();
 
         private bool isBlinking(GameTime gameTime) {
             var currentTime = gameTime.TotalGameTime;

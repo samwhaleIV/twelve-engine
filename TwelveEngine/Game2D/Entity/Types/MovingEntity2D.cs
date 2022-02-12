@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.Game2D.Entity.Types {
     public abstract class MovingEntity2D:Entity2D {

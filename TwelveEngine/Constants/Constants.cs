@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using TwelveEngine.Config;
+using TwelveEngine.Shell.Config;
 
 namespace TwelveEngine {
     public static partial class Constants {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TwelveEngine.Game2D;
 using Microsoft.Xna.Framework;
-using TwelveEngine.Input;
+using TwelveEngine.Shell.Input;
 using JewelEditor.InputContext.MouseHandlers;
 using Microsoft.Xna.Framework.Input;
 using JewelEditor.HistoryActions;
@@ -46,7 +46,7 @@ namespace JewelEditor.Entity {
             if(target == null) {
                 return;
             }
-            var point = Game.MouseHandler.Position;
+            var point = Owner.Mouse.Position;
             target.MouseUp(point);
             target = null;
         }
@@ -95,7 +95,6 @@ namespace JewelEditor.Entity {
             if(state.InputMode != InputMode.Tile) return;
             Point point = Game.MouseState.Position;
 
-            Owner.UpdateScreenSpace();
             if(!Owner.TryGetTile(point,out var tile)) return;
 
             var layer = Owner.GetLayer(Editor.TileLayer);
@@ -148,11 +147,11 @@ namespace JewelEditor.Entity {
 
             LoadMouseHandlers(Owner);
 
-            var mouseHandler = Game.MouseHandler;
-            mouseHandler.OnMouseDown += MouseHandler_OnMouseDown;
-            mouseHandler.OnMouseUp += MouseHandler_OnMouseUp;
-            mouseHandler.OnMouseMove += MouseHandler_OnMouseMove;
-            mouseHandler.OnMouseScroll += MouseHandler_OnMouseScroll;
+            var mouseHandler = Owner.Mouse;
+            mouseHandler.OnPress += MouseHandler_OnMouseDown;
+            mouseHandler.OnRelease += MouseHandler_OnMouseUp;
+            mouseHandler.OnMove += MouseHandler_OnMouseMove;
+            mouseHandler.OnScroll += MouseHandler_OnMouseScroll;
             OnUpdate += InputEntity_OnUpdate;
         }
 
@@ -161,11 +160,11 @@ namespace JewelEditor.Entity {
         }
 
         private void InputEntity_OnUnload() {
-            var mouseHandler = Game.MouseHandler;
-            mouseHandler.OnMouseDown -= MouseHandler_OnMouseDown;
-            mouseHandler.OnMouseUp -= MouseHandler_OnMouseUp;
-            mouseHandler.OnMouseMove -= MouseHandler_OnMouseMove;
-            mouseHandler.OnMouseScroll -= MouseHandler_OnMouseScroll;
+            var mouseHandler = Owner.Mouse;
+            mouseHandler.OnPress -= MouseHandler_OnMouseDown;
+            mouseHandler.OnRelease -= MouseHandler_OnMouseUp;
+            mouseHandler.OnMove -= MouseHandler_OnMouseMove;
+            mouseHandler.OnScroll -= MouseHandler_OnMouseScroll;
         }
 
         private IMouseTarget target = null;
@@ -184,7 +183,6 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseScroll(Point point,ScrollDirection direction) {
-            Owner.UpdateScreenSpace();
             var target = GetTarget(point);
             if(target == null) {
                 target = pointer;
@@ -193,7 +191,6 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseMove(Point point) {
-            Owner.UpdateScreenSpace();
             if(target == null) {
                 GetTarget(point,dropFocus: true)?.MouseMove(point);
             } else {
@@ -202,7 +199,6 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseUp(Point point) {
-            Owner.UpdateScreenSpace();
             if(target == null) {
                 return;
             }
@@ -211,7 +207,6 @@ namespace JewelEditor.Entity {
         }
 
         private void MouseHandler_OnMouseDown(Point point) {
-            Owner.UpdateScreenSpace();
             target = GetTarget(point);
             if(target == null) {
                 target = GetMouseHandlerTarget();

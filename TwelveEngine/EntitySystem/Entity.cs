@@ -1,5 +1,6 @@
 ﻿using System;
 using TwelveEngine.Serial;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
     public abstract class Entity<TOwner>:ISerializable where TOwner:GameState {

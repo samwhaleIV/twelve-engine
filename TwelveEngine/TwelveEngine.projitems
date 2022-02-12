@@ -9,8 +9,8 @@
     <Import_RootNamespace>TwelveEngine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigLoader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\EntityContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerReader.cs" />
@@ -34,21 +34,22 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Terrain\TerrainChunk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\World.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\DataGameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\RenderTargetStack.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\PixelShaderTest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\TimeoutThread.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameUI\DebugWriter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameUI\Corner.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\IMouseTarget.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\States\DataGameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\States\InputGameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\RenderTargetStack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\States\PixelShaderTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Timeout\TimeoutThread.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\DebugWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\Corner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\IMouseTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\LayerEncodingMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\Map.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapDecoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapEncoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\String\PropertyType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Config\TwelveConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TwelveConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\TwelveConfigSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Config\ConfigProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\String\TypeParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\ControllerBinds.cs" />
@@ -56,7 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Direction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Types\MovingEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Types\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Types\RedBox.cs" />
@@ -64,17 +65,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity2DType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\GamePadType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Glyphs\GamePadMap.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Glyphs\KeyboardMap.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Glyphs\GlyphMap.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseEndpoints.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\InputMethod.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Impulse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\GamePadType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Glyphs\GamePadMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Glyphs\KeyboardMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Glyphs\GlyphMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\ImpulseEndpoints.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\InputMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Watcher\KeyWatcherData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Impulse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\KeyBindSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CPUTexture.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameUI\ImpulseGuide.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\CPUTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\InputGuide.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\MatrixMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\Mirroring.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\Painter.cs" />
@@ -87,15 +88,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\Rotation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\TileGenViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\TileGenSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\InputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Hitbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\InteractionLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\DebugRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\TimeoutManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\ScrollDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Timeout\TimeoutManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\ScrollDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\ArrayConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\ExportMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\ImportMethods.cs" />
@@ -104,22 +104,22 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\Type.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\Value.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\Automation\AutomationAgent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\Automation\AutomationIO.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\Automation\InputFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\Automation\SerialInputFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\Automation\VCRDisplay.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\ProxyGametime.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBinds.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcher.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Watcher\KeyWatcherSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\MouseHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\AutomationAgent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\AutomationIO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\InputFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\SerialInputFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\VCRDisplay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\ProxyGametime.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\KeyBinds.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Watcher\KeyWatcher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Watcher\KeyWatcherSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\MouseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\GameManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Grid2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameShell\GameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\IInteract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\SerialFrame.cs" />
@@ -128,7 +128,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImagePanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RootNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Anchor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
@@ -150,5 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Shell\" />
   </ItemGroup>
 </Project>

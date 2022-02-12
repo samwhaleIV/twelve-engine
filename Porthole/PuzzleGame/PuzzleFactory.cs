@@ -75,7 +75,7 @@ namespace Porthole.PuzzleGame {
                     Name = "Player",
                     StateLock = false
                 };
-                grid.ImpulseGuide.SetDescriptions(
+                grid.InputGuide.SetDescriptions(
                     (Impulse.Up, Strings.MoveUp),
                     (Impulse.Down, Strings.MoveDown),
                     (Impulse.Left, Strings.MoveLeft),

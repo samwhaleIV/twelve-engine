@@ -1,4 +1,4 @@
-﻿using TwelveEngine.Input;
+﻿using TwelveEngine.Shell.Input;
 using Microsoft.Xna.Framework;
 using TwelveEngine.UI;
 using JewelEditor.InputContext;

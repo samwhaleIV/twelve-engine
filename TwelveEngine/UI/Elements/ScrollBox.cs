@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using TwelveEngine.Input;
+using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.UI.Elements {
     public sealed class ScrollBox:RenderFrame {
@@ -20,12 +20,16 @@ namespace TwelveEngine.UI.Elements {
         private void ScrollBox_OnScroll(Point mousePosition,ScrollDirection direction) {
             cancelScrollAnimation();
             switch(scrollMode) {
-                //TODO: Implement other cases
                 default:
-                case ScrollMode.Y: {
+                case ScrollMode.Y:
                     sendScrollY(direction);
                     break;
-                }
+                case ScrollMode.X:
+                    throw new NotImplementedException();
+                    break;
+                case ScrollMode.XY:
+                    throw new NotImplementedException();
+                    break;
             }
         }
 

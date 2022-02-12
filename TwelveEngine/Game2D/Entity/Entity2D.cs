@@ -3,6 +3,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Serial;
+using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.Game2D {
     public abstract class Entity2D:Entity<Grid2D> {
@@ -64,10 +65,10 @@ namespace TwelveEngine.Game2D {
         }
 
         protected bool IsKeyDown(Impulse impulse) {
-            return Game.ImpulseHandler.IsKeyDown(impulse);
+            return Owner.Input.IsKeyDown(impulse);
         }
         protected bool IsKeyUp(Impulse impulse) {
-            return Game.ImpulseHandler.IsKeyUp(impulse);
+            return Owner.Input.IsKeyUp(impulse);
         }
 
         public Hitbox GetInteractionBox() {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
+using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.Serial {
     public sealed partial class SerialFrame {

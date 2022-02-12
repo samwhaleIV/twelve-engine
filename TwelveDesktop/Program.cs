@@ -1,11 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using TwelveEngine;
-using TwelveEngine.Config;
-using TwelveEngine.Game3D;
+using TwelveEngine.Shell;
+using TwelveEngine.Shell.Config;
 
 namespace TwelveDesktop {
-        
+
     internal static class Program {
         [STAThread]
         internal static void Main() {

@@ -1,5 +1,5 @@
-﻿using TwelveEngine;
-using ElfGame.ElfSprite.Face.Controller;
+﻿using ElfGame.ElfSprite.Face.Controller;
+using TwelveEngine.Shell.States;
 
 namespace ElfGame.ElfSprite.Face {
     internal class ElfFace {
@@ -29,8 +29,8 @@ namespace ElfGame.ElfSprite.Face {
             }
         }
 
-        private GameState _gameState;
-        public GameState GameState {
+        private InputGameState _gameState;
+        public InputGameState GameState {
             get => _gameState;
             set {
                 _gameState = value;

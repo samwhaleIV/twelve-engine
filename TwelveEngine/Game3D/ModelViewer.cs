@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.GameUI;
 using TwelveEngine.Game3D.Entity.Types;
 using TwelveEngine.Game3D.Entity;
+using TwelveEngine.Shell.UI;
+using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.Game3D {
 
@@ -31,7 +32,7 @@ namespace TwelveEngine.Game3D {
         public float ModelRotationSpeed { get; set; } = 2.5f;
         public float FreeCamSpeed { get; set; } = 0.05f;
 
-        private ImpulseGuide ImpulseGuide { get; set; }
+        private InputGuide InputGuide { get; set; }
 
         private int ModelID = EntitySystem.EntityManager.START_ID - 1;
 
@@ -60,10 +61,10 @@ namespace TwelveEngine.Game3D {
             OnPreRender += PreRenderEntities;
         }
 
-        private void UpdateImpulseGuide() {
+        private void UpdateInputGuide() {
             switch(controlMode) {
                 case ControlMode.Camera:
-                    ImpulseGuide.SetDescriptions(
+                    InputGuide.SetDescriptions(
                         (Impulse.Toggle, "Control Mode (Camera)"),
                         (Impulse.Up, "Forward"),
                         (Impulse.Down, "Back"),
@@ -74,7 +75,7 @@ namespace TwelveEngine.Game3D {
                     );
                     break;
                 case ControlMode.Model:
-                    ImpulseGuide.SetDescriptions(
+                    InputGuide.SetDescriptions(
                         (Impulse.Toggle, "Control Mode (Model)"),
                         (Impulse.Up, "-Z"),
                         (Impulse.Down, "+Z"),
@@ -85,7 +86,7 @@ namespace TwelveEngine.Game3D {
                     );
                     break;
                 case ControlMode.Animation:
-                    ImpulseGuide.SetDescriptions(
+                    InputGuide.SetDescriptions(
                         (Impulse.Toggle, "Control Mode (Animation)"),
                         (Impulse.Accept, "Toggle Play"),
                         (Impulse.Left, "Toggle Looping"),
@@ -163,7 +164,7 @@ namespace TwelveEngine.Game3D {
                     break;
 
             }
-            UpdateImpulseGuide();
+            UpdateInputGuide();
         }
 
         private static ModelBase GetModel(bool isAnimated) {
@@ -206,9 +207,8 @@ namespace TwelveEngine.Game3D {
             AddSubjectEntity();
 
             Input.OnToggleDown += Input_OnToggleDown;
-            ImpulseGuide = new ImpulseGuide(Game);
 
-            UpdateImpulseGuide();
+            UpdateInputGuide();
 
             Game.OnWriteDebug += Game_OnWriteDebug;
         }
@@ -241,7 +241,7 @@ namespace TwelveEngine.Game3D {
 
         private void ModelTest_OnUpdate(GameTime gameTime) {
             if(controlMode == ControlMode.Camera && Camera is AngleCamera angleCamera) {
-                angleCamera.Debug_UpdateFreeCam(Game,MOUSE_SPEED,GetFreeCamVelocity(gameTime));
+                angleCamera.UpdateFreeCam(this,MOUSE_SPEED,GetFreeCamVelocity(gameTime));
             }
             Camera.Update(Game.Viewport.AspectRatio);
             if(controlMode == ControlMode.Model) {
@@ -269,7 +269,7 @@ namespace TwelveEngine.Game3D {
         private void ModelTest_OnRender(GameTime gameTime) {
             RenderEntities(gameTime);
             Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-            ImpulseGuide.Render();
+            InputGuide.Render();
             Game.SpriteBatch.End();
         }
 

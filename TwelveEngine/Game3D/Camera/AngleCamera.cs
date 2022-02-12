@@ -1,6 +1,7 @@
 ﻿using System;
 using TwelveEngine.Serial;
 using Microsoft.Xna.Framework;
+using TwelveEngine.Shell.States;
 
 namespace TwelveEngine.Game3D {
     public sealed class AngleCamera:Camera3D {
@@ -110,14 +111,14 @@ namespace TwelveEngine.Game3D {
             MoveUpDown(velocity.Z);
         }
 
-        public void Debug_UpdateFreeCam(GameManager game,float lookSpeed,float moveSpeed) {
-            var mouseDelta = game.MouseHandler.Delta;
-            if(game.MouseHandler.Capturing && mouseDelta != Point.Zero) {
+        public void UpdateFreeCam(InputGameState gameState,float lookSpeed,float moveSpeed) {
+            var mouseDelta = gameState.Mouse.Delta;
+            if(gameState.Mouse.Capturing && mouseDelta != Point.Zero) {
                 mouseDelta.Y = -mouseDelta.Y;
                 AddAngle(mouseDelta.ToVector2() * lookSpeed);
             }
 
-            var delta = game.ImpulseHandler.GetDelta3D();
+            var delta = gameState.Input.GetDelta3D();
             if(delta.X != 0) MoveLeftRight(delta.X * moveSpeed);
             if(delta.Y != 0) MoveUpDown(delta.Y * moveSpeed);
             if(delta.Z != 0) MoveFrontBack(delta.Z * moveSpeed);

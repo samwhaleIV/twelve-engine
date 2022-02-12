@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using TwelveEngine.Game2D;
-using TwelveEngine.Input;
 
 namespace JewelEditor.InputContext.MouseHandlers {
     internal sealed class EntityEditor:MouseHandler {

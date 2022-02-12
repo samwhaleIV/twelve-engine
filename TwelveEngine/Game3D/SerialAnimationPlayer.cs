@@ -1,7 +1,7 @@
 ﻿using TwelveEngine.Serial;
 using Liru3D.Animations;
 using Liru3D.Models;
-using TwelveEngine.GameUI;
+using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game3D {
     public sealed class SerialAnimationPlayer:AnimationPlayer, ISerializable {

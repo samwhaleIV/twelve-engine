@@ -3,9 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game3D.Entity;
+using TwelveEngine.Shell.States;
 
 namespace TwelveEngine.Game3D {
-    public class World:GameState {
+    public class World:InputGameState {
 
         private readonly EntityFactory<Entity3D,World> entityFactory;
 

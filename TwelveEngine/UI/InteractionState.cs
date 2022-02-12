@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using TwelveEngine.Input;
+using TwelveEngine.Shell.Input;
 using TwelveEngine.UI.Elements;
 
 namespace TwelveEngine.UI {

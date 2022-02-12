@@ -1,4 +1,4 @@
-﻿using TwelveEngine;
+﻿using TwelveEngine.Shell.Timeout;
 
 namespace ElfGame.ElfSprite.Face.Controller {
     internal abstract class Component:TimeoutThread {

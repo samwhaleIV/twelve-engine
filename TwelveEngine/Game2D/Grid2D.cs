@@ -5,11 +5,12 @@ using TwelveEngine.Serial.Map;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Collision;
 using TwelveEngine.Game2D.Entity;
-using TwelveEngine.GameUI;
 using TwelveEngine.Serial;
+using TwelveEngine.Shell.States;
+using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game2D {
-    public class Grid2D:GameState {
+    public class Grid2D:InputGameState {
 
         public Grid2D(
             int? tileSize = null,
@@ -46,8 +47,6 @@ namespace TwelveEngine.Game2D {
         }
 
         private readonly EntityFactory<Entity2D,Grid2D> entityFactory;
-
-        public ImpulseGuide ImpulseGuide { get; private set; }
 
         private Point size;
 
@@ -153,7 +152,6 @@ namespace TwelveEngine.Game2D {
         }
 
         private void Grid2D_OnLoad() {
-            ImpulseGuide = new ImpulseGuide(Game);
             collisionInterface.Types?.LoadTypes();
             Entities = new EntityManager<Entity2D,Grid2D>(this,entityFactory);
             if(pendingTileRenderer != null) {
@@ -190,19 +188,6 @@ namespace TwelveEngine.Game2D {
             }
             return tileSize;
         }
-
-        private void updateScreenSpace(bool automatic = true) {
-            if(!automatic) {
-                if(didManualScreenSpaceUpdate) {
-                    // Ignore repeated requests
-                    return;
-                }
-                didManualScreenSpaceUpdate = true;
-            }
-            ScreenSpace = getScreenSpace();
-        }
-
-        public void UpdateScreenSpace() => updateScreenSpace(automatic: false);
 
         public Vector2 GetCenter() => ScreenSpace.GetCenter();
 
@@ -265,28 +250,27 @@ namespace TwelveEngine.Game2D {
             endSpriteBatch();
         }
 
-        private bool rendering = false;
-
-        private bool didManualScreenSpaceUpdate = false;
+        private void updateScreenSpace() {
+            ScreenSpace = getScreenSpace();
+        }
 
         private void Camera_Invalidated() {
-            if(rendering) {
+            if(IsRendering) {
                 throw new InvalidOperationException("Cannot invalidate the camera during the render cycle!");
             }
-            if(!didManualScreenSpaceUpdate) {
-                return;
+            if(IsUpdating) {
+                updateScreenSpace();
             }
-            updateScreenSpace(automatic: true);
         }
 
         private void update(GameTime gameTime) {
+            updateScreenSpace();
+            UpdateInputs(gameTime);
             Entities.IterateMutable(Entity2D.Update,gameTime);
-            didManualScreenSpaceUpdate = false;
         }
 
         private void render(GameTime gameTime) {
-            updateScreenSpace(automatic: true);
-            rendering = true;
+            updateScreenSpace();
             tileRenderer.CacheArea(ScreenSpace);
 
             Game.GraphicsDevice.Clear(BackgroundColor);
@@ -311,13 +295,11 @@ namespace TwelveEngine.Game2D {
             tryStartSpriteBatch();
 
             if(LayerMode.Foreground) {
-
                 renderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
             }
 
-            ImpulseGuide.Render();
+            InputGuide.Render();
             tryEndSpriteBatch();
-            rendering = false;
         }
 
         private void Grid2D_OnExport(SerialFrame frame) {

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Input;
+using TwelveEngine.Shell;
+using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.UI {
     public class RenderElement:Element {

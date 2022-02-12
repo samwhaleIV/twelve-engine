@@ -15,7 +15,7 @@ namespace TwelveEngine.Game3D {
 
         private void CRTTest_OnUpdate(GameTime gameTime) {
             if(Camera is AngleCamera angleCamera) {
-                angleCamera.Debug_UpdateFreeCam(Game,0.05f,0.01f);
+                angleCamera.UpdateFreeCam(this,0.05f,0.01f);
             }
             Camera.Update(Game.Viewport.AspectRatio);
 

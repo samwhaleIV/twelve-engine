@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem.EntityContainer {
     internal sealed class EntityContainer<TEntity,TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {

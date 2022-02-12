@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine.Config {
+﻿namespace TwelveEngine.Shell.Config {
     public class TwelveConfigSet {
 
         public int RenderScale = 8;

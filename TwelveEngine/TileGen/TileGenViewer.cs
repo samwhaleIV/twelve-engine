@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.GameUI;
+using TwelveEngine.Shell.States;
+using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.TileGen {
-    public sealed class TileGenViewer:GameState {
+    public sealed class TileGenViewer:InputGameState {
 
         private const int PATTERN_SIZE = 16;
 
@@ -12,8 +13,6 @@ namespace TwelveEngine.TileGen {
         private Texture2D texture = null;
 
         public int RenderScale { get; set; } = 3;
-
-        private ImpulseGuide impulseGuide;
 
         public TileGenViewer() {
             OnLoad += TileGenViewer_OnLoad;
@@ -30,19 +29,17 @@ namespace TwelveEngine.TileGen {
             patternSet = Pattern.GetSet(Constants.PatternsImage,PATTERN_SIZE);
             patternSet.Settings.Seed = null;
 
-            Input.OnAcceptDown += ImpulseHandler_OnAcceptDown;
-            Input.OnCancelDown += ImpulseHandler_OnCancelDown;
+            Input.OnAcceptDown += InputHandler_OnAcceptDown;
+            Input.OnCancelDown += InputHandler_OnCancelDown;
             generatePatterns();
 
-            impulseGuide = new ImpulseGuide(Game);
-
-            impulseGuide.SetDescriptions(
+            InputGuide.SetDescriptions(
                 (Impulse.Accept, "Generate Tiles"),
                 (Impulse.Cancel, "Delete Texture")
             );
         }
 
-        private void ImpulseHandler_OnCancelDown() {
+        private void InputHandler_OnCancelDown() {
             if(texture == null) {
                 return;
             }
@@ -51,17 +48,17 @@ namespace TwelveEngine.TileGen {
         }
 
         private void TileGenViewer_OnUnload() {
-            Input.OnAcceptDown -= ImpulseHandler_OnAcceptDown;
-            Input.OnCancelDown -= ImpulseHandler_OnCancelDown;
+            Input.OnAcceptDown -= InputHandler_OnAcceptDown;
+            Input.OnCancelDown -= InputHandler_OnCancelDown;
         }
 
-        private void ImpulseHandler_OnAcceptDown() => generatePatterns();
+        private void InputHandler_OnAcceptDown() => generatePatterns();
 
         private void render(GameTime gameTime) {
             Game.GraphicsDevice.Clear(Color.Black);
             if(texture == null) {
                 Game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
-                impulseGuide.Render();
+                InputGuide.Render();
                 Game.SpriteBatch.End();
                 return;
             }
@@ -75,7 +72,7 @@ namespace TwelveEngine.TileGen {
 
             Game.SpriteBatch.Draw(texture,destination,Color.White);
 
-            impulseGuide.Render();
+            InputGuide.Render();
             Game.SpriteBatch.End();
         }
     }

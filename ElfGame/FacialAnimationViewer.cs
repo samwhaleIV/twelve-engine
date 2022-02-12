@@ -1,11 +1,12 @@
 ﻿using System;
-using TwelveEngine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ElfGame.ElfSprite.Face;
+using TwelveEngine.Shell.Input;
+using TwelveEngine.Shell.States;
 
 namespace ElfGame {
-    internal class FacialAnimationViewer:GameState {
+    internal class FacialAnimationViewer:InputGameState {
 
         private readonly ElfFace elfFace = new ElfFace();
         private readonly Random random = new Random();
