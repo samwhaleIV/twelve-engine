@@ -15,15 +15,15 @@ namespace ElfGame {
 
         public FacialAnimationViewer() {
             OnLoad += FacialAnimationViewer_OnLoad;
+            OnUnload += FacialAnimationViewer_OnUnload;
             OnRender += FacialAnimationViewer_OnRender;
             OnPreRender += FacialAnimationViewer_OnPreRender;
+
+            Input.OnAcceptDown += Input_OnAcceptDown;
+            Input.OnDirectionDown += Input_OnDirectionDown;
         }
 
         private void FacialAnimationViewer_OnLoad() {
-            Input.OnAcceptDown += Input_OnAcceptDown;
-            Input.OnDirectionDown +=Input_OnDirectionDown;
-            OnUnload += FacialAnimationViewer_OnUnload;
-
             elfFace.Renderer.Texture = Game.Content.Load<Texture2D>(Constants.ElfFaceImage);
 
             var size = elfFace.Renderer.Size;
@@ -50,8 +50,6 @@ namespace ElfGame {
         }
 
         private void FacialAnimationViewer_OnUnload() {
-            Input.OnAcceptDown -= Input_OnAcceptDown;
-            Input.OnDirectionDown -= Input_OnDirectionDown;
             renderBuffer?.Dispose();
         }
 

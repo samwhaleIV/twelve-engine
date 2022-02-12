@@ -20,18 +20,16 @@ namespace TwelveEngine.Shell.UI {
 
         private Texture2D gamePadTexture, keyboardTexture;
 
-        private readonly InputHandler inputHandler;
-
         private readonly GamePadMap gamePadMap = new GamePadMap();
         private readonly KeyboardMap keyboardMap = new KeyboardMap();
 
-        private readonly GameManager game;
-        private readonly SpriteFont guideFont;
+        private SpriteFont guideFont;
+        private GameManager game;
+        private InputHandler input;
 
-        internal InputGuide(InputHandler inputHandler,GameManager game) {
+        internal void Load(GameManager game,InputHandler input) {
             this.game = game;
-            this.inputHandler = inputHandler;
-
+            this.input = input;
             gamePadMap.LoadGlyphs();
             keyboardMap.LoadGlyphs();
 
@@ -88,7 +86,7 @@ namespace TwelveEngine.Shell.UI {
         }
 
         private Point getGamepadBlockOffset() {
-            switch(inputHandler.GamePadType) {
+            switch(input.GamePadType) {
                 default:
                 case GamePadType.MicrosoftXbox:
                     return Point.Zero;
@@ -103,13 +101,13 @@ namespace TwelveEngine.Shell.UI {
             if(descriptions == null) {
                 return;
             }
-            switch(inputHandler.InputMethod) {
+            switch(input.Method) {
                 default: return;
                 case InputMethod.Keyboard:
-                    renderGuide(keyboardTexture,keyboardMap,inputHandler.GetKeyboardBind,Point.Zero);
+                    renderGuide(keyboardTexture,keyboardMap,input.GetKeyboardBind,Point.Zero);
                     return;
                 case InputMethod.GamePad:
-                    renderGuide(gamePadTexture,gamePadMap,inputHandler.GetGamePadBind,getGamepadBlockOffset());
+                    renderGuide(gamePadTexture,gamePadMap,input.GetGamePadBind,getGamepadBlockOffset());
                     return;
             }
         }

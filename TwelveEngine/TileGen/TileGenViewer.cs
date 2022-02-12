@@ -16,8 +16,10 @@ namespace TwelveEngine.TileGen {
 
         public TileGenViewer() {
             OnLoad += TileGenViewer_OnLoad;
-            OnUnload += TileGenViewer_OnUnload;
             OnRender += render;
+
+            Input.OnAcceptDown += InputHandler_OnAcceptDown;
+            Input.OnCancelDown += InputHandler_OnCancelDown;
         }
 
         private void generatePatterns() {
@@ -29,8 +31,6 @@ namespace TwelveEngine.TileGen {
             patternSet = Pattern.GetSet(Constants.PatternsImage,PATTERN_SIZE);
             patternSet.Settings.Seed = null;
 
-            Input.OnAcceptDown += InputHandler_OnAcceptDown;
-            Input.OnCancelDown += InputHandler_OnCancelDown;
             generatePatterns();
 
             InputGuide.SetDescriptions(
@@ -45,11 +45,6 @@ namespace TwelveEngine.TileGen {
             }
             texture.Dispose();
             texture = null;
-        }
-
-        private void TileGenViewer_OnUnload() {
-            Input.OnAcceptDown -= InputHandler_OnAcceptDown;
-            Input.OnCancelDown -= InputHandler_OnCancelDown;
         }
 
         private void InputHandler_OnAcceptDown() => generatePatterns();

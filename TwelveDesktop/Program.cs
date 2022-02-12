@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using TwelveEngine.Game3D;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.Config;
 

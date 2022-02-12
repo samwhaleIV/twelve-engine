@@ -32,8 +32,6 @@ namespace TwelveEngine.Game3D {
         public float ModelRotationSpeed { get; set; } = 2.5f;
         public float FreeCamSpeed { get; set; } = 0.05f;
 
-        private InputGuide InputGuide { get; set; }
-
         private int ModelID = EntitySystem.EntityManager.START_ID - 1;
 
         private readonly string modelName;
@@ -50,10 +48,10 @@ namespace TwelveEngine.Game3D {
         ) {
             this.modelName = modelName;
             this.textureName = textureName;
+            isAnimatedModel = animatedModel;
             isTextureTest = textureTest;
 
             OnLoad += ModelTest_OnLoad;
-            OnUnload += ModelViewer_OnUnload;
 
             OnUpdate += ModelTest_OnUpdate;
             OnRender += ModelTest_OnRender;
@@ -120,14 +118,6 @@ namespace TwelveEngine.Game3D {
                     animationPlayer.AnimationIndex++;
                     break;
             }
-        }
-
-        private void ModelViewer_OnUnload() {
-            Input.OnToggleDown -= Input_OnToggleDown;
-            if(controlMode == ControlMode.Animation) {
-                UnbindAnimationController();
-            }
-            Game.OnWriteDebug -= Game_OnWriteDebug;
         }
 
         private void BindAnimationController() {
@@ -205,12 +195,10 @@ namespace TwelveEngine.Game3D {
             Entities.Create(Entity3DType.GridLines);
 
             AddSubjectEntity();
-
-            Input.OnToggleDown += Input_OnToggleDown;
-
             UpdateInputGuide();
 
-            Game.OnWriteDebug += Game_OnWriteDebug;
+            Input.OnToggleDown += Input_OnToggleDown;
+            OnWriteDebug += Game_OnWriteDebug;
         }
 
         private float GetVelocity(GameTime gameTime,float velocity) {

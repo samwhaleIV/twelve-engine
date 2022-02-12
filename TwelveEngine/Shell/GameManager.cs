@@ -35,9 +35,6 @@ namespace TwelveEngine.Shell {
             keyWatcherSet = new KeyWatcherSet(getDebugControls(keyBindSet));
 
             debugWriter = new DebugWriter(this);
-#if DEBUG
-            OnWriteDebug += DrawGameTimeDebug;
-#endif
         }
 
 #if DEBUG
@@ -103,7 +100,6 @@ namespace TwelveEngine.Shell {
         private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
 
         private readonly DebugWriter debugWriter;
-        public event Action<DebugWriter> OnWriteDebug;
 
         /* Public access */
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
@@ -395,13 +391,15 @@ namespace TwelveEngine.Shell {
             }
             vcrDisplay.Render(trueGameTime);
 #if DEBUG
-            watch.Stop();
-            renderTime = watch.Elapsed;
-            watch.Reset();
+            if(hasState()) {
+                watch.Stop();
+                renderTime = watch.Elapsed;
+                watch.Reset();
 
-            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp,DepthStencilState.None);
-            OnWriteDebug?.Invoke(debugWriter);
-            SpriteBatch.End();
+                SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp,DepthStencilState.None);
+                gameState.WriteDebug(debugWriter);
+                SpriteBatch.End();
+            }
 #endif
 
             rendering = false;

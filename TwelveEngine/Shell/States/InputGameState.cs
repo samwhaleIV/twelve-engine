@@ -9,9 +9,8 @@ namespace TwelveEngine.Shell.States {
 
         private readonly TimeoutManager timeoutManager = new TimeoutManager();
         private readonly MouseHandler mouseHandler = new MouseHandler();
-
-        private InputHandler inputHandler;
-        private InputGuide inputGuide;
+        private readonly InputHandler inputHandler = new InputHandler();
+        private readonly InputGuide inputGuide = new InputGuide();
 
         public InputHandler Input => inputHandler;
         public MouseHandler Mouse => mouseHandler;
@@ -20,8 +19,8 @@ namespace TwelveEngine.Shell.States {
         public InputGameState() => OnLoad += InputGameState_OnLoad;
 
         private void InputGameState_OnLoad() {
-            inputGuide = new InputGuide(inputHandler,Game);
-            inputHandler = new InputHandler(Game.KeyBinds);
+            inputHandler.Load(Game.KeyBinds);
+            inputGuide.Load(Game,Input);
         }
 
         public bool ClearTimeout(int ID) {

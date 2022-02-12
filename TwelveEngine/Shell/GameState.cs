@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Serial;
+using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Shell {
     public class GameState:ISerializable {
@@ -9,6 +10,7 @@ namespace TwelveEngine.Shell {
 
         public event Action OnLoad, OnUnload;
 
+        public event Action<DebugWriter> OnWriteDebug;
         public event Action<SerialFrame> OnExport, OnImport;
         public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
 
@@ -32,6 +34,8 @@ namespace TwelveEngine.Shell {
             Game = null;
             IsLoaded = false;
         }
+
+        internal void WriteDebug(DebugWriter writer) => OnWriteDebug?.Invoke(writer);
 
         internal void Update(GameTime gameTime) {
             IsUpdating = true;

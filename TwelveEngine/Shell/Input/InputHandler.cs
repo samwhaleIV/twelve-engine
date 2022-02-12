@@ -7,9 +7,7 @@ namespace TwelveEngine.Shell.Input {
 
     public sealed partial class InputHandler {
 
-        internal InputHandler(KeyBinds keyBinds) {
-            this.keyBinds = keyBinds;
-
+        internal InputHandler() {
             impulses = (Impulse[])Enum.GetValues(typeof(Impulse));
 
             impulseStates = new Dictionary<Impulse,KeyState>();
@@ -25,7 +23,9 @@ namespace TwelveEngine.Shell.Input {
         private readonly Dictionary<Impulse,KeyState> impulseStates;
         private readonly Dictionary<Impulse,(Action Down, Action Up)> endpoints;
 
-        private readonly KeyBinds keyBinds;
+        private KeyBinds keyBinds = null;
+        internal void Load(KeyBinds keyBinds) => this.keyBinds = keyBinds;
+
         private readonly Dictionary<Impulse,Buttons> gamePadBinds = GetControllerBinds();
 
         public Buttons GetGamePadBind(Impulse impulse) {
@@ -36,11 +36,9 @@ namespace TwelveEngine.Shell.Input {
             return keyBinds[impulse];
         }
 
-        public KeyBinds KeyBinds => keyBinds;
-
         private static InputMethod _inputMethod = InputMethod.Unknown;
 
-        public InputMethod InputMethod {
+        public InputMethod Method {
             get => _inputMethod;
             private set {
                 _inputMethod = value;
@@ -94,9 +92,9 @@ namespace TwelveEngine.Shell.Input {
 
             if(didUpdate) {
                  if(gamePadState != lastGamePadState) {
-                    InputMethod = InputMethod.GamePad;
+                    Method = InputMethod.GamePad;
                 } else if(keyboardState != lastKeyboardState) {
-                    InputMethod = InputMethod.Keyboard;
+                    Method = InputMethod.Keyboard;
                 }
             }
 

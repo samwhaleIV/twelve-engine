@@ -32,6 +32,7 @@ namespace TwelveEngine.Game3D {
         }
 
         private void World_OnUpdate(GameTime gameTime) {
+            UpdateInputs(gameTime);
             Entities.IterateMutable(Entity3D.Update,gameTime);
             _camera?.Update(GetAspectRatio());
         }

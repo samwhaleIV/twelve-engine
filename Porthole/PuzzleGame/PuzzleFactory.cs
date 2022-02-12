@@ -68,6 +68,14 @@ namespace Porthole.PuzzleGame {
                 grid.LayerMode.BackgroundLength += 1;
             }
 
+            grid.InputGuide.SetDescriptions(
+                (Impulse.Up, Strings.MoveUp),
+                (Impulse.Down, Strings.MoveDown),
+                (Impulse.Left, Strings.MoveLeft),
+                (Impulse.Right, Strings.MoveRight),
+                (Impulse.Accept, Strings.Interact)
+            );
+
             grid.OnLoad += () => {
                 var player = new Player() {
                     X = level.Player.X,
@@ -75,13 +83,6 @@ namespace Porthole.PuzzleGame {
                     Name = "Player",
                     StateLock = false
                 };
-                grid.InputGuide.SetDescriptions(
-                    (Impulse.Up, Strings.MoveUp),
-                    (Impulse.Down, Strings.MoveDown),
-                    (Impulse.Left, Strings.MoveLeft),
-                    (Impulse.Right, Strings.MoveRight),
-                    (Impulse.Accept, Strings.Interact)
-                );
                 grid.AddEntity(player);
             };
 
