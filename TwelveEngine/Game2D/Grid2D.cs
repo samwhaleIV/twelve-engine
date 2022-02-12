@@ -26,10 +26,9 @@ namespace TwelveEngine.Game2D {
                 tileSize = Constants.Config.TileSize;
             }
             this.tileSize = tileSize.Value;
-            LayerMode = layerMode.HasValue ? layerMode.Value : LayerModes.Default;
+            LayerMode = layerMode ?? LayerModes.Default;
 
-            collisionInterface = new CollisionInterface(this);
-            collisionInterface.Types = collisionTypes;
+            collisionInterface = new CollisionInterface(this) { Types = collisionTypes };
 
             if(entityFactory == null) {
                 entityFactory = Entity2DType.GetFactory();

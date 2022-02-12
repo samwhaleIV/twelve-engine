@@ -86,15 +86,11 @@ namespace TwelveEngine.Shell.UI {
         }
 
         private Point getGamepadBlockOffset() {
-            switch(input.GamePadType) {
-                default:
-                case GamePadType.MicrosoftXbox:
-                    return Point.Zero;
-                case GamePadType.SonyPlaystation:
-                    return new Point(gamePadMap.BlockSize,0);
-                case GamePadType.NintendoSwitch:
-                    return new Point(0,gamePadMap.BlockSize);
-            }
+            return input.GamePadType switch {
+                GamePadType.SonyPlaystation => new Point(gamePadMap.BlockSize,0),
+                GamePadType.NintendoSwitch => new Point(0,gamePadMap.BlockSize),
+                _ => Point.Zero,
+            };
         }
 
         public void Render() {

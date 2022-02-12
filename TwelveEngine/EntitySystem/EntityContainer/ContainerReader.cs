@@ -64,15 +64,13 @@ namespace TwelveEngine.EntitySystem {
         }
 
         public bool TryGet<TType>(int ID,out TType entity) where TType:TEntity {
-            TEntity _entity;
-            var result = container.IDs.TryGetValue(ID,out _entity);
+            var result = container.IDs.TryGetValue(ID,out TEntity _entity);
             entity = (TType)_entity;
             return result;
         }
 
         public bool TryGet<TType>(string name,out TType entity) where TType : TEntity {
-            TEntity _entity;
-            var result = container.Names.TryGetValue(name,out _entity);
+            var result = container.Names.TryGetValue(name,out TEntity _entity);
             entity = (TType)_entity;
             return result;
         }

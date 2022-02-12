@@ -69,29 +69,25 @@ namespace TwelveEngine.Shell.Config {
             KeyBindsFile = set.KeyBindsFile;
         }
 
-        internal TwelveConfigSet Export() {
-            var set = new TwelveConfigSet();
+        internal TwelveConfigSet Export() => new TwelveConfigSet {
+            RenderScale = RenderScale,
+            TileSize = TileSize,
+            GamePadIndex = (int)GamePadIndex,
 
-            set.RenderScale = RenderScale;
-            set.TileSize = TileSize;
-            set.GamePadIndex = (int)GamePadIndex;
+            PlayerSpeed = PlayerSpeed,
+            PlayerAccel = PlayerAccel,
+            PlayerDeaccel = PlayerDeaccel,
+            InteractSize = InteractSize,
 
-            set.PlayerSpeed = PlayerSpeed;
-            set.PlayerAccel = PlayerAccel;
-            set.PlayerDeaccel = PlayerDeaccel;
-            set.InteractSize = InteractSize;
+            PlaybackFolder = PlaybackFolder,
+            DefaultPlaybackFile = DefaultPlaybackFile,
+            PlayerImage = PlayerImage,
+            Tileset = Tileset,
 
-            set.PlaybackFolder = PlaybackFolder;
-            set.DefaultPlaybackFile = DefaultPlaybackFile;
-            set.PlayerImage = PlayerImage;
-            set.Tileset = Tileset;
+            CPUTextures = CPUTextures,
+            ShowCollision = ShowCollision,
 
-            set.CPUTextures = CPUTextures;
-            set.ShowCollision = ShowCollision;
-
-            set.KeyBindsFile = KeyBindsFile;
-
-            return set;
-        }
+            KeyBindsFile = KeyBindsFile
+        };
     }
 }

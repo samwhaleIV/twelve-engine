@@ -10,8 +10,7 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
         }
 
         private static void AddToTable(Dictionary<int,HashSet<int>> table,int entityID,int tableID) {
-            HashSet<int> hashSet;
-            if(!table.TryGetValue(tableID,out hashSet)) {
+            if(!table.TryGetValue(tableID,out var hashSet)) {
                 hashSet = new HashSet<int>();
                 table[tableID] = hashSet;
             }

@@ -54,14 +54,12 @@ namespace TwelveEngine.Shell.Automation {
 
             using(var stream = new MemoryStream()) {
                 using(var compressStream = new MemoryStream(fileData)) {
-                    using(var deflateStream = new DeflateStream(compressStream,CompressionMode.Decompress)) {
-                        await deflateStream.CopyToAsync(stream);
-                    }
+                    using var deflateStream = new DeflateStream(compressStream,CompressionMode.Decompress);
+                    await deflateStream.CopyToAsync(stream);
                 }
-                using(var reader = new BinaryReader(stream,Encoding.Default,false)) {
-                    stream.Seek(0,SeekOrigin.Begin);
-                    frames = readFileData(reader);
-                }
+                using var reader = new BinaryReader(stream,Encoding.Default,false);
+                stream.Seek(0,SeekOrigin.Begin);
+                frames = readFileData(reader);
             }
 
             if(frames == null) {

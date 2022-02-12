@@ -38,7 +38,7 @@ namespace TwelveEngine.Serial.Binary {
         }
 
         public bool Bool() {
-            return Type == Type.Bool ? ToBoolean(Bytes,0) : false;
+            return Type == Type.Bool && ToBoolean(Bytes,0);
         }
         public byte Byte() {
             return Type == Type.Byte? Bytes[0] : byte.MinValue;

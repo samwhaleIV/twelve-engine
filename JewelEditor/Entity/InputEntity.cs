@@ -25,13 +25,10 @@ namespace JewelEditor.Entity {
             if(Owner.Game.KeyboardState.IsKeyDown(Keys.LeftShift)) {
                 return pointer;
             }
-            switch(GetState().InputMode) {
-                default:
-                case InputMode.Tile:
-                    return tileEditor;
-                case InputMode.Entity:
-                    return entityEditor;
-            }
+            return GetState().InputMode switch {
+                InputMode.Entity => entityEditor,
+                _ => tileEditor,
+            };
         }
 
         private void ChangeInput(InputMode inputMode) {

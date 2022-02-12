@@ -31,7 +31,7 @@ namespace TwelveEngine.TileGen {
         }
 
         public void Seed(int? seed) {
-            random = seed.HasValue ? new Random(seed.Value) : random == null ? new Random() : random;
+            random = seed.HasValue ? new Random(seed.Value) : random ?? new Random();
             seedPalette();
         }
 

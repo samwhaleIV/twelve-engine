@@ -9,8 +9,8 @@ namespace TwelveEngine.EntitySystem {
 
         public EntityFactory(params (int entityType, Func<TEntity> generator)[] types) {
             generators = new Dictionary<int,Func<TEntity>>();
-            foreach(var type in types) {
-                generators[type.entityType] = type.generator;
+            foreach(var (entityType, generator) in types) {
+                generators[entityType] = generator;
             }
         }
 
