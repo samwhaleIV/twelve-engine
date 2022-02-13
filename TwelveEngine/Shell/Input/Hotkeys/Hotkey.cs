@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Shell.Input {
-    public sealed class KeyWatcher {
+    public sealed class Hotkey {
 
         private readonly Keys key;
         public Keys Key => key;
@@ -12,7 +12,7 @@ namespace TwelveEngine.Shell.Input {
 
         private readonly Action action;
 
-        public KeyWatcher(Keys key,Action action) {
+        public Hotkey(Keys key,Action action) {
             this.key = key;
             this.action = action;
         }

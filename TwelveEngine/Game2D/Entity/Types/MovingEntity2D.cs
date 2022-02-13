@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using TwelveEngine.Shell.Input;
+using TwelveEngine.Game2D.Collision;
 
 namespace TwelveEngine.Game2D.Entity.Types {
     public abstract class MovingEntity2D:Entity2D {
@@ -23,12 +24,13 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         private float deacelStartValue;
 
-        protected float MaxSpeed { get; set; }
-        protected float AccelRate { get; set; }
-        protected float DeaccelRate { get; set; }
-        protected float OrientationOffset { get; set; }
+        public float MaxSpeed { get; set; }
+        public float AccelRate { get; set; }
+        public float DeaccelRate { get; set; }
 
+        protected float OrientationOffset { get; set; }
         protected Point MovementDelta { get; private set; }
+
         private Point LastDelta { get; set; }
         private Point DeaccelDelta { get; set; }
 
@@ -37,12 +39,9 @@ namespace TwelveEngine.Game2D.Entity.Types {
 
         protected void QueueInteraction() => shouldInteract = true;
 
-        private void interact() {
+        private void Interact() {
+            TryInteract();
             shouldInteract = false;
-            if(Owner.Interaction == null) {
-                return;
-            }
-            Owner.Interaction.HitTest(this);
         }
 
         protected void UpdateMovement(GameTime gameTime) {
@@ -54,23 +53,13 @@ namespace TwelveEngine.Game2D.Entity.Types {
             if(startPosition != endPosition) {
                 OnPositionChanged?.Invoke();
             }
-            if(shouldInteract) {
-                interact();
-            }
+            if(shouldInteract) Interact();
         }
 
-        private float getLeftLimit(Hitbox self,Hitbox target) {
-            return target.X + target.Width - (self.X - X);
-        }
-        private float getUpLimit(Hitbox self,Hitbox target) {
-            return target.Y + target.Height - (self.Y - Y);
-        }
-        private float getRightLimit(Hitbox self,Hitbox target) {
-            return target.X - self.Width - (self.X - X);
-        }
-        private float getDownLimit(Hitbox self,Hitbox target) {
-            return target.Y - self.Height - (self.Y - Y);
-        }
+        private float getLeftLimit(Hitbox self,Hitbox target) => target.X + target.Width - (self.X - X);
+        private float getUpLimit(Hitbox self,Hitbox target) => target.Y + target.Height - (self.Y - Y);
+        private float getRightLimit(Hitbox self,Hitbox target) => target.X - self.Width - (self.X - X);
+        private float getDownLimit(Hitbox self,Hitbox target) => target.Y - self.Height - (self.Y - Y);
 
         private bool leftCollision(Hitbox self,Hitbox target) {
             if(Y == getUpLimit(self,target) || Y == getDownLimit(self,target)) {

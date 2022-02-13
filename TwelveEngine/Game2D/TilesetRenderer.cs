@@ -63,7 +63,7 @@ namespace TwelveEngine.Game2D {
         private void draw(Point start,Point tile,Point size,Point offset,int tileSize,int[,] data) {
             var target = new Rectangle(Point.Zero,new Point(tileSize));
 
-            float depthBase = 1f / Grid.Viewport.Height;
+            float depthBase = 1f / Game.Viewport.Height;
             int gridX, value, y;
             float depth;
 

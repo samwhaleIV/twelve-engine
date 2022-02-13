@@ -1,6 +1,7 @@
 ﻿using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D;
 using JewelEditor.Entity;
+using TwelveEngine.Game2D.Entity;
 
 namespace JewelEditor {
     internal static class JewelEntities {

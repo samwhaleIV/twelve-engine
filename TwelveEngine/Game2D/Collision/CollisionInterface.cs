@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace TwelveEngine.Game2D.Collision {
     public sealed class CollisionInterface {
 
-        private readonly Grid2D grid;
-        public CollisionInterface(Grid2D grid) => this.grid = grid;
+        private readonly Grid2D owner;
+        public CollisionInterface(Grid2D owner) => this.owner = owner;
 
-        internal CollisionTypes Types { get; set; }
+        public CollisionTypes Types => owner.CollisionTypes;
+        public int CollisionLayer { get; set; } = Constants.CollisionLayerIndex;
 
         public Hitbox? GetHitbox(int ID,Vector2 location) {
             return Types?.GetHitbox(ID,location);
@@ -17,12 +18,12 @@ namespace TwelveEngine.Game2D.Collision {
         }
 
         private const int MATRIX_SIZE = 9;
-        private int[,] surroundingMatrix = new int[MATRIX_SIZE,2] {
+        private static readonly int[,] surroundingMatrix = new int[MATRIX_SIZE,2] {
             {0,0},{0,-1},{0,1},{-1,0},{1,0},{-1,-1},{1,-1},{-1,1},{1,1}
         };
 
         private bool inRange(Point location) {
-            return location.X >= 0 && location.Y >= 0 && location.X < grid.Columns && location.Y < grid.Rows;
+            return location.X >= 0 && location.Y >= 0 && location.X < owner.Columns && location.Y < owner.Rows;
         }
 
         private Hitbox? getTileHitbox(int value,Point location) {
@@ -56,7 +57,7 @@ namespace TwelveEngine.Game2D.Collision {
         }
 
         public List<Hitbox> Collides(Hitbox source) {
-            int[,] layer = grid.GetLayer(Constants.CollisionLayerIndex);
+            int[,] layer = owner.GetLayer(CollisionLayer);
 
             List<Hitbox> surroundingHitboxes = getSurroundingArea(layer,source);
             var outputList = new List<Hitbox>();

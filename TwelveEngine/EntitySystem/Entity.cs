@@ -34,16 +34,13 @@ namespace TwelveEngine.EntitySystem {
         public bool IsLoaded { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
 
-        private GameManager game = null;
-        private TOwner owner = null;
-
-        protected GameManager Game => game;
-        protected TOwner Owner => owner;
+        protected GameManager Game { get; private set; }
+        protected TOwner Owner { get; private set; } = null;
 
         internal void Register(int ID,TOwner owner) {
             this.ID = ID;
-            this.owner = owner;
-            game = owner.Game;
+            Owner = owner;
+            Game = owner.Game;
         }
 
         protected event Action OnLoad, OnUnload;
@@ -58,8 +55,8 @@ namespace TwelveEngine.EntitySystem {
         internal void Unload() {
             OnUnload?.Invoke();
             ID = DEFAULT_ID;
-            owner = null;
-            game = null;
+            Owner = null;
+            Game = null;
             IsLoaded = false;
         }
 

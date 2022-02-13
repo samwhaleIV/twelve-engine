@@ -86,7 +86,11 @@ namespace TwelveEngine.Game2D.Collision {
             return new CollisionType(new Point(minX,minY),new Point(maxX - minX + 1,maxY - minY + 1),tileSize);
         }
 
-        internal void LoadTypes() {
+        internal bool IsLoaded { get; private set; }
+
+        internal void Load() {
+            if(IsLoaded) return;
+
             var (pixels,tilestColumns) = getCollisionSlice();
 
             var width = pixels.GetLength(0);
@@ -108,6 +112,7 @@ namespace TwelveEngine.Game2D.Collision {
                     types[tilesetIndex] = type.Value;
                 }
             }
+            IsLoaded = true;
         }
 
         public Hitbox? GetHitbox(int ID,Vector2 location) {

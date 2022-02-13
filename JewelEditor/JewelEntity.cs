@@ -1,5 +1,5 @@
 ﻿using JewelEditor.Entity;
-using TwelveEngine.Game2D;
+using TwelveEngine.Game2D.Entity;
 
 namespace JewelEditor {
     internal abstract class JewelEntity:Entity2D {

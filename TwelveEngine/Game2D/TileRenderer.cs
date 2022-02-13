@@ -4,18 +4,14 @@ using TwelveEngine.Shell;
 namespace TwelveEngine.Game2D {
     public abstract class TileRenderer {
 
-        private GameManager game;
-        private Grid2D grid;
+        protected Grid2D Grid { get; private set; }
+        protected GameManager Game { get; private set; }
 
-        protected GameManager Game => game;
-        protected Grid2D Grid => grid;
+        protected event Action OnLoad, OnUnload;
 
-        protected event Action OnLoad;
-        protected event Action OnUnload;
-
-        internal void Load(GameManager game,Grid2D grid) {
-            this.game = game;
-            this.grid = grid;
+        internal void Load(Grid2D grid) {
+            Grid = grid;
+            Game = grid.Game;
             OnLoad?.Invoke();
         }
         internal void Unload() => OnUnload?.Invoke();

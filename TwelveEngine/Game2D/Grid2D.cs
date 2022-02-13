@@ -3,37 +3,22 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Serial.Map;
 using TwelveEngine.EntitySystem;
-using TwelveEngine.Game2D.Collision;
 using TwelveEngine.Game2D.Entity;
 using TwelveEngine.Serial;
 using TwelveEngine.Shell.States;
 using TwelveEngine.Shell.UI;
+using TwelveEngine.Game2D.Collision;
 
 namespace TwelveEngine.Game2D {
     public class Grid2D:InputGameState {
 
-        public Grid2D(
-            int? tileSize = null,
-            LayerMode? layerMode = null,
-            CollisionTypes collisionTypes = null,
-            EntityFactory<Entity2D,Grid2D> entityFactory = null
-        ) {
+        public Grid2D(EntityFactory<Entity2D,Grid2D> entityFactory = null,int? tileSize = null) {
 
-            camera = new Camera();
-            camera.Invalidated += Camera_Invalidated;
+            EntityFactory = entityFactory ?? Entity2DType.GetFactory();
+            if(tileSize.HasValue) TileSize = tileSize.Value;
 
-            if(!tileSize.HasValue) {
-                tileSize = Constants.Config.TileSize;
-            }
-            this.tileSize = tileSize.Value;
-            LayerMode = layerMode ?? LayerModes.Default;
-
-            collisionInterface = new CollisionInterface(this) { Types = collisionTypes };
-
-            if(entityFactory == null) {
-                entityFactory = Entity2DType.GetFactory();
-            }
-            this.entityFactory = entityFactory;
+            collisionInterface = new CollisionInterface(this);
+            Camera = new Camera();
 
             OnLoad += Grid2D_OnLoad;
             OnUnload += Grid2D_OnUnload;
@@ -41,28 +26,65 @@ namespace TwelveEngine.Game2D {
             OnImport += Grid2D_OnImport;
             OnExport += Grid2D_OnExport;
 
-            OnRender += render;
-            OnUpdate += update;
+            OnRender += Grid2D_OnRender;
+            OnUpdate += Grid2D_OnUpdate;
         }
 
-        private readonly EntityFactory<Entity2D,Grid2D> entityFactory;
+        private readonly CollisionInterface collisionInterface;
+        private CollisionTypes _collisionTypes;
 
-        private Point size;
-
-        public int Columns => size.X;
-        public int Rows => size.Y;
-
-        public bool TileInRange(Point tile) {
-            return tile.X >= 0 && tile.Y >= 0 && tile.X < Columns && tile.Y < Rows;
+        public CollisionTypes CollisionTypes {
+            get => _collisionTypes;
+            set {
+                if(_collisionTypes == value) return;
+                if(IsLoaded && !value.IsLoaded) value.Load();
+                _collisionTypes = value;
+            }
         }
 
-        public Point GetTile(Vector2 location) {
-            return Vector2.Floor(location).ToPoint();
+        public CollisionInterface Collision => collisionInterface;
+        
+
+        private Camera _camera = null;
+        private int[][,] layers;
+
+        public LayerMode LayerMode { get; set; } = LayerModes.Default;
+        public Color BackgroundColor { get; set; } = Color.Black;
+
+        public ScreenSpace ScreenSpace { get; private set; }
+        public Point Size { get; private set; } = Point.Zero;
+
+        public EntityFactory<Entity2D,Grid2D> EntityFactory { get; private set; }
+        public EntityManager<Entity2D,Grid2D> Entities { get; private set; }
+
+        public int TileSize { get; private set; } = Constants.Config.TileSize;
+
+        public TileRenderer TileRenderer { get; set; }
+
+        public int Columns => Size.X;
+        public int Rows => Size.Y;
+
+        public Camera Camera {
+            get => _camera;
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                }
+                var oldCamera = _camera;
+                if(oldCamera == value) {
+                    return;
+                }
+                if(oldCamera != null) {
+                    oldCamera.Invalidated -= Camera_Invalidated;
+                }
+                value.Invalidated += Camera_Invalidated;
+                _camera = value;
+            }
         }
 
-        public Point GetTile(Point screenPoint) {
-            return GetTile(GetWorldVector(screenPoint));
-        }
+        public bool TileInRange(Point tile) => new Rectangle(Point.Zero,Size).Contains(tile);
+        public Point GetTile(Vector2 location) => Vector2.Floor(location).ToPoint();
+        public Point GetTile(Point screenPoint) => GetTile(GetWorldVector(screenPoint));
 
         public bool TryGetTile(Point screenPoint,out Point tile) {
             tile = GetTile(screenPoint);
@@ -74,49 +96,9 @@ namespace TwelveEngine.Game2D {
             return TileInRange(tile);
         }
 
-        private Camera camera;
-
-        public Camera Camera {
-            get => camera;
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                }
-                if(camera == value) {
-                    return;
-                }
-                camera.Invalidated -= Camera_Invalidated;
-                camera = value;
-            }
-        }
-
-        public Color BackgroundColor { get; set; } = Color.Black;
-
-        private readonly int tileSize;
-        public int TileSize => tileSize;
-
-        public LayerMode LayerMode;
-
-        private readonly CollisionInterface collisionInterface;
-        public CollisionInterface Collision => collisionInterface;
-
-        public InteractionLayer Interaction { get; set; }
-
-        public EntityManager<Entity2D,Grid2D> Entities { get; private set; }
-
-        private int[][,] layers;
-        private TileRenderer tileRenderer = null;
-        private TileRenderer pendingTileRenderer = null;
-
-        public Viewport Viewport => Game.Viewport;
-
-        public ScreenSpace ScreenSpace { get; private set; }
-
-        private bool spriteBatchActive = false;
-
         public void ImportMap(Map map) {
             layers = map.Layers2D;
-            size = new Point(map.Width,map.Height);
+            Size = new Point(map.Width,map.Height);
         }
 
         public void Fill(int layerIndex,Func<int,int,int> pattern) {
@@ -129,48 +111,22 @@ namespace TwelveEngine.Game2D {
         }
 
         public int[,] GetLayer(int index) => layers[index];
-        private bool hasTileRenderer() => tileRenderer != null;
-
-        private void setTileRenderer(TileRenderer tileRenderer) {
-            if(!IsLoaded) {
-                pendingTileRenderer = tileRenderer;
-                return;
-            }
-        }
-
-        public TileRenderer TileRenderer {
-            get {
-                if(!hasTileRenderer()) {
-                    return pendingTileRenderer;
-                }
-                return tileRenderer;
-            }
-            set {
-                setTileRenderer(value);
-            }
-        }
 
         private void Grid2D_OnLoad() {
-            collisionInterface.Types?.LoadTypes();
-            Entities = new EntityManager<Entity2D,Grid2D>(this,entityFactory);
-            if(pendingTileRenderer != null) {
-                tileRenderer = pendingTileRenderer;
-                pendingTileRenderer = null;
-                tileRenderer.Load(Game,this);
-            }
+            CollisionTypes?.Load();
+            Entities = new EntityManager<Entity2D,Grid2D>(this,EntityFactory);
+            TileRenderer?.Load(this);
         }
 
         private void Grid2D_OnUnload() {
-            if(hasTileRenderer()) {
-                tileRenderer.Unload();
-            }
+            TileRenderer?.Unload();
         }
 
-        private void renderEntities(GameTime gameTime) {
+        private void RenderEntities(GameTime gameTime) {
             Entities.IterateImmutable(Entity2D.Render,gameTime);
         }
 
-        private static float cameraBounds(float value,float size,int gridSize) {
+        private static float CameraBounds(float value,float size,int gridSize) {
             if(value < 0f) {
                 return 0f;
             }
@@ -181,7 +137,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public int CalculateTileSize() {
-            int tileSize = (int)Math.Round(camera.Scale * this.tileSize);
+            int tileSize = (int)Math.Round(Camera.Scale * TileSize);
             if(tileSize % 2 == 1) {
                 tileSize++;
             }
@@ -190,67 +146,38 @@ namespace TwelveEngine.Game2D {
 
         public Vector2 GetCenter() => ScreenSpace.GetCenter();
 
-        private ScreenSpace getScreenSpace() {
+        private ScreenSpace GetScreenSpace() {
             int tileSize = CalculateTileSize();
 
-            Vector2 size = Viewport.Bounds.Size.ToVector2() / tileSize;
+            Vector2 size = Game.Viewport.Bounds.Size.ToVector2() / tileSize;
             Vector2 position = Camera.Position + Camera.Offset - (size * 0.5f) + new Vector2(0.5f);
 
-            if(camera.HorizontalPadding) {
-                position.X = cameraBounds(position.X,size.X,Columns);
+            if(Camera.HorizontalPadding) {
+                position.X = CameraBounds(position.X,size.X,Columns);
             }
-            if(camera.VerticalPadding) {
-                position.Y = cameraBounds(position.Y,size.Y,Rows);
+            if(Camera.VerticalPadding) {
+                position.Y = CameraBounds(position.Y,size.Y,Rows);
             }
 
             return new ScreenSpace(position,size,tileSize);
         }
 
         public Vector2 GetWorldVector(Point screenLocation) {
-            return ScreenSpace.Location + screenLocation.ToVector2() / Viewport.Bounds.Size.ToVector2() * ScreenSpace.Size;
+            return ScreenSpace.Location + screenLocation.ToVector2() / Game.Viewport.Bounds.Size.ToVector2() * ScreenSpace.Size;
         }
 
         public Point GetScreenPoint(Vector2 worldLocation) {
             return ((worldLocation - ScreenSpace.Location) * ScreenSpace.TileSize).ToPoint();
         }
 
-        private void renderLayers(int start,int length) {
-            if(!hasTileRenderer()) {
+        private void RenderLayers(int start,int length) {
+            if(TileRenderer == null) {
                 return;
             }
             int end = start + length;
             for(int i = start;i<end;i++) {
-                tileRenderer.RenderTiles(layers[i]);
+                TileRenderer.RenderTiles(layers[i]);
             }
-        }
-
-        private void startDeferredSpriteBatch() {
-            Game.SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-            spriteBatchActive = true;
-        }
-        private void startBackToFrontSpriteBatch() {
-            Game.SpriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointClamp);
-            spriteBatchActive = true;
-        }
-        private void endSpriteBatch() {
-            Game.SpriteBatch.End();
-            spriteBatchActive = false;
-        }
-        private void tryStartSpriteBatch() {
-            if(spriteBatchActive) {
-                return;
-            }
-            startDeferredSpriteBatch();
-        }
-        private void tryEndSpriteBatch() {
-            if(!spriteBatchActive) {
-                return;
-            }
-            endSpriteBatch();
-        }
-
-        private void updateScreenSpace() {
-            ScreenSpace = getScreenSpace();
         }
 
         private void Camera_Invalidated() {
@@ -258,54 +185,53 @@ namespace TwelveEngine.Game2D {
                 throw new InvalidOperationException("Cannot invalidate the camera during the render cycle!");
             }
             if(IsUpdating) {
-                updateScreenSpace();
+                ScreenSpace = GetScreenSpace();
             }
         }
 
-        private void update(GameTime gameTime) {
-            updateScreenSpace();
+        private void Grid2D_OnUpdate(GameTime gameTime) {
+            ScreenSpace = GetScreenSpace();
             UpdateInputs(gameTime);
             Entities.IterateMutable(Entity2D.Update,gameTime);
         }
 
-        private void render(GameTime gameTime) {
-            updateScreenSpace();
-            tileRenderer.CacheArea(ScreenSpace);
+        private void Grid2D_OnRender(GameTime gameTime) {
+            ScreenSpace = GetScreenSpace();
+            TileRenderer.CacheArea(ScreenSpace);
 
             Game.GraphicsDevice.Clear(BackgroundColor);
+            SpriteBatch.SamplerState = SamplerState.PointClamp;
             
             if(LayerMode.Background) {
                 if(LayerMode.BackgroundLength == 2) {
-                    startDeferredSpriteBatch();
-                    renderLayers(LayerMode.BackgroundStart,1);
-                    endSpriteBatch();
+                    SpriteBatch.Begin();
+                    RenderLayers(LayerMode.BackgroundStart,1);
+                    SpriteBatch.End();
 
-                    startBackToFrontSpriteBatch();
-                    renderLayers(LayerMode.BackgroundStart+1,1);
-                    renderEntities(gameTime);
-                    endSpriteBatch();
+                    SpriteBatch.Begin(SpriteSortMode.BackToFront);
+                    RenderLayers(LayerMode.BackgroundStart+1,1);
+                    RenderEntities(gameTime);
+                    SpriteBatch.End();
                 } else {
-                    startDeferredSpriteBatch();
-                    renderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);
-                    renderEntities(gameTime);
+                    SpriteBatch.Begin();
+                    RenderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);
+                    RenderEntities(gameTime);
                 }
             }
 
-            tryStartSpriteBatch();
-
+            SpriteBatch.TryBegin();
             if(LayerMode.Foreground) {
-                renderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
+                RenderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
             }
-
             InputGuide.Render();
-            tryEndSpriteBatch();
+            SpriteBatch.End();
         }
 
         private void Grid2D_OnExport(SerialFrame frame) {
             frame.Set(BackgroundColor);
-            frame.Set(camera);
+            frame.Set(Camera);
             frame.Set(LayerMode);
-            frame.Set(size);
+            frame.Set(Size);
             frame.Set(layers.Length);
             for(var i = 0;i<layers.Length;i++) {
                 frame.Set(layers[i]);
@@ -314,11 +240,10 @@ namespace TwelveEngine.Game2D {
 
         private void Grid2D_OnImport(SerialFrame frame) {
             BackgroundColor = frame.GetColor();
-            frame.Get(camera);
+            frame.Get(Camera);
             frame.Get(LayerMode);
-            size = frame.GetPoint();
+            Size = frame.GetPoint();
             var layerCount = frame.GetInt();
-
             var layers = new int[layerCount][,];
             for(var i = 0;i<layerCount;i++) {
                 layers[i] = frame.GetIntArray2D();

@@ -1,5 +1,3 @@
 ﻿namespace TwelveEngine.Shell.Input {
-    public enum InputMethod {
-        Unknown, Keyboard, GamePad
-    }
+    public enum InputMethod { Unknown, Keyboard, GamePad }
 }

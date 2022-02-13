@@ -32,7 +32,7 @@ namespace TwelveEngine.Shell {
 
             keyBinds = KeyBinds.Load(out KeyBindSet keyBindSet);
 
-            keyWatcherSet = new KeyWatcherSet(getDebugControls(keyBindSet));
+            keyWatcherSet = new HotkeySet(GetDebugControls(keyBindSet));
 
             debugWriter = new DebugWriter(this);
         }
@@ -60,15 +60,15 @@ namespace TwelveEngine.Shell {
         }
 #endif
 
-        private (Keys key, Action action)[] getDebugControls(KeyBindSet keyBindSet) => new (Keys, Action)[]{
+        private (Keys key, Action action)[] GetDebugControls(KeyBindSet keyBindSet) => new (Keys, Action)[]{
             (keyBindSet.Playback, automationAgent.TogglePlayback),
             (keyBindSet.Recording, automationAgent.ToggleRecording),
 
-            (keyBindSet.PauseGame, togglePaused),
-            (keyBindSet.AdvanceFrame, queueAdvanceFrame),
+            (keyBindSet.PauseGame, TogglePaused),
+            (keyBindSet.AdvanceFrame, QueueAdvanceFrame),
 
-            (keyBindSet.SaveState, saveSerialState),
-            (keyBindSet.LoadState, loadSerialState)
+            (keyBindSet.SaveState, SaveSerialState),
+            (keyBindSet.LoadState, LoadSerialState)
         };
 
         private void AutomationAgent_PlaybackStopped() {
@@ -81,8 +81,23 @@ namespace TwelveEngine.Shell {
         }
 
         /* State fields */
-        private GameState gameState = null;
-        private SerialFrame savedState = null;
+        private SerialFrame SavedState { get; set; }
+        private bool HasSavedState => SavedState != null;
+
+        private GameState PendingGameState { get; set; }
+        private GameState GameState { get; set; }
+
+        internal SpriteBatchSettings SpriteBatchSettings {
+            get {
+                if(HasPendingState) {
+                    return PendingGameState.SpriteBatchSettings;
+                }
+                if(HasGameState) {
+                    return GameState.SpriteBatchSettings;
+                }
+                return null;
+            }
+        }
 
         /* Loading, automation, and time maniuplation state */
         private bool initialized = false, gamePaused = false, updating = false, rendering = false;
@@ -93,7 +108,7 @@ namespace TwelveEngine.Shell {
         /* God class extensions */
         private readonly GraphicsDeviceManager graphicsDeviceManager;
         private readonly VCRDisplay vcrDisplay;
-        private readonly KeyWatcherSet keyWatcherSet;
+        private readonly HotkeySet keyWatcherSet;
         private readonly KeyBinds keyBinds;
 
         private readonly AutomationAgent automationAgent = new AutomationAgent();
@@ -107,7 +122,7 @@ namespace TwelveEngine.Shell {
         public KeyBinds KeyBinds => keyBinds;
         public GameTime Time => proxyGameTime;
 
-        public SpriteBatch SpriteBatch { get; private set; }
+        public SmartSpriteBatch SpriteBatch { get; private set; }
         public SpriteFont DebugFont { get; private set; }
         private RenderTargetStack RenderTargets { get; set; }
 
@@ -121,10 +136,10 @@ namespace TwelveEngine.Shell {
 
         public bool IsPaused {
             get => gamePaused;
-            set => setPaused(value);
+            set => SetPaused(value);
         }
 
-        private void setPaused(bool paused) {
+        private void SetPaused(bool paused) {
             if(gamePaused == paused) {
                 return;
             }
@@ -136,48 +151,46 @@ namespace TwelveEngine.Shell {
             gamePaused = paused;
         }
 
-        private void togglePaused() => setPaused(!gamePaused);
+        private void TogglePaused() => SetPaused(!gamePaused);
 
-        private GamePadState getGamePadState() {
+        private GamePadState GetGamepadState() {
             var state = GamePad.GetState(Constants.Config.GamePadIndex,GamePadDeadZone.None);
             return state;
         }
 
-        private KeyboardState getKeyboardState() {
+        private KeyboardState GetKeyboardState() {
             var state = Keyboard.GetState();
             return automationAgent.FilterKeyboardState(state);
         }
 
-        private MouseState getMouseState() {
+        private MouseState GetMouseState() {
             var state = Mouse.GetState();
             return automationAgent.FilterMouseState(state);
         }
 
-        private bool hasState() {
-            return gameState != null;
-        }
-
-        private void saveSerialState() {
-            if(!hasState()) {
+        private void SaveSerialState() {
+            if(!HasGameState) {
                 return;
             }
             var frame = new SerialFrame();
-            gameState.Export(frame);
-            savedState = frame;
+            GameState.Export(frame);
+            SavedState = frame;
         }
-        private void loadSerialState() {
-            if(!hasState() || savedState == null) {
+
+        private void LoadSerialState() {
+            if(!HasGameState || !HasSavedState) {
                 return;
             }
-            savedState.StartReadback();
-            gameState.Import(savedState);
+            SavedState.StartReadback();
+            GameState.Import(SavedState);
         }
 
-        private GameState pendingGameState = null;
         private Func<GameState> pendingStateGenerator = null;
 
+        private bool HasPendingState => PendingGameState != null;
+
         public void SetState(Func<GameState> stateGenerator) {
-            if(pendingGameState != null || pendingStateGenerator != null) {
+            if(HasPendingState || pendingStateGenerator != null) {
                 throw new InvalidOperationException("A GameState has already been queued. Cannot override the previous SetState; Load only one GameState at a time.");
             }
             if(!initialized) {
@@ -191,18 +204,14 @@ namespace TwelveEngine.Shell {
                 return;
             }
 
-            GameState oldState = gameState, newGameState;
-            gameState = null;
+            GameState oldState = GameState, newGameState;
+            GameState = null;
 
-            if(oldState != null) {
-                oldState.Unload();
-            }
+            oldState?.Unload();
             newGameState = stateGenerator.Invoke();
-            if(newGameState != null) {
-                newGameState.Load(this);
-            }
+            newGameState?.Load(this);
 
-            pendingGameState = newGameState;
+            PendingGameState = newGameState;
         }
         
         public void SetState(GameState state) => SetState(() => state);
@@ -229,11 +238,11 @@ namespace TwelveEngine.Shell {
         public event Action<GameManager> OnLoad;
 
         protected override void LoadContent() {
-            var cpuTextures = Constants.Config.CPUTextures;
+            string[] cpuTextures = Constants.Config.CPUTextures;
             if(cpuTextures.Length > 0) {
                 CPUTexture.LoadDictionary(Content,cpuTextures);
             }
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            SpriteBatch = new SmartSpriteBatch(this);
             RenderTargets = new RenderTargetStack(GraphicsDevice);
             DebugFont = Content.Load<SpriteFont>(Constants.DebugFont);
             vcrDisplay.Load();
@@ -242,26 +251,23 @@ namespace TwelveEngine.Shell {
         }
 
         protected override void UnloadContent() {
-            if(gameState != null) {
-                gameState.Unload();
-                gameState = null;
-            }
-            if(pendingGameState != null) {
-                pendingGameState.Unload();
-                pendingGameState = null;
-            }
+            GameState?.Unload();
+            GameState = null;
+
+            PendingGameState?.Unload();
+            PendingGameState = null;
+
+            SpriteBatch?.Dispose();
+            SpriteBatch = null;
+
             Content.Dispose();
-            if(SpriteBatch != null) {
-                SpriteBatch.Dispose();
-                SpriteBatch = null;
-            }
             graphicsDeviceManager.Dispose();
         }
 
         private bool advanceFrameQueued = false;
-        private void queueAdvanceFrame() => advanceFrameQueued = true;
+        private void QueueAdvanceFrame() => advanceFrameQueued = true;
 
-        private void advanceFrame(KeyboardState keyboardState,GameTime gameTime) {
+        private void AdvanceFrame(KeyboardState keyboardState,GameTime gameTime) {
             if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
 
                 shouldAdvanceFrame = false;
@@ -270,7 +276,7 @@ namespace TwelveEngine.Shell {
 
             } else if(gamePaused && !shouldAdvanceFrame) {
 
-                var simTime = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
+                TimeSpan simTime = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
                 proxyGameTime.AddSimTime(simTime);
                 shouldAdvanceFrame = true;
                 vcrDisplay.AdvanceFrame(gameTime);
@@ -279,7 +285,7 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        private void updateGame(GameTime trueGameTime) {
+        private void UpdateGame(GameTime trueGameTime) {
             proxyGameTime.Update(trueGameTime);
             automationAgent.StartUpdate();
 
@@ -290,33 +296,33 @@ namespace TwelveEngine.Shell {
                 automationAgent.UpdateRecordingFrame(proxyGameTime);
             }
 
-            KeyboardState = getKeyboardState();
-            MouseState = getMouseState();
-            GamePadState = getGamePadState();
+            KeyboardState = GetKeyboardState();
+            MouseState = GetMouseState();
+            GamePadState = GetGamepadState();
 
-            gameState.Update(proxyGameTime);
+            GameState.Update(proxyGameTime);
 
             automationAgent.EndUpdate();
             if(framesToSkip >= 1) {
-                fastForward();
+                FastForward();
             }
         }
 
-        private void fastForward() {
+        private void FastForward() {
             if(fastForwarding) return;
             fastForwarding = true;
-            var count = framesToSkip;
+            int count = framesToSkip;
             framesToSkip = 0;
 
-            var limit = automationAgent.FrameNumber + count;
-            var playbackFrameCount = automationAgent.PlaybackFrameCount;
+            int limit = automationAgent.FrameNumber + count;
+            int? playbackFrameCount = automationAgent.PlaybackFrameCount;
 
             if(playbackFrameCount.HasValue) {
                 limit = Math.Min(playbackFrameCount.Value,limit);
             }
 
-            for(var i = automationAgent.FrameNumber;i < limit;i++) {
-                updateGame(null); /* Automation agent supplies a game time when playback is active */
+            for(int i = automationAgent.FrameNumber;i < limit;i++) {
+                UpdateGame(null); /* Automation agent supplies a game time when playback is active */
             }
 
             fastForwarding = false;
@@ -329,41 +335,43 @@ namespace TwelveEngine.Shell {
             framesToSkip = count;
         }
 
+        private bool HasGameState => GameState != null;
+
         protected override void Update(GameTime gameTime) {
             updating = true;
 #if DEBUG
             watch.Start();
 #endif
-            if(!hasState()) {
+            if(!HasGameState) {
 #if DEBUG
                 watch.Stop();
                 updateTime = watch.Elapsed;
                 watch.Reset();
 #endif
-                if(pendingGameState != null) {
-                    var newState = pendingGameState;
-                    pendingGameState = null;
-                    gameState = newState;
+                if(HasPendingState) {
+                    GameState newState = PendingGameState;
+                    PendingGameState = null;
+                    GameState = newState;
                     Update(gameTime);
                 }
 
                 updating = false;
                 return;
             }
-            var vanillaKeyboardState = Keyboard.GetState();
+            KeyboardState vanillaKeyboardState = Keyboard.GetState();
             keyWatcherSet.Update(vanillaKeyboardState);
             if(advanceFrameQueued) {
-                advanceFrame(vanillaKeyboardState,gameTime);
+                AdvanceFrame(vanillaKeyboardState,gameTime);
                 advanceFrameQueued = false;
             }
 
             if(!gamePaused) {
-                updateGame(gameTime);             
+                UpdateGame(gameTime);             
             } else if(shouldAdvanceFrame) {
-                updateGame(gameTime);
+                UpdateGame(gameTime);
                 shouldAdvanceFrame = false;
             } else if(framesToSkip > 0) {
-                fastForward();
+                FastForward();
             }
 #if DEBUG
             watch.Stop();
@@ -372,7 +380,7 @@ namespace TwelveEngine.Shell {
 #endif
             updating = false;
             if(pendingStateGenerator != null) {
-                var generator = pendingStateGenerator;
+                Func<GameState> generator = pendingStateGenerator;
                 pendingStateGenerator = null;
                 SetState(generator);
             }
@@ -383,9 +391,9 @@ namespace TwelveEngine.Shell {
 #if DEBUG
             watch.Start();
 #endif
-            if(hasState()) {
-                gameState.PreRender(proxyGameTime);
-                gameState.Render(proxyGameTime);
+            if(HasGameState) {
+                GameState.PreRender(proxyGameTime);
+                GameState.Render(proxyGameTime);
             } else {
                 GraphicsDevice.Clear(Color.Black);
             }
@@ -396,12 +404,12 @@ namespace TwelveEngine.Shell {
             renderTime = watch.Elapsed;
             watch.Reset();
 
-            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp,DepthStencilState.None);
+            SpriteBatch.SamplerState = SamplerState.LinearClamp;
+            SpriteBatch.Begin();
             DrawGameTimeDebug(debugWriter);
-            gameState?.WriteDebug(debugWriter);
+            GameState?.WriteDebug(debugWriter);
             SpriteBatch.End();
 #endif
-
             rendering = false;
         }
     }

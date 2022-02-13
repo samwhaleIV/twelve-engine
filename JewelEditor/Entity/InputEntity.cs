@@ -48,7 +48,7 @@ namespace JewelEditor.Entity {
             target = null;
         }
 
-        private readonly KeyWatcherSet keyWatcherSet;
+        private readonly HotkeySet keyWatcherSet;
 
         private void SetInput(int index) {
             if(!GetUI().TryGetInputMode(index,out var inputMode)) {
@@ -137,7 +137,7 @@ namespace JewelEditor.Entity {
 
             var keyWatchers = new Queue<(Keys,Action)>();
             InitializeKeyWatchers(keyWatchers);
-            keyWatcherSet = new KeyWatcherSet(keyWatchers.ToArray());
+            keyWatcherSet = new HotkeySet(keyWatchers.ToArray());
         }
 
         private void InputEntity_OnLoad() {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TwelveEngine.Game2D.Collision;
 using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.Game2D.Entity.Types {

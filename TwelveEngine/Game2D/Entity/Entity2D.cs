@@ -1,11 +1,12 @@
-﻿using TwelveEngine.EntitySystem;
-using System;
+﻿using System;
+using TwelveEngine.EntitySystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Serial;
 using TwelveEngine.Shell.Input;
+using TwelveEngine.Game2D.Collision;
 
-namespace TwelveEngine.Game2D {
+namespace TwelveEngine.Game2D.Entity {
     public abstract class Entity2D:Entity<Grid2D> {
 
         public Entity2D() {
@@ -47,8 +48,6 @@ namespace TwelveEngine.Game2D {
             set => size.Y = value;
         }
 
-        private Direction direction = Direction.Down;
-
         public Vector2 Position {
             get => position;
             set => position = value;
@@ -59,10 +58,7 @@ namespace TwelveEngine.Game2D {
             set => size = value;
         }
 
-        public Direction Direction {
-            get => direction;
-            set => direction = value;
-        }
+        public Direction Direction { get; set; } = Direction.Down;
 
         protected bool IsKeyDown(Impulse impulse) {
             return Owner.Input.IsKeyDown(impulse);
@@ -71,18 +67,25 @@ namespace TwelveEngine.Game2D {
             return Owner.Input.IsKeyUp(impulse);
         }
 
-        public Hitbox GetInteractionBox() {
-            return Hitbox.GetInteractionArea(this);
+        protected bool TryInteract() {
+            var interactionBox = Hitbox.GetInteractionArea(this);
+            foreach(var target in Owner.Entities.GetByType<IInteract>()) {
+                if(interactionBox.Collides(target.GetHitbox())) {
+                    target.Interact(this);
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public void Draw(Texture2D texture,Rectangle source) {
+        protected void Draw(Texture2D texture,Rectangle source) {
             var destination = GetDestination();
-            var depth = getRenderDepth(destination.Y);
+            var depth = GetRenderDepth(destination.Y);
             Game.SpriteBatch.Draw(texture,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
         }
 
-        private float getRenderDepth(int destinationY) {
-            return 1 - Math.Max(destinationY / (float)Owner.Viewport.Height,0);
+        public float GetRenderDepth(int destinationY) {
+            return 1 - Math.Max(destinationY / (float)Game.Viewport.Height,0);
         }
 
         public Rectangle GetDestination() {
@@ -119,10 +122,10 @@ namespace TwelveEngine.Game2D {
 
         public event Action<GameTime> OnUpdate, OnRender;
 
-        public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
-        public void Render(GameTime gameTime) => OnRender?.Invoke(gameTime);
+        protected void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
+        protected void Render(GameTime gameTime) => OnRender?.Invoke(gameTime);
 
-        public static void Update(Entity2D entity,GameTime gameTime) => entity.Update(gameTime);
-        public static void Render(Entity2D entity,GameTime gameTime) => entity.Render(gameTime);
+        internal static void Update(Entity2D entity,GameTime gameTime) => entity.Update(gameTime);
+        internal static void Render(Entity2D entity,GameTime gameTime) => entity.Render(gameTime);
     }
 }

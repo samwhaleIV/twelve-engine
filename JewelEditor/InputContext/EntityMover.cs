@@ -3,6 +3,7 @@ using JewelEditor.HistoryActions;
 using Microsoft.Xna.Framework;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D;
+using TwelveEngine.Game2D.Entity;
 
 namespace JewelEditor.InputContext {
     internal sealed class EntityMover {

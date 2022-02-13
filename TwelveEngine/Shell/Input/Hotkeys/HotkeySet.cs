@@ -2,14 +2,14 @@
 using System;
 
 namespace TwelveEngine.Shell.Input {
-    public sealed class KeyWatcherSet {
-        private readonly KeyWatcher[] set;
-        public KeyWatcherSet(params (Keys key,Action action)[] set) {
-            var newSet = new KeyWatcher[set.Length];
+    public sealed class HotkeySet {
+        private readonly Hotkey[] set;
+        public HotkeySet(params (Keys key,Action action)[] set) {
+            var newSet = new Hotkey[set.Length];
             for(var i = 0;i<set.Length;i++) {
                 var item = set[i];
                 var action = item.action;
-                newSet[i] = new KeyWatcher(item.key,action);
+                newSet[i] = new Hotkey(item.key,action);
             }
             this.set = newSet;
         }

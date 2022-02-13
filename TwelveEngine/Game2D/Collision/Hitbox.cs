@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using TwelveEngine.Game2D.Entity;
 using TwelveEngine.Shell.Input;
 
-namespace TwelveEngine.Game2D {
+namespace TwelveEngine.Game2D.Collision {
     public readonly struct Hitbox {
         public Hitbox(
             Vector2 position,

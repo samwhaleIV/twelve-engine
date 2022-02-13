@@ -9,6 +9,8 @@
     <Import_RootNamespace>TwelveEngine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\SmartSpriteBatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
@@ -34,6 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Terrain\TerrainChunk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\World.cs" />
+    <Compile Include="..\TwelveEngine\Shell\SpriteBatchSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\States\DataGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\States\InputGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RenderTargetStack.cs" />
@@ -54,7 +57,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\ControllerBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\CameraPadding.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Direction.cs" />
@@ -71,7 +73,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Glyphs\GlyphMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\ImpulseEndpoints.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\InputMethod.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Watcher\KeyWatcherData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Hotkeys\HotkeyData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Impulse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\KeyBindSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\CPUTexture.cs" />
@@ -90,7 +92,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\TileGenSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\InputHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Hitbox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\InteractionLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
@@ -111,8 +112,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\VCRDisplay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\ProxyGametime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\KeyBinds.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Watcher\KeyWatcher.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Watcher\KeyWatcherSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Hotkeys\Hotkey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Hotkeys\HotkeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\MouseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
@@ -149,6 +150,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Shell\" />
   </ItemGroup>
 </Project>

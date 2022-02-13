@@ -23,10 +23,9 @@ namespace JewelEditor {
 
         public Editor() : base(
             tileSize: 16,
-            layerMode: LayerModes.SingleLayerBackground,
-            collisionTypes: null,
             entityFactory: JewelEntities.GetFactory()
         ) {
+            LayerMode = LayerModes.SingleLayerBackground;
             TileRenderer = new TilesetRenderer(Tileset);
             BackgroundColor = Color.LightGray;
 
