@@ -81,23 +81,11 @@ namespace TwelveEngine.Shell {
         }
 
         /* State fields */
-        private SerialFrame SavedState { get; set; }
-        private bool HasSavedState => SavedState != null;
+        private SerialFrame _savedState;
+        private bool HasSavedState => _savedState != null;
 
-        private GameState PendingGameState { get; set; }
-        private GameState GameState { get; set; }
-
-        internal SpriteBatchSettings SpriteBatchSettings {
-            get {
-                if(HasPendingState) {
-                    return PendingGameState.SpriteBatchSettings;
-                }
-                if(HasGameState) {
-                    return GameState.SpriteBatchSettings;
-                }
-                return null;
-            }
-        }
+        private GameState _pendingGameState = null;
+        private GameState _gameState = null;
 
         /* Loading, automation, and time maniuplation state */
         private bool initialized = false, gamePaused = false, updating = false, rendering = false;
@@ -122,7 +110,7 @@ namespace TwelveEngine.Shell {
         public KeyBinds KeyBinds => keyBinds;
         public GameTime Time => proxyGameTime;
 
-        public SmartSpriteBatch SpriteBatch { get; private set; }
+        public SpriteBatch SpriteBatch { get; private set; }
         public SpriteFont DebugFont { get; private set; }
         private RenderTargetStack RenderTargets { get; set; }
 
@@ -173,21 +161,21 @@ namespace TwelveEngine.Shell {
                 return;
             }
             var frame = new SerialFrame();
-            GameState.Export(frame);
-            SavedState = frame;
+            _gameState.Export(frame);
+            _savedState = frame;
         }
 
         private void LoadSerialState() {
             if(!HasGameState || !HasSavedState) {
                 return;
             }
-            SavedState.StartReadback();
-            GameState.Import(SavedState);
+            _savedState.StartReadback();
+            _gameState.Import(_savedState);
         }
 
         private Func<GameState> pendingStateGenerator = null;
 
-        private bool HasPendingState => PendingGameState != null;
+        private bool HasPendingState => _pendingGameState != null;
 
         public void SetState(Func<GameState> stateGenerator) {
             if(HasPendingState || pendingStateGenerator != null) {
@@ -204,14 +192,14 @@ namespace TwelveEngine.Shell {
                 return;
             }
 
-            GameState oldState = GameState, newGameState;
-            GameState = null;
+            GameState oldState = _gameState, newGameState;
+            _gameState = null;
 
             oldState?.Unload();
             newGameState = stateGenerator.Invoke();
             newGameState?.Load(this);
 
-            PendingGameState = newGameState;
+            _pendingGameState = newGameState;
         }
         
         public void SetState(GameState state) => SetState(() => state);
@@ -242,7 +230,7 @@ namespace TwelveEngine.Shell {
             if(cpuTextures.Length > 0) {
                 CPUTexture.LoadDictionary(Content,cpuTextures);
             }
-            SpriteBatch = new SmartSpriteBatch(this);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
             RenderTargets = new RenderTargetStack(GraphicsDevice);
             DebugFont = Content.Load<SpriteFont>(Constants.DebugFont);
             vcrDisplay.Load();
@@ -251,11 +239,11 @@ namespace TwelveEngine.Shell {
         }
 
         protected override void UnloadContent() {
-            GameState?.Unload();
-            GameState = null;
+            _gameState?.Unload();
+            _gameState = null;
 
-            PendingGameState?.Unload();
-            PendingGameState = null;
+            _pendingGameState?.Unload();
+            _pendingGameState = null;
 
             SpriteBatch?.Dispose();
             SpriteBatch = null;
@@ -300,7 +288,7 @@ namespace TwelveEngine.Shell {
             MouseState = GetMouseState();
             GamePadState = GetGamepadState();
 
-            GameState.Update(proxyGameTime);
+            _gameState.Update(proxyGameTime);
 
             automationAgent.EndUpdate();
             if(framesToSkip >= 1) {
@@ -335,7 +323,7 @@ namespace TwelveEngine.Shell {
             framesToSkip = count;
         }
 
-        private bool HasGameState => GameState != null;
+        private bool HasGameState => _gameState != null;
 
         protected override void Update(GameTime gameTime) {
             updating = true;
@@ -349,9 +337,9 @@ namespace TwelveEngine.Shell {
                 watch.Reset();
 #endif
                 if(HasPendingState) {
-                    GameState newState = PendingGameState;
-                    PendingGameState = null;
-                    GameState = newState;
+                    GameState newState = _pendingGameState;
+                    _pendingGameState = null;
+                    _gameState = newState;
                     Update(gameTime);
                 }
 
@@ -392,8 +380,8 @@ namespace TwelveEngine.Shell {
             watch.Start();
 #endif
             if(HasGameState) {
-                GameState.PreRender(proxyGameTime);
-                GameState.Render(proxyGameTime);
+                _gameState.PreRender(proxyGameTime);
+                _gameState.Render(proxyGameTime);
             } else {
                 GraphicsDevice.Clear(Color.Black);
             }
@@ -404,10 +392,9 @@ namespace TwelveEngine.Shell {
             renderTime = watch.Elapsed;
             watch.Reset();
 
-            SpriteBatch.SamplerState = SamplerState.LinearClamp;
-            SpriteBatch.Begin();
+            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp);
             DrawGameTimeDebug(debugWriter);
-            GameState?.WriteDebug(debugWriter);
+            _gameState?.WriteDebug(debugWriter);
             SpriteBatch.End();
 #endif
             rendering = false;

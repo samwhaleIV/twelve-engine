@@ -21,11 +21,6 @@ namespace TwelveEngine.Shell {
         public bool IsRendering { get; private set; } = false;
         public bool IsPreRendering { get; private set; } = false;
 
-        private readonly SpriteBatchSettings _spriteBatchSettings = new SpriteBatchSettings();
-        internal SpriteBatchSettings SpriteBatchSettings => _spriteBatchSettings;
-
-        protected SmartSpriteBatch SpriteBatch => Game.SpriteBatch;
-
         internal void Load(GameManager game) {
             IsLoading = true;
             Game = game;

@@ -200,31 +200,37 @@ namespace TwelveEngine.Game2D {
             TileRenderer.CacheArea(ScreenSpace);
 
             Game.GraphicsDevice.Clear(BackgroundColor);
-            SpriteBatch.SamplerState = SamplerState.PointClamp;
-            
+
+            bool drawing = false;
+            var spriteBatch = Game.SpriteBatch;
+
             if(LayerMode.Background) {
                 if(LayerMode.BackgroundLength == 2) {
-                    SpriteBatch.Begin();
+                    spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
                     RenderLayers(LayerMode.BackgroundStart,1);
-                    SpriteBatch.End();
+                    spriteBatch.End();
 
-                    SpriteBatch.Begin(SpriteSortMode.BackToFront);
+                    spriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointClamp);
                     RenderLayers(LayerMode.BackgroundStart+1,1);
                     RenderEntities(gameTime);
-                    SpriteBatch.End();
+                    spriteBatch.End();
                 } else {
-                    SpriteBatch.Begin();
+                    spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
                     RenderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);
                     RenderEntities(gameTime);
+                    drawing = true;
                 }
             }
 
-            SpriteBatch.TryBegin();
+            if(!drawing) {
+                spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            }
+
             if(LayerMode.Foreground) {
                 RenderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
             }
             InputGuide.Render();
-            SpriteBatch.End();
+            spriteBatch.End();
         }
 
         private void Grid2D_OnExport(SerialFrame frame) {

@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\SmartSpriteBatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
@@ -36,7 +35,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Terrain\TerrainChunk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\World.cs" />
-    <Compile Include="..\TwelveEngine\Shell\SpriteBatchSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\States\DataGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\States\InputGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RenderTargetStack.cs" />
