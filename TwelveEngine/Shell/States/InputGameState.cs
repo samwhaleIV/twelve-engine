@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using TwelveEngine.Shell.Timeout;
 using TwelveEngine.Shell.Input;
 using TwelveEngine.Shell.UI;
 

@@ -6,8 +6,8 @@
         public int GamePadIndex = 0;
 
         public float PlayerSpeed = 2.5f;
-        public float PlayerAccel = 200;
-        public float PlayerDeaccel = 100;
+        public float PlayerAccel = 1f;
+        public float PlayerDeaccel = 1f;
         public float InteractSize = 0.25f;
 
         public string PlaybackFolder = "playback";

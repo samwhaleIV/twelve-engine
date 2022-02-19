@@ -9,6 +9,7 @@
     <Import_RootNamespace>TwelveEngine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigWriter.cs" />
@@ -39,7 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\States\InputGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RenderTargetStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\States\PixelShaderTest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\Timeout\TimeoutThread.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\DebugWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\Corner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\IMouseTarget.cs" />
@@ -93,7 +93,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\Timeout\TimeoutManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\TimeoutManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\ScrollDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\ArrayConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\ExportMethods.cs" />
@@ -122,6 +122,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\IInteract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\SerialFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Time\VelocityController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImageButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImagePanel.cs" />

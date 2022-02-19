@@ -197,7 +197,7 @@ namespace TwelveEngine.Game2D {
 
         private void Grid2D_OnRender(GameTime gameTime) {
             ScreenSpace = GetScreenSpace();
-            TileRenderer.CacheArea(ScreenSpace);
+            TileRenderer?.CacheArea(ScreenSpace);
 
             Game.GraphicsDevice.Clear(BackgroundColor);
 
@@ -220,17 +220,37 @@ namespace TwelveEngine.Game2D {
                     RenderEntities(gameTime);
                     drawing = true;
                 }
-            }
-
-            if(!drawing) {
+            } else {
                 spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+                RenderEntities(gameTime);
+                drawing = true;
             }
 
-            if(LayerMode.Foreground) {
-                RenderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
-            }
+            if(!drawing) spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+
+            if(LayerMode.Foreground) RenderLayers(LayerMode.ForegroundStart,LayerMode.ForegroundLength);
             InputGuide.Render();
             spriteBatch.End();
+        }
+
+        private void ExportLayers(SerialFrame frame) {
+            bool hasLayers = layers != null;
+            frame.Set(hasLayers ? layers.Length : 0);
+            if(!hasLayers) return;
+            for(var i = 0;i<layers.Length;i++) {
+                frame.Set(layers[i]);
+            }
+        }
+
+        private void ImportLayer(SerialFrame frame) {
+            var layerCount = frame.GetInt();
+            bool hasLayers = layerCount > 0;
+            if(!hasLayers) return;
+            var layers = new int[layerCount][,];
+            for(var i = 0;i<layerCount;i++) {
+                layers[i] = frame.GetIntArray2D();
+            }
+            this.layers = layers;
         }
 
         private void Grid2D_OnExport(SerialFrame frame) {
@@ -238,10 +258,8 @@ namespace TwelveEngine.Game2D {
             frame.Set(Camera);
             frame.Set(LayerMode);
             frame.Set(Size);
-            frame.Set(layers.Length);
-            for(var i = 0;i<layers.Length;i++) {
-                frame.Set(layers[i]);
-            }
+
+            ExportLayers(frame);
         }
 
         private void Grid2D_OnImport(SerialFrame frame) {
@@ -249,12 +267,8 @@ namespace TwelveEngine.Game2D {
             frame.Get(Camera);
             frame.Get(LayerMode);
             Size = frame.GetPoint();
-            var layerCount = frame.GetInt();
-            var layers = new int[layerCount][,];
-            for(var i = 0;i<layerCount;i++) {
-                layers[i] = frame.GetIntArray2D();
-            }
-            this.layers = layers;
+
+            ImportLayer(frame);
         }
     }
 }

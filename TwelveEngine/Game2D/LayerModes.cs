@@ -29,6 +29,7 @@ namespace TwelveEngine.Game2D {
         }
     }
     public static class LayerModes {
+        public static readonly LayerMode None = new LayerMode();
         public static readonly LayerMode Default = SingleLayerBackground;
         public static readonly LayerMode SingleLayerBackground = new LayerMode() {
             BackgroundStart = 0,

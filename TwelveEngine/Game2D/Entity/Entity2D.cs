@@ -60,6 +60,9 @@ namespace TwelveEngine.Game2D.Entity {
 
         public Direction Direction { get; set; } = Direction.Down;
 
+        public bool IsHorizontal() => (int)Direction >= 2;
+        public bool IsVertical() => (int)Direction <= 1;
+
         protected bool IsKeyDown(Impulse impulse) {
             return Owner.Input.IsKeyDown(impulse);
         }
