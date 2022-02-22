@@ -21,13 +21,12 @@ namespace JewelEditor {
             new ButtonData(new Rectangle(16,32,16,16), InputMode.Entity)
         };
 
-        public Editor() : base(
-            tileSize: 16,
-            entityFactory: JewelEntities.GetFactory()
-        ) {
+        public Editor() {
+            TileSize = 16;
+            EntityFactory = JewelEntities.GetFactory();
             LayerMode = LayerModes.SingleLayerBackground;
             TileRenderer = new TilesetRenderer(Tileset);
-            BackgroundColor = Color.LightGray;
+            RenderBackground = gameTime => Game.GraphicsDevice.Clear(Color.LightGray);
 
             int width = DefaultSize, height = DefaultSize;
 
@@ -43,7 +42,8 @@ namespace JewelEditor {
             ImportMap(defaultMap);
 
             Camera.Position = new Point(width,height).ToVector2() / 2f;
-            Camera.Padding = CameraPadding.None;
+            Camera.HorizontalPadding = false;
+            Camera.VerticalPadding = false;
 
             OnLoad += () => {
                 Entities.Create(JewelEntities.StateEntity,State);

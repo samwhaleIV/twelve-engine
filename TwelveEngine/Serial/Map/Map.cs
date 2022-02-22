@@ -12,6 +12,18 @@
             Layers = layers;
         }
 
+        public Map(int width,int height,int valueOffset,int[][] layers) {
+            Width = width;
+            Height = height;
+            Layers = layers;
+            if(valueOffset == 0) {
+                return;
+            }
+            foreach(var layer in Layers) {
+                for(int i = 0;i<layer.Length;i++) layer[i] += valueOffset;
+            }
+        }
+
         public int[][,] Layers2D => getLayers2D();
 
         private int[,] getLayer2D(int index) {

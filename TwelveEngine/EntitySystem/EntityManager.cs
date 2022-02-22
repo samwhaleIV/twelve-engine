@@ -235,6 +235,9 @@ namespace TwelveEngine.EntitySystem {
         }
 
         public TEntity Create(int type,string name = null) {
+            if(factory == null) {
+                throw new InvalidOperationException("Cannot create an entity without an EntityFactory!");
+            }
             var entity = factory.Create(type);
             if(entity == null) {
                 return null;
@@ -288,6 +291,9 @@ namespace TwelveEngine.EntitySystem {
         }
 
         private void Owner_Import(SerialFrame frame) {
+            if(factory == null) {
+                throw new InvalidOperationException("Cannot reload an EntityManager without an EntityFactory!");
+            }
             AssertMutation();
 
             PauseChanges();

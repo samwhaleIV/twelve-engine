@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 
 namespace TwelveEngine.Game2D.Collision {
     public sealed class CollisionInterface {
@@ -8,7 +7,7 @@ namespace TwelveEngine.Game2D.Collision {
         public CollisionInterface(Grid2D owner) => this.owner = owner;
 
         public CollisionTypes Types => owner.CollisionTypes;
-        public int CollisionLayer { get; set; } = Constants.CollisionLayerIndex;
+        public int Layer { get; set; } = Constants.CollisionLayerIndex;
 
         public Hitbox? GetHitbox(int ID,Vector2 location) {
             return Types?.GetHitbox(ID,location);
@@ -22,51 +21,50 @@ namespace TwelveEngine.Game2D.Collision {
             {0,0},{0,-1},{0,1},{-1,0},{1,0},{-1,-1},{1,-1},{-1,1},{1,1}
         };
 
-        private bool inRange(Point location) {
-            return location.X >= 0 && location.Y >= 0 && location.X < owner.Columns && location.Y < owner.Rows;
-        }
+        private bool InRange(Point location) => owner.Area.Contains(location);
 
-        private Hitbox? getTileHitbox(int value,Point location) {
+        private Hitbox? GetTileHitbox(int value,Point location) {
             return Types?.GetHitbox(value,location);
         }
 
-        private List<Hitbox> getSurroundingArea(int[,] layer,Hitbox hitbox) {
+        private readonly Hitbox[] collisionBuffer = new Hitbox[MATRIX_SIZE];
+        private int collisionBufferLength = 0;
+
+        private void PopulateCollisionBuffer(int[,] layer,Hitbox hitbox) {
 
             Point center = (hitbox.Position + hitbox.Size * 0.5f).ToPoint();
 
-            var hitboxes = new List<Hitbox>();
-
+            collisionBufferLength = 0;
             for(int i = 0;i<MATRIX_SIZE;i++) {
                 var offset = new Point(surroundingMatrix[i,0],surroundingMatrix[i,1]);
                 var location = center + offset;
 
-                if(!inRange(location)) {
+                if(!InRange(location)) {
                     continue;
                 }
 
                 int layerValue = layer[location.X,location.Y];
-                Hitbox? tileHitbox = getTileHitbox(layerValue,location);
+                Hitbox? tileHitbox = GetTileHitbox(layerValue,location);
 
                 if(!tileHitbox.HasValue) {
                     continue;
                 }
-                hitboxes.Add(tileHitbox.Value);
+                int index = collisionBufferLength;
+                collisionBufferLength += 1;
+                collisionBuffer[index] = tileHitbox.Value;
             }
 
-            return hitboxes;
         }
 
-        public List<Hitbox> Collides(Hitbox source) {
-            int[,] layer = owner.GetLayer(CollisionLayer);
+        public Hitbox? Collides(Hitbox source) {
+            int[,] layer = owner.GetLayer(Layer);
 
-            List<Hitbox> surroundingHitboxes = getSurroundingArea(layer,source);
-            var outputList = new List<Hitbox>();
-
-            foreach(Hitbox hitbox in surroundingHitboxes) {
-                if(source.Collides(hitbox)) outputList.Add(hitbox);
+            PopulateCollisionBuffer(layer,source);
+            for(int i = 0;i<collisionBufferLength;i++) {
+                var hitbox = collisionBuffer[i];
+                if(source.Collides(hitbox)) return hitbox;
             }
-
-            return outputList;
+            return null;
         }
     }
 }

@@ -142,7 +142,7 @@ namespace TwelveEngine.Shell {
         private void TogglePaused() => SetPaused(!gamePaused);
 
         private GamePadState GetGamepadState() {
-            var state = GamePad.GetState(Constants.Config.GamePadIndex,GamePadDeadZone.None);
+            var state = GamePad.GetState(Constants.Config.GamePadIndex,GamePadDeadZone.Circular);
             return state;
         }
 

@@ -20,11 +20,14 @@ namespace TwelveEngine.Game2D.Collision {
         public float Width => Size.X;
         public float Height => Size.Y;
 
-        public bool Collides(Hitbox target) {
-            return X <= target.X + target.Width &&
-            X + Width >= target.X &&
-            Y <= target.Y + target.Height &&
-            Height + Y >= target.Y;
+        public float Right => Position.X + Size.X;
+        public float Bottom => Position.Y + Size.Y;
+
+        public readonly bool Collides(Hitbox target) {
+            return X < target.X + target.Width &&
+                   X + Width > target.X &&
+                   Y < target.Y + target.Height &&
+                   Height + Y > target.Y;
         }
 
         public static Hitbox GetInteractionArea(Entity2D entity) {

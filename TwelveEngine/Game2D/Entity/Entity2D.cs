@@ -48,6 +48,9 @@ namespace TwelveEngine.Game2D.Entity {
             set => size.Y = value;
         }
 
+        public float Bottom => Y + Height;
+        public float Right => X + Width;
+
         public Vector2 Position {
             get => position;
             set => position = value;

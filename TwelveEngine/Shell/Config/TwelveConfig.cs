@@ -14,9 +14,6 @@ namespace TwelveEngine.Shell.Config {
         public string PlayerImage { get; private set; }
         public string PlaybackFolder { get; private set; }
         public string DefaultPlaybackFile { get; private set; }
-        public float PlayerAccel { get; private set; }
-        public float PlayerDeaccel { get; private set; }
-        public float PlayerSpeed { get; private set; }
         public string KeyBindsFile { get; private set; }
 
         private static PlayerIndex _gamePadIndex;
@@ -53,9 +50,6 @@ namespace TwelveEngine.Shell.Config {
             TileSize = set.TileSize;
             setGamePadIndex(set.GamePadIndex);
 
-            PlayerSpeed = set.PlayerSpeed;
-            PlayerAccel = set.PlayerAccel;
-            PlayerDeaccel = set.PlayerDeaccel;
             InteractSize = set.InteractSize;
 
             PlaybackFolder = set.PlaybackFolder;
@@ -73,10 +67,6 @@ namespace TwelveEngine.Shell.Config {
             RenderScale = RenderScale,
             TileSize = TileSize,
             GamePadIndex = (int)GamePadIndex,
-
-            PlayerSpeed = PlayerSpeed,
-            PlayerAccel = PlayerAccel,
-            PlayerDeaccel = PlayerDeaccel,
             InteractSize = InteractSize,
 
             PlaybackFolder = PlaybackFolder,

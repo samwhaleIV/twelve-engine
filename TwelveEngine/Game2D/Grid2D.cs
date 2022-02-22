@@ -12,13 +12,11 @@ using TwelveEngine.Game2D.Collision;
 namespace TwelveEngine.Game2D {
     public class Grid2D:InputGameState {
 
-        public Grid2D(EntityFactory<Entity2D,Grid2D> entityFactory = null,int? tileSize = null) {
-
-            EntityFactory = entityFactory ?? Entity2DType.GetFactory();
-            if(tileSize.HasValue) TileSize = tileSize.Value;
-
+        public Grid2D() {
             collisionInterface = new CollisionInterface(this);
             Camera = new Camera();
+
+            RenderBackground = gameTime => Game.GraphicsDevice.Clear(Color.Black);
 
             OnLoad += Grid2D_OnLoad;
             OnUnload += Grid2D_OnUnload;
@@ -44,25 +42,25 @@ namespace TwelveEngine.Game2D {
 
         public CollisionInterface Collision => collisionInterface;
         
-
         private Camera _camera = null;
         private int[][,] layers;
 
         public LayerMode LayerMode { get; set; } = LayerModes.Default;
-        public Color BackgroundColor { get; set; } = Color.Black;
 
         public ScreenSpace ScreenSpace { get; private set; }
         public Point Size { get; private set; } = Point.Zero;
 
-        public EntityFactory<Entity2D,Grid2D> EntityFactory { get; private set; }
+        public EntityFactory<Entity2D,Grid2D> EntityFactory { get; set; }
         public EntityManager<Entity2D,Grid2D> Entities { get; private set; }
 
-        public int TileSize { get; private set; } = Constants.Config.TileSize;
+        public int TileSize { get; set; } = Constants.Config.TileSize;
 
         public TileRenderer TileRenderer { get; set; }
 
         public int Columns => Size.X;
         public int Rows => Size.Y;
+
+        public Rectangle Area => new Rectangle(Point.Zero,Size);
 
         public Camera Camera {
             get => _camera;
@@ -195,11 +193,13 @@ namespace TwelveEngine.Game2D {
             Entities.IterateMutable(Entity2D.Update,gameTime);
         }
 
+        protected Action<GameTime> RenderBackground { get; set; }
+
         private void Grid2D_OnRender(GameTime gameTime) {
             ScreenSpace = GetScreenSpace();
             TileRenderer?.CacheArea(ScreenSpace);
 
-            Game.GraphicsDevice.Clear(BackgroundColor);
+            RenderBackground.Invoke(gameTime);
 
             bool drawing = false;
             var spriteBatch = Game.SpriteBatch;
@@ -254,20 +254,16 @@ namespace TwelveEngine.Game2D {
         }
 
         private void Grid2D_OnExport(SerialFrame frame) {
-            frame.Set(BackgroundColor);
             frame.Set(Camera);
             frame.Set(LayerMode);
             frame.Set(Size);
-
             ExportLayers(frame);
         }
 
         private void Grid2D_OnImport(SerialFrame frame) {
-            BackgroundColor = frame.GetColor();
             frame.Get(Camera);
             frame.Get(LayerMode);
             Size = frame.GetPoint();
-
             ImportLayer(frame);
         }
     }

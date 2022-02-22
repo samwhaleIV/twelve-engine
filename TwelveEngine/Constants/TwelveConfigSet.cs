@@ -4,10 +4,6 @@
         public int RenderScale = 8;
         public int TileSize = 16;
         public int GamePadIndex = 0;
-
-        public float PlayerSpeed = 2.5f;
-        public float PlayerAccel = 1f;
-        public float PlayerDeaccel = 1f;
         public float InteractSize = 0.25f;
 
         public string PlaybackFolder = "playback";
