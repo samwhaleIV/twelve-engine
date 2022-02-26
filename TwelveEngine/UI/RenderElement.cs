@@ -6,7 +6,7 @@ using TwelveEngine.Shell;
 using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.UI {
-    public class RenderElement:Element {
+    public abstract class RenderElement:UIElement {
 
         public RenderElement() {
             LayoutUpdated += RenderElement_LayoutUpdated;
@@ -89,6 +89,10 @@ namespace TwelveEngine.UI {
             var texture = GetTexture(1,1);
             texture.SetData(new Color[] {color});
             return texture;
+        }
+
+        protected SpriteFont GetSpriteFont(string fontName) {
+            return Game.Content.Load<SpriteFont>(fontName);
         }
 
         protected void Draw(Texture2D texture,Rectangle source,Color color) {

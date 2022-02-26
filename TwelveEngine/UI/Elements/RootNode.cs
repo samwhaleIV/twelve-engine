@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.UI.Elements {
-    internal sealed class RootNode:Element {
+    internal sealed class RootNode:UIElement {
 
         private readonly Func<Point> getSize;
         public RootNode(Func<Point> getSize) {

@@ -42,11 +42,11 @@ namespace TwelveEngine.UI {
         public int Width => rootNode.ComputedWidth;
         public int Height => rootNode.ComputedHeight;
 
-        public void AddChild(params Element[] children) {
+        public void AddChild(params UIElement[] children) {
             rootNode.AddChild(children);
         }
 
-        private void startLayoutRecurse(Element element) {
+        private void startLayoutRecurse(UIElement element) {
             element.ForceLayout();
             foreach(var child in element.Children) {
                 startLayoutRecurse(child);

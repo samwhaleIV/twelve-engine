@@ -35,7 +35,7 @@ namespace TwelveEngine.UI {
         /* ------------------------------------------------------------------------------------------------------ */
 
         private static void getAllChildren(
-            Element source,List<RenderElement> elements,int currentDepth,ref int maxDepth
+            UIElement source,List<RenderElement> elements,int currentDepth,ref int maxDepth
         ) {
             currentDepth += 1;
             if(currentDepth > maxDepth) {
@@ -54,7 +54,7 @@ namespace TwelveEngine.UI {
                 getAllChildren(child,elements,currentDepth,ref maxDepth);
             }
         }
-        private static void getAllChildren(Element rootNode,List<RenderElement> elements,out int depth) {
+        private static void getAllChildren(UIElement rootNode,List<RenderElement> elements,out int depth) {
             int maxDepth = 1;
             foreach(var child in rootNode.Children) {
                 getAllChildren(child,elements,-1,ref maxDepth);
@@ -62,13 +62,13 @@ namespace TwelveEngine.UI {
             depth = Math.Max(maxDepth,1);
         }
 
-        private static (List<RenderElement> elements, int maxDepth) getChildrenAndDepth(Element rootNode) {
+        private static (List<RenderElement> elements, int maxDepth) getChildrenAndDepth(UIElement rootNode) {
             var elements = new List<RenderElement>();
             getAllChildren(rootNode,elements,out int maxDepth);
             return (elements, maxDepth);
         }
 
-        public static RenderCache GenerateCache(Element rootNode) {
+        public static RenderCache GenerateCache(UIElement rootNode) {
             (List<RenderElement> elements, int maxDepth) = getChildrenAndDepth(rootNode);
             calculateDepths(elements,maxDepth);
 

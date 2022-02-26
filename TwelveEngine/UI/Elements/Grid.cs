@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine.UI.Elements {
-    public class Grid:Element {
+    public class Grid:UIElement {
 
         private (int Width, int Height) cellSize = (0,0);
         internal (int Width,int Height) CellSize => cellSize;

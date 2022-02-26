@@ -104,14 +104,14 @@ namespace TwelveEngine.UI.Elements {
             public readonly int XDifference;
             public readonly int YDifference;
 
-            public void Apply(Element element) {
+            public void Apply(UIElement element) {
                 element.PushLayoutFreeze();
                 element.X = StartX + XDifference;
                 element.Y = StartY + YDifference;
                 element.PopLayoutFreeze();
             }
 
-            public void Apply(Element element,float t) {
+            public void Apply(UIElement element,float t) {
                 element.PushLayoutFreeze();
                 element.X = StartX + (int)(t * XDifference);
                 element.Y = StartY + (int)(t * YDifference);

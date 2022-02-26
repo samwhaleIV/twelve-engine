@@ -19,7 +19,7 @@ namespace JewelEditor.InputContext {
 
             ButtonData[] buttons = Editor.Buttons;
 
-            RenderElement buttonGroup = new RenderElement() {
+            var buttonGroup = new UIElement() {
                 Sizing = Sizing.Normal,
                 Height = panel.Height,
                 Width = buttons.Length * panelHeight,
@@ -27,7 +27,7 @@ namespace JewelEditor.InputContext {
             };
 
             for(int i = 0;i<buttons.Length;i++) {
-                RenderElement parent = new RenderElement() {
+                var parent = new UIElement() {
                     Width = panelHeight,
                     Height = panelHeight,
                     X = i * panelHeight,

@@ -10,8 +10,8 @@ namespace TwelveEngine.UI.Elements {
 
         private readonly GameManager game;
 
-        private readonly Element rootNode;
-        public Element Target => rootNode;
+        private readonly UIElement rootNode;
+        public UIElement Target => rootNode;
 
         private readonly InteractionState interactionState;
         internal InteractionState InteractionState => interactionState;
@@ -37,7 +37,7 @@ namespace TwelveEngine.UI.Elements {
             interactionState = new InteractionState(() => renderCache);
             OnMouseLeave += interactionState.DropFocus;
 
-            rootNode = new Element() {
+            rootNode = new UIElement() {
                 Positioning = Positioning.Fixed,
                 Sizing = Sizing.Fill
             };
@@ -64,7 +64,7 @@ namespace TwelveEngine.UI.Elements {
             renderCache.Load(game);
         }
 
-        public new void AddChild(params Element[] elements) {
+        public new void AddChild(params UIElement[] elements) {
             if(loaded) {
                 throw new Exception("Cannot add new elements after frame has already been loadeed!");
             }
@@ -72,12 +72,12 @@ namespace TwelveEngine.UI.Elements {
                 rootNode.AddChild(element);
             }
         }
-        public new void RemoveChild(Element element) {
+        public new void RemoveChild(UIElement element) {
             rootNode.RemoveChild(element);
         }
         public new bool HasParent() => true;
 
-        private void getChildren(Element root,List<RenderElement> list) {
+        private void getChildren(UIElement root,List<RenderElement> list) {
             if(root is RenderElement element) {
                 list.Add(element);
             }

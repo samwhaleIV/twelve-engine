@@ -125,11 +125,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImageButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImagePanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Label.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\LabelButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RootNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Anchor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Grid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Picture.cs" />

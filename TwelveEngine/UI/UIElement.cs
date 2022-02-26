@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.UI {
-    public class Element {
+    public class UIElement {
 
         protected Positioning positioning = Positioning.Normal;
         protected Sizing sizing = Sizing.Normal;
@@ -14,18 +14,18 @@ namespace TwelveEngine.UI {
         private Anchor anchor = Anchor.TopLeft;
         private Padding padding = new Padding();
 
-        private Element parent = null;
+        private UIElement parent = null;
         public bool HasParent() => parent != null;
 
-        private readonly List<Element> children = new List<Element>();
-        public List<Element> Children => children;
+        private readonly List<UIElement> children = new List<UIElement>();
+        public List<UIElement> Children => children;
 
         private int layoutFreezes = 1;
         public bool LayoutUpdatesEnabled => layoutFreezes < 1;
 
         protected event Action LayoutUpdated;
 
-        public void AddChild(params Element[] children) {
+        public void AddChild(params UIElement[] children) {
             foreach(var child in children) {
                 this.children.Add(child);
                 child.parent = this;
@@ -33,7 +33,7 @@ namespace TwelveEngine.UI {
             }
         }
 
-        public void RemoveChild(Element child) {
+        public void RemoveChild(UIElement child) {
             children.Remove(child);
             child.parent = null;
             child.UpdateLayout();
@@ -82,7 +82,7 @@ namespace TwelveEngine.UI {
             cachePosition(position);
 
             LayoutUpdated?.Invoke();
-            foreach(Element child in children) {
+            foreach(UIElement child in children) {
                 child.UpdateLayout();
             }
         }
@@ -217,7 +217,7 @@ namespace TwelveEngine.UI {
             UpdateLayout();
         }
 
-        internal Element Parent {
+        internal UIElement Parent {
             get => parent;
             set {
                 if(parent == value) {
