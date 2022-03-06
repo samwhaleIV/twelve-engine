@@ -10,7 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ButtonData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entity\FileActionsMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entity\StateEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entity\UIEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HistoryAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HistoryActions\CreateEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HistoryActions\DeleteEntity.cs" />
@@ -21,7 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)InputContext\MouseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputContext\MouseHandlers\EntityEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputContext\MouseHandlers\TileEditor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)InputContext\SelectorUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputContext\EntityMover.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entity\EntityMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entity\GridLines.cs" />
@@ -30,7 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)JewelEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entity\InputEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputContext\MouseHandlers\Pointer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entity\UIEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entity\QuickActionBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileType.cs" />
   </ItemGroup>
 </Project>

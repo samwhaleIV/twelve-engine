@@ -8,8 +8,8 @@ namespace JewelEditor {
         private const int DefaultSize = 16;
         public const string Tileset = "JewelEditor/MapTiles";
         public const string State = "State";
-        public const string UI = "UI";
-        public const int ButtonsPanelHeight = 96;
+        public const string QuickActionBar = "QuickActionBar";
+        public const int QuickActionBarHeight = 96;
         public const int TileLayer = 0;
         public const int EraserIndex = 3; /* See below */
 
@@ -50,7 +50,7 @@ namespace JewelEditor {
                 Entities.Create(JewelEntities.InputEntity);
                 Entities.Create(JewelEntities.GridLines);
                 Entities.Create(JewelEntities.EntityMarker,"DebugMarker");
-                Entities.Create(JewelEntities.UIEntity,UI);
+                Entities.Create(JewelEntities.QuickActionBar,QuickActionBar);
             };
         }
     }

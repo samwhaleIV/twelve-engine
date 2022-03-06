@@ -6,12 +6,12 @@ using JewelEditor.Entity;
 namespace JewelEditor.InputContext {
     internal sealed class ContextButton:ImageButton {
 
-        private readonly UIEntity owner;
+        private readonly JewelEntity owner;
         private readonly ButtonData source;
 
         private static Rectangle selectionRectangle = new Rectangle(0,32,16,16);
 
-        public ContextButton(UIEntity owner,ButtonData source) : base(Editor.Tileset,source.TextureSource) {
+        public ContextButton(JewelEntity owner,ButtonData source) : base(Editor.Tileset,source.TextureSource) {
             this.owner = owner;
             this.source = source;
             OnClick += SelectorUI_OnClick;

@@ -1,43 +1,33 @@
 ﻿using TwelveEngine.Shell.Input;
 using Microsoft.Xna.Framework;
 using TwelveEngine.UI;
-using JewelEditor.InputContext;
 
 namespace JewelEditor.Entity {
-    internal sealed class UIEntity:JewelEntity {
-
-        protected override int GetEntityType() => JewelEntities.UIEntity;
+    internal abstract class UIEntity:JewelEntity {
 
         public UIEntity() {
             OnLoad += UIEntity_OnLoad;
             OnUnload += UIEntity_OnUnload;
         }
 
-        public void DropFocus() => UIState.DropFocus();
-        public UIState UIState { get; private set; }
-        public IMouseTarget MouseTarget => UIState.MouseTarget;
+        private UIState UIState { get; set; } = null;
 
-        public bool TryGetInputMode(int index,out (InputMode Mode, TileType? Type) mode) {
-            var buttonSources = Editor.Buttons;
-            if(index < 0 || index >= buttonSources.Length) {
-                mode = (InputMode.Tile, null);
-                return false;
-            }
-           (Rectangle _,InputMode Mode,TileType? Type) = buttonSources[index];
-            mode = (Mode, Type);
-            return true;
-        }
+        public IMouseTarget MouseTarget => UIState.MouseTarget;
+        public void DropFocus() => UIState.DropFocus();
+
+        protected abstract void GenerateState(UIState state);
 
         private void UIEntity_OnLoad() {
-            UIState = new UIState(Game);
+            var state = new UIState(Game);
+            GenerateState(state);
 
-            SelectorUI.Generate(this);
+            Owner.OnUpdate += state.Update;
+            Owner.OnRender += state.Render;
+            Owner.OnPreRender += state.PreRender;
 
-            Owner.OnUpdate += UIState.Update;
-            Owner.OnRender += UIState.Render;
-            Owner.OnPreRender += UIState.PreRender;
-            UIState.Load();
-            UIState.StartLayout();
+            state.Load();
+            state.StartLayout();
+            UIState = state;
         }
 
         private void UIEntity_OnUnload() {
@@ -46,11 +36,6 @@ namespace JewelEditor.Entity {
             Owner.OnPreRender -= UIState.PreRender;
             UIState.Unload();
             UIState = null;
-        }
-
-        public override bool Contains(Vector2 location) {
-            var point = Owner.GetScreenPoint(location);
-            return point.Y < Editor.ButtonsPanelHeight;
         }
     }
 }

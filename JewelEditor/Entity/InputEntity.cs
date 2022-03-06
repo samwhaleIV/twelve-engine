@@ -51,7 +51,7 @@ namespace JewelEditor.Entity {
         private readonly HotkeySet keyWatcherSet;
 
         private void SetInput(int index) {
-            if(!GetUI().TryGetInputMode(index,out var inputMode)) {
+            if(!GetQuickActionBar().TryGetInputMode(index,out var inputMode)) {
                 return;
             }
             if(inputMode.Type.HasValue) {
@@ -167,7 +167,7 @@ namespace JewelEditor.Entity {
         private IMouseTarget target = null;
 
         private IMouseTarget GetTarget(Point point,bool dropFocus = false) {
-            var UI = GetUI();
+            var UI = GetQuickActionBar();
             bool inUIArea = UI.Contains(Owner.GetWorldVector(point));
             if(!inUIArea) {
                 if(dropFocus) {
