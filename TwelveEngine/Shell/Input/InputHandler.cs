@@ -111,8 +111,8 @@ namespace TwelveEngine.Shell.Input {
             return impulseStates[impulse] == KeyState.Up;
         }
 
-        public Point GetDelta2D() {
-            var delta = Point.Zero;
+        public Vector2 GetDelta2D() {
+            var delta = Vector2.Zero;
 
             if(IsKeyDown(Impulse.Up)) delta.Y--;
             if(IsKeyDown(Impulse.Down)) delta.Y++;

@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D;
+using TwelveEngine.Game2D.Collision;
+using TwelveEngine.Game2D.Entity;
 
 namespace Porthole.PuzzleGame.Components {
     public class PulseButton:WorldComponent,IInteract {
@@ -39,7 +41,7 @@ namespace Porthole.PuzzleGame.Components {
             SignalState = positive ? SignalState.Positive : SignalState.Negative;
             SendSignal();
             SignalState = SignalState.Neutral;
-            Grid.Game.SetTimeout(endPulse,timeout);
+            Grid.SetTimeout(endPulse,timeout);
         }
 
         protected override void OnChange() {

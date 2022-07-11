@@ -25,7 +25,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\Switch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Levels\AlphaLevels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\SignalState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />

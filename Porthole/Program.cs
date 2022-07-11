@@ -1,6 +1,7 @@
 ﻿using Porthole.PuzzleGame;
 using TwelveEngine;
 using TwelveEngine.Serial.Map;
+using TwelveEngine.Shell;
 
 namespace Porthole {
     internal static class Program {
@@ -10,7 +11,7 @@ namespace Porthole {
             if(loadedPuzzleGameData) {
                 return;
             }
-            MapDatabase.LoadMaps();
+            MapDatabase.LoadMaps(@"C:\Users\pinks\Documents\twelve-engine\Porthole\maps.temdb"); //don't publish this, dumbass
             loadedPuzzleGameData = true;
         }
 

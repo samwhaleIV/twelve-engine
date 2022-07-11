@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D;
+using TwelveEngine.Game2D.Collision;
+using TwelveEngine.Game2D.Entity;
 using TwelveEngine.Serial;
 
 namespace Porthole.PuzzleGame.Components {
-    public sealed class Switch:WorldComponent, IInteract {
+    public sealed class Switch:WorldComponent,IInteract {
         private readonly Point location;
         private readonly bool facingLeft;
 

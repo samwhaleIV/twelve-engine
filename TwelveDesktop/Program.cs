@@ -10,6 +10,7 @@ using TwelveEngine.Game2D.Collision;
 using TwelveEngine.Serial.Map;
 using TwelveEngine.EntitySystem;
 using Microsoft.Xna.Framework.Graphics;
+using Porthole;
 
 namespace TwelveDesktop {
 
@@ -18,7 +19,7 @@ namespace TwelveDesktop {
         internal static void Main() {
 
             ConfigLoader.LoadEngineConfig(new TwelveConfigSet() {
-                CPUTextures = new string[] { }
+                CPUTextures = new string[] { "tileset" }
             });
             using var game = new GameManager();
             game.OnLoad += Game_OnLoad;
@@ -26,8 +27,10 @@ namespace TwelveDesktop {
         }
 
         private static void Game_OnLoad(GameManager game) {
+            game.SetState(Porthole.Program.GetPuzzleGameTest());
+            //game.SetState<ElfGame.FacialAnimationViewer>();
             //game.SetState(new CRTTest());
-            game.SetState<JewelEditor.Editor>();
+            //game.SetState<JewelEditor.Editor>();
             //game.SetState(ModelViewer.CreateTextureTest("Test/cat-test-picture"));
         }
     }

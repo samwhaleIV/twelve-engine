@@ -6,6 +6,7 @@ namespace Porthole.PuzzleGame {
         public string Map;
         public (float X, float Y) Player;
         public Action Components;
-        public CameraPadding Padding;
+        public bool CameraPaddingX;
+        public bool CameraPaddingY;
     }
 }

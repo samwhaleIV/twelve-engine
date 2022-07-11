@@ -43,11 +43,10 @@ namespace TwelveEngine.Physics {
         }
 
         public void Update(float delta,float accelerationScale = 1f) {
-            float timeDelta = delta;
             if(Force != 0f) {
-                Accelerate(timeDelta,accelerationScale);
+                Accelerate(delta,accelerationScale);
             } else if(Velocity != 0f) {
-                Deaccelerate(timeDelta);
+                Deaccelerate(delta);
             }
         }
     }

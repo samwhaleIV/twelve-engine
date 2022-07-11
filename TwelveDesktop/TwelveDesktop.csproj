@@ -23,10 +23,10 @@
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
-  <Import Project="..\ElfGame\ElfGame.projitems" Label="Shared" />
   <Import Project="..\JewelEditor\JewelEditor.projitems" Label="Shared" />
+  <Import Project="..\Porthole\Porthole.projitems" Label="Shared" />
   <ItemGroup>
-    <MonoGameContentReference Include="..\Content\ElfGame.mgcb" />
+    <MonoGameContentReference Include="..\Content\Porthole.mgcb" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Lovebirb.MonoGame.SkinnedMeshImporter" Version="1.0.2" />

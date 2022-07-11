@@ -11,9 +11,10 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\PlatformerPlayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Physics\IVelocityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\TopDownPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityController2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Physics\IVelocityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />

@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using TwelveEngine.Serial.Map;
 using TwelveEngine.Game2D;
 using TwelveEngine.Game2D.Collision;
-using TwelveEngine.Game2D.Entity.Types;
 using TwelveEngine;
+using TwelveEngine.Shell;
+using TwelveEngine.EntitySystem;
+using TwelveEngine.Game2D.Entity;
 
 namespace Porthole.PuzzleGame {
     public static class PuzzleFactory {
@@ -46,26 +48,33 @@ namespace Porthole.PuzzleGame {
 
         public static GameState GenerateState(Func<ComponentFactory,Level> levelSelector) {
 
-            var grid = new Grid2D(
-                layerMode: LayerModes.BackgroundForegroundStandard,
-                collisionTypes: new CollisionTypes(Tiles.CollisionArea,Tiles.CollisionColor)
-            ) {
-                TileRenderer = new TilesetRenderer()
-            };
+            var grid = new PuzzleGrid();
+
+            grid.EntityFactory = new EntityFactory<Entity2D,Grid2D>(
+                (1, () => new Player())
+            );
+
+
+            grid.CollisionTypes = new CollisionTypes(Tiles.CollisionArea, Tiles.CollisionColor);
+            grid.TileRenderer = new TilesetRenderer();
 
             var factory = new ComponentFactory(grid);
             Level level = levelSelector.Invoke(factory);
-
-            grid.PanZoom = false;
 
             var map = getMap(level);
 
             grid.ImportMap(map);
             grid.LayerMode = LayerModes.GetAutomatic(map.Layers.Length);
 
+            grid.Camera.HorizontalPadding = level.CameraPaddingX;
+            grid.Camera.VerticalPadding = level.CameraPaddingY;
+
             bool showCollisionLayer = Constants.Config.ShowCollision;
+
             if(showCollisionLayer) {
-                grid.LayerMode.BackgroundLength += 1;
+                LayerMode layerMode = grid.LayerMode;
+                layerMode.BackgroundLength += 1;
+                grid.LayerMode = layerMode;
             }
 
             grid.InputGuide.SetDescriptions(
@@ -77,13 +86,15 @@ namespace Porthole.PuzzleGame {
             );
 
             grid.OnLoad += () => {
+
                 var player = new Player() {
                     X = level.Player.X,
                     Y = level.Player.Y,
                     Name = "Player",
                     StateLock = false
                 };
-                grid.AddEntity(player);
+
+                grid.Entities.Add(player);
             };
 
             level.Components();

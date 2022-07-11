@@ -2,27 +2,25 @@
 using TwelveEngine;
 using TwelveEngine.Serial;
 using TwelveEngine.Game2D;
+using TwelveEngine.Game2D.Collision;
 
 namespace Porthole.PuzzleGame {
     public sealed class PuzzleManager:ISerializable {
 
         private readonly Component[] components;
 
-        public PuzzleManager(Grid2D grid,Component[] components) {
+        public PuzzleManager(PuzzleGrid grid,Component[] components) {
             this.components = components;
             installInteractionLayer(grid);
             installStateHandlers(grid);
         }
 
-        private void installInteractionLayer(Grid2D grid) {
-            var interactionLayer = new InteractionLayer();
-            grid.Interaction = interactionLayer;
-
+        private void installInteractionLayer(PuzzleGrid grid) {
             foreach(var component in components) {
                 if(!(component is IInteract)) {
                     continue;
                 }
-                interactionLayer.AddTarget((IInteract)component);
+                grid.AddHitTarget((IInteract)component);
             }
         }
 

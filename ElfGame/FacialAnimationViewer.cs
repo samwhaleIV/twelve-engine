@@ -15,12 +15,21 @@ namespace ElfGame {
 
         public FacialAnimationViewer() {
             OnLoad += FacialAnimationViewer_OnLoad;
+
+            OnUpdate += FacialAnimationViewer_OnUpdate;
             OnUnload += FacialAnimationViewer_OnUnload;
             OnRender += FacialAnimationViewer_OnRender;
+
             OnPreRender += FacialAnimationViewer_OnPreRender;
 
             Input.OnAcceptDown += Input_OnAcceptDown;
             Input.OnDirectionDown += Input_OnDirectionDown;
+        }
+
+        private void FacialAnimationViewer_OnUpdate(GameTime gameTime) {
+            UpdateImpulseInput();
+            UpdateMouseInput();
+            UpdateTimeoutInput(gameTime);
         }
 
         private void FacialAnimationViewer_OnLoad() {
