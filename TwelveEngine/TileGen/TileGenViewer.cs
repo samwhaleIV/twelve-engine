@@ -12,11 +12,12 @@ namespace TwelveEngine.TileGen {
 
         private Texture2D texture = null;
 
-        public int RenderScale { get; set; } = 3;
+        public int RenderScale { get; set; } = 4;
 
         public TileGenViewer() {
             OnLoad += TileGenViewer_OnLoad;
             OnRender += render;
+            OnUpdate += gameTime => UpdateInputs(gameTime);
 
             Input.OnAcceptDown += InputHandler_OnAcceptDown;
             Input.OnCancelDown += InputHandler_OnCancelDown;
