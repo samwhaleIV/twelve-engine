@@ -25,8 +25,8 @@ namespace JewelEditor {
             }
         }
 
-        public abstract void Apply(Grid2D grid);
-        public abstract void Undo(Grid2D grid);
+        public abstract void Apply(TileGrid grid);
+        public abstract void Undo(TileGrid grid);
 
         public abstract void Export(SerialFrame frame);
 

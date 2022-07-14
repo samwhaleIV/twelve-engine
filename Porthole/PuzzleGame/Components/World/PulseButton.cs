@@ -13,7 +13,7 @@ namespace Porthole.PuzzleGame.Components {
 
         public PulseButton(
 
-            Grid2D grid,
+            TileGrid grid,
             Point location, bool positive
 
         ) : base(grid) {
@@ -23,7 +23,7 @@ namespace Porthole.PuzzleGame.Components {
 
         public Hitbox GetHitbox() {
             int x = location.X, y = location.Y;
-            return Grid.Collision.Types.GetHitbox(CollisionLayer[x,y],location).Value;
+            return Grid.CollisionTypes.GetHitbox(CollisionLayer[x,y],location).Value;
         }
 
         private bool updating = false;

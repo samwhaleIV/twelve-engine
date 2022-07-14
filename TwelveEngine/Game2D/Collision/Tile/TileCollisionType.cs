@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TwelveEngine.Game2D.Collision {
-    public readonly struct CollisionType {
-        public CollisionType(
+namespace TwelveEngine.Game2D.Collision.Tile {
+    public readonly struct TileCollisionType {
+        public TileCollisionType(
             Point location,Point size,float tileSize
         ) {
             Location = location.ToVector2() / tileSize;

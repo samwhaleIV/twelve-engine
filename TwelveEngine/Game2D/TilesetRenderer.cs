@@ -36,7 +36,7 @@ namespace TwelveEngine.Game2D {
         private void TilesetRenderer_OnLoad() {
             loadTileset();
 
-            int tileSize = Grid.TileSize;
+            int tileSize = Grid.UnitSize;
             spriteBatch = Game.SpriteBatch;
 
             int rows = tileset.Height / tileSize;
@@ -101,8 +101,12 @@ namespace TwelveEngine.Game2D {
             if(start.Y < 0) offset.Y = -start.Y;
 
             Point end = start + size;
-            if(end.X > Grid.Columns) size.X -= end.X - Grid.Columns;
-            if(end.Y > Grid.Rows) size.Y -= end.Y - Grid.Rows;
+            if(end.X > Grid.Width) {
+                size.X -= end.X - Grid.UnitWidth;
+            }
+            if(end.Y > Grid.Height) {
+                size.Y -= end.Y - Grid.UnitHeight;
+            }
 
             tileArea = (start, tile, size, offset, tileSize);
         }

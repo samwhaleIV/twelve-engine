@@ -6,7 +6,7 @@ using TwelveEngine.Game2D;
 namespace JewelEditor.InputContext.MouseHandlers {
     internal sealed class TileEditor:MouseHandler {
 
-        public TileEditor(Grid2D grid) : base(grid) { }
+        public TileEditor(TileGrid grid) : base(grid) { }
 
         private int GetPaintValue() {
             return (int)Grid.Entities.Get<StateEntity>(Editor.State).TileType;

@@ -11,7 +11,7 @@ namespace Porthole.PuzzleGame.Components {
 
         public LaserGate(
 
-            Grid2D grid,
+            TileGrid grid,
             Point recepticle1, Point recepticle2,bool horizontal
 
         ) : base(grid) {

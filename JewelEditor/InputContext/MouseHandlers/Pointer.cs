@@ -7,7 +7,7 @@ namespace JewelEditor.InputContext.MouseHandlers {
 
         private readonly EntityMover entityMover;
 
-        public Pointer(Grid2D grid):base(grid) {
+        public Pointer(TileGrid grid):base(grid) {
             entityMover = new EntityMover(grid.Entities);
             OnScroll += Pointer_Scroll;
         }

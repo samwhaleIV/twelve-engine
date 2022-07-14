@@ -15,7 +15,7 @@ namespace JewelEditor.Entity {
         private EntityEditor entityEditor;
         private TileEditor tileEditor;
 
-        private void LoadMouseHandlers(Grid2D grid) {
+        private void LoadMouseHandlers(TileGrid grid) {
             pointer = new Pointer(grid);
             entityEditor = new EntityEditor(grid);
             tileEditor = new TileEditor(grid);
@@ -81,10 +81,10 @@ namespace JewelEditor.Entity {
                   E = origin + new Point(-1,0),
                   S = origin + new Point(0,1),
                   w = origin + new Point(1,0);
-            if(Owner.TileInRange(N)) queue.Enqueue(N);
-            if(Owner.TileInRange(E)) queue.Enqueue(E);
-            if(Owner.TileInRange(S)) queue.Enqueue(S);
-            if(Owner.TileInRange(w)) queue.Enqueue(w);
+            if(Owner.UnitInRange(N)) queue.Enqueue(N);
+            if(Owner.UnitInRange(E)) queue.Enqueue(E);
+            if(Owner.UnitInRange(S)) queue.Enqueue(S);
+            if(Owner.UnitInRange(w)) queue.Enqueue(w);
         }
 
         private void FillArea() {
@@ -92,9 +92,9 @@ namespace JewelEditor.Entity {
             if(state.InputMode != InputMode.Tile) return;
             Point point = Game.MouseState.Position;
 
-            if(!Owner.TryGetTile(point,out var tile)) return;
+            if(!TileGrid.TryGetTile(point,out var tile)) return;
 
-            var layer = Owner.GetLayer(Editor.TileLayer);
+            var layer = TileGrid.GetLayer(Editor.TileLayer);
             var newValue = (int)state.TileType;
 
             var startValue = layer[tile.X,tile.Y];
@@ -142,7 +142,7 @@ namespace JewelEditor.Entity {
 
         private void InputEntity_OnLoad() {
 
-            LoadMouseHandlers(Owner);
+            LoadMouseHandlers(TileGrid);
 
             var mouseHandler = Owner.Mouse;
             mouseHandler.OnPress += MouseHandler_OnMouseDown;

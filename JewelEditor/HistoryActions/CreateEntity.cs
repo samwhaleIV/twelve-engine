@@ -4,7 +4,7 @@ using TwelveEngine.Serial;
 
 namespace JewelEditor.HistoryActions {
     internal class CreateEntity:HistoryAction {
-        public override void Apply(Grid2D grid) {
+        public override void Apply(TileGrid grid) {
             throw new NotImplementedException();
         }
 
@@ -16,7 +16,7 @@ namespace JewelEditor.HistoryActions {
             throw new NotImplementedException();
         }
 
-        public override void Undo(Grid2D grid) {
+        public override void Undo(TileGrid grid) {
             throw new NotImplementedException();
         }
     }

@@ -6,7 +6,7 @@ namespace Porthole.PuzzleGame.Components {
         private readonly LaserDirection direction;
         public LaserDirection Direction => direction;
 
-        public LaserSplitter(Grid2D grid,LaserDirection direction) : base(grid) {
+        public LaserSplitter(TileGrid grid,LaserDirection direction) : base(grid) {
             this.direction = direction;
         }
 

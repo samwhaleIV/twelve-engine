@@ -14,7 +14,7 @@ namespace Porthole.PuzzleGame.Components {
         private int value = 0;
         private readonly int x; private readonly int y;
 
-        public Counter(Grid2D grid,int x,int y,bool horizontal,bool smallType) : base(grid) {
+        public Counter(TileGrid grid,int x,int y,bool horizontal,bool smallType) : base(grid) {
             isSmallType = smallType;
             maxValue = smallType ? MAX_VALUE_SMALL : MAX_VALUE;
             tiles = horizontal ? Tiles.Counter.Horizontal : Tiles.Counter.Vertical;

@@ -1,19 +1,26 @@
 ﻿using TwelveEngine.Game2D.Collision;
 using Microsoft.Xna.Framework;
 using System;
+using TwelveEngine.Game2D.Collision.Poly;
 
 namespace TwelveEngine.Game2D.Entity {
     public abstract class MovingEntity2D:Entity2D {
 
         protected abstract Vector2 GetVelocity(float delta);
+
         protected abstract void OnCollideX();
         protected abstract void OnCollideY();
 
+        protected event Action<Line> OnCollideLine;
+
         protected bool TryGetCollision(out Hitbox hitbox) {
+            
             var result = Owner.Collision.Collides(new Hitbox(Position,Size));
-            if(result.HasValue) {
-                hitbox = result.Value;
+            if(result.IsHitbox) {
+                hitbox = result.Hitbox.Value;
                 return true;
+            } else if(result.IsLine) {
+                OnCollideLine?.Invoke(result.Line.Value);
             }
             hitbox = new Hitbox();
             return false;

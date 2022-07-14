@@ -10,8 +10,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionResultType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Poly\PolyCollision.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Tile\TileCollision.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\PlatformerPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\TopDownPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Poly\Line.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileGrid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\UniformGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityController2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Physics\IVelocityData.cs" />
@@ -58,8 +65,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serial\String\TypeParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\ControllerBinds.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Tile\TileCollisionType.cs" />
+    <Compile Include="..\TwelveEngine\Game2D\Collision\Tile\TileCollisionTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\MovingEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\Entity.cs" />
@@ -151,5 +158,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Game2D\Collision\Tile\" />
   </ItemGroup>
 </Project>

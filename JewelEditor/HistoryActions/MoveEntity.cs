@@ -26,8 +26,8 @@ namespace JewelEditor.HistoryActions {
             grid.Entities.Get(name).Position = location;
         }
 
-        public override void Apply(Grid2D grid) => SetLocation(grid,newLocation);
-        public override void Undo(Grid2D grid) => SetLocation(grid,oldLocation);
+        public override void Apply(TileGrid grid) => SetLocation(grid,newLocation);
+        public override void Undo(TileGrid grid) => SetLocation(grid,oldLocation);
 
         public override void Export(SerialFrame frame) {
             frame.Set(name);

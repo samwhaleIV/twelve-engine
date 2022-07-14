@@ -8,6 +8,7 @@ using TwelveEngine;
 using TwelveEngine.Shell;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Entity;
+using TwelveEngine.Game2D.Collision.Tile;
 
 namespace Porthole.PuzzleGame {
     public static class PuzzleFactory {
@@ -55,7 +56,7 @@ namespace Porthole.PuzzleGame {
             );
 
 
-            grid.CollisionTypes = new CollisionTypes(Tiles.CollisionArea, Tiles.CollisionColor);
+            grid.CollisionTypes = new TileCollisionTypes(Tiles.CollisionArea, Tiles.CollisionColor);
             grid.TileRenderer = new TilesetRenderer();
 
             var factory = new ComponentFactory(grid);

@@ -6,12 +6,12 @@ using System.Collections.Generic;
 namespace Porthole.PuzzleGame {
     public partial class ComponentFactory {
 
-        public ComponentFactory(Grid2D grid) {
+        public ComponentFactory(TileGrid grid) {
             _grid = grid;
             _components = new Queue<Component>();
         }
 
-        private readonly Grid2D _grid;
+        private readonly TileGrid _grid;
         private readonly Queue<Component> _components;
 
         private T _export<T>(T component) where T : Component {

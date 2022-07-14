@@ -3,7 +3,7 @@ using TwelveEngine.Serial.Map;
 using Microsoft.Xna.Framework;
 
 namespace JewelEditor {
-    public sealed class Editor:Grid2D {
+    public sealed class Editor:TileGrid {
 
         private const int DefaultSize = 16;
         public const string Tileset = "JewelEditor/MapTiles";
@@ -22,11 +22,11 @@ namespace JewelEditor {
         };
 
         public Editor() {
-            TileSize = 16;
+            UnitSize = 16;
             EntityFactory = JewelEntities.GetFactory();
             LayerMode = LayerModes.SingleLayerBackground;
             TileRenderer = new TilesetRenderer(Tileset);
-            RenderBackground = gameTime => Game.GraphicsDevice.Clear(Color.LightGray);
+            BackgroundColor = Color.LightGray;
 
             int width = DefaultSize, height = DefaultSize;
 

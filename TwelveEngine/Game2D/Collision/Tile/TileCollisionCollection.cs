@@ -2,11 +2,11 @@
 using Microsoft.Xna.Framework;
 using TwelveEngine.Shell;
 
-namespace TwelveEngine.Game2D.Collision {
+namespace TwelveEngine.Game2D.Collision.Tile {
 
-    public sealed class CollisionTypes {
+    public sealed class TileCollisionTypes {
 
-        private readonly Dictionary<int,CollisionType> types = new Dictionary<int,CollisionType>();
+        private readonly Dictionary<int,TileCollisionType> types = new Dictionary<int,TileCollisionType>();
 
         private readonly int tileSize;
         private readonly string textureName;
@@ -14,7 +14,7 @@ namespace TwelveEngine.Game2D.Collision {
         private readonly Color color;
         private readonly Rectangle area;
 
-        public CollisionTypes(   
+        public TileCollisionTypes(   
             Rectangle area,
             Color color,           
             int? tileSize = null,
@@ -53,7 +53,7 @@ namespace TwelveEngine.Game2D.Collision {
             return (pixels, width / tileSize);
         }
 
-        private CollisionType? getCollisionType(Color[,] pixels,int xOffset,int yOffset) {
+        private TileCollisionType? getCollisionType(Color[,] pixels,int xOffset,int yOffset) {
 
             int minX = int.MaxValue, minY = int.MaxValue;
             int maxX = int.MinValue, maxY = int.MinValue;
@@ -83,7 +83,7 @@ namespace TwelveEngine.Game2D.Collision {
                 return null;
             }
 
-            return new CollisionType(new Point(minX,minY),new Point(maxX - minX + 1,maxY - minY + 1),tileSize);
+            return new TileCollisionType(new Point(minX,minY),new Point(maxX - minX + 1,maxY - minY + 1),tileSize);
         }
 
         internal bool IsLoaded { get; private set; }

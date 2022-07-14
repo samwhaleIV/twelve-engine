@@ -98,7 +98,7 @@ namespace Porthole.PuzzleGame {
         }
 
         private Rectangle getTextureSource(GameTime gameTime) {
-            var tileSize = Owner.TileSize;
+            var tileSize = Owner.UnitSize;
             var source = new Rectangle() {
                 X = getRenderColumn() * tileSize,
                 Y = getRenderRow(gameTime) * tileSize,

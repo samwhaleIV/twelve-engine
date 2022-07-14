@@ -73,17 +73,6 @@ namespace TwelveEngine.Game2D.Entity {
             return Owner.Input.IsKeyUp(impulse);
         }
 
-        protected bool TryInteract() {
-            var interactionBox = Hitbox.GetInteractionArea(this);
-            foreach(var target in Owner.Entities.GetByType<IInteract>()) {
-                if(interactionBox.Collides(target.GetHitbox())) {
-                    target.Interact(this);
-                    return true;
-                }
-            }
-            return false;
-        }
-
         protected void Draw(Texture2D texture,Rectangle source) {
             var destination = GetDestination();
             var depth = GetRenderDepth(destination.Y);
@@ -124,6 +113,17 @@ namespace TwelveEngine.Game2D.Entity {
                 location.X < X + Width &&
                 location.Y >= Y &&
                 location.Y < Y + Height;
+        }
+
+        protected bool TryInteract() {
+            var interactionBox = Hitbox.GetInteractionArea(Position,Size,Direction);
+            foreach(var target in Owner.Entities.GetByType<IInteract>()) {
+                if(interactionBox.Collides(target.GetHitbox())) {
+                    target.Interact(this);
+                    return true;
+                }
+            }
+            return false;
         }
 
         public event Action<GameTime> OnUpdate, OnRender;

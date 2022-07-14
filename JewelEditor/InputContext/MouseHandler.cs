@@ -7,10 +7,10 @@ using TwelveEngine.Shell.Input;
 namespace JewelEditor.InputContext {
     internal abstract class MouseHandler:IMouseTarget {
 
-        private readonly Grid2D _grid;
-        public MouseHandler(Grid2D grid) => _grid = grid;
+        private readonly TileGrid _grid;
+        public MouseHandler(TileGrid grid) => _grid = grid;
 
-        protected Grid2D Grid => _grid;
+        protected TileGrid Grid => _grid;
         protected StateEntity GetState() => Grid.Entities.Get<StateEntity>(Editor.State);
 
         public abstract void MouseDown(Point point);

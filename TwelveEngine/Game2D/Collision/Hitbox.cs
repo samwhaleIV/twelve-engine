@@ -30,27 +30,26 @@ namespace TwelveEngine.Game2D.Collision {
                    Height + Y > target.Y;
         }
 
-        public static Hitbox GetInteractionArea(Entity2D entity) {
+        public static Hitbox GetInteractionArea(Vector2 origin,Vector2 size,Direction direction) {
 
             var boxSize = Constants.Config.InteractSize;
             var halfSize = boxSize * 0.5f;
 
             var location = Vector2.Zero;
 
-            var direction = entity.Direction;
             if(direction == Direction.Left || direction == Direction.Right) {
-                location.Y = (entity.Y + entity.Height * 0.5f) - halfSize;
+                location.Y = (origin.Y + size.Y * 0.5f) - halfSize;
                 if(direction == Direction.Left) {
-                    location.X = entity.X - boxSize;
+                    location.X = origin.X - boxSize;
                 } else {
-                    location.X = entity.X + entity.Width;
+                    location.X = origin.X + size.X;
                 }
             } else {
-                location.X = (entity.X + entity.Width * 0.5f) - halfSize;
+                location.X = (origin.X + size.X * 0.5f) - halfSize;
                 if(direction == Direction.Up) {
-                    location.Y = entity.Y - boxSize;
+                    location.Y = origin.Y - boxSize;
                 } else {
-                    location.Y = entity.Y + entity.Height;
+                    location.Y = origin.Y + size.Y;
                 }
             }
 

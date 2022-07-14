@@ -80,7 +80,7 @@ namespace JewelEditor.Entity {
             if(!applyAction) {
                 return;
             }
-            historyAction.Apply(Owner);
+            historyAction.Apply(TileGrid);
         }
 
         public void Undo() {
@@ -93,7 +93,7 @@ namespace JewelEditor.Entity {
             }
             for(int i = historyAction.Length - 1;i >= 0;i--) {
                 var action = historyAction[i];
-                action.Undo(Owner);
+                action.Undo(TileGrid);
             }
             RedoStack.Push(historyAction);
         }
@@ -108,7 +108,7 @@ namespace JewelEditor.Entity {
             }
             for(int i = 0;i<historyAction.Length;i++) {
                 var action = historyAction[i];
-                action.Apply(Owner);
+                action.Apply(TileGrid);
             }
             UndoStack.Push(historyAction);
         }

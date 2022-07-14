@@ -10,7 +10,7 @@ namespace Porthole.PuzzleGame.Components {
         private readonly bool facingLeft;
 
         public Switch(
-            Grid2D grid,
+            TileGrid grid,
             Point location,
             bool facingLeft
 
@@ -26,7 +26,7 @@ namespace Porthole.PuzzleGame.Components {
 
         public Hitbox GetHitbox() {
             int x = location.X, y = location.Y;
-            return Grid.Collision.GetHitbox(CollisionLayer[x,y],location).Value;
+            return Grid.CollisionTypes.GetHitbox(CollisionLayer[x,y],location).Value;
         }
 
         protected override void OnChange() {
