@@ -18,5 +18,9 @@ namespace TwelveEngine.Game2D.Collision.Poly {
             A = new Vector2(x1,y1);
             B = new Vector2(x2,y2);
         }
+
+        public bool SharesPoint(Line line) {
+            return A == line.A || A == line.B || B == line.A || B == line.B;
+        }
     }
 }

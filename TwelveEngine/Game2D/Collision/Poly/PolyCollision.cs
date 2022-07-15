@@ -95,16 +95,33 @@ namespace TwelveEngine.Game2D.Collision.Poly {
             if(graph == null || graph.Length < 1) {
                 return CollisionResult.None;
             }
+
+            Queue<Line> intersections = new Queue<Line>();
+
             foreach(var line in graph) {
+                if(
+                    (line.A.X <= source.X && line.B.X <= source.X) ||
+                    (line.A.X >= source.Right && line.B.X >= source.Right) ||
+                    (line.A.Y <= source.Y && line.B.Y <= source.Y) ||
+                    (line.A.Y >= source.Bottom && line.B.Y >= source.Bottom)
+                ) {
+                    continue;
+                }
                 var result = LineIntersects(source,line);
                 
                 //for now, ignore inside colliding lines
 
-                if(result.Intersection == IntersectionResult.Intersects) {
-                    return new CollisionResult(line,result.ClipLine.Value);
+                if(result.Intersection != IntersectionResult.Intersects) {
+                    continue;
                 }
+                intersections.Enqueue(result.ClipLine.Value);
             }
-            return CollisionResult.None;
+
+            if(intersections.Count <= 0) {
+                return CollisionResult.None;
+            } else {
+                return new CollisionResult(intersections.ToArray());
+            }
         }
     }
 }

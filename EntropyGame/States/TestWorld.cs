@@ -82,17 +82,6 @@ namespace EntropyGame.States {
                 OnRender += Player_OnRender;
                 OnUpdate += Player_OnUpdate;
                 OnLoad += Player_OnLoad;
-                OnCollideLine += Player_OnCollideLine;
-            }
-
-            private void Player_OnCollideLine(Line line) {
-                var lines = Owner.Entities.GetByType<LineEntity>(LINE_TYPE);
-                foreach(var lineEntity in lines) {
-                    if(lineEntity.Line.A == line.A && lineEntity.Line.B == line.B) {
-                        lineEntity.Color = Color.Blue;
-                        break;
-                    }
-                }
             }
 
             protected override int GetEntityType() => PLAYER_TYPE;
@@ -100,14 +89,14 @@ namespace EntropyGame.States {
             protected override Vector2 GetForce() => Owner.Input.GetDelta2D();
 
             private void Player_OnLoad() {
-                texture = Game.Content.Load<Texture2D>("player");
+                texture = Game.Content.Load<Texture2D>("testing-testing-cat");
             }
 
             private void Player_OnRender(GameTime gameTime) {
                 if(!OnScreen()) {
                     return;
                 }
-                Draw(texture,new Rectangle(0,0,16,16));
+                Draw(texture,new Rectangle(130,78,353,353));
             }
 
             private void Player_OnUpdate(GameTime gameTime) {
@@ -124,26 +113,46 @@ namespace EntropyGame.States {
                 (PLAYER_TYPE, () => new Player()),
                 (LINE_TYPE, () => new LineEntity())
             );
+            Mouse.OnPress += AddPoint;
+            Mouse.OnRelease += AddPoint;
+        }
+
+        private List<Line> lines = new List<Line>();
+
+        private Vector2? lineStart = null;
+
+        private readonly Color[] colors = new Color[] {
+            Color.Red, Color.Blue, Color.Green,
+            Color.Orange, Color.Yellow, Color.Purple, Color.Pink
+        };
+
+        private int colorIndex = 0;
+
+        private void AddPoint(Point point) {
+
+            Vector2 worldPoint = GetWorldVector(point);
+
+            if(!lineStart.HasValue) {
+                lineStart = worldPoint;
+                return;
+            }
+
+            Line line = new Line(lineStart.Value,worldPoint);
+            lineStart = null;
+
+            var lineEntity = new LineEntity() {
+                Line = line,
+                Color = colors[colorIndex = (colorIndex + 1) % colors.Length],
+            };
+            Entities.Add(lineEntity);
+
+            lines.Add(line);
+            PolyCollision.Lines = lines.ToArray();
         }
 
         private void World_OnLoad() {
             var player = Entities.Create(PLAYER_TYPE,"test-player");
             player.Position = new Vector2(0,5);
-
-            Line[] lines = new Line[] {
-                new Line(0,0,10,10)
-            };
-
-            Queue<Line> collisionLines = new Queue<Line>();
-
-            foreach(var line in lines) {
-                var lineEntity = new LineEntity();
-                lineEntity.Line = line;
-                collisionLines.Enqueue(line);
-                Entities.Add(lineEntity);
-            }
-
-            PolyCollision.Lines = collisionLines.ToArray();
         }
     }
 }
