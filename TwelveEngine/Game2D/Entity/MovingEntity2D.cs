@@ -16,7 +16,7 @@ namespace TwelveEngine.Game2D.Entity {
             return result.HasCollision;
         }
 
-        private float HitboxCollisionX(float velocity,float oldPosition,Hitbox hitbox) {
+        private float HitboxCollisionX(float velocity,Hitbox hitbox) {
             float x;
             if(velocity < 0) {
                 x = hitbox.Right;
@@ -26,7 +26,7 @@ namespace TwelveEngine.Game2D.Entity {
             return x;
         }
 
-        private float HitboxCollisionY(float velocity,float oldPosition,Hitbox hitbox) {
+        private float HitboxCollisionY(float velocity,Hitbox hitbox) {
             float y;
             if(velocity < 0) {
                 y = hitbox.Bottom;
@@ -38,6 +38,8 @@ namespace TwelveEngine.Game2D.Entity {
 
         private float LineCollisionX(float velocity,float oldPosition,Line[] lines) {
             if(lines.Length > 1) {
+                /* This is only an approximation of the closest nearest spot
+                   bound by the frame rate and discrete step rate (same for LineCollisionY) */
                 return oldPosition;
             }
             Line line = lines[0];
@@ -67,7 +69,7 @@ namespace TwelveEngine.Game2D.Entity {
         private float CollisionPassX(CollisionResult result,float velocity,float oldPosition) {
             switch(result.Type) {
                 case CollisionResultType.Hitbox:
-                    return HitboxCollisionX(velocity,oldPosition,result.Hitbox.Value);
+                    return HitboxCollisionX(velocity,result.Hitbox.Value);
                 case CollisionResultType.Line:
                     return LineCollisionX(velocity,oldPosition,result.ClipLines);
                 default:
@@ -78,7 +80,7 @@ namespace TwelveEngine.Game2D.Entity {
         private float CollisionPassY(CollisionResult result,float velocity,float oldPosition) {
             switch(result.Type) {
                 case CollisionResultType.Hitbox:
-                    return HitboxCollisionY(velocity,oldPosition,result.Hitbox.Value);
+                    return HitboxCollisionY(velocity,result.Hitbox.Value);
                 case CollisionResultType.Line:
                     return LineCollisionY(velocity,oldPosition,result.ClipLines);
                 default:
@@ -115,6 +117,7 @@ namespace TwelveEngine.Game2D.Entity {
             if(collideY) {
                 OnCollideY();
             }
+
         }
     }
 }

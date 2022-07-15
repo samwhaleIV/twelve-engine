@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Game2D.Collision.Poly;
 using TwelveEngine.Serial;
+using System.Diagnostics;
 
 namespace EntropyGame.States {
     internal sealed class TestWorld:UniformGrid {
@@ -128,9 +129,11 @@ namespace EntropyGame.States {
 
         private int colorIndex = 0;
 
-        private void AddPoint(Point point) {
+        private void AddPoint(float x,float y) {
+            AddPoint(new Vector2(x,y));
+        }
 
-            Vector2 worldPoint = GetWorldVector(point);
+        private void AddPoint(Vector2 worldPoint) {
 
             if(!lineStart.HasValue) {
                 lineStart = worldPoint;
@@ -150,9 +153,21 @@ namespace EntropyGame.States {
             PolyCollision.Lines = lines.ToArray();
         }
 
+        private void AddPoint(Point point) {
+            Vector2 worldPoint = GetWorldVector(point);
+            Debug.WriteLine($"AddPoint({worldPoint.X}f,{worldPoint.Y}f);");
+            AddPoint(worldPoint);
+        }
+
         private void World_OnLoad() {
             var player = Entities.Create(PLAYER_TYPE,"test-player");
             player.Position = new Vector2(0,5);
+
+            /* 133023430560032257.teinp */
+            AddPoint(-2.1992188f,6.1210938f);
+            AddPoint(3.8476562f,7.2851562f);
+            AddPoint(3.6757812f,7.4101562f);
+            AddPoint(2.5507812f,4.0195312f);
         }
     }
 }
