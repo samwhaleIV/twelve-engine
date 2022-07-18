@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using Porthole.Physics;
-using tainicom.Aether.Physics2D;
 using tainicom.Aether.Physics2D.Dynamics;
 
 namespace TwelveEngine.Game2D.Entity {
@@ -9,11 +7,11 @@ namespace TwelveEngine.Game2D.Entity {
 
         public bool CameraTracking { get; set; } = false;
 
-        public float ReboundMultiplier { get; set; } = 1.25f;
+        public float ReboundMultiplier { get; set; } = 1.5f;
 
-        public float Force { get; set; } = 16f;
+        public float Force { get; set; } = 32f;
 
-        private float _damping = 6f, _friction = 1f, _restitution = 0.1f;
+        private float _damping = 8f, _friction = 1f, _restitution = 0.5f;
 
         public float Damping {
             get => _damping;

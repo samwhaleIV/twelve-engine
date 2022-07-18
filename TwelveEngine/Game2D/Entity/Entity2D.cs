@@ -13,6 +13,8 @@ namespace TwelveEngine.Game2D.Entity {
             OnImport += Entity2D_OnImport;
         }
 
+        public bool OnScreen() => Owner.OnScreen(this);
+
         private void Entity2D_OnImport(SerialFrame frame) {
             Position = frame.GetVector2();
             Size = frame.GetVector2();
@@ -103,41 +105,12 @@ namespace TwelveEngine.Game2D.Entity {
             return Owner.Input.IsKeyUp(impulse);
         }
 
+        public Rectangle GetDestination() => Owner.GetDestination(this);
+
         protected void Draw(Texture2D texture,Rectangle? source = null) {
-            var destination = GetDestination();
-            var depth = GetRenderDepth(destination.Y);
+            var destination = Owner.GetDestination(Position,Size);
+            var depth = Owner.GetRenderDepth(destination.Y);
             Game.SpriteBatch.Draw(texture,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
-        }
-
-        public float GetRenderDepth(int destinationY) {
-            return 1f - Math.Max(destinationY / (float)Game.Viewport.Height,0f);
-        }
-
-        public Rectangle GetDestination() {
-            var screenSpace = Owner.ScreenSpace;
-            var tileSize = screenSpace.TileSize;
-
-            Vector2 position = Position, size = Size;
-
-            var destination = new Rectangle {
-                X = (int)Math.Round((position.X - screenSpace.X) * tileSize),
-                Y = (int)Math.Round((position.Y - screenSpace.Y) * tileSize),
-
-                Width = (int)Math.Floor(size.X * tileSize),
-                Height = (int)Math.Floor(size.Y * tileSize)
-            };
-
-            return destination;
-        }
-
-        public bool OnScreen() {
-            var screenSpace = Owner.ScreenSpace;
-            return !(
-                X + Width <= screenSpace.X ||
-                Y + Height <= screenSpace.Y ||
-                X >= screenSpace.X + screenSpace.Width ||
-                Y >= screenSpace.Y + screenSpace.Height
-            );
         }
 
         public virtual bool Contains(Vector2 location) {

@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using TwelveEngine.Serial;
 using System.Diagnostics;
 using tainicom.Aether.Physics2D.Dynamics;
+using TwelveEngine.Game2D.Objects;
 
 namespace EntropyGame.States {
     internal sealed class TestWorld:PhysicsGrid2D {
@@ -116,6 +117,14 @@ namespace EntropyGame.States {
             );
             Mouse.OnPress += AddPoint;
             Mouse.OnRelease += AddPoint;
+
+            SetAtlas("tileset");
+            PhysicsGameObject gameObject = Objects.CreateKinematic();
+            gameObject.AngularVelocity = 1f;
+
+            gameObject.Position = new Vector2(0,0);
+            gameObject.Size = Vector2.One;
+            gameObject.TextureSource = new Rectangle(16,0,16,16);
         }
 
         private List<Line> lines = new List<Line>();
@@ -160,7 +169,7 @@ namespace EntropyGame.States {
 
         private void World_OnLoad() {
             var player = Entities.Create(PLAYER_TYPE,"test-player");
-            player.Position = new Vector2(0,0);
+            player.Position = new Vector2(2.5f,2.5f);
 
             AddPoint(0,0);
             AddPoint(5,0);

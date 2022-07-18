@@ -33,6 +33,11 @@ namespace TwelveEngine.Serial {
             Set(color.A);
         }
 
+        public void Set(Rectangle rectangle) {
+            Set(rectangle.Location);
+            Set(rectangle.Size);
+        }
+
         public Vector2 GetVector2() {
             float x = GetFloat(), y = GetFloat();
             return new Vector2(x,y);
@@ -54,6 +59,10 @@ namespace TwelveEngine.Serial {
             var b = GetByte();
             var a = GetByte();
             return new Color(r,g,b,a);
+        }
+
+        public Rectangle GetRectangle() {
+            return new Rectangle(GetPoint(),GetPoint());
         }
     }
 }

@@ -11,6 +11,9 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\PhysicsEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\TopDownPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\GameObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\ObjectManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\PhysicsGameObject.cs" />
     <Compile Include="..\TwelveEngine\Game2D\PhysicsGrid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />

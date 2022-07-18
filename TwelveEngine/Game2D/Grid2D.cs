@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Entity;
+using TwelveEngine.Game2D.Objects;
 using TwelveEngine.Serial;
 using TwelveEngine.Shell.States;
 
@@ -97,6 +98,50 @@ namespace TwelveEngine.Game2D {
         }
 
         public Vector2 GetCenter() => ScreenSpace.GetCenter();
+
+        public Rectangle GetDestination(Vector2 position,Vector2 size) {
+            int tileSize = ScreenSpace.TileSize;
+
+            var destination = new Rectangle {
+                X = (int)Math.Floor((position.X - ScreenSpace.X) * tileSize),
+                Y = (int)Math.Floor((position.Y - ScreenSpace.Y) * tileSize),
+
+                Width = (int)Math.Floor(size.X * tileSize),
+                Height = (int)Math.Floor(size.Y * tileSize)
+            };
+
+            return destination;
+        }
+
+        public bool OnScreen(Vector2 position,Vector2 size) {
+            //Todo: Account for rotation
+            return !(
+                position.X + size.X <= ScreenSpace.X ||
+                position.Y + size.Y <= ScreenSpace.Y ||
+                position.X >= ScreenSpace.X + ScreenSpace.Width ||
+                position.Y >= ScreenSpace.Y + ScreenSpace.Height
+            );
+        }
+
+        public bool OnScreen(Entity2D entity) {
+            return OnScreen(entity.Position,entity.Size);
+        }
+
+        public bool OnScreen(GameObject gameObject) {
+            return OnScreen(gameObject.Position,gameObject.Size);
+        }
+
+        public Rectangle GetDestination(Entity2D entity) {
+            return GetDestination(entity.Position,entity.Size);
+        }
+
+        public Rectangle GetDestination(GameObject gameObject) {
+            return GetDestination(gameObject.Position,gameObject.Size);
+        }
+
+        public float GetRenderDepth(int destinationY) {
+            return 1f - Math.Max(destinationY / (float)Game.Viewport.Height,0f);
+        }
 
         private ScreenSpace GetScreenSpace() {
             int tileSize = CalculateTileSize();
