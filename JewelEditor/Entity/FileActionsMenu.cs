@@ -1,5 +1,4 @@
-﻿using System;
-using TwelveEngine.UI;
+﻿using TwelveEngine.UI;
 
 namespace JewelEditor.Entity {
     internal class FileActionsMenu:UIEntity {

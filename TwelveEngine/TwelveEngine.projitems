@@ -9,19 +9,9 @@
     <Import_RootNamespace>TwelveEngine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionInterface.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\CollisionResultType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Poly\PolyCollision.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Tile\TileCollision.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\PlatformerPlayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\TopDownPlayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Poly\Line.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\PhysicsEntity2D.cs" />
+    <Compile Include="..\TwelveEngine\Game2D\PhysicsGrid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileGrid.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\UniformGrid.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityController2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Physics\IVelocityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
@@ -65,10 +55,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serial\String\TypeParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\ControllerBinds.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Tile\TileCollisionType.cs" />
-    <Compile Include="..\TwelveEngine\Game2D\Collision\Tile\TileCollisionTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Direction.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\MovingEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManager.cs" />
@@ -96,7 +83,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\TileGenViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TileGen\TileGenSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\InputHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\Hitbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\Entity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\LayerModes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
@@ -126,10 +112,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Grid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Collision\IInteract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\SerialFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImageButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImagePanel.cs" />
@@ -158,6 +142,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Game2D\Collision\Tile\" />
   </ItemGroup>
 </Project>

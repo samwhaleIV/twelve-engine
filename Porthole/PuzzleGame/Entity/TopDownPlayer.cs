@@ -1,12 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using TwelveEngine.Physics;
+using Porthole.Physics;
 using TwelveEngine.Shell.Input;
+using TwelveEngine.Serial;
+using Porthole.Collision;
 
-namespace TwelveEngine.Game2D.Entity {
+namespace Porthole.PuzzleGame.Entity {
     public abstract class TopDownPlayer:MovingEntity2D {
+
+        protected bool TryInteract() {
+            var interactionBox = Hitbox.GetInteractionArea(Position,Size,Direction);
+            foreach(var target in Owner.Entities.GetByType<IInteract>()) {
+                if(interactionBox.Collides(target.GetHitbox())) {
+                    target.Interact(this);
+                    return true;
+                }
+            }
+            return false;
+        }
 
         private const float MAX_SPEED = 2.5f;
 

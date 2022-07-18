@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using TwelveEngine;
 using TwelveEngine.Serial;
 using TwelveEngine.Game2D;
-using TwelveEngine.Game2D.Collision;
+using Porthole.Collision;
 
 namespace Porthole.PuzzleGame {
     public sealed class PuzzleManager:ISerializable {

@@ -1,13 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using TwelveEngine.Game2D.Collision;
-using TwelveEngine.Game2D.Entity;
+using TwelveEngine.Serial;
 using TwelveEngine.Shell.Input;
 
-namespace Porthole.PuzzleGame {
+namespace Porthole.PuzzleGame.Entity {
     internal class Player:TopDownPlayer {
 
         protected override int GetEntityType() => 1;
@@ -17,12 +14,14 @@ namespace Porthole.PuzzleGame {
         private const float ANIM_JUMP_START = 0.25f;
         private const int ANIM_ROWS = 4;
 
+
         public Player() {
             OnUpdate += Player_OnUpdate;
             OnRender += Player_OnRender;
             OnLoad += Player_OnLoad;
             OnUnload += Player_OnUnload;
             OnMovementStarted += Player_OnMovementStarted;
+
         }
 
         private TimeSpan animationStartTime = TimeSpan.Zero;

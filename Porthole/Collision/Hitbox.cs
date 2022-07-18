@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using TwelveEngine.Game2D.Entity;
 using TwelveEngine.Shell.Input;
 
-namespace TwelveEngine.Game2D.Collision {
+namespace Porthole.Collision {
     public readonly struct Hitbox {
         public Hitbox(
             Vector2 position,
@@ -23,6 +22,10 @@ namespace TwelveEngine.Game2D.Collision {
         public float Right => Position.X + Size.X;
         public float Bottom => Position.Y + Size.Y;
 
+        public Vector2 Center => Position + Size * 0.5f;
+
+        public float Radius => (Width + Height) * 0.25f; /* Good enough */
+
         public readonly bool Collides(Hitbox target) {
             return X < target.X + target.Width &&
                    X + Width > target.X &&
@@ -32,7 +35,7 @@ namespace TwelveEngine.Game2D.Collision {
 
         public static Hitbox GetInteractionArea(Vector2 origin,Vector2 size,Direction direction) {
 
-            var boxSize = Constants.Config.InteractSize;
+            var boxSize = TwelveEngine.Constants.Config.InteractSize;
             var halfSize = boxSize * 0.5f;
 
             var location = Vector2.Zero;

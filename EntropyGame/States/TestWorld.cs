@@ -5,12 +5,20 @@ using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Entity;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using TwelveEngine.Game2D.Collision.Poly;
 using TwelveEngine.Serial;
 using System.Diagnostics;
 
 namespace EntropyGame.States {
-    internal sealed class TestWorld:UniformGrid {
+    internal sealed class TestWorld:PhysicsGrid2D {
+
+        private struct Line {
+            public Vector2 A;
+            public Vector2 B;
+
+            public Line(Vector2 a,Vector2 b) {
+                A = a; B = b;
+            }
+        }
 
         private const int PLAYER_TYPE = 1;
 
@@ -75,7 +83,7 @@ namespace EntropyGame.States {
             protected override int GetEntityType() => LINE_TYPE;
         }
 
-        private sealed class Player:TopDownPlayer {
+        private sealed class Player:PhysicsEntity2D {
 
             private Texture2D texture;
 
@@ -87,8 +95,6 @@ namespace EntropyGame.States {
 
             protected override int GetEntityType() => PLAYER_TYPE;
 
-            protected override Vector2 GetForce() => Owner.Input.GetDelta2D();
-
             private void Player_OnLoad() {
                 texture = Game.Content.Load<Texture2D>("testing-testing-cat");
             }
@@ -97,11 +103,11 @@ namespace EntropyGame.States {
                 if(!OnScreen()) {
                     return;
                 }
-                Draw(texture,new Rectangle(130,78,353,353));
+                Draw(texture);
             }
 
             private void Player_OnUpdate(GameTime gameTime) {
-                UpdateMovement(gameTime);
+                
                 Owner.Camera.Position = Position;
             }
         }
@@ -150,7 +156,6 @@ namespace EntropyGame.States {
             Entities.Add(lineEntity);
 
             lines.Add(line);
-            PolyCollision.Lines = lines.ToArray();
         }
 
         private void AddPoint(Point point) {
@@ -161,13 +166,10 @@ namespace EntropyGame.States {
 
         private void World_OnLoad() {
             var player = Entities.Create(PLAYER_TYPE,"test-player");
-            player.Position = new Vector2(0,5);
+            player.Position = new Vector2(0,2);
 
-            /* 133023430560032257.teinp */
-            AddPoint(-2.1992188f,6.1210938f);
-            AddPoint(3.8476562f,7.2851562f);
-            AddPoint(3.6757812f,7.4101562f);
-            AddPoint(2.5507812f,4.0195312f);
+            AddPoint(0,0);
+            AddPoint(5,0);
         }
     }
 }

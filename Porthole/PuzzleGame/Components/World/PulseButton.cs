@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using TwelveEngine.Game2D;
-using TwelveEngine.Game2D.Collision;
+using Porthole.Collision;
 using TwelveEngine.Game2D.Entity;
 
 namespace Porthole.PuzzleGame.Components {
@@ -13,7 +12,7 @@ namespace Porthole.PuzzleGame.Components {
 
         public PulseButton(
 
-            TileGrid grid,
+            PuzzleGrid grid,
             Point location, bool positive
 
         ) : base(grid) {

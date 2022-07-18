@@ -3,12 +3,12 @@ using System.Reflection;
 using System.Collections.Generic;
 using TwelveEngine.Serial.Map;
 using TwelveEngine.Game2D;
-using TwelveEngine.Game2D.Collision;
 using TwelveEngine;
 using TwelveEngine.Shell;
 using TwelveEngine.EntitySystem;
+using Porthole.PuzzleGame.Entity;
 using TwelveEngine.Game2D.Entity;
-using TwelveEngine.Game2D.Collision.Tile;
+using Porthole.Collision;
 
 namespace Porthole.PuzzleGame {
     public static class PuzzleFactory {

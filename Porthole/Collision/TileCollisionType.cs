@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TwelveEngine.Game2D.Collision.Tile {
+namespace Porthole.Collision {
     public readonly struct TileCollisionType {
         public TileCollisionType(
             Point location,Point size,float tileSize

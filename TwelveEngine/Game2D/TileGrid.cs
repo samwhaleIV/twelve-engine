@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using TwelveEngine.Game2D.Collision;
 using TwelveEngine.Serial;
 using TwelveEngine.Serial.Map;
-using TwelveEngine.Game2D.Collision.Tile;
 
 namespace TwelveEngine.Game2D {
     public class TileGrid:Grid2D {
@@ -14,22 +12,10 @@ namespace TwelveEngine.Game2D {
         private int[][,] layers;
 
         public TileGrid() {
-            Collision = new TileCollision(this);
             OnLoad += TileGrid_OnLoad;
             OnUnload += TileGrid_OnUnload;
             OnExport += TileGrid_OnExport;
             OnImport += TileGrid_OnImport;
-        }
-
-        private TileCollisionTypes _collisionTypes;
-
-        public TileCollisionTypes CollisionTypes {
-            get => _collisionTypes;
-            set {
-                if(_collisionTypes == value) return;
-                if(IsLoaded && !value.IsLoaded) value.Load();
-                _collisionTypes = value;
-            }
         }
 
         private void ExportLayers(SerialFrame frame) {
@@ -69,7 +55,6 @@ namespace TwelveEngine.Game2D {
         }
 
         private void TileGrid_OnLoad() {
-            CollisionTypes?.Load();
             TileRenderer?.Load(this);
         }
 

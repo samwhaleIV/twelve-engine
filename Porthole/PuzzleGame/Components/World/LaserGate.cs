@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using TwelveEngine.Game2D;
 
 namespace Porthole.PuzzleGame.Components {
     public sealed class LaserGate:WorldComponent {
@@ -11,7 +10,7 @@ namespace Porthole.PuzzleGame.Components {
 
         public LaserGate(
 
-            TileGrid grid,
+            PuzzleGrid grid,
             Point recepticle1, Point recepticle2,bool horizontal
 
         ) : base(grid) {

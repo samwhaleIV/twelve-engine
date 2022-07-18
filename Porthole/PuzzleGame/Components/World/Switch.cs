@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using TwelveEngine.Game2D;
-using TwelveEngine.Game2D.Collision;
+using Porthole.Collision;
 using TwelveEngine.Game2D.Entity;
 using TwelveEngine.Serial;
 
@@ -10,7 +9,7 @@ namespace Porthole.PuzzleGame.Components {
         private readonly bool facingLeft;
 
         public Switch(
-            TileGrid grid,
+            PuzzleGrid grid,
             Point location,
             bool facingLeft
 

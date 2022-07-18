@@ -9,6 +9,12 @@
     <Import_RootNamespace>Porthole</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Collision\Hitbox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collision\IInteract.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Physics\IVelocityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityController2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Physics\VelocityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Component.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\ComponentFactory.cs" />
@@ -23,9 +29,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\LaserSplitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\PulseButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Components\World\Switch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Entity\MovingEntity2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Entity\TopDownPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Levels\AlphaLevels.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Player.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\Entity\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\PuzzleManager.cs" />
@@ -33,5 +41,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)PuzzleGame\WorldComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Strings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tiles.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collision\TileCollision.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collision\TileCollisionType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Collision\TileCollisionTypes.cs" />
   </ItemGroup>
 </Project>

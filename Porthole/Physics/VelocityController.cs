@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwelveEngine.Physics {
+namespace Porthole.Physics {
     public sealed class VelocityController {
 
         private readonly IVelocityData _data;

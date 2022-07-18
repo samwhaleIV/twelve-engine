@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
+using Porthole.PuzzleGame;
 
-namespace TwelveEngine.Game2D.Collision.Tile {
-    public sealed class TileCollision:CollisionInterface {
+namespace Porthole.Collision {
+    public sealed class TileCollision {
 
-        private readonly TileGrid owner;
-        public TileCollision(TileGrid owner) => this.owner = owner;
+        private readonly PuzzleGrid owner;
+        public TileCollision(PuzzleGrid owner) => this.owner = owner;
 
         public TileCollisionTypes Types => owner.CollisionTypes;
-        public int Layer { get; set; } = Constants.CollisionLayerIndex;
+        public int Layer { get; set; } = TwelveEngine.Constants.CollisionLayerIndex;
 
         public Hitbox? GetHitbox(int ID,Vector2 location) {
             return Types?.GetHitbox(ID,location);
@@ -56,16 +57,16 @@ namespace TwelveEngine.Game2D.Collision.Tile {
 
         }
 
-        public override CollisionResult Collides(Hitbox source) {
+        public Hitbox? Collides(Hitbox source) {
             PopulateCollisionBuffer(owner.GetLayer(Layer),source);
 
             for(int i = 0;i<collisionBufferLength;i++) {
                 var hitbox = collisionBuffer[i];
                 if(source.Collides(hitbox)) {
-                    return new CollisionResult(hitbox);
+                    return hitbox;
                 }
             }
-            return CollisionResult.None;
+            return null;
         }
     }
 }

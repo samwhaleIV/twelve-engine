@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TwelveEngine.Physics {
+namespace Porthole.Physics {
     public sealed class VelocityController2D:IVelocityData {
 
         private readonly VelocityController _x, _y;

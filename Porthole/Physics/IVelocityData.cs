@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine.Physics {
+﻿namespace Porthole.Physics {
     public interface IVelocityData {
         public float Acceleration { get; set; }
         public float Decay { get; set; }

@@ -1,17 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using TwelveEngine.Game2D;
-using TwelveEngine.Game2D.Entity;
-using TwelveEngine.Game3D;
-using TwelveEngine;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.Config;
-using TwelveEngine.Game2D.Collision;
-using TwelveEngine.Serial.Map;
-using TwelveEngine.EntitySystem;
-using Microsoft.Xna.Framework.Graphics;
-using Porthole;
-using TwelveEngine.TileGen;
 
 namespace TwelveDesktop {
 
@@ -20,7 +10,7 @@ namespace TwelveDesktop {
         internal static void Main() {
 
             ConfigLoader.LoadEngineConfig(new TwelveConfigSet() {
-                CPUTextures = new string[] { }
+                CPUTextures = new string[] {  }
             });
 
             using var game = new GameManager();

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TwelveEngine.Shell;
+﻿using TwelveEngine.Shell;
 using EntropyGame.States;
 
 namespace EntropyGame {

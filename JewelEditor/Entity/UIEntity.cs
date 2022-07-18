@@ -1,5 +1,4 @@
 ﻿using TwelveEngine.Shell.Input;
-using Microsoft.Xna.Framework;
 using TwelveEngine.UI;
 
 namespace JewelEditor.Entity {

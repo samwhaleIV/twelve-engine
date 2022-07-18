@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using TwelveEngine.Shell;
 
-namespace TwelveEngine.Game2D.Collision.Tile {
+namespace Porthole.Collision {
 
     public sealed class TileCollisionTypes {
 
@@ -21,10 +21,10 @@ namespace TwelveEngine.Game2D.Collision.Tile {
             string textureName = null
         ) {
             if(string.IsNullOrWhiteSpace(textureName)) {
-                textureName = Constants.Config.Tileset;
+                textureName = TwelveEngine.Constants.Config.Tileset;
             }
             if(!tileSize.HasValue) {
-                tileSize = Constants.Config.TileSize;
+                tileSize = TwelveEngine.Constants.Config.TileSize;
             }
             this.tileSize = tileSize.Value;
             this.textureName = textureName;

@@ -1,13 +1,9 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Serial.Map;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Entity;
 using TwelveEngine.Serial;
 using TwelveEngine.Shell.States;
-using TwelveEngine.Shell.UI;
-using TwelveEngine.Game2D.Collision;
 
 namespace TwelveEngine.Game2D {
     public abstract class Grid2D:InputGameState {
@@ -23,9 +19,6 @@ namespace TwelveEngine.Game2D {
             OnRender += Grid2D_OnRender;
             OnUpdate += Grid2D_OnUpdate;
         }
-
-        protected readonly CollisionInterface collisionInterface;
-        public CollisionInterface Collision { get; protected set; }
 
         public Vector2 Size { get; protected set; } = Vector2.Zero;
 

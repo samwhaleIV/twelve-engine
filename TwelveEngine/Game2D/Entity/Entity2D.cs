@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Serial;
 using TwelveEngine.Shell.Input;
-using TwelveEngine.Game2D.Collision;
 
 namespace TwelveEngine.Game2D.Entity {
     public abstract class Entity2D:Entity<Grid2D> {
@@ -26,45 +25,76 @@ namespace TwelveEngine.Game2D.Entity {
             frame.Set(Direction);
         }
 
-        private Vector2 position = Vector2.Zero;
-        private Vector2 size = Vector2.One;
+        public bool IsHorizontal() => (int)Direction >= 2;
+        public bool IsVertical() => (int)Direction <= 1;
+
+        public Direction Direction { get; set; } = Direction.Down;
 
         public float X {
-            get => position.X;
-            set => position.X = value;
+            get => GetPosition().X;
+            set {
+                Vector2 position = GetPosition();
+                position.X = value;
+                SetPosition(position);
+            }
         }
         public float Y {
-            get => position.Y;
-            set => position.Y = value;
+            get => GetPosition().Y;
+            set {
+                Vector2 position = GetPosition();
+                position.Y = value;
+                SetPosition(position);
+            }
         }
 
         public float Width {
-            get => size.X;
-            set => size.X = value;
+            get => GetSize().X;
+            set {
+                Vector2 size = GetPosition();
+                size.X = value;
+                SetSize(size);
+            }
         }
 
         public float Height {
-            get => size.Y;
-            set => size.Y = value;
+            get => GetSize().Y;
+            set {
+                Vector2 size = GetPosition();
+                size.Y = value;
+                SetSize(size);
+            }
         }
 
         public float Bottom => Y + Height;
         public float Right => X + Width;
 
+        private Vector2 _position = Vector2.Zero;
+        private Vector2 _size = Vector2.One;
+
+        protected virtual Vector2 GetPosition() {
+            return _position;
+        }
+        protected virtual void SetPosition(Vector2 position) {
+            _position = position;
+        }
+
+        protected virtual Vector2 GetSize() {
+            return _size;
+        }
+
+        protected virtual void SetSize(Vector2 size) {
+            _size = size;
+        }
+
         public Vector2 Position {
-            get => position;
-            set => position = value;
+            get => GetPosition();
+            set => SetPosition(value);
         }
 
         public Vector2 Size {
-            get => size;
-            set => size = value;
+            get => GetSize();
+            set => SetSize(value);
         }
-
-        public Direction Direction { get; set; } = Direction.Down;
-
-        public bool IsHorizontal() => (int)Direction >= 2;
-        public bool IsVertical() => (int)Direction <= 1;
 
         protected bool IsKeyDown(Impulse impulse) {
             return Owner.Input.IsKeyDown(impulse);
@@ -73,14 +103,14 @@ namespace TwelveEngine.Game2D.Entity {
             return Owner.Input.IsKeyUp(impulse);
         }
 
-        protected void Draw(Texture2D texture,Rectangle source) {
+        protected void Draw(Texture2D texture,Rectangle? source = null) {
             var destination = GetDestination();
             var depth = GetRenderDepth(destination.Y);
             Game.SpriteBatch.Draw(texture,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
         }
 
         public float GetRenderDepth(int destinationY) {
-            return 1 - Math.Max(destinationY / (float)Game.Viewport.Height,0);
+            return 1f - Math.Max(destinationY / (float)Game.Viewport.Height,0f);
         }
 
         public Rectangle GetDestination() {
@@ -113,17 +143,6 @@ namespace TwelveEngine.Game2D.Entity {
                 location.X < X + Width &&
                 location.Y >= Y &&
                 location.Y < Y + Height;
-        }
-
-        protected bool TryInteract() {
-            var interactionBox = Hitbox.GetInteractionArea(Position,Size,Direction);
-            foreach(var target in Owner.Entities.GetByType<IInteract>()) {
-                if(interactionBox.Collides(target.GetHitbox())) {
-                    target.Interact(this);
-                    return true;
-                }
-            }
-            return false;
         }
 
         public event Action<GameTime> OnUpdate, OnRender;

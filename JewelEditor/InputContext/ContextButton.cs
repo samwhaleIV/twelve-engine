@@ -1,7 +1,6 @@
 ﻿using TwelveEngine.UI.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using JewelEditor.Entity;
 
 namespace JewelEditor.InputContext {
     internal sealed class ContextButton:ImageButton {
