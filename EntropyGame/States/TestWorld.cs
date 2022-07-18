@@ -7,17 +7,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Serial;
 using System.Diagnostics;
+using tainicom.Aether.Physics2D.Dynamics;
 
 namespace EntropyGame.States {
     internal sealed class TestWorld:PhysicsGrid2D {
 
         private struct Line {
-            public Vector2 A;
-            public Vector2 B;
-
-            public Line(Vector2 a,Vector2 b) {
-                A = a; B = b;
-            }
+            public Vector2 A, B;
+            public Line(Vector2 a,Vector2 b) { A = a; B = b; }
         }
 
         private const int PLAYER_TYPE = 1;
@@ -39,13 +36,19 @@ namespace EntropyGame.States {
                 OnUnload += LineEntity_OnUnload;
             }
 
-            private void LineEntity_OnUnload() {
-                texture?.Dispose();
-            }
+            private World PhysicsWorld => (Owner as PhysicsGrid2D).PhysicsWorld;
+
+            private Body body;
 
             private void LineEntity_OnLoad() {
                 texture = new Texture2D(Game.GraphicsDevice,1,1);
                 texture.SetData(new Color[] { Color.White });
+                body = PhysicsWorld.CreateEdge(Line.A,Line.B);
+            }
+
+            private void LineEntity_OnUnload() {
+                texture?.Dispose();
+                PhysicsWorld.Remove(body);
             }
 
             /* https://community.monogame.net/t/line-drawing/6962/5 */
@@ -83,13 +86,13 @@ namespace EntropyGame.States {
             protected override int GetEntityType() => LINE_TYPE;
         }
 
-        private sealed class Player:PhysicsEntity2D {
+        private sealed class Player:TopDownPlayer {
 
             private Texture2D texture;
 
             public Player() {
+                CameraTracking = true;
                 OnRender += Player_OnRender;
-                OnUpdate += Player_OnUpdate;
                 OnLoad += Player_OnLoad;
             }
 
@@ -100,18 +103,9 @@ namespace EntropyGame.States {
             }
 
             private void Player_OnRender(GameTime gameTime) {
-                if(!OnScreen()) {
-                    return;
-                }
                 Draw(texture);
             }
-
-            private void Player_OnUpdate(GameTime gameTime) {
-                
-                Owner.Camera.Position = Position;
-            }
         }
-
 
         public TestWorld() {
             OnLoad += World_OnLoad;
@@ -166,7 +160,7 @@ namespace EntropyGame.States {
 
         private void World_OnLoad() {
             var player = Entities.Create(PLAYER_TYPE,"test-player");
-            player.Position = new Vector2(0,2);
+            player.Position = new Vector2(0,0);
 
             AddPoint(0,0);
             AddPoint(5,0);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using tainicom.Aether.Physics2D.Dynamics;
 
 namespace TwelveEngine.Game2D.Entity {
@@ -6,11 +7,15 @@ namespace TwelveEngine.Game2D.Entity {
 
         protected World PhysicsWorld => (Owner as PhysicsGrid2D).PhysicsWorld;
 
-        public Body Body { get; private set; }
-        public Fixture Fixture { get; private set; }
+        protected Body Body { get; private set; }
+        protected Fixture Fixture { get; private set; }
+
+        protected Action<Fixture> OnFixtureChanged;
 
         private void SetRectangleFixture(Vector2 size) {
-            Fixture = Body.CreateRectangle(size.X,size.Y,1f,Vector2.Zero);
+            var fixture = Body.CreateRectangle(size.X,size.Y,1f,Vector2.Zero);
+            Fixture = fixture;
+            OnFixtureChanged?.Invoke(fixture);
         }
 
         private void SetFixtureSize(Vector2 size) {
@@ -24,11 +29,16 @@ namespace TwelveEngine.Game2D.Entity {
         }
 
         protected override void SetPosition(Vector2 position) {
+            position += Size * 0.5f;
             base.SetPosition(position);
             if(!IsLoaded) {
                 return;
             }
             SetBodyPosition(position);
+        }
+
+        protected override Vector2 GetPosition() {
+            return Body.Position - Size * 0.5f;
         }
 
         protected override void SetSize(Vector2 size) {
@@ -45,8 +55,10 @@ namespace TwelveEngine.Game2D.Entity {
         }
 
         private void PhysicsEntity2D_OnLoad() {
-            Body = PhysicsWorld.CreateBody(Position,0f,BodyType.Dynamic);
-            Body.IgnoreGravity = true;
+            var body = PhysicsWorld.CreateBody(base.GetPosition(),0f,BodyType.Dynamic);
+            body.Rotation = 0f;
+            body.FixedRotation = true;
+            Body = body;
             SetRectangleFixture(Size);
         }
 

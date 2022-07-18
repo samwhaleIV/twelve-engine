@@ -117,12 +117,14 @@ namespace TwelveEngine.Game2D.Entity {
             var screenSpace = Owner.ScreenSpace;
             var tileSize = screenSpace.TileSize;
 
-            var destination = new Rectangle {
-                X = (int)Math.Round((X - screenSpace.X) * tileSize),
-                Y = (int)Math.Round((Y - screenSpace.Y) * tileSize),
+            Vector2 position = Position, size = Size;
 
-                Width = (int)Math.Floor(Width * tileSize),
-                Height = (int)Math.Floor(Height * tileSize)
+            var destination = new Rectangle {
+                X = (int)Math.Round((position.X - screenSpace.X) * tileSize),
+                Y = (int)Math.Round((position.Y - screenSpace.Y) * tileSize),
+
+                Width = (int)Math.Floor(size.X * tileSize),
+                Height = (int)Math.Floor(size.Y * tileSize)
             };
 
             return destination;

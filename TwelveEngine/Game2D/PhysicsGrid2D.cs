@@ -10,7 +10,7 @@ namespace TwelveEngine.Game2D {
         public World PhysicsWorld => _physicsWorld;
 
         public PhysicsGrid2D() {
-            _physicsWorld = new World();
+            _physicsWorld = new World(Vector2.Zero);
             OnUpdate += PhysicsGrid_OnUpdate;
         }
 

@@ -2,7 +2,6 @@
 using System;
 using Porthole.Physics;
 using TwelveEngine.Shell.Input;
-using TwelveEngine.Serial;
 using Porthole.Collision;
 
 namespace Porthole.PuzzleGame.Entity {

@@ -112,6 +112,15 @@ namespace TwelveEngine.Shell.Input {
         }
 
         public Vector2 GetDelta2D() {
+
+            if(Method == InputMethod.GamePad) {
+                var leftThumbStick = lastGamePadState.ThumbSticks.Left;
+                if(leftThumbStick != Vector2.Zero) {
+                    leftThumbStick.Y = -leftThumbStick.Y;
+                    return leftThumbStick;
+                }
+            }
+
             var delta = Vector2.Zero;
 
             if(IsKeyDown(Impulse.Up)) delta.Y--;
