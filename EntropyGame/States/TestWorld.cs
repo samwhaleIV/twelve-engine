@@ -104,6 +104,9 @@ namespace EntropyGame.States {
             }
 
             private void Player_OnRender(GameTime gameTime) {
+                if(!OnScreen()) {
+                    return;
+                }
                 Draw(texture);
             }
         }
@@ -117,6 +120,7 @@ namespace EntropyGame.States {
             );
             Mouse.OnPress += AddPoint;
             Mouse.OnRelease += AddPoint;
+            BackgroundColor = Color.LightGray;
 
             SetAtlas("tileset");
             PhysicsGameObject gameObject = Objects.CreateKinematic();
@@ -170,9 +174,6 @@ namespace EntropyGame.States {
         private void World_OnLoad() {
             var player = Entities.Create(PLAYER_TYPE,"test-player");
             player.Position = new Vector2(2.5f,2.5f);
-
-            AddPoint(0,0);
-            AddPoint(5,0);
         }
     }
 }

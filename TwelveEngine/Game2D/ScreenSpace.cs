@@ -6,7 +6,6 @@ namespace TwelveEngine.Game2D {
         public ScreenSpace(Vector2 position,Vector2 size,int tileSize) {
             Location = position;
             Size = size;
-
             TileSize = tileSize;
         }
 

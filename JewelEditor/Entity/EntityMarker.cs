@@ -24,7 +24,7 @@ namespace JewelEditor.Entity {
             if(!OnScreen()) {
                 return;
             }
-            Game.SpriteBatch.Draw(texture,GetDestination(),textureSource,Color.White);
+            Draw(texture,textureSource);
         }
     }
 }

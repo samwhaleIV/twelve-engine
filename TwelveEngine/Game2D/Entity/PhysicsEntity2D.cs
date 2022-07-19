@@ -13,7 +13,7 @@ namespace TwelveEngine.Game2D.Entity {
         protected Action<Fixture> OnFixtureChanged;
 
         private void SetRectangleFixture(Vector2 size) {
-            var fixture = Body.CreateRectangle(size.X,size.Y,0.5f,Vector2.Zero);
+            var fixture = Body.CreateRectangle(size.X,size.Y,1f,Vector2.Zero);
             Fixture = fixture;
             OnFixtureChanged?.Invoke(fixture);
         }

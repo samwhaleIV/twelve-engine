@@ -79,9 +79,11 @@ namespace TwelveEngine.Game2D {
             }
             Vector2 size = gameObject.Size;
             float rotation = gameObject.Rotation;
-            Rectangle destination = GetDestination(gameObject.Position + size * 0.5f,size), source = gameObject.TextureSource;
+            Rectangle source = gameObject.TextureSource;
+            VectorRectangle destination = GetDestination(gameObject.Position + size * 0.5f,size,source.Size);
             Vector2 origin = source.Size.ToVector2() * 0.5f;
-            Game.SpriteBatch.Draw(Atlas,destination,source,gameObject.Color,rotation,origin,gameObject.SpriteEffects,GetRenderDepth(destination.Y));
+            float depth = GetRenderDepth(((gameObject.Position - ScreenSpace.Location) * ScreenSpace.TileSize).Y);
+            Game.SpriteBatch.Draw(Atlas,destination.Location,source,gameObject.Color,rotation,origin,destination.Size,gameObject.SpriteEffects,depth);
         }
 
         protected override void RenderGrid(GameTime gameTime) {

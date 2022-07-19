@@ -99,48 +99,47 @@ namespace TwelveEngine.Game2D {
 
         public Vector2 GetCenter() => ScreenSpace.GetCenter();
 
-        public Rectangle GetDestination(Vector2 position,Vector2 size) {
-            int tileSize = ScreenSpace.TileSize;
-
-            var destination = new Rectangle {
-                X = (int)Math.Floor((position.X - ScreenSpace.X) * tileSize),
-                Y = (int)Math.Floor((position.Y - ScreenSpace.Y) * tileSize),
-
-                Width = (int)Math.Floor(size.X * tileSize),
-                Height = (int)Math.Floor(size.Y * tileSize)
-            };
-
-            return destination;
+        public VectorRectangle GetDestination(Vector2 position,Vector2 worldSize,Point textureSize) {
+            float tileSize = ScreenSpace.TileSize;
+            Vector2 location = (position - ScreenSpace.Location) * tileSize;
+            return new VectorRectangle(location,worldSize / textureSize.ToVector2() * tileSize);
         }
 
-        public bool OnScreen(Vector2 position,Vector2 size) {
-            //Todo: Account for rotation
-            return !(
-                position.X + size.X <= ScreenSpace.X ||
-                position.Y + size.Y <= ScreenSpace.Y ||
-                position.X >= ScreenSpace.X + ScreenSpace.Width ||
-                position.Y >= ScreenSpace.Y + ScreenSpace.Height
-            );
+
+        private bool OnScreen(Vector2 position,Vector2 size) {
+            return position.X < ScreenSpace.X + ScreenSpace.Width &&
+                     ScreenSpace.X < position.X + size.X &&
+                     position.Y < ScreenSpace.Y + ScreenSpace.Height &&
+                     ScreenSpace.Y < position.Y + size.Y;
         }
 
         public bool OnScreen(Entity2D entity) {
             return OnScreen(entity.Position,entity.Size);
         }
 
+        private const float CORNER_RADIUS_MARGIN = 0.20703125f;
+
         public bool OnScreen(GameObject gameObject) {
-            return OnScreen(gameObject.Position,gameObject.Size);
+            Vector2 margin = gameObject.Size * CORNER_RADIUS_MARGIN;
+            return OnScreen(gameObject.Position - margin,gameObject.Size + margin * 2);
         }
 
-        public Rectangle GetDestination(Entity2D entity) {
-            return GetDestination(entity.Position,entity.Size);
+        public VectorRectangle GetDestination(Entity2D entity,Point textureSize) {
+            return GetDestination(entity.Position,entity.Size,textureSize);
         }
 
-        public Rectangle GetDestination(GameObject gameObject) {
-            return GetDestination(gameObject.Position,gameObject.Size);
+        public VectorRectangle GetDestination(GameObject gameObject,Point textureSize) {
+            return GetDestination(gameObject.Position,gameObject.Size,textureSize);
         }
 
-        public float GetRenderDepth(int destinationY) {
-            return 1f - Math.Max(destinationY / (float)Game.Viewport.Height,0f);
+        public float GetRenderDepth(float destinationY) {
+            float depth = 1f - Math.Max(destinationY / Game.Viewport.Height,0f);
+            if(depth > 1f) {
+                depth = 1f;
+            } else if(depth < 0f) {
+                depth = 0f;
+            }
+            return depth;
         }
 
         private ScreenSpace GetScreenSpace() {

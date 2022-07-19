@@ -105,12 +105,13 @@ namespace TwelveEngine.Game2D.Entity {
             return Owner.Input.IsKeyUp(impulse);
         }
 
-        public Rectangle GetDestination() => Owner.GetDestination(this);
-
-        protected void Draw(Texture2D texture,Rectangle? source = null) {
-            var destination = Owner.GetDestination(Position,Size);
-            var depth = Owner.GetRenderDepth(destination.Y);
-            Game.SpriteBatch.Draw(texture,destination,source,Color.White,0f,Vector2.Zero,SpriteEffects.None,depth);
+        protected void Draw(Texture2D texture,Rectangle? source = null,SpriteEffects spriteEffects = SpriteEffects.None) {
+            if(source == null) {
+                source = texture.Bounds;
+            }
+            var destination = Owner.GetDestination(Position,Size,source.Value.Size);
+            float depth = Owner.GetRenderDepth(destination.Location.Y);
+            Game.SpriteBatch.Draw(texture,destination.Location,source,Color.White,0f,Vector2.Zero,destination.Size,spriteEffects,depth);
         }
 
         public virtual bool Contains(Vector2 location) {

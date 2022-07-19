@@ -10,7 +10,7 @@ namespace TwelveDesktop {
         internal static void Main() {
 
             ConfigLoader.LoadEngineConfig(new TwelveConfigSet() {
-                CPUTextures = new string[] {  }
+                CPUTextures = new string[] { "tileset" }
             });
 
             using var game = new GameManager();
