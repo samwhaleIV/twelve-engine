@@ -73,18 +73,30 @@ namespace TwelveEngine.Game2D {
             _physicsWorld.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
+        public bool RenderObjectHitboxes { get; set; }
+        public Color HitboxColor { get; set; } = Color.FromNonPremultiplied(byte.MaxValue,0,0,byte.MaxValue / 2);
+        private const float HITBOX_RENDER_DENOMINATOR = 256f;
+
         protected virtual void RenderObject(GameObject gameObject) {
             if(gameObject.Invisible || !OnScreen(gameObject)) {
                 return;
             }
-            Vector2 size = gameObject.Size;
+            Vector2 size = gameObject.Size, halfSize = size * 0.5f;
             float rotation = gameObject.Rotation;
             Rectangle source = gameObject.TextureSource;
-            VectorRectangle destination = GetDestination(gameObject.Position + size * 0.5f,size,source.Size);
+            VectorRectangle destination = GetDestination(gameObject.Position + halfSize,size,source.Size);
             Vector2 origin = source.Size.ToVector2() * 0.5f;
             float depth = GetRenderDepth(((gameObject.Position - ScreenSpace.Location) * ScreenSpace.TileSize).Y);
             Game.SpriteBatch.Draw(Atlas,destination.Location,source,gameObject.Color,rotation,origin,destination.Size,gameObject.SpriteEffects,depth);
-        }
+            if(!RenderObjectHitboxes || !(gameObject is PhysicsGameObject physicsGameObject)) {
+                return;
+            }
+            Rectangle hitboxSource = new Rectangle(Point.Zero,(new Vector2(HITBOX_RENDER_DENOMINATOR) * physicsGameObject.HitboxSize).ToPoint());
+            Vector2 originOffset = gameObject.Position + halfSize - physicsGameObject.HitboxOffset;
+            destination = GetDestination(physicsGameObject.HitboxOffset + originOffset,physicsGameObject.HitboxSize,hitboxSource.Size);
+            origin = originOffset * HITBOX_RENDER_DENOMINATOR;
+            Game.SpriteBatch.Draw(BlankTexture,destination.Location,hitboxSource,HitboxColor,rotation,origin,destination.Size,SpriteEffects.None,depth);
+        } 
 
         protected override void RenderGrid(GameTime gameTime) {
             Game.SpriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointClamp);

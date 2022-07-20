@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Entity;
 using TwelveEngine.Game2D.Objects;
@@ -13,6 +14,7 @@ namespace TwelveEngine.Game2D {
             Camera = new Camera();
 
             OnLoad += Grid2D_OnLoad;
+            OnUnload += Grid2D_OnUnload;
 
             OnImport += Grid2D_OnImport;
             OnExport += Grid2D_OnExport;
@@ -70,9 +72,15 @@ namespace TwelveEngine.Game2D {
             }
         }
 
+        public Texture2D BlankTexture { get; private set; }
+
         private void Grid2D_OnLoad() {
             Entities = new EntityManager<Entity2D,Grid2D>(this,EntityFactory);
+            BlankTexture = new Texture2D(Game.GraphicsDevice,1,1);
+            BlankTexture.SetData(new Color[] { Color.White });
         }
+
+        private void Grid2D_OnUnload() => BlankTexture?.Dispose();
 
         private static float CameraBounds(float value,float size,float length) {
             //todo disable overflow axis when size of screen space width is larger than the width of the map
@@ -99,12 +107,15 @@ namespace TwelveEngine.Game2D {
 
         public Vector2 GetCenter() => ScreenSpace.GetCenter();
 
-        public VectorRectangle GetDestination(Vector2 position,Vector2 worldSize,Point textureSize) {
+        public VectorRectangle GetDestination(Vector2 position,Vector2 worldSize,Vector2 textureSize) {
             float tileSize = ScreenSpace.TileSize;
             Vector2 location = (position - ScreenSpace.Location) * tileSize;
-            return new VectorRectangle(location,worldSize / textureSize.ToVector2() * tileSize);
+            return new VectorRectangle(location,worldSize / textureSize * tileSize);
         }
 
+        public VectorRectangle GetDestination(Vector2 position,Vector2 worldSize,Point textureSize) {
+            return GetDestination(position,worldSize,textureSize.ToVector2());
+        }
 
         private bool OnScreen(Vector2 position,Vector2 size) {
             return position.X < ScreenSpace.X + ScreenSpace.Width &&
@@ -125,10 +136,18 @@ namespace TwelveEngine.Game2D {
         }
 
         public VectorRectangle GetDestination(Entity2D entity,Point textureSize) {
-            return GetDestination(entity.Position,entity.Size,textureSize);
+            return GetDestination(entity.Position,entity.Size,textureSize.ToVector2());
         }
 
         public VectorRectangle GetDestination(GameObject gameObject,Point textureSize) {
+            return GetDestination(gameObject.Position,gameObject.Size,textureSize.ToVector2());
+        }
+
+        public VectorRectangle GetDestination(Entity2D entity,Vector2 textureSize) {
+            return GetDestination(entity.Position,entity.Size,textureSize);
+        }
+
+        public VectorRectangle GetDestination(GameObject gameObject,Vector2 textureSize) {
             return GetDestination(gameObject.Position,gameObject.Size,textureSize);
         }
 

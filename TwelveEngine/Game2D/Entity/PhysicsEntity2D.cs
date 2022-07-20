@@ -12,15 +12,14 @@ namespace TwelveEngine.Game2D.Entity {
 
         protected Action<Fixture> OnFixtureChanged;
 
-        private void SetRectangleFixture(Vector2 size) {
+        private void UpdateFixture() {
+            if(Fixture != null) {
+                Body.Remove(Fixture);
+            }
+            var size = base.GetSize();
             var fixture = Body.CreateRectangle(size.X,size.Y,1f,Vector2.Zero);
             Fixture = fixture;
             OnFixtureChanged?.Invoke(fixture);
-        }
-
-        private void SetFixtureSize(Vector2 size) {
-            Body.Remove(Fixture);
-            SetRectangleFixture(size);
         }
 
         private void SetBodyPosition(Vector2 position) {
@@ -42,11 +41,14 @@ namespace TwelveEngine.Game2D.Entity {
         }
 
         protected override void SetSize(Vector2 size) {
+            if(size == base.GetSize()) {
+                return;
+            }
             base.SetSize(size);
             if(Body == null) {
                 return;
             }
-            SetFixtureSize(size);
+            UpdateFixture();
         }
 
         public PhysicsEntity2D() {
@@ -58,7 +60,7 @@ namespace TwelveEngine.Game2D.Entity {
             var body = PhysicsWorld.CreateBody(base.GetPosition(),0f,BodyType.Dynamic);
             body.FixedRotation = true;
             Body = body;
-            SetRectangleFixture(Size);
+            UpdateFixture();
         }
 
         private void PhysicsEntity2D_OnUnload() {

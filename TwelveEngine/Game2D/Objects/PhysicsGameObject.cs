@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using tainicom.Aether.Physics2D.Dynamics;
 using TwelveEngine.Serial;
 
@@ -9,73 +7,94 @@ namespace TwelveEngine.Game2D.Objects {
     public class PhysicsGameObject:GameObject {
 
         private readonly BodyType bodyType;
-        internal BodyType BodyType => bodyType; //serial helper stem object
+        internal BodyType BodyType => bodyType;
 
         public PhysicsGameObject(ObjectManager owner,int ID,BodyType bodyType) : base(owner,ID) {
             this.bodyType = bodyType;
+
             OnLoad += PhysicsGameObject_OnLoad;
             OnUnload += PhysicsGameObject_OnUnload;
+
             OnImport += PhysicsGameObject_OnImport;
             OnExport += PhysicsGameObject_OnExport;
         }
 
-        private Body body;
-        private Fixture fixture;
-
         protected Action<Fixture> OnFixtureChanged;
 
-        private void SetRectangleFixture(Vector2 size) {
-            var fixture = body.CreateRectangle(size.X,size.Y,1f,Vector2.Zero);
-            body.SetTransform(size * 0.5f,0f);
-            this.fixture = fixture;
-            OnFixtureChanged?.Invoke(fixture);
-        }
+        protected Body Body { get; private set; }
+        protected Fixture Fixture { get; private set; }
 
-        private void SetFixtureSize(Vector2 size) {
-            body.Remove(fixture);
-            SetRectangleFixture(size);
+        private void UpdateFixture() {
+            if(Fixture != null) {
+                Body.Remove(Fixture);
+            }
+            var size = base.GetSize();
+            var hitboxSize = _hitboxSize;
+            var newFixture = Body.CreateRectangle(hitboxSize.X,hitboxSize.Y,1f,HitboxOffset - size * 0.5f + hitboxSize * 0.5f);
+            Body.SetTransform(size * 0.5f,0f);
+            Fixture = newFixture;
+            OnFixtureChanged?.Invoke(Fixture);
         }
 
         private void SetBodyPosition(Vector2 position) {
-            body.Position = position;
+            Body.Position = position;
         }
 
         protected override void SetPosition(Vector2 position) {
-            position += Size * 0.5f;
             base.SetPosition(position);
-            if(body == null) {
+            position += Size * 0.5f;
+            if(Body == null) {
                 return;
             }
             SetBodyPosition(position);
         }
 
         protected override Vector2 GetPosition() {
-            return body.Position - Size * 0.5f;
+            return Body.Position - Size * 0.5f;
         }
 
         protected override float GetRotation() {
-            return body.Rotation;
+            return Body.Rotation;
         }
 
         protected override void SetRotation(float rotation) {
             base.SetRotation(rotation);
-            if(body == null) {
+            if(Body == null) {
                 return;
             }
-            body.Rotation = rotation;
+            Body.Rotation = rotation;
         }
 
         protected override void SetSize(Vector2 size) {
-            base.SetSize(size);
-            if(!IsLoaded) {
+            if(size == base.GetSize()) {
                 return;
             }
-            SetFixtureSize(size);
+            base.SetSize(size);
+            if(Body == null) {
+                return;
+            }
+            UpdateFixture();
         }
 
         private void PhysicsGameObject_OnLoad() {
             Body body = Grid.PhysicsWorld.CreateBody(base.GetPosition(),base.GetRotation(),bodyType);
+            LoadBodyProperties(body);
+            Body = body;
+            UpdateFixture();
+        }
 
+        private void PhysicsGameObject_OnUnload() {
+            Body.ResetDynamics();
+            Grid.PhysicsWorld.Remove(Body);
+        }
+
+        private Vector2 _linearVelocity = Vector2.Zero;
+        private float _angularVelocity = 0f, _linearDamping = 0f, _angularDamping = 0f, _mass = 1f, _inertia = 0f;
+        private bool _isBullet = false, _sleepingAllowed = true, _awake = true, _enabled = true, _fixedRotation = false, _ignoreGravity = true, _ignoreCCD = false;
+
+        private Vector2 _hitboxSize = Vector2.One, _hitboxOffset = Vector2.Zero;
+
+        private void LoadBodyProperties(Body body) {
             body.LinearVelocity = _linearVelocity;
             body.AngularVelocity = _angularVelocity;
             body.LinearDamping = _linearDamping;
@@ -89,176 +108,138 @@ namespace TwelveEngine.Game2D.Objects {
             body.Mass = _mass;
             body.Inertia = _inertia;
             body.IgnoreCCD = _ignoreCCD;
-
-            this.body = body;
-            SetRectangleFixture(Size);
         }
 
-        private void PhysicsGameObject_OnUnload() {
-            body.ResetDynamics();
-            Grid.PhysicsWorld.Remove(body);
-            body = null;
-            fixture = null;
-        }
-
-        private Vector2 _linearVelocity = Vector2.Zero;
-        private float _angularVelocity = 0f, _linearDamping = 0f, _angularDamping = 0f, _mass = 1f, _inertia = 0f;
-        private bool _isBullet = false, _sleepingAllowed = true, _awake = true, _enabled = true, _fixedRotation = false, _ignoreGravity = true, _ignoreCCD = false;
-
-        public Vector2 LinearVelocity {
-            get {
-                return body == null ? _linearVelocity : body.LinearVelocity;
-            }
+        public Vector2 HitboxSize {
+            get => _hitboxSize;
             set {
-                _linearVelocity = value;
-                if(body == null) {
+                if(_hitboxSize == value) {
                     return;
                 }
-                body.LinearVelocity = value;
+                _hitboxSize = value;
+                if(Body == null) {
+                    return;
+                }
+                UpdateFixture();
+            }
+        }
+
+        public Vector2 HitboxOffset {
+            get => _hitboxOffset;
+            set {
+                if(_hitboxOffset == value) {
+                    return;
+                }
+                _hitboxOffset = value;
+                if(Body == null) {
+                    return;
+                }
+                UpdateFixture();
+            }
+        }
+
+        public Vector2 LinearVelocity {
+            get => Body == null ? _linearVelocity : Body.LinearVelocity;
+            set {
+                _linearVelocity = value;
+                if(Body == null) return;
+                Body.LinearVelocity = value;
             }
         }
         public float AngularVelocity {
-            get {
-                return body == null ? _angularVelocity : body.AngularVelocity;
-            }
+            get => Body == null ? _angularVelocity : Body.AngularVelocity;
             set {
                 _angularVelocity = value;
-                if(body == null) {
-                    return;
-                }
-                body.AngularVelocity = value;
+                if(Body == null) return;
+                Body.AngularVelocity = value;
             }
         }
         public float LinearDamping {
-            get {
-                return body == null ? _linearDamping : body.LinearDamping;
-            }
+            get => Body == null ? _linearDamping : Body.LinearDamping;
             set {
                 _linearDamping = value;
-                if(body == null) {
-                    return;
-                }
-                body.LinearDamping = value;
+                if(Body == null) return;
+                Body.LinearDamping = value;
             }
         }
         public float AngularDamping {
-            get {
-                return body == null ? _angularDamping : body.AngularDamping;
-            }
+            get => Body == null ? _angularDamping : Body.AngularDamping;
             set {
                 _angularDamping = value;
-                if(body == null) {
-                    return;
-                }
-                body.AngularDamping = value;
+                if(Body == null) return;
+                Body.AngularDamping = value;
             }
         }
         public bool IsBullet {
-            get {
-                return body == null ? _isBullet : body.IsBullet;
-            }
+            get => Body == null ? _isBullet : Body.IsBullet;
             set {
                 _isBullet = value;
-                if(body == null) {
-                    return;
-                }
-                body.IsBullet = value;
+                if(Body == null) return;
+                Body.IsBullet = value;
             }
         }
         public bool SleepingAllowed {
-            get {
-                return body == null ? _sleepingAllowed : body.SleepingAllowed;
-            }
+            get => Body == null ? _sleepingAllowed : Body.SleepingAllowed;
             set {
                 _sleepingAllowed = value;
-                if(body == null) {
-                    return;
-                }
-                body.SleepingAllowed = value;
+                if(Body == null) return;
+                Body.SleepingAllowed = value;
             }
         }
         public bool Awake {
-            get {
-                return body == null ? _awake : body.Awake;
-            }
+            get => Body == null ? _awake : Body.Awake;
             set {
                 _awake = value;
-                if(body == null) {
-                    return;
-                }
-                body.Awake = value;
+                if(Body == null) return;
+                Body.Awake = value;
             }
         }
         public bool Enabled {
-            get {
-                return body == null ? _enabled : body.Enabled;
-            }
+            get => Body == null ? _enabled : Body.Enabled;
             set {
                 _enabled = value;
-                if(body == null) {
-                    return;
-                }
-                body.Enabled = value;
+                if(Body == null) return;
+                Body.Enabled = value;
             }
         }
         public bool FixedRotation {
-            get {
-                return body == null ? _fixedRotation : body.FixedRotation;
-            }
+            get => Body == null ? _fixedRotation : Body.FixedRotation;
             set {
                 _fixedRotation = value;
-                if(body == null) {
-                    return;
-                }
-                body.FixedRotation = value;
+                if(Body == null) return;
+                Body.FixedRotation = value;
             }
         }
         public bool IgnoreGravity {
-            get {
-                return body == null ? _ignoreGravity : body.IgnoreGravity;
-            }
+            get => Body == null ? _ignoreGravity : Body.IgnoreGravity;
             set {
                 _ignoreGravity = value;
-                if(body == null) {
-                    return;
-                }
-                body.IgnoreGravity = value;
+                if(Body == null) return;
+                Body.IgnoreGravity = value;
             }
         }
         public float Mass {
-            get {
-                return body == null ? _mass : body.Mass;
-            }
+            get => Body == null ? _mass : Body.Mass;
             set {
                 _mass = value;
-                if(body == null) {
-                    return;
-                }
-                body.Mass = value;
+                if(Body == null) return;
+                Body.Mass = value;
             }
         }
         public float Inertia {
-            get {
-                return body == null ? _inertia : body.Inertia;
-            }
+            get => Body == null ? _inertia : Body.Inertia;
             set {
                 _inertia = value;
-                if(body == null) {
-                    return;
-                }
-                body.Inertia = value;
+                if(Body == null) return;
+                Body.Inertia = value;
             }
         }
         public bool IgnoreCCD {
-            get {
-                return body == null ? _ignoreCCD : body.IgnoreCCD;
-            }
+            get => Body == null ? _ignoreCCD : Body.IgnoreCCD;
             set {
                 _ignoreCCD = value;
-                if(body == null) {
-                    return;
-                }
-                body.IgnoreCCD = value;
+                if(Body == null) return;
+                Body.IgnoreCCD = value;
             }
         }
 
@@ -276,6 +257,8 @@ namespace TwelveEngine.Game2D.Objects {
             frame.Set(Mass);
             frame.Set(Inertia);
             frame.Set(IgnoreCCD);
+            frame.Set(HitboxOffset);
+            frame.Set(HitboxSize);
         }
 
         private void PhysicsGameObject_OnImport(SerialFrame frame) {
@@ -292,6 +275,8 @@ namespace TwelveEngine.Game2D.Objects {
             Mass = frame.GetFloat();
             Inertia = frame.GetFloat();
             IgnoreCCD = frame.GetBool();
+            HitboxOffset = frame.GetVector2();
+            HitboxSize = frame.GetVector2();
         }
     }
 }
