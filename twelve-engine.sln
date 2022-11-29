@@ -11,28 +11,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platforms", "Platforms", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledCompiler", "TiledCompiler\TiledCompiler.csproj", "{CE78CDD9-8CD2-407A-B5EB-832C4837D3BD}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Porthole", "Porthole\Porthole.shproj", "{8E5E3DD6-2B80-4BF8-9755-BA8A8E4C59A2}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ElfGame", "ElfGame\ElfGame.shproj", "{365C0711-BC1F-4B64-B2D6-EF9A21B28150}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentBuilder", "ContentBuilder\ContentBuilder.csproj", "{3A872519-8EC1-437D-B43E-215FC2D0E1BE}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "JewelEditor", "JewelEditor\JewelEditor.shproj", "{2583E5F7-191B-44DA-A916-0F63EEAF7CE2}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EntropyGame", "EntropyGame\EntropyGame.shproj", "{1A80A74E-6695-4132-BB4F-8A5E2246E56F}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Elves", "Elves\Elves.shproj", "{E8A83DFC-9C0F-4082-93F5-8AB67ECB8669}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		EntropyGame\EntropyGame.projitems*{1a80a74e-6695-4132-bb4f-8a5e2246e56f}*SharedItemsImports = 13
-		JewelEditor\JewelEditor.projitems*{2583e5f7-191b-44da-a916-0f63eeaf7ce2}*SharedItemsImports = 13
-		ElfGame\ElfGame.projitems*{365c0711-bc1f-4b64-b2d6-ef9a21b28150}*SharedItemsImports = 13
-		EntropyGame\EntropyGame.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
-		JewelEditor\JewelEditor.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
-		Porthole\Porthole.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
+		Elves\Elves.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
 		TwelveEngine\TwelveEngine.projitems*{7049d8d0-4ef9-4d9c-a731-10ce09de4451}*SharedItemsImports = 5
-		Porthole\Porthole.projitems*{8e5e3dd6-2b80-4bf8-9755-ba8a8e4c59a2}*SharedItemsImports = 13
 		TwelveEngine\TwelveEngine.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
 		TwelveEngine\TwelveEngine.projitems*{ce78cdd9-8cd2-407a-b5eb-832c4837d3bd}*SharedItemsImports = 5
+		Elves\Elves.projitems*{e8a83dfc-9c0f-4082-93f5-8ab67ecb8669}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

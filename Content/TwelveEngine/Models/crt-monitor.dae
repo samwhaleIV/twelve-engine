@@ -13,14 +13,14 @@
   <library_effects>
     <effect id="CRTMaterial-effect">
       <profile_COMMON>
-        <newparam sid="crt-texture_png_001-surface">
+        <newparam sid="crt-texture_png-surface">
           <surface type="2D">
-            <init_from>crt-texture_png_001</init_from>
+            <init_from>crt-texture_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="crt-texture_png_001-sampler">
+        <newparam sid="crt-texture_png-sampler">
           <sampler2D>
-            <source>crt-texture_png_001-surface</source>
+            <source>crt-texture_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -29,7 +29,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <texture texture="crt-texture_png_001-sampler" texcoord="UVMap"/>
+              <texture texture="crt-texture_png-sampler" texcoord="UVMap"/>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1.45</float>
@@ -40,8 +40,8 @@
     </effect>
   </library_effects>
   <library_images>
-    <image id="crt-texture_png_001" name="crt-texture_png_001">
-      <init_from>crt-texture.png.001.png</init_from>
+    <image id="crt-texture_png" name="crt-texture_png">
+      <init_from>crt-texture.png</init_from>
     </image>
   </library_images>
   <library_materials>

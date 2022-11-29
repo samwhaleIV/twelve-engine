@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
@@ -23,9 +23,11 @@
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
-  <Import Project="..\Elves\Elves.projitems" Label="Shared" />
+  <Import Project="..\JewelEditor\JewelEditor.projitems" Label="Shared" />
+  <Import Project="..\Porthole\Porthole.projitems" Label="Shared" />
+  <Import Project="..\EntropyGame\EntropyGame.projitems" Label="Shared" />
   <ItemGroup>
-    <MonoGameContentReference Include="..\Content\Elves.mgcb" />
+    <MonoGameContentReference Include="..\Content\ElfGame.mgcb" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Aether.Physics2D.MG" Version="1.6.1" />

@@ -2,6 +2,11 @@
 using Microsoft.Xna.Framework;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.Config;
+using Elves;
+using Elves.ElfScript;
+using Elves.BattleSequencer;
+using System.IO;
+using System.Linq;
 
 namespace TwelveDesktop {
 
@@ -9,8 +14,15 @@ namespace TwelveDesktop {
         [STAThread]
         internal static void Main() {
 
+            var functions = Tokenizer.GetFunctions(File.ReadAllLines(@"C:\Users\pinks\Desktop\elfscript.txt"));
+            var script = Script.Compile(functions);
+
+            var sequencer = new ConsoleBattleInterface();
+            script.Execute("Main",sequencer,null);
+            return;
+
             ConfigLoader.LoadEngineConfig(new TwelveConfigSet() {
-                CPUTextures = new string[] { "tileset" }
+                CPUTextures = new string[] { }
             });
 
             using var game = new GameManager();
@@ -19,13 +31,7 @@ namespace TwelveDesktop {
         }
 
         private static void Game_OnLoad(GameManager game) {
-            //game.SetState(Porthole.Program.GetPuzzleGameTest());
-            //game.SetState<ElfGame.FacialAnimationViewer>();
-            //game.SetState(new CRTTest());
-            //game.SetState<JewelEditor.Editor>();
-            //game.SetState(ModelViewer.CreateTextureTest("Test/cat-test-picture"));
-            //game.SetState(new TileGenViewer());
-            game.SetState(EntropyGame.Program.GetStartState());
+            Elves.Program.Main(game);
         }
     }
 }
