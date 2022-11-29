@@ -10,12 +10,15 @@ namespace Elves.ElfScript {
         private readonly Command[] commands;
         private readonly string[] parameterNames;
 
-        public ExecutableFunction(Command[] commands,string[] parameterNames) {
+        public string DisplayName { get; private set; }
+
+        public ExecutableFunction(Command[] commands,string[] parameterNames,string displayName) {
             this.commands = commands;
             this.parameterNames = parameterNames;
+            DisplayName = displayName;
         }
 
-        public void Execute(UVSequencer context,Script script,object[] parameters) {
+        public async Task Execute(UVSequencer context,Script script,object[] parameters) {
             if(parameters.Length < parameterNames.Length) {
                 throw new ElfScriptException("Function called with insufficient parameters.");
             }
@@ -28,7 +31,7 @@ namespace Elves.ElfScript {
                 script.SetValue(key,parameters[i]);
             }
             foreach(var command in commands) {
-                command.Execute(context,script);
+                await command.Execute(context,script);
             }
             foreach(var key in parameterNames) {
                 script.DeleteValue(key);

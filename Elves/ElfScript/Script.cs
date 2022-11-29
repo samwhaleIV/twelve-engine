@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Elves.BattleSequencer;
 
@@ -10,16 +9,32 @@ namespace Elves.ElfScript {
         private readonly Dictionary<string,ExecutableFunction> executableFunctions = new Dictionary<string,ExecutableFunction>();
 
         private Script(Function[] functions) {
+            Queue<Command> queue = new Queue<Command>();
             foreach(var function in functions) {
-                Queue<Command> queue = new Queue<Command>();
                 foreach(string[] line in function.Lines) {
-                    var commands = CommandRouter.Route(line);
-                    foreach(var command in commands) {
-                        queue.Enqueue(command);
-                    }
+                    Command command = CommandFactory.Route(line);
+                    queue.Enqueue(command);
                 }
+                executableFunctions[function.Name] = new ExecutableFunction(queue.ToArray(),function.Parameters,function.DisplayName);
+                queue.Clear();
             }
         }
+
+        private readonly Random random = new Random();
+
+        public int GetRandom(int min,int max) {
+            return random.Next(min,max);
+        }
+
+        public string GetFunctionDisplayName(string function) {
+            if(!executableFunctions.ContainsKey(function)) {
+                return null;
+            } else {
+                return executableFunctions[function].DisplayName;
+            }
+        }
+
+        internal readonly Queue<string> OptionQueue = new Queue<string>();
 
         public static Script Compile(Function[] functions) => new Script(functions);
 
@@ -38,11 +53,11 @@ namespace Elves.ElfScript {
             return variables.Remove(name);
         }
 
-        public void Execute(string functionName,UVSequencer context,string[] parameters) {
-            if(!executableFunctions.ContainsKey(functionName)) {
-                throw new ElfScriptException($"Function '{functionName}' does not exist!");
+        public Task Execute(string function,UVSequencer context,string[] parameters) {
+            if(!executableFunctions.ContainsKey(function)) {
+                throw new ElfScriptException($"Function '{function}' does not exist!");
             }
-            executableFunctions[functionName].Execute(context,this,parameters);
+            return executableFunctions[function].Execute(context,this,parameters);
         }
     }
 }

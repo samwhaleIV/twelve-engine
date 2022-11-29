@@ -17,8 +17,8 @@ namespace Elves.ElfScript {
         const char PARAMETER_DELIMITER = ',';
 
         private static readonly HashSet<char> textSeperations = new HashSet<char>() { TEXT_BLOCK_SEPERATOR, COMMAND_BLOCK_SEPERATOR, EQUALITY_OPERATOR };
-
         private static readonly HashSet<char> equalityModifier = new HashSet<char>() { '+','/','*','-' };
+
 
         private static string[] Tokenize(string line) {
             Queue<string> tokens = new Queue<string>();
@@ -62,7 +62,12 @@ namespace Elves.ElfScript {
             return tokens.ToArray();
         }
 
-        private static string CreateDisplayName(string name) {
+        private static readonly Dictionary<string,string> displayNames = new Dictionary<string,string>();
+
+        private static string GetDisplayName(string name) {
+            if(displayNames.ContainsKey(name)) {
+                return displayNames[name];
+            }
             StringBuilder stringBuilder = new StringBuilder();
             foreach(char character in name) {
                 if(char.IsUpper(character) && stringBuilder.Length > 0) {
@@ -71,6 +76,7 @@ namespace Elves.ElfScript {
                 stringBuilder.Append(character);
             }
             string displayName = stringBuilder.ToString().Trim();
+            displayNames[name] = displayName;
             return displayName;
         }
 
@@ -97,7 +103,6 @@ namespace Elves.ElfScript {
             }
             target.Name = name;
             target.Parameters = parameters;
-            target.DisplayName = CreateDisplayName(name);
             return;
         }
 
@@ -113,6 +118,7 @@ namespace Elves.ElfScript {
                     throw new ElfScriptException($"Duplicate function name {function.Name}.");
                 }
                 functions[function.Name] = function;
+                function.DisplayName = GetDisplayName(function.Name);
                 function = null;  
             }
             foreach(var line in lines) {

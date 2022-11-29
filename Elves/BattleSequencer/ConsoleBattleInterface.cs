@@ -1,52 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Elves.BattleSequencer {
     public sealed class ConsoleBattleInterface:UVSequencer {
-
-        public void TestBattle() {
-            var player = AddUser(new UVUser() {
-                Name = "Sam"
-            });
-            var elf = AddUser(new UVUser() {
-                Name = "Elf"
-            });
-            while(true) {
-                ProcessEvent(elf.Kill());
-                ProcessUserTurns();
-                Console.ReadKey();
-            }
-
+        public override Task AddUser(User user) {
+            throw new NotImplementedException();
         }
 
-        internal override void EmitTagline(string message) {
-            Console.WriteLine(message);
+        public override Task RemoveUser(User user) {
+            throw new NotImplementedException();
         }
 
-        internal override void EmitUserDamaged(UVUser user,int amount) {
-            Console.WriteLine($">{user.Name} has lost {amount} health.");
-            Console.Beep(200,100);
+        public override Task<int> SelectOption(string[] options) {
+            throw new NotImplementedException();
         }
 
-        internal override void EmitUserDeath(UVUser user) {
-            Console.WriteLine($">{user.Name} has died.");
+        public override Task SetActor(User user) {
+            throw new NotImplementedException();
         }
 
-        internal override void EmitUserEnterBattle(UVUser user) {
-            Console.WriteLine($">{user.Name} enters the battle.");
+        public override Task Speech(string text) {
+            throw new NotImplementedException();
         }
 
-        internal override void EmitUserExitBattle(UVUser user) {
-            Console.WriteLine($">{user.Name} exits the battle.");
+        public override Task Tag(string text) {
+            throw new NotImplementedException();
         }
 
-        internal override void EmitUserHealed(UVUser user,int amount) {
-            Console.WriteLine($">{user.Name} has gained {amount} health.");
+        public override Task UserHealed(User user) {
+            throw new NotImplementedException();
         }
 
-        internal override void EmitUserSpeech(UVUser user,string message) {
-            Console.WriteLine($"{user.Name}: {message}");
+        public override Task UserHurt(User user) {
+            throw new NotImplementedException();
         }
     }
 }

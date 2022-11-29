@@ -10,21 +10,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\ConsoleBattleInterface.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\EventSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\TaglineEvent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\Events.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\UserModifiers.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\CommandRouter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\BattleSequencer\Speech.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\BattleSequencer\Option.cs" />
+    <Compile Include="..\Elves\ElfScript\BattleSequencer\TextSingle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\CommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\BattleSequencer\TextSelect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\Command.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\ElfScriptException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\ExecutableFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\Function.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\Script.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\Tokenizer.cs" />
-    <Compile Include="..\Elves\BattleSequencer\UVEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StorageSystem.cs" />
     <Compile Include="..\Elves\BattleSequencer\UVSequencer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\UVUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainMenu.cs" />
