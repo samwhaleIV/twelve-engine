@@ -36,6 +36,12 @@ namespace Elves.ElfScript {
 
         internal readonly Queue<string> OptionQueue = new Queue<string>();
 
+        internal ConditionalBranch ConditionalBranch = ConditionalBranch.None;
+        internal bool ConditionalPolarity = true;
+
+        internal bool InSwitchStatement = false;
+        internal (string Function,string[] Parameters)? SwitchCase = null;
+
         public static Script Compile(Function[] functions) => new Script(functions);
 
         private readonly Dictionary<string,object> variables = new Dictionary<string,object>();

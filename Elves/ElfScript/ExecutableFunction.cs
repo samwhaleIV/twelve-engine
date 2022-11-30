@@ -31,8 +31,37 @@ namespace Elves.ElfScript {
                 script.SetValue(key,parameters[i]);
             }
             foreach(var command in commands) {
-                await command.Execute(context,script);
+                var isReturnStatement = command is ReturnStatement;
+                if(isReturnStatement || command is EndIfStatement) {
+                    script.ConditionalBranch = ConditionalBranch.None;
+                    script.ConditionalPolarity = true;
+                    if(isReturnStatement) {
+                        script.InSwitchStatement = false;
+                        script.SwitchCase = null;
+                    }
+                    await command.Execute(context,script);
+                } else if(script.SwitchCase.HasValue) {
+                    if(!(command is EndSwitchStatement)) {
+
+                        continue;
+                    }
+                } else {
+                    switch(script.ConditionalBranch) {
+                        case ConditionalBranch.If:
+                            if(!script.ConditionalPolarity) {
+                                continue;
+                            }
+                            break;
+                        case ConditionalBranch.Else:
+                            if(script.ConditionalPolarity) {
+                                continue;
+                            }
+                            break;
+                    }
+                    await command.Execute(context,script);
+                }
             }
+
             foreach(var key in parameterNames) {
                 script.DeleteValue(key);
             }

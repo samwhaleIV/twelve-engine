@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Elves.BattleSequencer {
-    public class User {
+    public sealed class User {
         public int Health { get; set; } = Constants.DefaultHealth;
         public int MaxHealth { get; set; } = Constants.DefaultHealth;
         public string Name { get; set; } = Constants.NoName;

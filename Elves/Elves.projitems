@@ -9,9 +9,11 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\ControlStatements.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\ConsoleBattleInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\BattleSequencer\Option.cs" />
+    <Compile Include="..\Elves\ElfScript\ConditionalBranch.cs" />
     <Compile Include="..\Elves\ElfScript\BattleSequencer\TextSingle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\CommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfScript\BattleSequencer\TextSelect.cs" />
