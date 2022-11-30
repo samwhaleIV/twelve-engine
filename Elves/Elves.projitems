@@ -9,29 +9,17 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\ControlStatements.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\ConsoleBattleInterface.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer\User.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\BattleSequencer\Option.cs" />
-    <Compile Include="..\Elves\ElfScript\ConditionalBranch.cs" />
-    <Compile Include="..\Elves\ElfScript\BattleSequencer\TextSingle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\CommandFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\BattleSequencer\TextSelect.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\Command.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\ElfScriptException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\ExecutableFunction.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\Function.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\Script.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ElfScript\Tokenizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Script\Script.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Script\ThreadMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\UI\BattleUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\IUVSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StorageSystem.cs" />
-    <Compile Include="..\Elves\BattleSequencer\UVSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BattleSequencer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestWorld.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Scripts\" />
   </ItemGroup>
 </Project>

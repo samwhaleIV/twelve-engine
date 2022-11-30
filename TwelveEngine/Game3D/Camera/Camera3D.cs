@@ -8,6 +8,8 @@ namespace TwelveEngine.Game3D {
         private Vector3 position = Vector3.Zero;
         private float fieldOfView = 75f, nearPlane = 1f, farPlane = 1000f;
 
+        private bool orthographic = false;
+
         public Vector3 Position {
             get => position;
             set {
@@ -40,6 +42,14 @@ namespace TwelveEngine.Game3D {
             }
         }
 
+        public bool Orthographic {
+            get => orthographic;
+            set {
+                orthographic = value;
+                InvalidateProjectionMatrix();
+            }
+        }
+
         public bool IsProjectionMatrixValid { get; private set; } = false;
         public bool IsViewMatrixValid { get; private set; } = false;
 
@@ -65,8 +75,25 @@ namespace TwelveEngine.Game3D {
 
         private float GetFieldOfView() => MathHelper.ToRadians(FieldOfView);
 
+        public Vector2 OrthographicCenter { get; private set; } = Vector2.Zero;
+        public Vector2 OrthographicSize { get; private set; } = Vector2.Zero;
+
         private Matrix GetProjectionMatrix(float aspectRatio) {
-            return Matrix.CreatePerspectiveFieldOfView(GetFieldOfView(),aspectRatio,NearPlane,FarPlane);
+            if(orthographic) {
+                float width, height;
+                if(aspectRatio > 1) {
+                    width = 1f;
+                    height = 1f / aspectRatio;
+                } else {
+                    width = aspectRatio / 1f;
+                    height = 1f;
+                }
+                OrthographicCenter = new Vector2(0f,height * 0.5f);
+                OrthographicSize = new Vector2(width,height);
+                return Matrix.CreateOrthographicOffCenter(-width * 0.5f,width*0.5f,0f,height,NearPlane,FarPlane);
+            } else {
+                return Matrix.CreatePerspectiveFieldOfView(GetFieldOfView(),aspectRatio,NearPlane,FarPlane);
+            }
         }
 
         private float lastAspectRatio = 0f;
@@ -93,6 +120,7 @@ namespace TwelveEngine.Game3D {
         }
 
         public virtual void Export(SerialFrame frame) {
+            frame.Set(Orthographic);
             frame.Set(Position);
             frame.Set(FieldOfView);
             frame.Set(NearPlane);
@@ -100,6 +128,7 @@ namespace TwelveEngine.Game3D {
         }
 
         public virtual void Import(SerialFrame frame) {
+            Orthographic = frame.GetBool();
             Position = frame.GetVector3();
             FieldOfView = frame.GetFloat();
             NearPlane = frame.GetFloat();

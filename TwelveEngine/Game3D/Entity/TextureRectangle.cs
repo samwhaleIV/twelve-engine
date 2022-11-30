@@ -36,32 +36,65 @@ namespace TwelveEngine.Game3D.Entity {
         private void TextureRectangle_OnImport(SerialFrame frame) {
             frame.Set(TopLeft);
             frame.Set(BottomRight);
+            frame.Set(UVOffset);
+            frame.Set(PixelSmoothing);
+            frame.Set(TopLeftColor);
+            frame.Set(TopRightColor);
+            frame.Set(BottomLeftColor);
+            frame.Set(BottomRightColor);
         }
 
         private void TextureRectangle_OnExport(SerialFrame frame) {
             TopLeft = frame.GetVector3();
             BottomRight = frame.GetVector3();
+            UVOffset = frame.GetVector2();
+            PixelSmoothing = frame.GetBool();
+            TopLeftColor = frame.GetColor();
+            TopRightColor = frame.GetColor();
+            BottomLeftColor = frame.GetColor();
+            BottomRightColor = frame.GetColor();
         }
 
         private BufferSet bufferSet;
 
-        private static VertexPositionColorTexture[] GetVertices(Vector3 start,Vector3 end) {
+        public Vector2 UVOffset = Vector2.Zero;
 
-            var a = new VertexPositionColorTexture(start,Color.White,new Vector2(0,0));
+        public Color TopLeftColor { get; set; } = Color.White;
+        public Color TopRightColor { get; set; } = Color.White;
+        public Color BottomLeftColor { get; set; } = Color.White;
+        public Color BottomRightColor { get; set; } = Color.White;
 
-            var b = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),Color.White,new Vector2(1,0));
-            var c = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),Color.White,new Vector2(0,1));
+        public void SetColor(Color color) {
+            TopLeftColor = color;
+            TopRightColor = color;
+            BottomLeftColor = color;
+            BottomRightColor = color;
+        }
 
-            var d = new VertexPositionColorTexture(end,Color.White,new Vector2(1,1));
+        public Color Color {
+            set => SetColor(value);
+        }
+
+        private VertexPositionColorTexture[] GetVertices(Vector3 start,Vector3 end) {
+
+            var a = new VertexPositionColorTexture(start,TopLeftColor,UVOffset);
+
+            var b = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),TopRightColor,new Vector2(1,0)+UVOffset);
+            var c = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),BottomLeftColor,new Vector2(0,1)+UVOffset);
+
+            var d = new VertexPositionColorTexture(end,BottomRightColor,Vector2.One+UVOffset);
 
             return new VertexPositionColorTexture[] { a,b,c,b,d,c };
         }
 
         private void TextureRectangle_OnLoad() {
             bufferSet = Owner.CreateBufferSet(GetVertices(TopLeft,BottomRight));
+            
             effect = new BasicEffect(Game.GraphicsDevice) {
                 TextureEnabled = true
             };
+
+            effect.VertexColorEnabled = true;
 
             Owner.OnProjectionMatrixChanged += Owner_OnProjectionMatrixChanged;
             Owner.OnViewMatrixChanged += Owner_OnViewMatrixChanged;
@@ -93,12 +126,18 @@ namespace TwelveEngine.Game3D.Entity {
             effect = null;
         }
 
+        public bool PixelSmoothing { get; set; } = false;
+
         private void TextureRectangle_OnRender(GameTime gameTime) {
+            bufferSet.VertexBuffer.SetData(GetVertices(TopLeft,BottomRight));
             bufferSet.Apply();
+            var oldSampler = effect.GraphicsDevice.SamplerStates[0];
+            effect.GraphicsDevice.SamplerStates[0] = PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap;
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();
                 effect.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,0,0,bufferSet.VertexCount / 3);
             }
+            effect.GraphicsDevice.SamplerStates[0] = oldSampler;
         }
     }
 }

@@ -100,7 +100,7 @@ namespace TwelveEngine.Game3D {
         protected virtual void ResetGraphicsDeviceState(GraphicsDevice graphicsDevice) {
             graphicsDevice.Clear(Color.Gray);
             graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            graphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+            graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
         }
     }
 }

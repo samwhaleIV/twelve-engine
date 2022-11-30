@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game3D.Entity.Types {
-    public sealed class TextureEntity:TextureRectangle {
+    public class TextureEntity:TextureRectangle {
 
         protected override int GetEntityType() => Entity3DType.Texture;
 

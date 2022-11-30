@@ -40,7 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\GridLinesEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\ModelViewer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Terrain\TerrainChunk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\World.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\States\DataGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\States\InputGameState.cs" />
@@ -119,31 +118,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\SerialFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Button.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImageButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ImagePanel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Label.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\LabelButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RenderFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\RootNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\ScrollBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Anchor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Grid.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Panel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Elements\Picture.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\PictureMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Positioning.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\ScrollMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Factory\Debug.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Padding.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\RenderCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\RenderElement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Enum\Sizing.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\RenderElementSorter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\UIGameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\UIState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />
