@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Script\Script.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Script\ThreadMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\SpritePosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\UI\BattleUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\IUVSequencer.cs" />

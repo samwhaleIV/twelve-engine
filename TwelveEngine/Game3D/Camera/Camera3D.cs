@@ -21,6 +21,9 @@ namespace TwelveEngine.Game3D {
         public float FieldOfView {
             get => fieldOfView;
             set {
+                if(Orthographic) {
+                    return;
+                }
                 fieldOfView = value;
                 InvalidateProjectionMatrix();
             }
@@ -88,9 +91,9 @@ namespace TwelveEngine.Game3D {
                     width = aspectRatio / 1f;
                     height = 1f;
                 }
-                OrthographicCenter = new Vector2(0f,height * 0.5f);
+                OrthographicCenter = new Vector2(width * -0.5f,height* -0.5f);
                 OrthographicSize = new Vector2(width,height);
-                return Matrix.CreateOrthographicOffCenter(-width * 0.5f,width*0.5f,0f,height,NearPlane,FarPlane);
+                return Matrix.CreateOrthographic(width,height,nearPlane,farPlane);
             } else {
                 return Matrix.CreatePerspectiveFieldOfView(GetFieldOfView(),aspectRatio,NearPlane,FarPlane);
             }

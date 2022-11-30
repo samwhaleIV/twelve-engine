@@ -42,6 +42,8 @@ namespace TwelveEngine.Game3D.Entity {
             frame.Set(TopRightColor);
             frame.Set(BottomLeftColor);
             frame.Set(BottomRightColor);
+            frame.Set(UVTopLeft);
+            frame.Set(UVBottomRight);
         }
 
         private void TextureRectangle_OnExport(SerialFrame frame) {
@@ -53,6 +55,8 @@ namespace TwelveEngine.Game3D.Entity {
             TopRightColor = frame.GetColor();
             BottomLeftColor = frame.GetColor();
             BottomRightColor = frame.GetColor();
+            UVTopLeft = frame.GetVector2();
+            UVBottomRight = frame.GetVector2();
         }
 
         private BufferSet bufferSet;
@@ -63,6 +67,16 @@ namespace TwelveEngine.Game3D.Entity {
         public Color TopRightColor { get; set; } = Color.White;
         public Color BottomLeftColor { get; set; } = Color.White;
         public Color BottomRightColor { get; set; } = Color.White;
+
+        public void SetColors(Color topLeft,Color topRight,Color bottomLeft,Color bottomRight) {
+            TopLeftColor = topLeft;
+            TopRightColor = topRight;
+            BottomLeftColor = bottomLeft;
+            BottomRightColor = bottomRight;
+        }
+
+        public Vector2 UVTopLeft = Vector2.Zero;
+        public Vector2 UVBottomRight = Vector2.One;
 
         public void SetColor(Color color) {
             TopLeftColor = color;
@@ -77,12 +91,12 @@ namespace TwelveEngine.Game3D.Entity {
 
         private VertexPositionColorTexture[] GetVertices(Vector3 start,Vector3 end) {
 
-            var a = new VertexPositionColorTexture(start,TopLeftColor,UVOffset);
+            var a = new VertexPositionColorTexture(start,TopLeftColor,UVTopLeft+UVOffset);
 
-            var b = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),TopRightColor,new Vector2(1,0)+UVOffset);
-            var c = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),BottomLeftColor,new Vector2(0,1)+UVOffset);
+            var b = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),TopRightColor,new Vector2(UVBottomRight.X,UVTopLeft.Y)+UVOffset);
+            var c = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),BottomLeftColor,new Vector2(UVTopLeft.X,UVBottomRight.Y)+UVOffset);
 
-            var d = new VertexPositionColorTexture(end,BottomRightColor,Vector2.One+UVOffset);
+            var d = new VertexPositionColorTexture(end,BottomRightColor,UVBottomRight+UVOffset);
 
             return new VertexPositionColorTexture[] { a,b,c,b,d,c };
         }

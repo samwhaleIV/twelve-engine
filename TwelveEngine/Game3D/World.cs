@@ -33,8 +33,10 @@ namespace TwelveEngine.Game3D {
 
         private void World_OnUpdate(GameTime gameTime) {
             UpdateInputs(gameTime);
+            var aspectRatio = GetAspectRatio();
+            _camera?.Update(aspectRatio); /* An entity might need to use orthographic projection information */
             Entities.IterateMutable(Entity3D.Update,gameTime);
-            _camera?.Update(GetAspectRatio());
+            _camera?.Update(aspectRatio);
         }
 
         public void RenderEntities(GameTime gameTime) {
