@@ -22,9 +22,9 @@ namespace TwelveEngine.Shell.Config {
                 if(splitIndex < 0) {
                     continue;
                 }
-                var name = line.Substring(0,splitIndex).Trim();
+                var name = line[..splitIndex].Trim();
                 splitIndex += 1;
-                var value = line.Substring(splitIndex,line.Length - splitIndex).Trim();
+                var value = line[splitIndex..].Trim();
                 dictionary[name] = value;
             }
 

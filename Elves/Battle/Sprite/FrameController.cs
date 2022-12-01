@@ -24,7 +24,7 @@ namespace Elves.Battle.Sprite {
                 this.frames[frame.ID] = frame;
             }
             Rectangle idleArea; /* This is where we get the base sprite size from. Use a larger size and smaller baseHeight to dial your animations in! */
-            int idleID = (int)Animation.Idle;
+            int idleID = (int)AnimationType.Idle;
             if(this.frames.TryGetValue(idleID,out var idleFrame)) {
                 idleArea = idleFrame.Frames[0];
                 defaultSpriteFrame = idleFrame;
@@ -105,20 +105,19 @@ namespace Elves.Battle.Sprite {
                 animationStart = now;
                 updateAnimationStart = false;
             }
-            switch(currentFrame.AnimationMode) {
-                case AnimationMode.PlayOnce: return FilterSpriteAreaLoopCount(now,1);
-                case AnimationMode.PlayTwice: return FilterSpriteAreaLoopCount(now,2);
-                default: case AnimationMode.Static: return FilterSpriteAreaStatic();
-                case AnimationMode.Loop: return FilterSpriteAreaLoop(now);
-            }
+            return currentFrame.AnimationMode switch {
+                AnimationMode.PlayOnce => FilterSpriteAreaLoopCount(now,1),
+                AnimationMode.PlayTwice => FilterSpriteAreaLoopCount(now,2),
+                AnimationMode.Loop => FilterSpriteAreaLoop(now),
+                _ => FilterSpriteAreaStatic(),
+            };
         }
 
         private bool updateAnimationStart = false;
 
         private void AdvanceAnimationQueue() {
             var callback = animationCallback;
-            (SpriteFrame Frame,Action Callback) newAnimation;
-            if(animationQueue.TryPeek(out newAnimation)) {
+            if(animationQueue.TryPeek(out (SpriteFrame Frame, Action Callback) newAnimation)) {
                 currentFrame = newAnimation.Frame;
                 callback = newAnimation.Callback;
             } else {

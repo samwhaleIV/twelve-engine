@@ -6,25 +6,6 @@ using TwelveEngine.EntitySystem;
 namespace TwelveEngine.Game3D.Entity {
     public abstract class Entity3D:Entity<World> {
 
-        public Entity3D() {
-            OnImport += Entity3D_OnImport;
-            OnExport += Entity3D_OnExport;
-        }
-
-        private void Entity3D_OnExport(SerialFrame frame) {
-            frame.Set(Position);
-            frame.Set(Rotation);
-            frame.Set(Scale);
-            frame.Set(Billboard);
-        }
-
-        private void Entity3D_OnImport(SerialFrame frame) {
-            Position = frame.GetVector3();
-            Rotation = frame.GetVector3();
-            Scale = frame.GetVector3();
-            Billboard = frame.GetBool();
-        }
-
         protected bool WorldMatrixValid { get; set; } = false;
 
         protected bool PositionValid { get; set; } = false;

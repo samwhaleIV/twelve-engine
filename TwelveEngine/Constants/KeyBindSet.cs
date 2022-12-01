@@ -10,9 +10,6 @@ namespace TwelveEngine.Shell.Config {
         public Keys PauseGame = Keys.F5;
         public Keys AdvanceFrame = Keys.F6;
 
-        public Keys SaveState = Keys.F1;
-        public Keys LoadState = Keys.F2;
-
         public Keys Up = Keys.W;
         public Keys Down = Keys.S;
         public Keys Left = Keys.A;

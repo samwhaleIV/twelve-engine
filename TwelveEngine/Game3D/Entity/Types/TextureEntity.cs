@@ -4,12 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game3D.Entity.Types {
     public class TextureEntity:TextureRectangle {
 
-        protected override int GetEntityType() => Entity3DType.Texture;
-
         private void BindEvents() {
             OnLoad += TextureEntity_OnLoad;
-            OnImport += TextureEntity_OnImport;
-            OnExport += TextureEntity_OnExport;
         }
 
         public TextureEntity(string textureName) {
@@ -28,14 +24,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
                 }
                 _textureName = value;
             }
-        }
-
-        private void TextureEntity_OnExport(SerialFrame frame) {
-            frame.Set(TextureName);
-        }
-
-        private void TextureEntity_OnImport(SerialFrame frame) {
-            TextureName = frame.GetString();
         }
 
         private void TextureEntity_OnLoad() {

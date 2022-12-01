@@ -30,33 +30,6 @@ namespace TwelveEngine.EntitySystem {
             return entity as TType;
         }
 
-        public IEnumerable<TEntity> GetByType(int entityType) {
-            if(!container.Types.ContainsKey(entityType)) {
-                yield break;
-            }
-            foreach(var ID in container.Types[entityType]) {
-                yield return container.IDs[ID];
-            }
-        }
-
-        public IEnumerable<TType> GetByType<TType>() {
-            foreach(var entity in container.IDs) {
-                if(!(entity is TType typedEntity)) {
-                    continue;
-                }
-                yield return typedEntity;
-            }
-        }
-
-        public IEnumerable<TType> GetByType<TType>(int entityType) where TType : TEntity {
-            if(!container.Types.ContainsKey(entityType)) {
-                yield break;
-            }
-            foreach(var ID in container.Types[entityType]) {
-                yield return container.IDs[ID] as TType;
-            }
-        }
-
         public bool Has(string name) {
             return container.Names.ContainsKey(name);
         }

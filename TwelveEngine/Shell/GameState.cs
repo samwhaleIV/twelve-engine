@@ -4,14 +4,13 @@ using TwelveEngine.Serial;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Shell {
-    public class GameState:ISerializable {
+    public class GameState {
 
         public GameManager Game { get; private set; } = null;
 
         public event Action OnLoad, OnUnload;
 
         public event Action<DebugWriter> OnWriteDebug;
-        public event Action<SerialFrame> OnExport, OnImport;
         public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
 
         public bool IsLoaded { get; private set; } = false;
@@ -54,8 +53,5 @@ namespace TwelveEngine.Shell {
             OnPreRender?.Invoke(gameTime);
             IsPreRendering = false;
         }
-
-        public void Export(SerialFrame frame) => OnExport?.Invoke(frame);
-        public void Import(SerialFrame frame) => OnImport?.Invoke(frame);
     }
 }

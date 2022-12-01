@@ -10,10 +10,8 @@ namespace TwelveEngine.Game3D.Entity.Types {
         private static readonly Color Z_AXIS_COLOR = Color.Blue;
         private static readonly Color GRID_COLOR = Color.DarkGray;
 
-        protected override int GetEntityType() => Entity3DType.GridLines;
-
-        private float cellSize;
-        private int gridSize;
+        private readonly float cellSize;
+        private readonly int gridSize;
 
         private BufferSet bufferSet;
         private BasicEffect effect;
@@ -26,8 +24,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
             OnUnload += GridLinesEntity_OnUnload;
             OnUpdate += GridLinesEntity_OnUpdate;
             OnRender += GridLinesEntity_OnRender;
-            OnImport += GridLinesEntity_OnImport;
-            OnExport += GridLinesEntity_OnExport;
         }
 
         private void GridLinesEntity_OnUpdate(GameTime gameTime) {
@@ -66,16 +62,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
             bufferSet?.Dispose();
             bufferSet = null;
-        }
-
-        private void GridLinesEntity_OnExport(SerialFrame frame) {
-            frame.Set(cellSize);
-            frame.Set(gridSize);
-        }
-
-        private void GridLinesEntity_OnImport(SerialFrame frame) {
-            cellSize = frame.GetFloat();
-            gridSize = frame.GetInt();
         }
 
         private void GridLinesEntity_OnRender(GameTime gameTime) {

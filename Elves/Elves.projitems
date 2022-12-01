@@ -27,6 +27,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestWorld.cs" />
   </ItemGroup>
 </Project>

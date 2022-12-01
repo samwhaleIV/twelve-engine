@@ -16,9 +16,6 @@ namespace TwelveEngine.Game2D {
             OnLoad += Grid2D_OnLoad;
             OnUnload += Grid2D_OnUnload;
 
-            OnImport += Grid2D_OnImport;
-            OnExport += Grid2D_OnExport;
-
             OnRender += Grid2D_OnRender;
             OnUpdate += Grid2D_OnUpdate;
         }
@@ -51,7 +48,6 @@ namespace TwelveEngine.Game2D {
 
         public int UnitSize { get; set; } = Constants.Config.TileSize;
 
-        public EntityFactory<Entity2D,Grid2D> EntityFactory { get; set; }
         public EntityManager<Entity2D,Grid2D> Entities { get; private set; }
 
         public Camera Camera {
@@ -75,7 +71,7 @@ namespace TwelveEngine.Game2D {
         public Texture2D BlankTexture { get; private set; }
 
         private void Grid2D_OnLoad() {
-            Entities = new EntityManager<Entity2D,Grid2D>(this,EntityFactory);
+            Entities = new EntityManager<Entity2D,Grid2D>(this);
             BlankTexture = new Texture2D(Game.GraphicsDevice,1,1);
             BlankTexture.SetData(new Color[] { Color.White });
         }
@@ -198,16 +194,6 @@ namespace TwelveEngine.Game2D {
             ScreenSpace = GetScreenSpace();
             UpdateInputs(gameTime);
             Entities.IterateMutable(Entity2D.Update,gameTime);
-        }
-
-        private void Grid2D_OnExport(SerialFrame frame) {
-            frame.Set(Camera);
-            frame.Set(BackgroundColor);
-        }
-
-        private void Grid2D_OnImport(SerialFrame frame) {
-            frame.Get(Camera);
-            BackgroundColor = frame.GetColor();
         }
     }
 }

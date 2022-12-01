@@ -6,21 +6,9 @@ namespace TwelveEngine.Game3D.Entity {
     public abstract class ModelBase:WorldMatrixEntity {
 
         public ModelBase() {
-            OnImport += ModelBase_OnImport;
-            OnExport += ModelBase_OnExport;
             OnLoad += ModelBase_OnLoad;
             OnUnload += ModelBase_OnUnload;
             OnUpdate += ModelBase_OnUpdate;
-        }
-
-        private void ModelBase_OnExport(SerialFrame frame) {
-            frame.Set(Model);
-            frame.Set(Texture);
-        }
-
-        private void ModelBase_OnImport(SerialFrame frame) {
-            Model = frame.GetString();
-            Texture = frame.GetString();
         }
 
         private void ModelBase_OnUpdate(GameTime gameTime) {

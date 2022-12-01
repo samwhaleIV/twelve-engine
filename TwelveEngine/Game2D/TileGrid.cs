@@ -14,40 +14,6 @@ namespace TwelveEngine.Game2D {
         public TileGrid() {
             OnLoad += TileGrid_OnLoad;
             OnUnload += TileGrid_OnUnload;
-            OnExport += TileGrid_OnExport;
-            OnImport += TileGrid_OnImport;
-        }
-
-        private void ExportLayers(SerialFrame frame) {
-            bool hasLayers = layers != null;
-            frame.Set(hasLayers ? layers.Length : 0);
-            if(!hasLayers) return;
-            for(var i = 0;i<layers.Length;i++) {
-                frame.Set(layers[i]);
-            }
-        }
-
-        private void ImportLayer(SerialFrame frame) {
-            var layerCount = frame.GetInt();
-            bool hasLayers = layerCount > 0;
-            if(!hasLayers) return;
-            var layers = new int[layerCount][,];
-            for(var i = 0;i<layerCount;i++) {
-                layers[i] = frame.GetIntArray2D();
-            }
-            this.layers = layers;
-        }
-
-        private void TileGrid_OnExport(SerialFrame frame) {
-            frame.Set(LayerMode);
-            frame.Set(Size);
-            ExportLayers(frame);
-        }
-
-        private void TileGrid_OnImport(SerialFrame frame) {
-            frame.Get(LayerMode);
-            Size = frame.GetVector2();
-            ImportLayer(frame);
         }
 
         private void TileGrid_OnUnload() {

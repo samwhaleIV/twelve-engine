@@ -17,15 +17,5 @@ namespace TwelveEngine.Game3D {
         protected override Matrix GetViewMatrix() {
             return Matrix.CreateLookAt(Position,Target,Vector3.Up);
         }
-
-        public override void Export(SerialFrame frame) {
-            base.Export(frame);
-            frame.Set(Target);
-        }
-
-        public override void Import(SerialFrame frame) {
-            base.Import(frame);
-            Target = frame.GetVector3();
-        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
-    public struct LayerMode:ISerializable {
+    public struct LayerMode {
         public bool Background;
         public int BackgroundStart;
         public int BackgroundLength;
@@ -9,24 +9,6 @@ namespace TwelveEngine.Game2D {
         public bool Foreground;
         public int ForegroundStart;
         public int ForegroundLength;
-
-        public void Export(SerialFrame frame) {
-            frame.Set(Background);
-            frame.Set(BackgroundStart);
-            frame.Set(BackgroundLength);
-            frame.Set(Foreground);
-            frame.Set(ForegroundStart);
-            frame.Set(ForegroundLength);
-        }
-
-        public void Import(SerialFrame frame) {
-            Background = frame.GetBool();
-            BackgroundStart = frame.GetInt();
-            BackgroundLength = frame.GetInt();
-            Foreground = frame.GetBool();
-            ForegroundStart = frame.GetInt();
-            ForegroundLength = frame.GetInt();
-        }
     }
     public static class LayerModes {
         public static readonly LayerMode None = new LayerMode();
@@ -60,15 +42,11 @@ namespace TwelveEngine.Game2D {
             Foreground = true
         };
         public static LayerMode GetAutomatic(int layerCount) {
-            switch(layerCount) {
-                default:
-                case 2:
-                    return SingleLayerBackground;
-                case 3:
-                    return DoubleLayerBackground;
-                case 4:
-                    return BackgroundForegroundAlt;
-            }
+            return layerCount switch {
+                3 => DoubleLayerBackground,
+                4 => BackgroundForegroundAlt,
+                _ => SingleLayerBackground,
+            };
         }
     }
 }

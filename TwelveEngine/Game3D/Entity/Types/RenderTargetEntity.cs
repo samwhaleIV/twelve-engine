@@ -11,8 +11,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         public Point Size { get; set; } = new Point(DEFAULT_SIZE);
 
-        protected override int GetEntityType() => Entity3DType.RenderTarget;
-
         private RenderTarget2D renderTarget = null;
 
         public Action<GameTime> RenderOnTarget { get; set; } = null;
@@ -21,7 +19,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
             OnLoad += RenderTargetEntity_OnLoad;
             OnUnload += RenderTargetEntity_OnUnload;
             OnPreRender += RenderTargetEntity_OnPreRender;
-            StateLock = true;
         }
 
         private void RenderTargetEntity_OnPreRender(GameTime gameTime) {

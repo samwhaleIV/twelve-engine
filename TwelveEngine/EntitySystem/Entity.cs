@@ -3,12 +3,9 @@ using TwelveEngine.Serial;
 using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
-    public abstract class Entity<TOwner>:ISerializable where TOwner:GameState {
+    public abstract class Entity<TOwner> where TOwner:GameState {
 
         private const int DEFAULT_ID = EntityManager.START_ID - 1;
-
-        protected abstract int GetEntityType();
-        public int Type => GetEntityType();
 
         private string _name = null;
         private void SetName(string newName) {
@@ -58,19 +55,6 @@ namespace TwelveEngine.EntitySystem {
             Owner = null;
             Game = null;
             IsLoaded = false;
-        }
-
-        public bool StateLock { get; set; } = false;
-
-        protected event Action<SerialFrame> OnExport, OnImport;
-
-        public void Export(SerialFrame frame) {
-            frame.Set(Name);
-            OnExport?.Invoke(frame);
-        }
-        public void Import(SerialFrame frame) {
-            Name = frame.GetString();
-            OnImport?.Invoke(frame);
         }
     }
 }

@@ -41,23 +41,9 @@ namespace TwelveEngine.Game2D {
             _physicsWorld = new World(Vector2.Zero);
             _objectManager = new ObjectManager(this);
 
-            OnImport +=PhysicsGrid2D_OnImport;
-            OnExport += PhysicsGrid2D_OnExport;
-
             OnUpdate += PhysicsGrid_OnUpdate;
-
             OnLoad += PhysicsGrid2D_OnLoad;
             OnUnload += PhysicsGrid2D_OnUnload;
-        }
-
-        private void PhysicsGrid2D_OnExport(SerialFrame frame) {
-            frame.Set(Atlas.Name);
-            Objects.Export(frame);
-        }
-
-        private void PhysicsGrid2D_OnImport(SerialFrame frame) {
-            SetAtlas(frame.GetString());
-            Objects.Import(frame);
         }
 
         private void PhysicsGrid2D_OnLoad() {

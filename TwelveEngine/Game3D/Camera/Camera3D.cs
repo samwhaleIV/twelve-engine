@@ -3,7 +3,7 @@ using TwelveEngine.Serial;
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game3D {
-    public abstract class Camera3D:ISerializable {
+    public abstract class Camera3D {
 
         private Vector3 position = Vector3.Zero;
         private float fieldOfView = 75f, nearPlane = 1f, farPlane = 1000f;
@@ -123,22 +123,6 @@ namespace TwelveEngine.Game3D {
             if(viewMatrixChanged) {
                 OnViewMatrixChanged?.Invoke(ViewMatrix);
             }
-        }
-
-        public virtual void Export(SerialFrame frame) {
-            frame.Set(Orthographic);
-            frame.Set(Position);
-            frame.Set(FieldOfView);
-            frame.Set(NearPlane);
-            frame.Set(FarPlane);
-        }
-
-        public virtual void Import(SerialFrame frame) {
-            Orthographic = frame.GetBool();
-            Position = frame.GetVector3();
-            FieldOfView = frame.GetFloat();
-            NearPlane = frame.GetFloat();
-            FarPlane = frame.GetFloat();
         }
     }
 }

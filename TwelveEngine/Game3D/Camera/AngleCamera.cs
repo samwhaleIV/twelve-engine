@@ -123,17 +123,5 @@ namespace TwelveEngine.Game3D {
             if(delta.Y != 0) MoveUpDown(delta.Y * moveSpeed);
             if(delta.Z != 0) MoveFrontBack(delta.Z * moveSpeed);
         }
-
-        public override void Export(SerialFrame frame) {
-            base.Export(frame);
-            frame.Set(Angle);
-            frame.Set(LimitedPitch);
-        }
-
-        public override void Import(SerialFrame frame) {
-            base.Import(frame);
-            Angle = frame.GetVector2();
-            LimitedPitch = frame.GetBool();
-        }
     }
 }

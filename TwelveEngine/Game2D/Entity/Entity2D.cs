@@ -8,24 +8,7 @@ using TwelveEngine.Shell.Input;
 namespace TwelveEngine.Game2D.Entity {
     public abstract class Entity2D:Entity<Grid2D> {
 
-        public Entity2D() {
-            OnExport += Entity2D_OnExport;
-            OnImport += Entity2D_OnImport;
-        }
-
         public bool OnScreen() => Owner.OnScreen(this);
-
-        private void Entity2D_OnImport(SerialFrame frame) {
-            Position = frame.GetVector2();
-            Size = frame.GetVector2();
-            Direction = frame.GetDirection();
-        }
-
-        private void Entity2D_OnExport(SerialFrame frame) {
-            frame.Set(Position);
-            frame.Set(Size);
-            frame.Set(Direction);
-        }
 
         public bool IsHorizontal() => (int)Direction >= 2;
         public bool IsVertical() => (int)Direction <= 1;

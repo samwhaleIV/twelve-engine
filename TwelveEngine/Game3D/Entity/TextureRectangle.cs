@@ -28,35 +28,6 @@ namespace TwelveEngine.Game3D.Entity {
 
             OnLoad += TextureRectangle_OnLoad;
             OnUnload += TextureRectangle_OnUnload;
-
-            OnImport += TextureRectangle_OnImport;
-            OnExport += TextureRectangle_OnExport;
-        }
-
-        private void TextureRectangle_OnImport(SerialFrame frame) {
-            frame.Set(TopLeft);
-            frame.Set(BottomRight);
-            frame.Set(UVOffset);
-            frame.Set(PixelSmoothing);
-            frame.Set(TopLeftColor);
-            frame.Set(TopRightColor);
-            frame.Set(BottomLeftColor);
-            frame.Set(BottomRightColor);
-            frame.Set(UVTopLeft);
-            frame.Set(UVBottomRight);
-        }
-
-        private void TextureRectangle_OnExport(SerialFrame frame) {
-            TopLeft = frame.GetVector3();
-            BottomRight = frame.GetVector3();
-            UVOffset = frame.GetVector2();
-            PixelSmoothing = frame.GetBool();
-            TopLeftColor = frame.GetColor();
-            TopRightColor = frame.GetColor();
-            BottomLeftColor = frame.GetColor();
-            BottomRightColor = frame.GetColor();
-            UVTopLeft = frame.GetVector2();
-            UVBottomRight = frame.GetVector2();
         }
 
         private BufferSet bufferSet;

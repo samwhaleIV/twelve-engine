@@ -20,9 +20,6 @@ namespace Elves.Battle.Sprite {
             frameController = new FrameController(this,frames,baseHeight);
             positionController = new PositionController(this);
 
-            OnImport += BattleSprite_OnImport;
-            OnExport += BattleSprite_OnExport;
-
             OnLoad += () => {
                 float baseSize = baseHeight;
                 float width = frameController.Width / baseSize, height = frameController.Height / baseSize;
@@ -36,14 +33,6 @@ namespace Elves.Battle.Sprite {
                 positionController.UpdateScreenPosition(gameTime);
                 frameController.UpdateUVArea(gameTime);
             };
-        }
-
-
-        private void BattleSprite_OnExport(SerialFrame frame) {
-
-        }
-        private void BattleSprite_OnImport(SerialFrame frame) {
-
         }
     }
 }

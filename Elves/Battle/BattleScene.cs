@@ -35,14 +35,6 @@ namespace Elves.Battle {
                 };
                 Entities.Add(backgroundEntity);
 
-                var battleSprite = new BattleSprite("Elves/elf-sheet",3,9,17,47,52);
-                battleSprite.Name = "BattleSprite";
-                battleSprite.SpritePosition = SpritePosition.CenterLeft;
-                Entities.Add(battleSprite);
-
-                battleSprite = new BattleSprite("Elves/elf-sheet",22,4,24,52,52);
-                battleSprite.SpritePosition = SpritePosition.CenterRight;
-                Entities.Add(battleSprite);
             };
             OnUpdate += gameTime => {
                 UpdateCamera();
@@ -62,22 +54,8 @@ namespace Elves.Battle {
                 }
                 writer.WriteXY(angleCamera.Yaw,angleCamera.Pitch,"Yaw","Pitch");
             };
-            bool transitionEnabled = true;
-            int positionIndex = 0;
-            SpritePosition[] positions = new SpritePosition[] {
-                SpritePosition.Center,SpritePosition.Left,SpritePosition.Right,SpritePosition.CenterLeft,SpritePosition.CenterRight
-            };
-            Mouse.OnPress += point => {
-                if(!transitionEnabled) {
-                    return;
-                }
-                transitionEnabled = false;
-                var battleSprite = Entities.Get<BattleSprite>("BattleSprite");
-                battleSprite.SetSpritePosition(Game.Time,positions[positionIndex++%positions.Length],() => {
-                    transitionEnabled = true;
-                });
-                return;
-            };
+
+
         }
 
         private void UpdateBackground(GameTime gameTime) {

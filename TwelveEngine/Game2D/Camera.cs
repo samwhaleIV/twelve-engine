@@ -3,7 +3,7 @@ using TwelveEngine.Serial;
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game2D {
-    public class Camera:ISerializable {
+    public class Camera {
 
         private Vector2 _position, _offset;
         private float _scale = Constants.Config.RenderScale;
@@ -67,20 +67,5 @@ namespace TwelveEngine.Game2D {
 
         internal event Action Invalidated;
 
-        public void Export(SerialFrame frame) {
-            frame.Set(Position);
-            frame.Set(Offset);
-            frame.Set(Scale);
-            frame.Set(HorizontalPadding);
-            frame.Set(VerticalPadding);
-        }
-
-        public void Import(SerialFrame frame) {
-            _position = frame.GetVector2();
-            _offset = frame.GetVector2();
-            _scale = frame.GetFloat();
-            _horizontalPadding = frame.GetBool();
-            _verticalPadding = frame.GetBool();
-        }
     }
 }

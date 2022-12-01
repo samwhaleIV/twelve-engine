@@ -65,10 +65,7 @@ namespace TwelveEngine.Shell {
             (keyBindSet.Recording, automationAgent.ToggleRecording),
 
             (keyBindSet.PauseGame, TogglePaused),
-            (keyBindSet.AdvanceFrame, QueueAdvanceFrame),
-
-            (keyBindSet.SaveState, SaveSerialState),
-            (keyBindSet.LoadState, LoadSerialState)
+            (keyBindSet.AdvanceFrame, QueueAdvanceFrame)
         };
 
         private void AutomationAgent_PlaybackStopped() {
@@ -81,9 +78,6 @@ namespace TwelveEngine.Shell {
         }
 
         /* State fields */
-        private SerialFrame _savedState;
-        private bool HasSavedState => _savedState != null;
-
         private GameState _pendingGameState = null;
         private GameState _gameState = null;
 
@@ -154,23 +148,6 @@ namespace TwelveEngine.Shell {
         private MouseState GetMouseState() {
             var state = Mouse.GetState();
             return automationAgent.FilterMouseState(state);
-        }
-
-        private void SaveSerialState() {
-            if(!HasGameState) {
-                return;
-            }
-            var frame = new SerialFrame();
-            _gameState.Export(frame);
-            _savedState = frame;
-        }
-
-        private void LoadSerialState() {
-            if(!HasGameState || !HasSavedState) {
-                return;
-            }
-            _savedState.StartReadback();
-            _gameState.Import(_savedState);
         }
 
         private Func<GameState> pendingStateGenerator = null;

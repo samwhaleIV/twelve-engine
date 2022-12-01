@@ -60,27 +60,5 @@ namespace TwelveEngine.Game2D.Objects {
         public Color Color { get; set; } = Color.White;
         public SpriteEffects SpriteEffects { get; set; } = SpriteEffects.None;
         public bool Invisible { get; set; } = false;
-
-        internal void Export(SerialFrame frame) {
-            frame.Set(Position);
-            frame.Set(Rotation);
-            frame.Set(Size);
-            frame.Set(TextureSource);
-            frame.Set(Color);
-            frame.Set((int)SpriteEffects);
-            frame.Set(Invisible);
-            OnExport?.Invoke(frame);
-        }
-
-        internal void Import(SerialFrame frame) {
-            Position = frame.GetVector2();
-            Rotation = frame.GetFloat();
-            Size = frame.GetVector2();
-            TextureSource = frame.GetRectangle();
-            Color = frame.GetColor();
-            SpriteEffects = (SpriteEffects)frame.GetInt();
-            Invisible = frame.GetBool();
-            OnImport?.Invoke(frame);
-        }
     }
 }

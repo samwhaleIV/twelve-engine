@@ -8,23 +8,13 @@ using TwelveEngine.Shell.States;
 namespace TwelveEngine.Game3D {
     public class World:InputGameState {
 
-        private readonly EntityFactory<Entity3D,World> entityFactory;
-
         public GraphicsDevice GraphicsDevice => Game.GraphicsDevice;
 
-        public World(EntityFactory<Entity3D,World> entityFactory = null) {
-            if(entityFactory == null) {
-                entityFactory = Entity3DType.GetFactory();
-            }
-            this.entityFactory = entityFactory;
+        public World() {
 
             OnLoad += SetupEntityManager;
             OnUpdate += World_OnUpdate;
             OnRender += World_OnRender;
-
-            cameraSerializer = new CameraSerializer(this);
-            OnImport += cameraSerializer.ImportCamera;
-            OnExport += cameraSerializer.ExportCamera;
         }
 
         private void World_OnRender(GameTime gameTime) {
@@ -47,8 +37,6 @@ namespace TwelveEngine.Game3D {
             Entities.IterateImmutable(Entity3D.PreRender,gameTime);
         }
 
-        private readonly CameraSerializer cameraSerializer;
-
         private Camera3D _camera;
         public Camera3D Camera { get => _camera; set => SetNewCamera(value); }
 
@@ -66,7 +54,7 @@ namespace TwelveEngine.Game3D {
 
         public EntityManager<Entity3D,World> Entities { get; private set; }
         private void SetupEntityManager() {
-            Entities = new EntityManager<Entity3D,World>(this,entityFactory);
+            Entities = new EntityManager<Entity3D,World>(this);
         }
 
         public float GetAspectRatio() => Game.Viewport.AspectRatio;

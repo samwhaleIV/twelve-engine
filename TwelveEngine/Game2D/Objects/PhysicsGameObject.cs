@@ -14,9 +14,6 @@ namespace TwelveEngine.Game2D.Objects {
 
             OnLoad += PhysicsGameObject_OnLoad;
             OnUnload += PhysicsGameObject_OnUnload;
-
-            OnImport += PhysicsGameObject_OnImport;
-            OnExport += PhysicsGameObject_OnExport;
         }
 
         protected Action<Fixture> OnFixtureChanged;
@@ -241,42 +238,6 @@ namespace TwelveEngine.Game2D.Objects {
                 if(Body == null) return;
                 Body.IgnoreCCD = value;
             }
-        }
-
-        private void PhysicsGameObject_OnExport(SerialFrame frame) {
-            frame.Set(LinearVelocity);
-            frame.Set(AngularVelocity);
-            frame.Set(LinearDamping);
-            frame.Set(AngularDamping);
-            frame.Set(IsBullet);
-            frame.Set(SleepingAllowed);
-            frame.Set(Awake);
-            frame.Set(Enabled);
-            frame.Set(FixedRotation);
-            frame.Set(IgnoreGravity);
-            frame.Set(Mass);
-            frame.Set(Inertia);
-            frame.Set(IgnoreCCD);
-            frame.Set(HitboxOffset);
-            frame.Set(HitboxSize);
-        }
-
-        private void PhysicsGameObject_OnImport(SerialFrame frame) {
-            LinearVelocity = frame.GetVector2();
-            AngularVelocity = frame.GetFloat();
-            LinearDamping = frame.GetFloat();
-            AngularDamping = frame.GetFloat();
-            IsBullet = frame.GetBool();
-            SleepingAllowed = frame.GetBool();
-            Awake = frame.GetBool();
-            Enabled = frame.GetBool();
-            FixedRotation = frame.GetBool();
-            IgnoreGravity = frame.GetBool();
-            Mass = frame.GetFloat();
-            Inertia = frame.GetFloat();
-            IgnoreCCD = frame.GetBool();
-            HitboxOffset = frame.GetVector2();
-            HitboxSize = frame.GetVector2();
         }
     }
 }

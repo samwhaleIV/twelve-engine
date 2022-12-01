@@ -69,18 +69,6 @@ namespace TwelveEngine.Game2D.Objects {
             return gameObject;
         }
 
-        private GameObject Create(int id) {
-            GameObject gameObject = new GameObject(this,id);
-            AddObject(gameObject);
-            return gameObject;
-        }
-
-        private PhysicsGameObject CreatePhysical(int id,BodyType bodyType) {
-            PhysicsGameObject gameObject = new PhysicsGameObject(this,id,bodyType);
-            AddObject(gameObject);
-            return gameObject;
-        }
-
         public PhysicsGameObject CreateStatic() {
             PhysicsGameObject gameObject = new PhysicsGameObject(this,GetNewObjectID(),BodyType.Static);
             AddObject(gameObject);
@@ -100,37 +88,5 @@ namespace TwelveEngine.Game2D.Objects {
         }
 
         public IEnumerable<GameObject> GetEnumerable() => objects.Values;
-
-        public void Export(SerialFrame frame) {
-            frame.Set(id);
-            var objectsList = objects.Values;
-            frame.Set(objectsList.Count);
-            foreach(GameObject gameObject in objects.Values) {
-                frame.Set(gameObject.ID);
-                if(gameObject is PhysicsGameObject physicsGameObject) {
-                    frame.Set(1 + (int)physicsGameObject.BodyType);
-                } else {
-                    frame.Set(0);
-                }
-                gameObject.Export(frame);
-            }
-        }
-
-        public void Import(SerialFrame frame) {
-            DeleteAll();
-            id = frame.GetInt();
-            var objectCount = frame.GetInt();
-            for(int i = 0;i<objectCount;i++) {
-                int objectID = frame.GetInt();
-                int type = frame.GetInt();
-                GameObject gameObject;
-                if(type == 0) {
-                    gameObject = Create(objectID);
-                } else {
-                    gameObject = CreatePhysical(objectID,(BodyType)(type-1));
-                }
-                gameObject.Import(frame);
-            }
-        }
     }
 }

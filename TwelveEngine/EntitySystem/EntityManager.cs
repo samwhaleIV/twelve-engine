@@ -15,18 +15,12 @@ namespace TwelveEngine.EntitySystem {
         private const string NO_MUTATION_ALLOWED = "Cannot modify Entity tables during immutable list iteration!";
 
         private readonly TOwner owner;
-        private readonly EntityFactory<TEntity,TOwner> factory;
 
         private readonly EntityContainer<TEntity,TOwner> container = new EntityContainer<TEntity,TOwner>();
 
-        public EntityManager(TOwner owner,EntityFactory<TEntity,TOwner> factory) {
-
-            owner.OnExport += Owner_Export;
-            owner.OnImport += Owner_Import;
+        public EntityManager(TOwner owner) {
             owner.OnUnload += Owner_Unload;
-
             this.owner = owner;
-            this.factory = factory;
         }
 
         private int IDCounter = EntityManager.START_ID;
@@ -179,23 +173,11 @@ namespace TwelveEngine.EntitySystem {
             entityListQueued = false;
         }
 
-        private IEnumerable<TEntity> GetSerializable() {
-            foreach(var entity in GetEntityList()) {
-                if(entity.StateLock) {
-                    continue;
-                }
-                yield return entity;
-            }
-        }
-
         /* Non-asserted */
-        private void _clearEntities(bool checkForStateLock = false) {
+        private void _clearEntities() {
             var entityList = GetEntityList();
             for(var i = 0;i < entityList.Length;i++) {
                 var entity = entityList[i];
-                if(checkForStateLock && entity.StateLock) {
-                    continue;
-                }
                 _removeEntity(entity);
             }
         }
@@ -234,26 +216,6 @@ namespace TwelveEngine.EntitySystem {
             _removeEntity(entity);
         }
 
-        public TEntity Create(int type,string name = null) {
-            if(factory == null) {
-                throw new InvalidOperationException("Cannot create an entity without an EntityFactory!");
-            }
-            var entity = factory.Create(type);
-            if(entity == null) {
-                return null;
-            }
-            if(!string.IsNullOrEmpty(name)) {
-                entity.Name = name;
-            }
-            Add(entity);
-            return entity;
-        }
-
-        public TType Create<TType>(int type,string name = null) where TType:TEntity {
-            /* Explicit cast for exception throwing. The user should expect a factory type to resolve to the same destination type */
-            return (TType)Create(type,name); 
-        }
-
         public void Add(params TEntity[] entities) {
             AssertMutation();
             PauseChanges();
@@ -276,39 +238,6 @@ namespace TwelveEngine.EntitySystem {
             AssertMutation();
             PauseChanges();
             _clearEntities();
-            ResumeChanges();
-        }
-
-        private void Owner_Export(SerialFrame frame) {
-            var entityList = GetSerializable().ToArray();
-            var entityCount = entityList.Length;
-            frame.Set(entityList.Length);
-            for(var i = 0;i<entityCount;i++) {
-                var entity = entityList[i];
-                frame.Set(entity.Type);
-                frame.Set(entity);
-            }
-        }
-
-        private void Owner_Import(SerialFrame frame) {
-            if(factory == null) {
-                throw new InvalidOperationException("Cannot reload an EntityManager without an EntityFactory!");
-            }
-            AssertMutation();
-
-            PauseChanges();
-            if(IDCounter > 0) {
-                _clearEntities(checkForStateLock: true);
-            }
-
-            int entityCount = frame.GetInt();
-
-            for(var i = 0;i<entityCount;i++) {
-                var type = frame.GetInt();
-                var entity = factory.Create(type);
-                frame.Get(entity);
-                _addEntity(entity);
-            }
             ResumeChanges();
         }
     }

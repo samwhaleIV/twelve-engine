@@ -3,9 +3,6 @@ using Microsoft.Xna.Framework;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.Config;
 
-using System.IO;
-using System.Linq;
-
 namespace TwelveDesktop {
 
     internal static class Program {
@@ -14,7 +11,6 @@ namespace TwelveDesktop {
             ConfigLoader.LoadEngineConfig(new TwelveConfigSet() {
                 CPUTextures = new string[] { }
             });
-
             using var game = new GameManager();
             game.OnLoad += Game_OnLoad;
             game.Run(GameRunBehavior.Synchronous);

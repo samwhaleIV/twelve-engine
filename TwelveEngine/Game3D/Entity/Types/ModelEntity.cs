@@ -6,9 +6,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
     public class ModelEntity:ModelBase {
 
         public ModelEntity() => OnRender += ModelEntity_OnRender;
-
-        protected override int GetEntityType() => Entity3DType.Model;
-
         private Model model;
 
         private ModelMesh[] modelMeshList = new ModelMesh[0];
