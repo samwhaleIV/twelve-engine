@@ -21,10 +21,10 @@ namespace TwelveEngine.Game3D {
         public float FieldOfView {
             get => fieldOfView;
             set {
+                fieldOfView = value;
                 if(Orthographic) {
                     return;
                 }
-                fieldOfView = value;
                 InvalidateProjectionMatrix();
             }
         }
@@ -48,6 +48,9 @@ namespace TwelveEngine.Game3D {
         public bool Orthographic {
             get => orthographic;
             set {
+                if(value == orthographic) {
+                    return;
+                }
                 orthographic = value;
                 InvalidateProjectionMatrix();
             }

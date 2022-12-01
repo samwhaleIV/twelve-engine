@@ -6,9 +6,9 @@ namespace TwelveEngine.Game3D.Entity {
     public abstract class TextureRectangle:WorldMatrixEntity {
 
         private Texture2D _texture;
-        protected Texture2D Texture {
+        public Texture2D Texture {
             get => _texture;
-            set {
+            protected set {
                 if(_texture == value) {
                     return;
                 }

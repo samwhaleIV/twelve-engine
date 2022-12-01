@@ -34,8 +34,8 @@ namespace TwelveEngine.EntitySystem {
         public bool IsLoaded { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
 
-        protected GameManager Game { get; private set; }
-        protected TOwner Owner { get; private set; } = null;
+        public GameManager Game { get; private set; }
+        public TOwner Owner { get; private set; } = null;
 
         internal void Register(int ID,TOwner owner) {
             this.ID = ID;
