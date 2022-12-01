@@ -13,7 +13,7 @@
 
         public string KeyBindsFile = Constants.DefaultKeyBindsFile;
 
-        public string[] CPUTextures = new string[] { Constants.DefaultTileset, Constants.PatternsImage };
+        public string[] CPUTextures = new string[] { };
 
         public bool ShowCollision = false;
     }

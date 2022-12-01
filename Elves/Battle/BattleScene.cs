@@ -54,8 +54,6 @@ namespace Elves.Battle {
                 }
                 writer.WriteXY(angleCamera.Yaw,angleCamera.Pitch,"Yaw","Pitch");
             };
-
-
         }
 
         private void UpdateBackground(GameTime gameTime) {
