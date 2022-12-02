@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game3D {
     public sealed class TargetCamera:Camera3D {

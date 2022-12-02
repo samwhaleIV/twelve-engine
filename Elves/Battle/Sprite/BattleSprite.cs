@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Game3D.Entity.Types;
-using TwelveEngine.Serial;
 
 namespace Elves.Battle.Sprite {
     public class BattleSprite:TextureEntity {

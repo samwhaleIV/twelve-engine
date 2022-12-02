@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 
-namespace TwelveEngine.Serial.Map {
+namespace TwelveEngine.Game2D.MapFormat {
 
     public static class MapDatabase {
 

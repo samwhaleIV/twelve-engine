@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace TwelveEngine.Serial.Map {
+namespace TwelveEngine.Game2D.MapFormat {
     public sealed class MapDecoder {
 
         public MapDecoder(FileStream fileStream) {

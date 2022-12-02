@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using TwelveEngine.Serial;
-using TwelveEngine.Serial.Map;
+using TwelveEngine.Game2D.MapFormat;
 
 namespace TwelveEngine.Game2D {
     public class TileGrid:Grid2D {

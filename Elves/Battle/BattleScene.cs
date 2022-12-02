@@ -1,13 +1,7 @@
-﻿using TwelveEngine.Shell.States;
-using Microsoft.Xna.Framework;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using TwelveEngine;
 using TwelveEngine.Game3D;
-using TwelveEngine.Game3D.Entity;
 using TwelveEngine.Game3D.Entity.Types;
-using TwelveEngine.Shell.UI;
 
 namespace Elves.Battle {
     public class BattleScene:World {

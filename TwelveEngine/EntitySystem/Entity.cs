@@ -1,5 +1,4 @@
 ﻿using System;
-using TwelveEngine.Serial;
 using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {

@@ -2,7 +2,6 @@
 using tainicom.Aether.Physics2D.Dynamics;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game2D.Objects;
-using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D {
     public class PhysicsGrid2D:Grid2D {

@@ -11,10 +11,17 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\PhysicsEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\TopDownPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\MapFormat\LayerEncodingMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\MapFormat\Map.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\MapFormat\MapDatabase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\MapFormat\MapDecoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\MapFormat\MapEncoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\ObjectManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\PhysicsGameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\VectorRectangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\PropertyType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TypeParser.cs" />
     <Compile Include="..\TwelveEngine\Game2D\PhysicsGrid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
@@ -42,15 +49,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\DebugWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\Corner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\IMouseTarget.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\LayerEncodingMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\Map.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapDecoder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapEncoder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\String\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TwelveConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\TwelveConfigSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigProcessor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\String\TypeParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\ControllerBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Direction.cs" />
@@ -73,13 +74,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\ScreenSpace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TimeoutManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\ScrollDirection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\ArrayConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\ExportMethods.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\ImportMethods.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\SerialFrameFormatter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\TypeExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\Type.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Binary\Value.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TilesetRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\AutomationAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\AutomationIO.cs" />
@@ -91,14 +85,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Hotkeys\Hotkey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\Hotkeys\HotkeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Input\MouseHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\Map\MapDatabase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Grid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\ISerializable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serial\SerialFrame\SerialFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />

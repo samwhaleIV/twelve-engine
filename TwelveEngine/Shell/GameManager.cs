@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Shell.Input;
 using TwelveEngine.Shell.Automation;
-using TwelveEngine.Serial;
 using TwelveEngine.Shell.States;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Config;

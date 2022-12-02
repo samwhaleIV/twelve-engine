@@ -1,6 +1,4 @@
-﻿using TwelveEngine.Serial;
-
-namespace TwelveEngine.Game2D {
+﻿namespace TwelveEngine.Game2D {
     public struct LayerMode {
         public bool Background;
         public int BackgroundStart;

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D.Objects {
     public class GameObject {
@@ -53,8 +52,6 @@ namespace TwelveEngine.Game2D.Objects {
             OnUnload?.Invoke();
             isUnloaded = true;
         }
-
-        protected Action<SerialFrame> OnImport, OnExport;
 
         public Rectangle TextureSource { get; set; } = new Rectangle(16,0,16,16);
         public Color Color { get; set; } = Color.White;

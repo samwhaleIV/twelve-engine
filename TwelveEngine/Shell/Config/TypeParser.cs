@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Serial.String {
+namespace TwelveEngine.Shell.Config {
     public static class TypeParser {
 
         private static readonly Type keysType = typeof(Keys);

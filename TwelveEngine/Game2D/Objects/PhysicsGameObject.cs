@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using tainicom.Aether.Physics2D.Dynamics;
-using TwelveEngine.Serial;
 
 namespace TwelveEngine.Game2D.Objects {
     public class PhysicsGameObject:GameObject {

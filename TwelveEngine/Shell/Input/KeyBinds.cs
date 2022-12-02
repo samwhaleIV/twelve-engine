@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Shell.Input.Glyphs;
-using TwelveEngine.Serial;
 using TwelveEngine.Shell.Config;
+using System.IO;
 
 namespace TwelveEngine.Shell.Input {
-    public sealed partial class KeyBinds:ISerializable {
+    public sealed partial class KeyBinds {
 
         private readonly Dictionary<Impulse,Keys> binds;
         private readonly KeyBindSet defaultSet;
@@ -88,19 +88,19 @@ namespace TwelveEngine.Shell.Input {
             return new KeyBinds(keyBindSet);
         }
 
-        public void Export(SerialFrame frame) {
-            frame.Set(binds.Count);
+        public void Export(BinaryWriter writer) {
+            writer.Write(binds.Count);
             foreach(var bind in binds) {
-                frame.Set(bind.Key);
-                frame.Set(bind.Value);
+                writer.Write((int)bind.Key);
+                writer.Write((int)bind.Value);
             }
         }
 
-        public void Import(SerialFrame frame) {
-            int count = frame.GetInt();
+        public void Import(BinaryReader reader) {
+            int count = reader.ReadInt32();
             for(var i = 0;i<count;i++) {
-                var bind = frame.GetBind();
-                var key = frame.GetKey();
+                var bind = (Impulse)reader.ReadInt32();
+                var key = (Keys)reader.ReadInt32();
                 binds[bind] = key;
             }
         }

@@ -2,7 +2,6 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Reflection;
-using TwelveEngine.Serial.String;
 
 namespace TwelveEngine.Shell.Config {
     public sealed class ConfigProcessor<TPropertySet> where TPropertySet : new() {

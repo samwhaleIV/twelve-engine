@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TwelveEngine.Shell;
+﻿using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
     public sealed partial class EntityManager<TEntity,TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {

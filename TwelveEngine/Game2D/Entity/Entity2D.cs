@@ -2,7 +2,6 @@
 using TwelveEngine.EntitySystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Serial;
 using TwelveEngine.Shell.Input;
 
 namespace TwelveEngine.Game2D.Entity {

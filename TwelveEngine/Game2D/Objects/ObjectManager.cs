@@ -1,8 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Serial;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using tainicom.Aether.Physics2D.Dynamics;
 
 namespace TwelveEngine.Game2D.Objects {

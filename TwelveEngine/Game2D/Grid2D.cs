@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game2D.Entity;
 using TwelveEngine.Game2D.Objects;
-using TwelveEngine.Serial;
 using TwelveEngine.Shell.States;
 
 namespace TwelveEngine.Game2D {

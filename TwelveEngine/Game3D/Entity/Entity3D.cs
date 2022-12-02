@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using TwelveEngine.Serial;
 using TwelveEngine.EntitySystem;
 
 namespace TwelveEngine.Game3D.Entity {

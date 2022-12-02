@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine.Serial.Map {
+﻿namespace TwelveEngine.Game2D.MapFormat {
     public readonly struct Map {
 
         public readonly int Width;
