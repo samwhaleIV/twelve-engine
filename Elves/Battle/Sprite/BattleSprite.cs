@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Game3D.Entity.Types;
+using Elves.Battle.Sprite.Animation;
 
 namespace Elves.Battle.Sprite {
     public class BattleSprite:TextureEntity {
@@ -8,11 +9,14 @@ namespace Elves.Battle.Sprite {
         private readonly FrameController frameController;
         private readonly PositionController positionController;
 
+        public Color AccentColor { get; set; } = Color.White;
+        public float XOffset { get; set; } = 0f;
+
         public void SetSpritePosition(SpritePosition spritePosition,Action callback) {
             positionController.SetSpritePosition(spritePosition,callback);
         }
 
-        public BattleSprite(string textureName,SpriteFrame[] frames,int baseHeight) :base(textureName) {
+        public BattleSprite(string textureName,FrameSet[] frames,int baseHeight) :base(textureName) {
 
             frameController = new FrameController(this,frames,baseHeight);
             positionController = new PositionController(this);

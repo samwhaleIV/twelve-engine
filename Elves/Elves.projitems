@@ -9,15 +9,16 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\AnimationMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Elves\HarmlessElf.cs" />
-    <Compile Include="..\Elves\Battle\Sprite\AnimationType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\BattleSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Script\Script.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Script\ThreadMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\FrameController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\FrameController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\PositionController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\SpriteFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\FrameSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\SpritePosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\UI\BattleUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
