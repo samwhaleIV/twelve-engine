@@ -17,6 +17,9 @@ namespace ContentBuilder {
 
         private const string ASSEMBLY_REFERENCE_FOLDER = "BuilderAssemblies";
 
+        private const string DEFAULT_PLATFORM = "DesktopGL";
+        private const string DEFAULT_GRAPHICS_PROFILE = "HiDef";
+
         /* Is Path.Combine'ed to Directory.GetCurrentDirectory() */
         private const string ENGINE_ROOT_RESOLVER = @"..\..\..\..\";
         private const bool PREFIX_ENGINE_NAMESPACE = false;
@@ -26,8 +29,8 @@ namespace ContentBuilder {
         private static readonly string Platform, GraphicsProfile;
 
         static Program() {
-            Platform = Environment.GetEnvironmentVariable("platform");
-            GraphicsProfile = Environment.GetEnvironmentVariable("profile");
+            Platform = Environment.GetEnvironmentVariable("platform") ?? DEFAULT_PLATFORM;
+            GraphicsProfile = Environment.GetEnvironmentVariable("profile") ?? DEFAULT_GRAPHICS_PROFILE;
         }
 
         private static readonly Preprocessors preprocessors = new Preprocessors() {
@@ -87,6 +90,9 @@ namespace ContentBuilder {
 
         private static void AddBuilderAssemblies(StringBuilder builder) {
             string assemblyDirectory = Path.Combine(GetContentRoot(),ASSEMBLY_REFERENCE_FOLDER);
+            if(!File.Exists(assemblyDirectory)) {
+                return;
+            }
             string[] assemblies = Directory.GetFiles(assemblyDirectory,"*.dll");
             foreach(string assembly in assemblies) {
                 var fileName = Path.GetFileName(assembly);
