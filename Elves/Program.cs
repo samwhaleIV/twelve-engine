@@ -3,6 +3,7 @@ using System.Text;
 using TwelveEngine.Shell;
 using Elves.Battle;
 using System.IO;
+using TwelveEngine;
 
 namespace Elves {
     public sealed class Program {
@@ -28,9 +29,12 @@ namespace Elves {
 
             LoadSaveData();
             if(saveData.KeyCount <= 0) {
-                Console.WriteLine("Heads up: Starting game from a blank save slate.");
+                Logger.WriteLine("Heads up: Starting game from a blank save slate.");
             }
             SaveSaveData();
+
+            Logger.AutoFlush = true;
+            Logger.Flush();
 
             game.SetState(new BattleScene("Backgrounds/checkerboard"));
         }
@@ -62,9 +66,9 @@ namespace Elves {
         private void LoadSaveData() {
             StringBuilder stringBuilder = new StringBuilder();
             if(!saveData.TryLoad(saveFilePath,stringBuilder)) {
-                Console.Write($"Save data load failure: {stringBuilder}");
+                Logger.Write($"Save data load failure: {stringBuilder}");
             } else {
-                Console.Write($"Save data load success: {stringBuilder}");
+                Logger.Write($"Save data load success: {stringBuilder}");
             }
         }
 
@@ -72,13 +76,13 @@ namespace Elves {
             StringBuilder stringBuilder = new StringBuilder();
             if(!CheckOrCreateSaveDirectory(stringBuilder)) {
                 stringBuilder.AppendLine("Save data directory does not exist, cannot write save file.");
-                Console.WriteLine(stringBuilder);
+                Logger.Write(stringBuilder.ToString());
                 return;
             }
             if(!saveData.TrySave(saveFilePath,stringBuilder)) {
-                Console.Write($"Save data write failure: {stringBuilder}");
+                Logger.Write($"Save data write failure: {stringBuilder}");
             } else {
-                Console.Write($"Save data write success: {stringBuilder}");
+                Logger.Write($"Save data write success: {stringBuilder}");
             }
         }
     }

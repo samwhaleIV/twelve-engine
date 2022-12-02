@@ -3,22 +3,27 @@ using TwelveEngine.Shell;
 using System.IO;
 using System;
 using System.Runtime.InteropServices;
-
-#if DEBUG
-[DllImport("kernel32.dll",SetLastError = true)]
-[return: MarshalAs(UnmanagedType.Bool)]
-static extern bool AllocConsole();
-AllocConsole();
-#endif
+using System.Text;
+using System.Diagnostics;
+using TwelveEngine;
 
 ConfigLoader.LoadEngineConfig(new TwelveConfigSet());
 using var game = new GameManager();
 game.OnLoad += Game_OnLoad;
 
-
 void Game_OnLoad(GameManager game) {
     string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"ElvesGame");
+    game.Disposed += Game_Disposed;
+    game.Exiting += Game_Exiting;
     var program = new Elves.Program(game,saveDirectory,true);
+}
+
+void Game_Exiting(object sender,EventArgs e) {
+    Logger.AutoFlush = false;
+}
+
+void Game_Disposed(object sender,EventArgs e) {
+    Logger.CleanUp();
 }
 
 game.Run();

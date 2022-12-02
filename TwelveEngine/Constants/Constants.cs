@@ -3,8 +3,6 @@ using TwelveEngine.Shell.Config;
 
 namespace TwelveEngine {
     public static partial class Constants {
-        public const int SerialSubframeSize = 1024;
-
         public const double MaxFrameDelta = 1000 / 15d;
         public const double SimFrameTime = 1000 / 60d;
 
@@ -14,6 +12,8 @@ namespace TwelveEngine {
         public const int ScreenEdgePadding = 8;
 
         public const string ContentDirectory = "Content";
+
+        public const string LogFile = "telog.txt";
 
         public const string PlaybackFileExt = "teinp"; /* Twelve Engine (Playback) Input (File) */
         public const string EngineConfigFile = "twelve.config";
