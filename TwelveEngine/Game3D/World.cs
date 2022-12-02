@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.EntitySystem;
@@ -11,22 +12,68 @@ namespace TwelveEngine.Game3D {
         public GraphicsDevice GraphicsDevice => Game.GraphicsDevice;
 
         public World() {
-
-            OnLoad += SetupEntityManager;
+            OnLoad += World_OnLoad;
             OnUpdate += World_OnUpdate;
             OnRender += World_OnRender;
         }
 
+        public EntityManager<Entity3D,World> Entities { get; private set; }
+
+        private void World_OnLoad() {
+            Entities = new EntityManager<Entity3D,World>(this);
+            if(pendingSamplerState == null) {
+                return;
+            }
+            Game.GraphicsDevice.SamplerStates[0] = pendingSamplerState;
+            pendingSamplerState = null;
+        }
+
+        public Color ClearColor { get; set; } = Color.Black;
+
         private void World_OnRender(GameTime gameTime) {
-            ResetGraphicsDeviceState(Game.GraphicsDevice);
+            Game.GraphicsDevice.Clear(ClearColor);
+        }
+
+        private readonly Stack<SamplerState> samplerStateStack = new Stack<SamplerState>();
+
+        private SamplerState pendingSamplerState = SamplerState.LinearClamp;
+        public SamplerState SamplerState {
+            get => Game?.GraphicsDevice.SamplerStates[0] ?? pendingSamplerState;
+            set {
+                if(Game == null) {
+                    pendingSamplerState = value;
+                } else {
+                    samplerStateStack.Clear();
+                    Game.GraphicsDevice.SamplerStates[0] = value;
+                }
+            }
+        }
+
+        public void PushSamplerState(SamplerState samplerState) {
+            samplerStateStack.Push(SamplerState);
+            if(Game == null) {
+                pendingSamplerState = samplerState;
+            } else {
+                Game.GraphicsDevice.SamplerStates[0] = samplerState;
+            }
+        }
+
+        public void PopSamplerState() {
+            if(!samplerStateStack.TryPop(out SamplerState samplerState)) {
+                return;
+            }
+            if(Game == null) {
+                pendingSamplerState = samplerState;
+            } else {
+                Game.GraphicsDevice.SamplerStates[0] = samplerState;
+            }
         }
 
         private void World_OnUpdate(GameTime gameTime) {
             UpdateInputs(gameTime);
-            var aspectRatio = GetAspectRatio();
-            _camera?.Update(aspectRatio); /* An entity might need to use orthographic projection information */
+            _camera?.Update(AspectRatio); /* An entity might need to use orthographic projection information */
             Entities.IterateMutable(Entity3D.Update,gameTime);
-            _camera?.Update(aspectRatio);
+            _camera?.Update(AspectRatio);
         }
 
         public void RenderEntities(GameTime gameTime) {
@@ -52,12 +99,7 @@ namespace TwelveEngine.Game3D {
             OnViewMatrixChanged?.Invoke(viewMatrix);
         }
 
-        public EntityManager<Entity3D,World> Entities { get; private set; }
-        private void SetupEntityManager() {
-            Entities = new EntityManager<Entity3D,World>(this);
-        }
-
-        public float GetAspectRatio() => Game.Viewport.AspectRatio;
+        public float AspectRatio => Game.Viewport.AspectRatio;
 
         private void SetNewCamera(Camera3D newCamera) {
             var oldCamera = _camera;
@@ -74,7 +116,6 @@ namespace TwelveEngine.Game3D {
                 FireViewMatrixChanged(Matrix.Identity);
                 return;
             }
-            newCamera.Update(GetAspectRatio());
 
             newCamera.OnProjectionMatrixChanged += FireProjectionMatrixChanged;
             newCamera.OnViewMatrixChanged += FireViewMatrixChanged;
@@ -85,12 +126,6 @@ namespace TwelveEngine.Game3D {
 
         public BufferSet CreateBufferSet<TVertices>(TVertices[] vertices) where TVertices:struct {
             return BufferSet.Create(GraphicsDevice,vertices);
-        }
-
-        protected virtual void ResetGraphicsDeviceState(GraphicsDevice graphicsDevice) {
-            graphicsDevice.Clear(Color.Gray);
-            graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
         }
     }
 }

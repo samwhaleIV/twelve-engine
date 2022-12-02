@@ -76,10 +76,10 @@ namespace TwelveEngine.Game3D.Entity {
             bufferSet = Owner.CreateBufferSet(GetVertices(TopLeft,BottomRight));
             
             effect = new BasicEffect(Game.GraphicsDevice) {
-                TextureEnabled = true
+                TextureEnabled = true,
+                VertexColorEnabled = true,
+                LightingEnabled = false
             };
-
-            effect.VertexColorEnabled = true;
 
             Owner.OnProjectionMatrixChanged += Owner_OnProjectionMatrixChanged;
             Owner.OnViewMatrixChanged += Owner_OnViewMatrixChanged;
@@ -116,13 +116,12 @@ namespace TwelveEngine.Game3D.Entity {
         private void TextureRectangle_OnRender(GameTime gameTime) {
             bufferSet.VertexBuffer.SetData(GetVertices(TopLeft,BottomRight));
             bufferSet.Apply();
-            var oldSampler = effect.GraphicsDevice.SamplerStates[0];
-            effect.GraphicsDevice.SamplerStates[0] = PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap;
+            Owner.PushSamplerState(PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap);
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();
                 effect.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,0,0,bufferSet.VertexCount / 3);
             }
-            effect.GraphicsDevice.SamplerStates[0] = oldSampler;
+            Owner.PopSamplerState();
         }
     }
 }

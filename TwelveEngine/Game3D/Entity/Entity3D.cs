@@ -19,6 +19,9 @@ namespace TwelveEngine.Game3D.Entity {
         public Vector3 Position {
             get => _position;
             set {
+                if(_position == value) {
+                    return;
+                }
                 _position = value;
                 PositionValid = false;
                 WorldMatrixValid = false;
@@ -28,6 +31,9 @@ namespace TwelveEngine.Game3D.Entity {
         public Vector3 Rotation {
             get => _rotation;
             set {
+                if(_rotation == value) {
+                    return;
+                }
                 _rotation = value;
                 RotationValid = false;
                 WorldMatrixValid = false;
@@ -37,6 +43,9 @@ namespace TwelveEngine.Game3D.Entity {
         public Vector3 Scale {
             get => _scale;
             set {
+                if(_scale == value) {
+                    return;
+                }
                 _scale = value;
                 ScaleValid = false;
                 WorldMatrixValid = false;
@@ -55,21 +64,21 @@ namespace TwelveEngine.Game3D.Entity {
             }
         }
 
-        public virtual bool IsVisible() => true;
+        public bool IsVisible { get; set; } = true;
 
         public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
 
         public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
 
         public void PreRender(GameTime gameTime) {
-            if(!IsVisible()) {
+            if(!IsVisible) {
                 return;
             }
             OnPreRender?.Invoke(gameTime);
         }
 
         public void Render(GameTime gameTime) {
-            if(!IsVisible()) {
+            if(!IsVisible) {
                 return;
             }
             OnRender?.Invoke(gameTime);

@@ -13,6 +13,9 @@ namespace TwelveEngine.Game3D {
         public Vector3 Position {
             get => position;
             set {
+                if(position == value) {
+                    return;
+                }
                 position = value;
                 InvalidateViewMatrix();
             }
@@ -21,6 +24,9 @@ namespace TwelveEngine.Game3D {
         public float FieldOfView {
             get => fieldOfView;
             set {
+                if(fieldOfView == value) {
+                    return;
+                }
                 fieldOfView = value;
                 if(Orthographic) {
                     return;
@@ -32,6 +38,9 @@ namespace TwelveEngine.Game3D {
         public float NearPlane {
             get => nearPlane;
             set {
+                if(nearPlane == value) {
+                    return;
+                }
                 nearPlane = value;
                 InvalidateProjectionMatrix();
             }
@@ -40,6 +49,9 @@ namespace TwelveEngine.Game3D {
         public float FarPlane {
             get => farPlane;
             set {
+                if(farPlane == value) {
+                    return;
+                }
                 farPlane = value;
                 InvalidateProjectionMatrix();
             }

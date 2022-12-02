@@ -24,7 +24,7 @@ namespace Elves.Battle.Sprite {
 
         private Vector3 GetPosition(SpritePosition spritePosition,float screenWidth) {
             var position = positionTable[spritePosition];
-            float aspectRatio = sprite.Game.Viewport.AspectRatio;
+            float aspectRatio = sprite.Owner.AspectRatio;
             if(aspectRatio < 1) {
                 position.X = position.X * screenWidth;
             } else {

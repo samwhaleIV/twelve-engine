@@ -14,9 +14,9 @@ namespace Elves.Battle {
 
         public double BackgroundScrollTime { get; set; } = 60d;
 
-        public bool DebugCamera { get; set; } = false;
-
         public BattleScene(string backgroundImage) {
+            ClearColor = Color.Black;
+            SamplerState = SamplerState.PointClamp;
             OnLoad += () => {
                 var camera = new AngleCamera() {
                     NearPlane = 0.1f,
@@ -37,22 +37,10 @@ namespace Elves.Battle {
 
             };
             OnUpdate += gameTime => {
-                UpdateCamera();
                 UpdateBackground(gameTime);
             };
             OnRender += gameTime => {
                 RenderEntities(gameTime);
-            };
-            OnWriteDebug += writer => {
-                if(!DebugCamera) {
-                    return;
-                }
-                writer.ToTopLeft();
-                writer.Write(Camera.Position);
-                if(!(Camera is AngleCamera angleCamera)) {
-                    return;
-                }
-                writer.WriteXY(angleCamera.Yaw,angleCamera.Pitch,"Yaw","Pitch");
             };
         }
 
@@ -61,19 +49,6 @@ namespace Elves.Battle {
             background.SetColors(Color.Red,Color.Purple,Color.Red,Color.Purple);
             double scrollT = gameTime.TotalGameTime.TotalSeconds / BackgroundScrollTime % 1d;
             background.UVOffset = new Vector2((float)scrollT,0f);
-        }
-
-        private void UpdateCamera() {
-            if(DebugCamera && Camera is AngleCamera angleCamera) {
-                angleCamera.UpdateFreeCam(this,0.05f,0.01f);
-            }
-            Camera.Update(Game.Viewport.AspectRatio);
-        }
-
-        protected override void ResetGraphicsDeviceState(GraphicsDevice graphicsDevice) {
-            graphicsDevice.Clear(Color.Black);
-            graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
         }
     }
 }
