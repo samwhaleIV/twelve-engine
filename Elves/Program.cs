@@ -8,6 +8,8 @@ using TwelveEngine;
 namespace Elves {
     public sealed class Program {
 
+        public static GameState GetStartState() => new BattleScene("Backgrounds/checkerboard");
+
         private readonly string saveDirectory;
         private readonly string saveFilePath;
 
@@ -22,6 +24,8 @@ namespace Elves {
         private readonly bool shouldCreateDirectory;
 
         public Program(GameManager game,string saveDirectory,bool shouldCreateDirectory) {
+            Textures.Load(game);
+
             this.shouldCreateDirectory = shouldCreateDirectory;
 
             this.saveDirectory = saveDirectory;
@@ -36,7 +40,7 @@ namespace Elves {
             Logger.AutoFlush = true;
             Logger.Flush();
 
-            game.SetState(new BattleScene("Backgrounds/checkerboard"));
+            game.SetState(new LoadingState(GetStartState()));
         }
 
         private bool notifiedLackOfDirectoryCreationAuthority = false;

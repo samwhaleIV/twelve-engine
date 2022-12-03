@@ -13,18 +13,7 @@ namespace Elves.UI {
         protected GameManager Game => game;
         protected SpriteBatch SpriteBatch => game.SpriteBatch;
 
-        internal void Load(GameManager game) {
-            this.game = game;
-            if(Texture != null) {
-                return;
-            }
-            Texture = game.Content.Load<Texture2D>(PendingTexture);
-            PendingTexture = null;
-        }
-
-        protected string PendingTexture { get; set; } = "UI/nothing";
-
-        protected Texture2D Texture { get; set; }
+        protected Texture2D Texture { get; set; } = Textures.Nothing;
 
         public Rectangle Area {
             get => GetArea();

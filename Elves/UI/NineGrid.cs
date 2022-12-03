@@ -5,11 +5,7 @@ using TwelveEngine.Shell;
 namespace Elves.UI {
     public sealed class NineGrid:UIElement {
 
-        private const string DEFAULT_TEXTURE = "UI/panel";
-
-        public NineGrid() => PendingTexture = DEFAULT_TEXTURE;
-
-        public NineGrid(string textureName) => PendingTexture = textureName;
+        public NineGrid() => Texture = Textures.UIPanel;
 
         public Rectangle Source { get; set; } = new Rectangle(0,85,16,16);
         public int Corner { get; set; } = 4;

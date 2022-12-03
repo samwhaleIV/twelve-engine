@@ -5,41 +5,37 @@ using System.Collections.Generic;
 using System.Text;
 using TwelveEngine.Shell;
 
-namespace Elves.UI {
-    public sealed partial class UVSpriteFont {
+namespace Elves {
+    public sealed class UVSpriteFont {
 
-        private const string TEXTURE_NAME = "UI/font";
+        private readonly int lineHeight, letterSpacing, wordSpacing;
+        private readonly Texture2D texture;
 
-        private const int LINE_HEIGHT = 38;
-        private const int LETTER_SPACING = 1;
-        private const int WORD_SPACING = 4;
+        private readonly Dictionary<char,Rectangle> glyphs;
 
-        private Texture2D fontTexture;
-
-        private string textureName;
-
-        private GameManager game;
-
-        public UVSpriteFont(string textureName = TEXTURE_NAME) {
-            string lowercase = "abcdefghijklmnopqrstuvwxyz";
-            foreach(char character in lowercase) {
-                Glpyhs[character] = Glpyhs[char.ToUpperInvariant(character)];
-            }
-            this.textureName = textureName;
-        }
-        public void Load(GameManager game) {
-            this.game = game;
-            fontTexture = game.Content.Load<Texture2D>(textureName);
-        }
-        public void Begin() {
-            game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+        public UVSpriteFont(Texture2D texture,int lineHeight,int letterSpacing,int wordSpacing,Dictionary<char,Rectangle> glyphs) {
+            this.texture = texture;
+            this.lineHeight = lineHeight;
+            this.letterSpacing = letterSpacing;
+            this.wordSpacing = wordSpacing;
+            this.glyphs = glyphs;
         }
 
         private Rectangle GlyphOrDefault(char character) {
-            if(!Glpyhs.TryGetValue(character,out Rectangle value)) {
+            if(!glyphs.TryGetValue(character,out Rectangle value)) {
                 value = new Rectangle();
             }
             return value;
+        }
+
+        private SpriteBatch spriteBatch = null;
+
+        public void Begin(SpriteBatch spriteBatch) {
+            if(this.spriteBatch != null) {
+                this.spriteBatch.End();
+            }
+            spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            this.spriteBatch = spriteBatch;
         }
 
         private Queue<char[]> words = new Queue<char[]>();
@@ -80,21 +76,25 @@ namespace Elves.UI {
         private int DrawGlpyh(char character,int x,int y,int scale,Color color) {
             Rectangle glyph = GlyphOrDefault(character);
             Rectangle destination = new Rectangle(x,y,glyph.Width*scale,glyph.Height*scale);
-            game.SpriteBatch.Draw(fontTexture,destination,glyph,color);
+            spriteBatch.Draw(texture,destination,glyph,color);
             return glyph.Width;
         }
 
         public void Draw(StringBuilder stringBuilder,Point destination,int scale,Color? color = null,int? maxWidth = null) {
+            if(spriteBatch == null) {
+                return;
+            }
+
             FillWordsQueue(stringBuilder);
 
             int x = destination.X, y = destination.Y;
 
-            int lineHeight = LINE_HEIGHT * scale;
+            int lineHeight = this.lineHeight * scale;
 
             Color glyphColor = color ?? Color.White;
 
-            int wordSpacing = WORD_SPACING * scale;
-            int letterSpacing = LETTER_SPACING * scale;
+            int wordSpacing = this.wordSpacing * scale;
+            int letterSpacing = this.letterSpacing * scale;
 
             foreach(var word in words) {
                 if(maxWidth.HasValue && x + MeasureWordWidth(word,scale,letterSpacing) > maxWidth.Value) {
@@ -113,8 +113,8 @@ namespace Elves.UI {
         public void DrawCentered(StringBuilder stringBuilder,Point center,int scale,Color? color = null) {
             FillWordsQueue(stringBuilder);
 
-            int wordSpacing = WORD_SPACING * scale;
-            int letterSpacing = LETTER_SPACING * scale;
+            int wordSpacing = this.wordSpacing * scale;
+            int letterSpacing = this.letterSpacing * scale;
 
             int totalWidth = 0;
             foreach(var word in words) {
@@ -124,7 +124,7 @@ namespace Elves.UI {
             totalWidth -= wordSpacing;
 
             int x = center.X - totalWidth / 2;
-            int y = center.Y - LINE_HEIGHT * scale / 2;
+            int y = center.Y - lineHeight * scale / 2;
 
             Color glyphColor = color ?? Color.White;
 
@@ -139,7 +139,11 @@ namespace Elves.UI {
         }
         
         public void End() {
-            game.SpriteBatch.End();
+            if(spriteBatch == null) {
+                return;
+            }
+            spriteBatch.End();
+            spriteBatch = null;
         }
     }
 }

@@ -22,12 +22,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\SpritePosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\IUVSequencer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LoadingState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Textures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\GlyphsData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\NineGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />

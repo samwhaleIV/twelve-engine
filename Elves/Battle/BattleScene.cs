@@ -25,13 +25,10 @@ namespace Elves.Battle {
         public UVSpriteFont SpriteFont => spriteFont;
 
         public BattleScene(string backgroundImage) {
-            spriteFont = new UVSpriteFont();
             ClearColor = Color.Black;
             SamplerState = SamplerState.PointClamp;
             var nineGrid = new NineGrid();
             OnLoad += () => {
-                nineGrid.Load(Game);
-                spriteFont.Load(Game);
                 var camera = new AngleCamera() {
                     NearPlane = 0.1f,
                     FarPlane = 20f,
@@ -70,9 +67,9 @@ namespace Elves.Battle {
 
                 Game.SpriteBatch.End();
 
-                SpriteFont.Begin();
+                Fonts.UIFont.Begin(Game.SpriteBatch);
                 SpriteFont.DrawCentered(stringBuilder,Game.Viewport.Bounds.Center,scale,Color.White);
-                SpriteFont.End();
+                Fonts.UIFont.End();
             };
         }
 
