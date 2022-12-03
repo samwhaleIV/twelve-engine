@@ -5,20 +5,20 @@ using System.Collections.Generic;
 using System.Text;
 using TwelveEngine.Shell;
 
-namespace Elves {
+namespace Elves.UI.Font {
     public static partial class Fonts {
 
         public static bool IsLoaded { get; private set; } = false;
 
-        public static UVSpriteFont UIFont { get; private set; }
-        public static UVSpriteFont ClassicFont { get; private set; }
+        public static UVSpriteFont DefaultFont { get; private set; }
+        public static UVSpriteFont RetroFont { get; private set; }
 
         public static void Load() {
             if(IsLoaded) {
                 return;
             }
-            UIFont = new UVSpriteFont(Textures.UIFont,34,1,4,GetUIFontData());
-            ClassicFont = null;//todo
+            DefaultFont = new UVSpriteFont(UITextures.DefaultFont,34,1,4,GetUIFontData());
+            RetroFont = null;//todo
             IsLoaded = true;
         }
     }

@@ -168,7 +168,12 @@ namespace TwelveEngine.Shell {
 
         public void SetState(Func<GameState> stateGenerator) {
             if(HasPendingState || pendingStateGenerator != null) {
-                throw new InvalidOperationException("A GameState has already been queued. Cannot override the previous SetState; Load only one GameState at a time.");
+                /* Recursive loading! Preload all your assets to your heart's content! */
+                pendingStateGenerator = null;
+                _pendingGameState?.Unload();
+                _pendingGameState = stateGenerator.Invoke();
+                _pendingGameState.Load(this);
+                return;
             }
             if(!initialized) {
                 throw new InvalidOperationException("Cannot change GameState until GameManager has loaded all of its own content.");
@@ -181,14 +186,12 @@ namespace TwelveEngine.Shell {
                 return;
             }
 
-            GameState oldState = _gameState, newGameState;
+            GameState oldState = _gameState;
             _gameState = null;
 
             oldState?.Unload();
-            newGameState = stateGenerator.Invoke();
-            newGameState?.Load(this);
-
-            _pendingGameState = newGameState;
+            _pendingGameState = stateGenerator.Invoke();
+            _pendingGameState?.Load(this);
         }
         
         public void SetState(GameState state) => SetState(() => state);

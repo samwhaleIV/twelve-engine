@@ -6,6 +6,7 @@ using Elves.Battle.Sprite.Elves;
 using Elves.UI;
 using System.Text;
 using System;
+using Elves.UI.Font;
 
 namespace Elves.Battle {
     public class BattleScene:World {
@@ -20,9 +21,6 @@ namespace Elves.Battle {
             return Math.Min(Math.Max(screenHeight / 270 - 2,1),MAX_SCALE);
         }
 
-        private readonly UVSpriteFont spriteFont;
-
-        public UVSpriteFont SpriteFont => spriteFont;
 
         public BattleScene(string backgroundImage) {
             ClearColor = Color.Black;
@@ -63,13 +61,14 @@ namespace Elves.Battle {
                 Point halfSize = size / new Point(2);
                 nineGrid.Area = new Rectangle(Game.Viewport.Bounds.Center-halfSize,size);
                 nineGrid.Scale = scale * 4;
-                nineGrid.Draw();
+                nineGrid.Draw(Game.SpriteBatch);
 
                 Game.SpriteBatch.End();
 
-                Fonts.UIFont.Begin(Game.SpriteBatch);
-                SpriteFont.DrawCentered(stringBuilder,Game.Viewport.Bounds.Center,scale,Color.White);
-                Fonts.UIFont.End();
+                var font = Fonts.DefaultFont;
+                font.Begin(Game.SpriteBatch);
+                font.DrawCentered(stringBuilder,Game.Viewport.Bounds.Center,scale,Color.White);
+                font.End();
             };
         }
 

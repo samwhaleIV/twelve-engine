@@ -23,16 +23,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\IUVSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoadingState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SaveData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Fonts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\FontData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Save\SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SaveKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Textures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\GlyphsData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Save\SaveKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\UITextures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\NineGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\UVSpriteFont.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\UVSpriteFont.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Save\" />
   </ItemGroup>
 </Project>

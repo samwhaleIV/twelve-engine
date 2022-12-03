@@ -8,12 +8,7 @@ using TwelveEngine.Shell;
 namespace Elves.UI {
     public class UIElement {
 
-        private GameManager game;
-
-        protected GameManager Game => game;
-        protected SpriteBatch SpriteBatch => game.SpriteBatch;
-
-        protected Texture2D Texture { get; set; } = Textures.Nothing;
+        protected Texture2D Texture { get; set; } = UITextures.Nothing;
 
         public Rectangle Area {
             get => GetArea();
@@ -29,11 +24,11 @@ namespace Elves.UI {
             _area = rectangle;
         }
 
-        public virtual void Draw() {
+        public virtual void Draw(SpriteBatch spriteBatch) {
             if(Texture == null) {
                 return;
             }
-            SpriteBatch.Draw(Texture,Area,Color.White);
+            spriteBatch.Draw(Texture,Area,Color.White);
         }
     }
 }

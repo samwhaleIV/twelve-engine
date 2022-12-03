@@ -3,9 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TwelveEngine.Shell;
 
-namespace Elves {
+namespace Elves.UI.Font {
     public sealed class UVSpriteFont {
 
         private readonly int lineHeight, letterSpacing, wordSpacing;

@@ -4,6 +4,8 @@ using TwelveEngine.Shell;
 using Elves.Battle;
 using System.IO;
 using TwelveEngine;
+using Elves.UI.Font;
+using Elves.UI;
 
 namespace Elves {
     public sealed class Program {
@@ -24,8 +26,6 @@ namespace Elves {
         private readonly bool shouldCreateDirectory;
 
         public Program(GameManager game,string saveDirectory,bool shouldCreateDirectory) {
-            Textures.Load(game);
-
             this.shouldCreateDirectory = shouldCreateDirectory;
 
             this.saveDirectory = saveDirectory;
@@ -40,7 +40,10 @@ namespace Elves {
             Logger.AutoFlush = true;
             Logger.Flush();
 
-            game.SetState(new LoadingState(GetStartState()));
+            UITextures.Load(game);
+            Fonts.Load();
+
+            game.SetState(GetStartState);
         }
 
         private bool notifiedLackOfDirectoryCreationAuthority = false;

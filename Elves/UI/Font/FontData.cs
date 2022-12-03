@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elves {
+namespace Elves.UI.Font {
     public static partial class Fonts {
 
         private static Dictionary<char,Rectangle> GetUIFontData() => new Dictionary<char,Rectangle>() {
