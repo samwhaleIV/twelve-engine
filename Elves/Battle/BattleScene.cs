@@ -3,16 +3,24 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D;
 using TwelveEngine.Game3D.Entity.Types;
 using Elves.Battle.Sprite.Elves;
+using Elves.UI;
+using System.Text;
 
 namespace Elves.Battle {
     public class BattleScene:World {
 
         public double BackgroundScrollTime { get; set; } = 60d;
 
+        private readonly UVSpriteFont spriteFont;
+
+        public UVSpriteFont SpriteFont => spriteFont;
+
         public BattleScene(string backgroundImage) {
+            spriteFont = new UVSpriteFont();
             ClearColor = Color.Black;
             SamplerState = SamplerState.PointClamp;
             OnLoad += () => {
+                spriteFont.Load(Game);
                 var camera = new AngleCamera() {
                     NearPlane = 0.1f,
                     FarPlane = 20f,
@@ -35,8 +43,12 @@ namespace Elves.Battle {
             OnUpdate += gameTime => {
                 UpdateBackground(gameTime);
             };
+            var stringBuilder = new StringBuilder("Hello, world!");
             OnRender += gameTime => {
                 RenderEntities(gameTime);
+                SpriteFont.Begin();
+                SpriteFont.DrawCentered(stringBuilder,Game.Viewport.Bounds.Center,2,Color.White);
+                SpriteFont.End();
             };
         }
 

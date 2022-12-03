@@ -20,7 +20,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\PositionController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\FrameSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\SpritePosition.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\UI\BattleUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\IUVSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveData.cs" />
@@ -28,5 +27,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\GlyphsData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\UVSpriteFont.cs" />
   </ItemGroup>
 </Project>

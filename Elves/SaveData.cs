@@ -6,7 +6,7 @@ using System.Text;
 namespace Elves {
     public sealed class SaveData {
 
-        private readonly Dictionary<string,SaveValue> dataTable = new Dictionary<string,SaveValue>();
+        private readonly Dictionary<SaveKey,SaveValue> dataTable = new Dictionary<SaveKey,SaveValue>();
         public int KeyCount => dataTable.Count;
 
         private enum SaveValueType:int { String, Int, Flag, Bool }
@@ -62,7 +62,7 @@ namespace Elves {
         private void Export(BinaryWriter binaryWriter) {
             binaryWriter.Write(dataTable.Count);
             foreach(var item in dataTable) {
-                binaryWriter.Write(item.Key);
+                binaryWriter.Write((int)item.Key);
                 var valueType = item.Value.Type;
                 binaryWriter.Write((int)valueType);
                 switch(valueType) {
@@ -85,7 +85,7 @@ namespace Elves {
         private void Import(BinaryReader reader) {
             int itemCount = reader.ReadInt32();
             for(int i = 0;i<itemCount;i++) {
-                var key = reader.ReadString();
+                var key = (SaveKey)reader.ReadInt32();
                 var valueType = (SaveValueType)reader.ReadInt32();
                 switch(valueType) {
                     case SaveValueType.String:
@@ -105,7 +105,7 @@ namespace Elves {
             }
         }
 
-        public bool TryGetString(string key,out string value,string defaultValue = null) {
+        public bool TryGetString(SaveKey key,out string value,string defaultValue = null) {
             if(!dataTable.TryGetValue(key,out var saveValue)) {
                 value = defaultValue;
                 return false;
@@ -118,7 +118,7 @@ namespace Elves {
             return true;
         }
 
-        public bool TryGetInt(string key,out int value,int defaultValue = 0) {
+        public bool TryGetInt(SaveKey key,out int value,int defaultValue = 0) {
             if(!dataTable.TryGetValue(key,out var saveValue)) {
                 value = defaultValue;
                 return false;
@@ -131,7 +131,7 @@ namespace Elves {
             return true;
         }
 
-        public bool TryGetBool(string key,out bool value,bool defaultValue = false) {
+        public bool TryGetBool(SaveKey key,out bool value,bool defaultValue = false) {
             if(!dataTable.TryGetValue(key,out var saveValue)) {
                 value = defaultValue;
                 return false;
@@ -144,27 +144,27 @@ namespace Elves {
             return true;
         }
 
-        public bool HasKey(string key) {
+        public bool HasKey(SaveKey key) {
             return dataTable.ContainsKey(key);
         }
 
-        public void RemoveKey(string key) {
+        public void RemoveKey(SaveKey key) {
             dataTable.Remove(key);
         }
 
-        public void SetFlag(string key) {
+        public void SetFlag(SaveKey key) {
             dataTable[key] = new SaveValue(SaveValueType.Flag,null);
         }
 
-        public void SetValue(string key,string value) {
+        public void SetValue(SaveKey key,string value) {
             dataTable.Add(key,new SaveValue(SaveValueType.String,value));
         }
 
-        public void SetValue(string key,int value) {
+        public void SetValue(SaveKey key,int value) {
             dataTable.Add(key,new SaveValue(SaveValueType.Int,value));
         }
 
-        public void SetValue(string key,bool value) {
+        public void SetValue(SaveKey key,bool value) {
             dataTable.Add(key,new SaveValue(SaveValueType.Bool,value));
         }
     }
