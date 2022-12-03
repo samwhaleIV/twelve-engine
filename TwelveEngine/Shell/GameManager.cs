@@ -8,17 +8,30 @@ using TwelveEngine.Shell.Automation;
 using TwelveEngine.Shell.States;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Config;
+using System.Text;
 
 namespace TwelveEngine.Shell {
     public sealed partial class GameManager:Game {
 
-        public GameManager() {
+        public GameManager(
+            bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool mouseVisible = true
+        ) {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
 
-            Content.RootDirectory = Constants.ContentDirectory;
-            IsMouseVisible = true;
+            Logger.WriteBooleanSet("Context settings",new string[] {
+                "Fullscreen","HardwareModeSwitch","VerticalSync","MouseVisible"
+            },new bool[] {
+                fullscreen, hardwareModeSwitch, verticalSync, mouseVisible
+            });
 
-            graphicsDeviceManager.SynchronizeWithVerticalRetrace = true;
+            Content.RootDirectory = Constants.ContentDirectory;
+            IsMouseVisible = mouseVisible;
+
+            graphicsDeviceManager.SynchronizeWithVerticalRetrace = verticalSync;
+
+            graphicsDeviceManager.IsFullScreen = fullscreen;
+            graphicsDeviceManager.HardwareModeSwitch = hardwareModeSwitch;
+
             IsFixedTimeStep = false;
 
             vcrDisplay = new VCRDisplay(this,automationAgent);

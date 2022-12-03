@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace TwelveEngine {
 
@@ -29,8 +30,7 @@ namespace TwelveEngine {
             if(logFileExists) {
                 streamWriter.WriteLine();
             }
-            WriteLine("======================================== Twelve Engine Log ========================================");
-            WriteLine($"Game started, current time (UTC): {DateTime.UtcNow}");
+            WriteLine($"Logger started, current time (UTC): {DateTime.UtcNow}");
         }
 #if DEBUG
         [DllImport("kernel32.dll",SetLastError = true)]
@@ -61,6 +61,26 @@ namespace TwelveEngine {
             if(AutoFlush) {
                 streamWriter.Flush();
             }
+        }
+
+        public static void WriteBooleanSet(string label,string[] names,bool[] values) {
+            if(names.Length != values.Length) {
+                throw new ArgumentException("Bad boolean set, names and values must be equal in length.");
+            }
+            if(names.Length == 0) {
+                return;
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append(label);
+            stringBuilder.Append(": ");
+            for(int i = 0;i<names.Length;i++) {
+                stringBuilder.Append(names[i]);
+                stringBuilder.Append(" = ");
+                stringBuilder.Append(values[i] ? "Yes" : "No");
+                stringBuilder.Append(" | ");
+            }
+            stringBuilder.Remove(stringBuilder.Length - 3, 3);
+            WriteLine(stringBuilder.ToString());
         }
 
         public static void Flush() {

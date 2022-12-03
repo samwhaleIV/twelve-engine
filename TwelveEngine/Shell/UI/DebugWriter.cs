@@ -24,7 +24,7 @@ namespace TwelveEngine.Shell.UI {
         }
 
         private static int GetStartYBottom(Viewport viewport,int padding,int lineHeight) {
-            return viewport.Height - padding - lineHeight;
+            return viewport.Height - lineHeight;
         }
 
         private void Begin(Corner corner,Vector2? offset = null,Color? color = null) {
