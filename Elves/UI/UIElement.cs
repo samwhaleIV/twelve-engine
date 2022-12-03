@@ -8,17 +8,23 @@ using TwelveEngine.Shell;
 namespace Elves.UI {
     public class UIElement {
 
-        private Texture2D _texture = null;
+        private GameManager game;
 
-        public void SetTexture(GameManager game,string textureName = "UI/nothing") {
-            _texture = game.Content.Load<Texture2D>(textureName);
+        protected GameManager Game => game;
+        protected SpriteBatch SpriteBatch => game.SpriteBatch;
+
+        internal void Load(GameManager game) {
+            this.game = game;
+            if(Texture != null) {
+                return;
+            }
+            Texture = game.Content.Load<Texture2D>(PendingTexture);
+            PendingTexture = null;
         }
 
-        public void SetTexture(Texture2D texture) {
-            _texture = texture;
-        }
+        protected string PendingTexture { get; set; } = "UI/nothing";
 
-        protected Texture2D Texture => _texture;
+        protected Texture2D Texture { get; set; }
 
         public Rectangle Area {
             get => GetArea();
@@ -34,11 +40,11 @@ namespace Elves.UI {
             _area = rectangle;
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch) {
-            if(_texture == null) {
+        public virtual void Draw() {
+            if(Texture == null) {
                 return;
             }
-            spriteBatch.Draw(_texture,Area,Color.White);
+            SpriteBatch.Draw(Texture,Area,Color.White);
         }
     }
 }

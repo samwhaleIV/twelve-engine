@@ -5,11 +5,20 @@ using TwelveEngine.Game3D.Entity.Types;
 using Elves.Battle.Sprite.Elves;
 using Elves.UI;
 using System.Text;
+using System;
 
 namespace Elves.Battle {
     public class BattleScene:World {
 
         public double BackgroundScrollTime { get; set; } = 60d;
+
+        private const int MAX_SCALE = 8;
+
+        private int GetUIScale() {
+            int screenHeight = Game.Viewport.Height;
+            /* 2160 (4K) / 8 = 270 */
+            return Math.Min(Math.Max(screenHeight / 270 - 2,1),MAX_SCALE);
+        }
 
         private readonly UVSpriteFont spriteFont;
 
@@ -19,7 +28,9 @@ namespace Elves.Battle {
             spriteFont = new UVSpriteFont();
             ClearColor = Color.Black;
             SamplerState = SamplerState.PointClamp;
+            var nineGrid = new NineGrid();
             OnLoad += () => {
+                nineGrid.Load(Game);
                 spriteFont.Load(Game);
                 var camera = new AngleCamera() {
                     NearPlane = 0.1f,
@@ -46,8 +57,21 @@ namespace Elves.Battle {
             var stringBuilder = new StringBuilder("Hello, world!");
             OnRender += gameTime => {
                 RenderEntities(gameTime);
+
+                Game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+
+                int scale = GetUIScale();
+
+                Point size = new Point(250,100) * new Point(scale);
+                Point halfSize = size / new Point(2);
+                nineGrid.Area = new Rectangle(Game.Viewport.Bounds.Center-halfSize,size);
+                nineGrid.Scale = scale * 4;
+                nineGrid.Draw();
+
+                Game.SpriteBatch.End();
+
                 SpriteFont.Begin();
-                SpriteFont.DrawCentered(stringBuilder,Game.Viewport.Bounds.Center,2,Color.White);
+                SpriteFont.DrawCentered(stringBuilder,Game.Viewport.Bounds.Center,scale,Color.White);
                 SpriteFont.End();
             };
         }

@@ -29,6 +29,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\GlyphsData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\NineGrid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UVSpriteFont.cs" />
   </ItemGroup>
 </Project>
