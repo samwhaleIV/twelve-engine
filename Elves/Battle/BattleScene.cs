@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D;
 using TwelveEngine.Game3D.Entity.Types;
+using Elves.Battle.Sprite.Elves;
 
 namespace Elves.Battle {
     public class BattleScene:World {
@@ -27,8 +28,9 @@ namespace Elves.Battle {
                     Billboard = true,
                     Scale = new Vector3(1f)
                 };
-                Entities.Add(backgroundEntity);
 
+                Entities.Add(backgroundEntity);
+                Entities.Add(new HarmlessElf());
             };
             OnUpdate += gameTime => {
                 UpdateBackground(gameTime);

@@ -16,9 +16,9 @@ namespace Elves.Battle.Sprite {
             positionController.SetSpritePosition(spritePosition,callback);
         }
 
-        public BattleSprite(string textureName,FrameSet[] frames,int baseHeight) :base(textureName) {
+        public BattleSprite(string textureName,FrameSet[] frameSets,int baseHeight) :base(textureName) {
 
-            frameController = new FrameController(this,frames,baseHeight);
+            frameController = new FrameController(this,frameSets,baseHeight);
             positionController = new PositionController(this);
 
             OnLoad += () => {

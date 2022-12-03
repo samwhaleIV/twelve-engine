@@ -15,7 +15,10 @@ namespace Elves.Battle.Sprite.Animation {
 
         public readonly AnimationMode AnimationMode;
 
-        private FrameSet(int ID,Rectangle[] frames,TimeSpan frameLength,AnimationMode animationMode) {
+        public Rectangle AreaOrDefault => FrameCount <= 0 ? Rectangle.Empty : Frames[0];
+
+        private 
+            FrameSet(int ID,Rectangle[] frames,TimeSpan frameLength,AnimationMode animationMode) {
             this.ID = ID;
             Frames = frames;
             FrameLength = frameLength;

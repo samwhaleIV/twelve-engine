@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using TwelveEngine;
 
 namespace Elves.Battle.Sprite.Animation {
     public sealed class FrameController {
@@ -19,23 +20,37 @@ namespace Elves.Battle.Sprite.Animation {
         private readonly Dictionary<int,FrameSet> frameSets = new Dictionary<int,FrameSet>();
 
         public FrameController(BattleSprite battleSprite,FrameSet[] frameSets,int baseHeight) {
+            if(frameSets == null) {
+                frameSets = new FrameSet[0];
+            }
             sprite = battleSprite;
             foreach(FrameSet frameSet in frameSets) {
                 this.frameSets[frameSet.ID] = frameSet;
             }
-            Rectangle idleArea; /* This is where we get the base sprite size from. Use a larger size and smaller baseHeight to dial your animations in! */
-            int idleID = (int)AnimationType.Static;
-            if(this.frameSets.TryGetValue(idleID,out var idleFrame)) {
-                idleArea = idleFrame.Frames[0];
-                defaultFrameSet = idleFrame;
+
+            FrameSet staticFrameSet, idleFrameSet;
+            bool hasStaticFrameSet = this.frameSets.TryGetValue((int)AnimationType.Static,out staticFrameSet);
+            bool hasIdleFrameSet = this.frameSets.TryGetValue((int)AnimationType.Idle,out idleFrameSet);
+
+            Rectangle defaultFrameArea;
+            if(!hasStaticFrameSet && !hasIdleFrameSet) {
+                defaultFrameArea = new Rectangle(0,0,baseHeight,baseHeight);
+                defaultFrameSet = FrameSet.CreateStatic(AnimationType.Static,defaultFrameArea);
+                Logger.WriteLine($"Battle sprite for \"{sprite.Name}\" is missing their frame sets! Resorting to an (ugly) fallback!");
+            } else if(hasStaticFrameSet && hasIdleFrameSet) {
+                defaultFrameArea = staticFrameSet.AreaOrDefault;
+                defaultFrameSet = idleFrameSet;
+            } else if(hasStaticFrameSet) {
+                defaultFrameArea = staticFrameSet.AreaOrDefault;
+                defaultFrameSet = staticFrameSet;
             } else {
-                idleArea = new Rectangle(0,0,baseHeight,baseHeight);
-                var spriteFrame = FrameSet.CreateStatic(idleID,idleArea);
-                defaultFrameSet = spriteFrame;
-                this.frameSets[idleID] = spriteFrame;
+                defaultFrameArea = idleFrameSet.AreaOrDefault;
+                defaultFrameSet = idleFrameSet;
             }
-            frameWidth = idleArea.Width;
-            frameHeight = idleArea.Height;
+
+            frameWidth = defaultFrameArea.Width;
+            frameHeight = defaultFrameArea.Height;
+
             currentFrameSet = defaultFrameSet;
         }
 
@@ -67,7 +82,7 @@ namespace Elves.Battle.Sprite.Animation {
         private readonly Queue<(FrameSet FrameSet, Action Callback)> animationQueue = new Queue<(FrameSet FrameSet, Action Callback)>();
 
         private Rectangle FilterSpriteAreaLoopCount(TimeSpan now,int loopCount) {
-            double t = (animationStart - now) / currentFrameSet.AnimationLength;
+            double t = (now - animationStart) / currentFrameSet.AnimationLength;
             double tReal = t;
             bool atEnd = t >= loopCount;
             t = Math.Max(0,t) % 1;
@@ -83,7 +98,7 @@ namespace Elves.Battle.Sprite.Animation {
 
         private Rectangle FilterSpriteAreaLoop(TimeSpan now) {
             /* A loop is immediately terminated, unlike loop count. It is presumed that n-less loops are idle animations. */
-            double t = (animationStart - now) / currentFrameSet.AnimationLength;
+            double t = (now - animationStart) / currentFrameSet.AnimationLength;
             t = Math.Max(0,t) % 1;
             int frameIndex = (int)Math.Floor(currentFrameSet.FrameCount * t);
             if(animationQueue.Count > 0) {
