@@ -63,7 +63,7 @@ namespace Elves.Battle.Sprite {
         }
 
         public void UpdateScreenPosition(GameTime gameTime) {
-            Vector2 screenSize = sprite.Owner.Camera.OrthographicSize;
+            Vector2 screenSize = sprite.Owner.Camera.OrthographicArea.Size;
             float scale = screenSize.Y;
             sprite.Scale = new Vector3(scale,scale,0) * (1f - SCREEN_EDGE_MARGIN);
             if(!positionAnimating) {

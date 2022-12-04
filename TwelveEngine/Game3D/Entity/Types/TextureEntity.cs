@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Game3D.Entity.Types {
     public class TextureEntity:TextureRectangle {
@@ -7,9 +8,32 @@ namespace TwelveEngine.Game3D.Entity.Types {
             OnLoad += TextureEntity_OnLoad;
         }
 
+        private Texture2D pendingTexture = null;
+
         public TextureEntity(string textureName) {
             TextureName = textureName;
             BindEvents();
+        }
+
+        public TextureEntity(Texture2D texture) {
+            pendingTexture = texture;
+            BindEvents();
+        }
+
+        public void SetUVArea(int x,int y,int width,int height) {
+            SetUVArea(new Rectangle(x,y,width,height));
+        }
+
+        public void SetUVArea(Rectangle textureArea) {
+            var texture = Texture ?? pendingTexture;
+            if(texture == null) {
+                UVTopLeft = Vector2.Zero;
+                UVBottomRight = Vector2.Zero;
+                return;
+            }
+            float textureWidth = texture.Width, textureHeight = texture.Height;
+            UVTopLeft = new Vector2(textureArea.X / textureWidth,textureArea.Y / textureHeight);
+            UVBottomRight = new Vector2(textureArea.Right / textureWidth,textureArea.Bottom / textureHeight);
         }
 
         public TextureEntity() => BindEvents();
@@ -26,7 +50,12 @@ namespace TwelveEngine.Game3D.Entity.Types {
         }
 
         private void TextureEntity_OnLoad() {
-            Texture = Game.Content.Load<Texture2D>(TextureName);
+            if(_textureName != null) {
+                Texture = Game.Content.Load<Texture2D>(TextureName);
+            } else if(pendingTexture != null) {
+                Texture = pendingTexture;
+                pendingTexture = null;
+            }
         }
     }
 }

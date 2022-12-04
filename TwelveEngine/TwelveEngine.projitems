@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TypeParser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
     <Compile Include="..\TwelveEngine\Game2D\PhysicsGrid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />

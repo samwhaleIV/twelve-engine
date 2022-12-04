@@ -7,10 +7,10 @@ namespace TwelveEngine.Game3D.Entity {
         public ModelBase() {
             OnLoad += ModelBase_OnLoad;
             OnUnload += ModelBase_OnUnload;
-            OnUpdate += ModelBase_OnUpdate;
+            OnRender += ModelBase_OnRender;
         }
 
-        private void ModelBase_OnUpdate(GameTime gameTime) {
+        private void ModelBase_OnRender(GameTime gameTime) {
             UpdateWorldMatrix(ApplyWorldMatrix);
         }
 

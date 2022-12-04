@@ -54,20 +54,8 @@ namespace Elves.Battle.Sprite.Animation {
             currentFrameSet = defaultFrameSet;
         }
 
-        private void SetUVArea(Rectangle area) {
-            var texture = sprite.Texture;
-            sprite.UVTopLeft = new Vector2(
-                (float)area.X / texture.Width,
-                (float)area.Y / texture.Height
-            );
-            sprite.UVBottomRight = new Vector2(
-                (float)area.Right / texture.Width,
-                (float)area.Bottom / texture.Height
-            );
-        }
-
         public void UpdateUVArea(GameTime gameTime) {
-            SetUVArea(GetSpriteArea(gameTime));
+            sprite.SetUVArea(GetSpriteArea(gameTime));
         }
 
         private void ClearAnimation() {

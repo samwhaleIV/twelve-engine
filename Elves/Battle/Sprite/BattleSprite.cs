@@ -16,24 +16,31 @@ namespace Elves.Battle.Sprite {
             positionController.SetSpritePosition(spritePosition,callback);
         }
 
+        private readonly int baseHeight;
+
         public BattleSprite(string textureName,FrameSet[] frameSets,int baseHeight) :base(textureName) {
+            this.baseHeight = baseHeight;
 
             frameController = new FrameController(this,frameSets,baseHeight);
             positionController = new PositionController(this);
 
-            OnLoad += () => {
-                float baseSize = baseHeight;
-                float width = frameController.Width / baseSize, height = frameController.Height / baseSize;
-                float halfWidth = width * 0.5f, halfHeight = height * 0.5f;
-                Vector3 baseSizeOffset = new Vector3(0f,(1f-height)*-0.5f,0f);
-                TopLeft = new Vector3(-halfWidth,halfHeight,0f) + baseSizeOffset;
-                BottomRight = new Vector3(halfWidth,-halfHeight,0f) + baseSizeOffset;
-            };
-
-            OnUpdate += gameTime => {
-                positionController.UpdateScreenPosition(gameTime);
-                frameController.UpdateUVArea(gameTime);
-            };
+            OnLoad += BattleSprite_OnLoad;
+            OnUpdate +=BattleSprite_OnUpdate;
         }
+
+        private void BattleSprite_OnUpdate(GameTime gameTime) {
+            positionController.UpdateScreenPosition(gameTime);
+            frameController.UpdateUVArea(gameTime);
+        }
+
+        private void BattleSprite_OnLoad() {
+            float baseSize = baseHeight;
+            float width = frameController.Width / baseSize, height = frameController.Height / baseSize;
+            float halfWidth = width * 0.5f, halfHeight = height * 0.5f;
+            Vector3 baseSizeOffset = new Vector3(0f,(1f-height)*-0.5f,0f);
+            TopLeft = new Vector3(-halfWidth,halfHeight,0f) + baseSizeOffset;
+            BottomRight = new Vector3(halfWidth,-halfHeight,0f) + baseSizeOffset;
+        }
+
     }
 }

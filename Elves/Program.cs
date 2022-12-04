@@ -10,7 +10,7 @@ using Elves.UI;
 namespace Elves {
     public sealed class Program {
 
-        public static GameState GetStartState() => new BattleScene("Backgrounds/checkerboard");
+        public static GameState GetStartState() => new MainMenu();
 
         private readonly string saveDirectory;
         private readonly string saveFilePath;

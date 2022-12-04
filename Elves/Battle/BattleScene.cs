@@ -9,46 +9,20 @@ using System;
 using Elves.UI.Font;
 
 namespace Elves.Battle {
-    public class BattleScene:World {
+    public class BattleScene:OrthoBackgroundState {
 
-        public double BackgroundScrollTime { get; set; } = 60d;
+        public BattleScene(string backgroundImage):base(backgroundImage) {
 
-        private const int MAX_SCALE = 8;
+            ScrollingBackground = true;
 
-        private int GetUIScale() {
-            int screenHeight = Game.Viewport.Height;
-            /* 2160 (4K) / 8 = 270 */
-            return Math.Min(Math.Max(screenHeight / 270 - 2,1),MAX_SCALE);
-        }
+            SetBackgroundColors(Color.Red,Color.Purple,Color.Red,Color.Purple);
 
-
-        public BattleScene(string backgroundImage) {
-            ClearColor = Color.Black;
-            SamplerState = SamplerState.PointClamp;
             var nineGrid = new NineGrid();
-            OnLoad += () => {
-                var camera = new AngleCamera() {
-                    NearPlane = 0.1f,
-                    FarPlane = 20f,
-                    FieldOfView = 75f,
-                    Orthographic = true,
-                    Angle = new Vector2(0f,180f),
-                    Position = new Vector3(0f,0f,10f)
-                };
-                Camera = camera;
-                var backgroundEntity = new TextureEntity(backgroundImage) {
-                    Name = "ScrollingBackground",
-                    PixelSmoothing = true,
-                    Billboard = true,
-                    Scale = new Vector3(1f)
-                };
 
-                Entities.Add(backgroundEntity);
+            OnLoad += () => {
                 Entities.Add(new HarmlessElf());
             };
-            OnUpdate += gameTime => {
-                UpdateBackground(gameTime);
-            };
+
             var stringBuilder = new StringBuilder("Hello, world!");
             OnRender += gameTime => {
                 RenderEntities(gameTime);
@@ -70,13 +44,6 @@ namespace Elves.Battle {
                 font.DrawCentered(stringBuilder,Game.Viewport.Bounds.Center,scale,Color.White);
                 font.End();
             };
-        }
-
-        private void UpdateBackground(GameTime gameTime) {
-            TextureEntity background = Entities.Get<TextureEntity>("ScrollingBackground");
-            background.SetColors(Color.Red,Color.Purple,Color.Red,Color.Purple);
-            double scrollT = gameTime.TotalGameTime.TotalSeconds / BackgroundScrollTime % 1d;
-            background.UVOffset = new Vector2((float)scrollT,0f);
         }
     }
 }

@@ -9,6 +9,7 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Screenspace3DSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Elves\HarmlessElf.cs" />
@@ -22,9 +23,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\SpritePosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\IUVSequencer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LoadingState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Fonts.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\FontData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\TwelvenFontData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Save\SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScene.cs" />

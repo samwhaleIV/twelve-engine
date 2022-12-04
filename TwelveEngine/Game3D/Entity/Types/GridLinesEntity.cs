@@ -21,16 +21,13 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
             OnLoad += GridLinesEntity_OnLoad;
             OnUnload += GridLinesEntity_OnUnload;
-            OnUpdate += GridLinesEntity_OnUpdate;
             OnRender += GridLinesEntity_OnRender;
         }
 
-        private void GridLinesEntity_OnUpdate(GameTime gameTime) {
-            UpdateWorldMatrix(worldMatrix => effect.World = worldMatrix);
-        }
         private void UpdateEffectViewMatrix(Matrix viewMatrix) {
             effect.View = viewMatrix;
         }
+
         private void UpdateEffectProjectionMatrix(Matrix projectionMatrix) {
             effect.Projection = projectionMatrix;
         }
@@ -63,7 +60,10 @@ namespace TwelveEngine.Game3D.Entity.Types {
             bufferSet = null;
         }
 
+        private void SetEffectWorldMatrix(Matrix matrix) => effect.World = matrix;
+
         private void GridLinesEntity_OnRender(GameTime gameTime) {
+            UpdateWorldMatrix(SetEffectWorldMatrix);
             bufferSet.Apply();
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();

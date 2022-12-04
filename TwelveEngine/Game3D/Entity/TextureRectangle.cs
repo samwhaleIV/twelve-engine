@@ -7,7 +7,7 @@ namespace TwelveEngine.Game3D.Entity {
         private Texture2D _texture;
         public Texture2D Texture {
             get => _texture;
-            protected set {
+            set {
                 if(_texture == value) {
                     return;
                 }
@@ -22,9 +22,7 @@ namespace TwelveEngine.Game3D.Entity {
         public Vector3 BottomRight { get; set; } = new Vector3(0.5f,-0.5f,0f);
 
         public TextureRectangle() {
-            OnUpdate += TextureRectangle_OnUpdate;
             OnRender += TextureRectangle_OnRender;
-
             OnLoad += TextureRectangle_OnLoad;
             OnUnload += TextureRectangle_OnUnload;
         }
@@ -45,6 +43,16 @@ namespace TwelveEngine.Game3D.Entity {
             BottomRightColor = bottomRight;
         }
 
+        public void SetColors(Color[] colors) {
+            if(colors.Length != 4) {
+                return;
+            }
+            TopLeftColor = colors[0];
+            TopRightColor = colors[1];
+            BottomLeftColor = colors[2];
+            BottomRightColor = colors[3];
+        }
+
         public Vector2 UVTopLeft = Vector2.Zero;
         public Vector2 UVBottomRight = Vector2.One;
 
@@ -57,6 +65,11 @@ namespace TwelveEngine.Game3D.Entity {
 
         public Color Color {
             set => SetColor(value);
+        }
+
+        public void SetUVArea(Rectangle textureArea,float textureWidth,float textureHeight) {
+            UVTopLeft = new Vector2(textureArea.X / textureWidth,textureArea.Y / textureHeight);
+            UVBottomRight = new Vector2(textureArea.Right / textureWidth,textureArea.Bottom / textureHeight);
         }
 
         private VertexPositionColorTexture[] GetVertices(Vector3 start,Vector3 end) {
@@ -87,10 +100,6 @@ namespace TwelveEngine.Game3D.Entity {
             effect.Projection = Owner.ProjectionMatrix;
         }
 
-        private void TextureRectangle_OnUpdate(GameTime gameTime) {
-            UpdateWorldMatrix(matrix => effect.World = matrix);
-        }
-
         private void Owner_OnViewMatrixChanged(Matrix viewMatrix) {
             effect.View = viewMatrix;
         }
@@ -112,10 +121,16 @@ namespace TwelveEngine.Game3D.Entity {
 
         public bool PixelSmoothing { get; set; } = false;
 
+        private void SetEffectWorldMatrix(Matrix matrix) => effect.World = matrix;
+
+        public float Alpha { get; set; } = 1f;
+
         private void TextureRectangle_OnRender(GameTime gameTime) {
+            UpdateWorldMatrix(SetEffectWorldMatrix);
             bufferSet.VertexBuffer.SetData(GetVertices(TopLeft,BottomRight));
             bufferSet.Apply();
             Owner.PushSamplerState(PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap);
+            effect.Alpha = Alpha;
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();
                 effect.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,0,0,bufferSet.VertexCount / 3);
