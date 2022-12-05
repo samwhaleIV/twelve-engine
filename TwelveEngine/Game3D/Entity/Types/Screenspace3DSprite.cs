@@ -1,11 +1,7 @@
-﻿using TwelveEngine.Game3D.Entity.Types;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine;
-using Elves.Battle.Sprite.Animation;
-using TwelveEngine.Game3D;
 
-namespace Elves {
+namespace TwelveEngine.Game3D.Entity.Types {
     public class Screenspace3DSprite:TextureEntity {
 
         public Screenspace3DSprite() => Initialize();
@@ -17,7 +13,6 @@ namespace Elves {
         public Rectangle TextureSource { get; set; }
 
         private void Initialize() {
-            Billboard = true;
             OnPreRender += Screenspace3DSprite_OnPreRender;
         }
 
@@ -29,13 +24,13 @@ namespace Elves {
 
             Vector2 scale = orthoArea.Size / viewportSize;
 
-            Scale = new Vector3(Area.Size * scale,Scale.Z);
+            Scale = new Vector3(Area.Size * scale,1f);
 
             TopLeft = new Vector3(0f,0f,0f);
             BottomRight = new Vector3(1f,-1f,0f);
 
             var position = orthoArea.TopLeft + new Vector2(0f,orthoArea.Height) + new Vector2(Area.X,-Area.Y) * scale;
-            Position = new Vector3(position,Scale.Z);
+            Position = new Vector3(position,Position.Z);
         }
     }
 }

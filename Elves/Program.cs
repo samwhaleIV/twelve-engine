@@ -6,11 +6,12 @@ using System.IO;
 using TwelveEngine;
 using Elves.UI.Font;
 using Elves.UI;
+using Elves.Menu;
 
 namespace Elves {
     public sealed class Program {
 
-        public static GameState GetStartState() => new MainMenu();
+        public static GameState GetStartState() => new MainMenu(debug3D: false);
 
         private readonly string saveDirectory;
         private readonly string saveFilePath;
@@ -19,9 +20,6 @@ namespace Elves {
         public string SaveFilePath => saveFilePath;
 
         private readonly SaveData saveData = new SaveData();
-
-        private readonly GameManager game;
-        public GameManager Game => game;
 
         private readonly bool shouldCreateDirectory;
 

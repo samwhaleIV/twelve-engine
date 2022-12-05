@@ -15,6 +15,16 @@ namespace TwelveEngine.Game3D.Entity {
         private Vector3 _rotation = Vector3.Zero;
         private Vector3 _scale = Vector3.One;
 
+        protected override float GetDepth() {
+            return _position.Z;
+        }
+
+        protected override void SetDepth(float value) {
+            var position = _position;
+            position.Z = value;
+            Position = position;
+        }
+
         public Vector3 Position {
             get => _position;
             set {

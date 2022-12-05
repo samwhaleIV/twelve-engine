@@ -20,15 +20,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
             BindEvents();
         }
 
-        public float Z {
-            get => Position.Z;
-            set {
-                var position = Position;
-                position.Z = value;
-                Position = position;
-            }
-        }
-
         public void SetUVArea(int x,int y,int width,int height) {
             SetUVArea(new Rectangle(x,y,width,height));
         }

@@ -1,13 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D;
 using TwelveEngine.Game3D.Entity.Types;
-using Elves.Battle.Sprite.Elves;
-using Elves.UI;
-using System.Text;
-using System;
-using Elves.UI.Font;
-using System.Reflection.Metadata;
 
 namespace Elves {
     public class OrthoBackgroundState:World {
@@ -48,27 +43,46 @@ namespace Elves {
             OnUpdate += UpdateBackground;
             OnRender += RenderEntities;
             OnPreRender += PreRenderEntities;
+            OnUpdate += OrthoBackgroundState_OnUpdate;
+        }
+
+        private void OrthoBackgroundState_OnUpdate(GameTime gameTime) {
+            if(!debug3D || Camera == null) {
+                return;
+            }
+            (Camera as AngleCamera).UpdateFreeCam(
+                this,Constants.Debug3DLookSpeed,Constants.Debug3DMovementSpeed
+            );
         }
 
         private readonly string backgroundImage;
         private readonly bool smoothBackground;
         private readonly Texture2D backgroundImageTexture;
 
-        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true) {
+        private readonly bool debug3D = false;
+
+        protected bool Debug3D => debug3D;
+
+        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true,bool debug3D = false) {
             this.backgroundImage = backgroundImage;
             this.smoothBackground = smoothBackground;
+            this.debug3D = debug3D;
             OnLoad += OrthoBackgroundState_OnLoad;
             Initialize();
         }
 
-        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true) {
+        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true,bool debug3D = false) {
             backgroundImageTexture = backgroundImage;
             this.smoothBackground = smoothBackground;
+            this.debug3D = debug3D;
             OnLoad += OrthoBackgroundState_OnLoad;
             Initialize();
         }
 
         private void OrthoBackgroundState_OnLoad() {
+            if(debug3D) {
+                Entities.Add(new GridLinesEntity());
+            }
             if(backgroundImageTexture != null) {
                 background = new TextureEntity(backgroundImageTexture);
             } else {
@@ -76,8 +90,8 @@ namespace Elves {
             }
             background.Name = BACKGROUND_ENTITY_NAME;
             background.PixelSmoothing = smoothBackground;
-            background.Billboard = true;
             background.Scale = new Vector3(1f);
+            background.Depth = DepthConstants.Background;
             Entities.Add(background);
         }
 
@@ -86,9 +100,9 @@ namespace Elves {
                 NearPlane = 0.1f,
                 FarPlane = 20f,
                 FieldOfView = 75f,
-                Orthographic = true,
+                Orthographic = !debug3D,
                 Angle = new Vector2(0f,180f),
-                Position = new Vector3(0f,0f,10f)
+                Position = new Vector3(0f,0f,DepthConstants.OrthoCam)
             };
         }
 

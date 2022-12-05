@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TwelveEngine.EntitySystem.EntityContainer;
 using TwelveEngine.Shell;
@@ -6,18 +7,18 @@ using TwelveEngine.Shell;
 namespace TwelveEngine.EntitySystem {
     internal static class EntityManager {
         internal const int START_ID = 0;
-        internal const int STARTING_CAPACITY = 256;
+        internal const int STARTING_CAPACITY = 128;
     }
     public sealed partial class EntityManager<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {
 
-        private const string ILLEGAL_ITERATION = "Illegal nested iteration! Do not iterate inside of another iteration action.";
+        private const string ILLEGAL_ITERATION = "Illegal nested iteration. Cannot iterate inside of another iteration operation.";
         private const string ILLEGAL_MODIFICATION_UNLOADED = "Cannot mutate contained entities, the entity manager is unloaded.";
         private const string ILLEGAL_ITERATION_UNLOADED = "Cannot iterate entity list, the entity manager is unloaded.";
 
         private readonly TOwner Owner;
         private readonly EntityContainer<TEntity,TOwner> Container = new EntityContainer<TEntity,TOwner>();
 
-        private bool IsIterating = false, IsUnloaded = false;
+        private bool IsIterating = false, IsUnloaded = false, IsIteratingSorted = false;
 
         private readonly SortedList<int,TEntity> Entities = new SortedList<int,TEntity>(EntityManager.STARTING_CAPACITY);
         private readonly List<(TEntity Entity, int ID)> EntitiesBuffer = new List<(TEntity Entity, int ID)>(EntityManager.STARTING_CAPACITY);
@@ -52,16 +53,15 @@ namespace TwelveEngine.EntitySystem {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
-            if(IsIterating) {
+            if(IsIterating || IsIteratingSorted) {
                 /* This should prevent shitty programming practices and impossible to fix bugs.
                  * This class is logically threaded around the trust in this assertion */
                 throw new EntityManagerException(ILLEGAL_ITERATION);
             }
             IsIterating = true;
             TryUpdateBuffer();
-            additionQueue.Clear();
             foreach(var item in EntitiesBuffer) {
-                /* Check if the entity was removed during another entity's invocated method call. I.e. Update() */
+                /* Check if the entity was removed during another entity's invoked method call. I.e. Update() */
                 if(item.Entity.ID != item.ID) {
                     continue;
                 }
@@ -72,7 +72,7 @@ namespace TwelveEngine.EntitySystem {
                 }
             }
             while(additionQueue.TryDequeue(out var item)) {
-                /* This handles an weird edge case, where you add an entity and remove it back in the same frame
+                /* This handles a weird edge case: where you add an entity and remove it back in the same frame
                  * (or even weirder, if you add the entity back again and generate a new ID for it) */
                 if(item.Entity.ID != item.ID) {
                     continue;
@@ -83,41 +83,86 @@ namespace TwelveEngine.EntitySystem {
             IsIterating = false;
         }
 
+        private class RenderBufferSort:IComparer<TEntity> {
+            public int Compare(TEntity a,TEntity b) {
+                if(a.Depth == b.Depth) {
+                    return b.ID.CompareTo(a.ID);
+                } else {
+                    return a.Depth.CompareTo(b.Depth);
+                }
+            }
+        }
+
+        private readonly SortedSet<TEntity> renderBuffer = new SortedSet<TEntity>(new RenderBufferSort());
+
+        public void IterateDepthSorted<TData>(Action<TEntity,TData> action,TData data) {
+            if(IsUnloaded) {
+                throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
+            }
+            if(IsIterating || IsIteratingSorted) {
+                throw new EntityManagerException(ILLEGAL_ITERATION);
+            }
+            IsIteratingSorted = true;
+            IsIterating = true;
+            TryUpdateBuffer();
+
+            foreach(var item in Entities) {
+                renderBuffer.Add(item.Value);
+            }
+            foreach(var entity in renderBuffer) {
+                action(entity,data);
+            }
+            renderBuffer.Clear();
+
+            IsIteratingSorted = false;
+            IsIterating = false;
+        }
+
         public TEntity Add(TEntity entity) {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_MODIFICATION_UNLOADED);
+            }
+            if(IsIteratingSorted) {
+                throw new EntityManagerException("Cannot add an entity during sorted iteration!");
             }
             if(entity == null) {
                 throw new ArgumentNullException(nameof(entity));
             }
             if(entity.EntityManager != null) {
-                throw new EntityManagerException("Entity is already registered!");
+                throw new EntityManagerException($"Entity is already registered to {(entity.EntityManager == this ? "this" : "another")} entity manager.");
             }
             entity.Register(GetNextID(),Owner,this);
             Container.Writer.AddEntity(entity);
             entity.Load();
             Entities.Add(entity.ID,entity);
             bufferNeedsUpdate = true;
-            additionQueue.Enqueue((entity,entity.ID));
+            if(IsIterating) {
+                additionQueue.Enqueue((entity, entity.ID));
+            }
             return entity;
         }
 
-        public TEntity Remove(TEntity entity) {
+        public void Remove(TEntity entity) {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_MODIFICATION_UNLOADED);
+            }
+            if(IsIteratingSorted) {
+                throw new EntityManagerException("Cannot remove an entity during sorted iteration!");
             }
             if(entity == null) {
                 throw new ArgumentNullException(nameof(entity));
             }
             if(entity.EntityManager != this) {
-                throw new EntityManagerException("Cannot remove entity, it is not registered to this entity manager!");
+                throw new EntityManagerException(entity.EntityManager == null ?
+                    "This entity does not belong to this entity manager. In fact, it doesn't belong to one at all." :
+                    "Cannot remove entity because it is not registered to this entity manager."
+                );
             }
             Container.Writer.RemoveEntity(entity);
             entity.Remove();
             entity.Unload();
             Entities.Remove(entity.ID);
             bufferNeedsUpdate = true;
-            return entity;
         }
 
         public void Add(params TEntity[] entities) {
@@ -140,7 +185,7 @@ namespace TwelveEngine.EntitySystem {
 
         private void Owner_Unload() {
             if(IsUnloaded) {
-                throw new EntityManagerException("Entity manager is already unloaded!");
+                throw new EntityManagerException("Entity manager is already unloaded! (Your GameManager's execution ordering might be broken.)");
             }
             IsUnloaded = true;
             if(Entities.Count <= 0) {
@@ -150,8 +195,6 @@ namespace TwelveEngine.EntitySystem {
             /* Just trying to drop as many references as possible, so GC can work faster
              * to cleanup any entities with huge amounts of data in their object */
             EntitiesBuffer.Clear();
-            additionQueue.Clear();
-
             bufferNeedsUpdate = false;
 
             Queue<TEntity> entitiesCopy = new Queue<TEntity>(Entities.Count);

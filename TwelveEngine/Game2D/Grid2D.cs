@@ -89,7 +89,7 @@ namespace TwelveEngine.Game2D {
         }
 
         protected void RenderEntities(GameTime gameTime) {
-            Entities.Iterate(Entity2D.Render,gameTime);
+            Entities.IterateDepthSorted(Entity2D.Render,gameTime);
         }
 
         public int CalculateTileSize() {

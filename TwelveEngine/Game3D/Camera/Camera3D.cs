@@ -95,17 +95,17 @@ namespace TwelveEngine.Game3D {
         public VectorRectangle OrthographicArea { get; private set; } = VectorRectangle.Zero;
 
         private Matrix GetProjectionMatrix(float aspectRatio) {
+            float width, height;
+            if(aspectRatio > 1) {
+                width = 1f;
+                height = 1f / aspectRatio;
+            } else {
+                width = aspectRatio / 1f;
+                height = 1f;
+            }
+            float x = width * -0.5f, y = height * -0.5f;
+            OrthographicArea = new VectorRectangle(x,y,width,height);
             if(orthographic) {
-                float width, height;
-                if(aspectRatio > 1) {
-                    width = 1f;
-                    height = 1f / aspectRatio;
-                } else {
-                    width = aspectRatio / 1f;
-                    height = 1f;
-                }
-                float x = width * -0.5f, y = height * -0.5f;
-                OrthographicArea = new VectorRectangle(x,y,width,height);
                 return Matrix.CreateOrthographic(width,height,nearPlane,farPlane);
             } else {
                 return Matrix.CreatePerspectiveFieldOfView(GetFieldOfView(),aspectRatio,NearPlane,FarPlane);

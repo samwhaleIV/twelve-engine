@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game3D.Entity;
 using TwelveEngine.Shell.States;
+using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game3D {
     public class World:InputGameState {
@@ -14,6 +15,16 @@ namespace TwelveEngine.Game3D {
             OnLoad += World_OnLoad;
             OnUpdate += World_OnUpdate;
             OnRender += World_OnRender;
+            OnWriteDebug += World_OnWriteDebug;
+        }
+
+        private void World_OnWriteDebug(DebugWriter writer) {
+            writer.ToTopLeft();
+            writer.Write(Camera.Position);
+            if(!(Camera is AngleCamera angleCamera)) {
+                return;
+            }
+            writer.WriteXY(angleCamera.Yaw,angleCamera.Pitch,"Yaw","Pitch");
         }
 
         public EntityManager<Entity3D,World> Entities { get; private set; }
@@ -26,6 +37,7 @@ namespace TwelveEngine.Game3D {
 
         private void World_OnRender(GameTime gameTime) {
             Game.GraphicsDevice.Clear(ClearColor);
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
         }
 
@@ -37,7 +49,7 @@ namespace TwelveEngine.Game3D {
         }
 
         public void RenderEntities(GameTime gameTime) {
-            Entities.Iterate(Entity3D.Render,gameTime);
+            Entities.IterateDepthSorted(Entity3D.Render,gameTime);
         }
 
         public void PreRenderEntities(GameTime gameTime) {

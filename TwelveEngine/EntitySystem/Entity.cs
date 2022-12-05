@@ -42,6 +42,13 @@ namespace TwelveEngine.EntitySystem {
 
         protected event Action OnLoad, OnUnload, OnRemove;
 
+        private float depth = 0f;
+
+        protected virtual float GetDepth() => depth;
+        protected virtual void SetDepth(float value) => depth = value;
+
+        public float Depth { get => GetDepth(); set => SetDepth(value); }
+
         internal void Load() {
             IsLoading = true;
             OnLoad?.Invoke();

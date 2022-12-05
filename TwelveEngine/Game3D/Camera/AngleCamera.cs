@@ -111,12 +111,14 @@ namespace TwelveEngine.Game3D {
         }
 
         public void UpdateFreeCam(InputGameState gameState,float lookSpeed,float moveSpeed) {
+            var timeDelta = (float)gameState.Game.Time.ElapsedGameTime.TotalSeconds;
+            lookSpeed *= timeDelta;
+            moveSpeed *= timeDelta;
             var mouseDelta = gameState.Mouse.Delta;
             if(gameState.Mouse.Capturing && mouseDelta != Point.Zero) {
                 mouseDelta.Y = -mouseDelta.Y;
                 AddAngle(mouseDelta.ToVector2() * lookSpeed);
             }
-
             var delta = gameState.Input.GetDelta3D();
             if(delta.X != 0) MoveLeftRight(delta.X * moveSpeed);
             if(delta.Y != 0) MoveUpDown(delta.Y * moveSpeed);

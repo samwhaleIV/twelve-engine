@@ -5,16 +5,15 @@ using System.Collections.Generic;
 namespace Elves.Battle.Sprite {
     public sealed class PositionController {
 
-        private const float CENTER_Z = 5f;
         private const float SCREEN_EDGE_MARGIN = 0.015f;
         private const double POSITION_CHANGE_DURATION = 0.1f;
 
         private static readonly Dictionary<SpritePosition,Vector3> positionTable = new Dictionary<SpritePosition,Vector3>() {
-            {SpritePosition.Left,new Vector3(-0.4f,0f,CENTER_Z - 1f)},
-            {SpritePosition.Right,new Vector3(0.4f,0f,CENTER_Z - 1f)},
-            {SpritePosition.Center,new Vector3(-0f,0f,CENTER_Z)},
-            {SpritePosition.CenterLeft,new Vector3(-0.2f,0f,CENTER_Z)},
-            {SpritePosition.CenterRight,new Vector3(0.2f,0f,CENTER_Z)},
+            {SpritePosition.Left,new Vector3(-0.4f,0f,DepthConstants.MiddleBack)},
+            {SpritePosition.Right,new Vector3(0.4f,0f,DepthConstants.MiddleFront)},
+            {SpritePosition.Center,new Vector3(-0f,0f,DepthConstants.Middle)},
+            {SpritePosition.CenterLeft,new Vector3(-0.2f,0f,DepthConstants.MiddleBack)},
+            {SpritePosition.CenterRight,new Vector3(0.2f,0f,DepthConstants.MiddleFront)},
         };
 
         private readonly BattleSprite sprite;
