@@ -7,6 +7,8 @@ namespace Elves.UI {
 
         public NineGrid() => Texture = UITextures.Panel;
 
+        public NineGrid(Texture2D texture) => Texture = texture;
+
         public Rectangle Source { get; set; } = new Rectangle(0,85,16,16);
         public int Corner { get; set; } = 4;
 

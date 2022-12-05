@@ -86,7 +86,7 @@ namespace TwelveEngine.EntitySystem {
         private class RenderBufferSort:IComparer<TEntity> {
             public int Compare(TEntity a,TEntity b) {
                 if(a.Depth == b.Depth) {
-                    return b.ID.CompareTo(a.ID);
+                    return a.ID.CompareTo(b.ID);
                 } else {
                     return a.Depth.CompareTo(b.Depth);
                 }

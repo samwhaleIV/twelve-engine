@@ -9,11 +9,11 @@ namespace Elves.Battle.Sprite {
         private const double POSITION_CHANGE_DURATION = 0.1f;
 
         private static readonly Dictionary<SpritePosition,Vector3> positionTable = new Dictionary<SpritePosition,Vector3>() {
-            {SpritePosition.Left,new Vector3(-0.4f,0f,DepthConstants.MiddleBack)},
-            {SpritePosition.Right,new Vector3(0.4f,0f,DepthConstants.MiddleFront)},
+            {SpritePosition.Left,new Vector3(-0.4f,0f,DepthConstants.MiddleFar)},
+            {SpritePosition.Right,new Vector3(0.4f,0f,DepthConstants.MiddleClose)},
             {SpritePosition.Center,new Vector3(-0f,0f,DepthConstants.Middle)},
-            {SpritePosition.CenterLeft,new Vector3(-0.2f,0f,DepthConstants.MiddleBack)},
-            {SpritePosition.CenterRight,new Vector3(0.2f,0f,DepthConstants.MiddleFront)},
+            {SpritePosition.CenterLeft,new Vector3(-0.2f,0f,DepthConstants.MiddleFar)},
+            {SpritePosition.CenterRight,new Vector3(0.2f,0f,DepthConstants.MiddleClose)},
         };
 
         private readonly BattleSprite sprite;

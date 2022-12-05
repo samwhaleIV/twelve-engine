@@ -17,6 +17,7 @@ namespace Elves.Menu {
 
         private const float WIGGLE_STRENGTH_MIN = 4;
         private const float WIGGLE_STRENGTH_MAX = 8;
+        public const float WIGGLE_BASE_SCALE = 20;
 
         private const float MIN_X = 1 / 8f;
         private const float MAX_X = 7 / 8f;
@@ -95,7 +96,7 @@ namespace Elves.Menu {
             } else {
                 TextureSource = GetRandomFloatingItemSource();
             }
-            Depth = random.NextSingle() > 0.5f ? DepthConstants.MiddleFront : DepthConstants.MiddleBack;
+            Depth = random.NextSingle() > 0.5f ? DepthConstants.MiddleFar : DepthConstants.MiddleClose;
             X = random.NextSingle() * X_RANGE + MIN_X;
             WiggleRate = TimeSpan.FromSeconds(random.NextSingle() * WIGGLE_RATE_RANGE + WIGGLE_RATE_MIN);
             WiggleStrength = WIGGLE_RATE_MIN + random.NextSingle() * WIGGLE_STRENGTH_RANGE + WIGGLE_STRENGTH_MIN;
@@ -109,7 +110,7 @@ namespace Elves.Menu {
                 Reset();
                 needsReset = false;
             }
-            float scale = (Owner as MainMenu).GetPixelScale();
+            float scale = (Owner as MainMenu).GetMenuItemScale();
             float t = (float)((gameTime.TotalGameTime - StartTime) / Duration);
             if(t < 0) {
                 t = 0;
@@ -128,7 +129,7 @@ namespace Elves.Menu {
 
             var wiggleT = (float)(gameTime.TotalGameTime / WiggleRate % 1);
             var offset = SinWiggle ? MathF.Sin(MathF.PI * 2 * wiggleT) : MathF.Cos(MathF.PI * 2 * wiggleT);
-            position.X += offset * WiggleStrength;
+            position.X += (offset * WiggleStrength) / WIGGLE_BASE_SCALE * scale;
 
             Area = new VectorRectangle(position-new Vector2(size.X*0.5f,0f),size);
         }
