@@ -40,10 +40,10 @@ namespace Elves {
         }
 
         private TextureEntity background;
+        protected TextureEntity Background => background;
 
         private void Initialize() {
             ClearColor = Color.Black;
-            SamplerState = SamplerState.PointClamp;
             SetOrthoCamera();
             OnUpdate += UpdateBackground;
             OnRender += RenderEntities;

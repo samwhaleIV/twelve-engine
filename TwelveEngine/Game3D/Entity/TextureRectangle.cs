@@ -119,7 +119,7 @@ namespace TwelveEngine.Game3D.Entity {
             effect = null;
         }
 
-        public bool PixelSmoothing { get; set; } = false;
+        public bool PixelSmoothing { get; set; } = true;
 
         private void SetEffectWorldMatrix(Matrix matrix) => effect.World = matrix;
 
@@ -129,13 +129,14 @@ namespace TwelveEngine.Game3D.Entity {
             UpdateWorldMatrix(SetEffectWorldMatrix);
             bufferSet.VertexBuffer.SetData(GetVertices(TopLeft,BottomRight));
             bufferSet.Apply();
-            Owner.PushSamplerState(PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap);
+            var startingSamplerState = Owner.GraphicsDevice.SamplerStates[0];
+            Owner.GraphicsDevice.SamplerStates[0] = PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap;
             effect.Alpha = Alpha;
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();
                 effect.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,0,0,bufferSet.VertexCount / 3);
             }
-            Owner.PopSamplerState();
+            Owner.GraphicsDevice.SamplerStates[0] = startingSamplerState;
         }
     }
 }

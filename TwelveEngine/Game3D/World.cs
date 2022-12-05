@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.EntitySystem;
@@ -21,52 +20,13 @@ namespace TwelveEngine.Game3D {
 
         private void World_OnLoad() {
             Entities = new EntityManager<Entity3D,World>(this);
-            if(pendingSamplerState == null) {
-                return;
-            }
-            Game.GraphicsDevice.SamplerStates[0] = pendingSamplerState;
-            pendingSamplerState = null;
         }
 
         public Color ClearColor { get; set; } = Color.Black;
 
         private void World_OnRender(GameTime gameTime) {
             Game.GraphicsDevice.Clear(ClearColor);
-        }
-
-        private readonly Stack<SamplerState> samplerStateStack = new Stack<SamplerState>();
-
-        private SamplerState pendingSamplerState = SamplerState.LinearClamp;
-        public SamplerState SamplerState {
-            get => Game?.GraphicsDevice.SamplerStates[0] ?? pendingSamplerState;
-            set {
-                if(Game == null) {
-                    pendingSamplerState = value;
-                } else {
-                    samplerStateStack.Clear();
-                    Game.GraphicsDevice.SamplerStates[0] = value;
-                }
-            }
-        }
-
-        public void PushSamplerState(SamplerState samplerState) {
-            samplerStateStack.Push(SamplerState);
-            if(Game == null) {
-                pendingSamplerState = samplerState;
-            } else {
-                Game.GraphicsDevice.SamplerStates[0] = samplerState;
-            }
-        }
-
-        public void PopSamplerState() {
-            if(!samplerStateStack.TryPop(out SamplerState samplerState)) {
-                return;
-            }
-            if(Game == null) {
-                pendingSamplerState = samplerState;
-            } else {
-                Game.GraphicsDevice.SamplerStates[0] = samplerState;
-            }
+            GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
         }
 
         private void World_OnUpdate(GameTime gameTime) {

@@ -16,8 +16,6 @@ namespace Elves {
         public VectorRectangle Area { get; set; } = VectorRectangle.Zero; /* Space in pixels */
         public Rectangle TextureSource { get; set; }
 
-        public float Z { get; set; } = 5f;
-
         private void Initialize() {
             Billboard = true;
             OnPreRender += Screenspace3DSprite_OnPreRender;

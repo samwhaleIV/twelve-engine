@@ -9,6 +9,7 @@ using TwelveEngine.Shell.States;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Config;
 using System.Text;
+using System.Collections.Generic;
 
 namespace TwelveEngine.Shell {
     public sealed partial class GameManager:Game {
