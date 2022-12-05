@@ -71,7 +71,6 @@ namespace TwelveEngine.Game3D {
 
         private void World_OnUpdate(GameTime gameTime) {
             UpdateInputs(gameTime);
-            Entities.UpdateBuffer();
             _camera?.Update(AspectRatio); /* An entity might need to use orthographic projection information */
             Entities.Iterate(Entity3D.Update,gameTime);
             _camera?.Update(AspectRatio);

@@ -11,8 +11,6 @@ namespace TwelveEngine.EntitySystem {
     public sealed partial class EntityManager<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {
 
         private const string ILLEGAL_ITERATION = "Illegal nested iteration! Do not iterate inside of another iteration action.";
-        private const string ILLEGAL_MUTATION = "Cannot mutate entity buffer during an iteration action!";
-
         private const string ILLEGAL_MODIFICATION_UNLOADED = "Cannot mutate contained entities, the entity manager is unloaded.";
         private const string ILLEGAL_ITERATION_UNLOADED = "Cannot iterate entity list, the entity manager is unloaded.";
 
@@ -23,6 +21,7 @@ namespace TwelveEngine.EntitySystem {
 
         private readonly SortedList<int,TEntity> Entities = new SortedList<int,TEntity>(EntityManager.STARTING_CAPACITY);
         private readonly List<(TEntity Entity, int ID)> EntitiesBuffer = new List<(TEntity Entity, int ID)>(EntityManager.STARTING_CAPACITY);
+        private bool bufferNeedsUpdate = false;
 
         public EntityManager(TOwner owner) {
             if(owner == null) {
@@ -35,49 +34,34 @@ namespace TwelveEngine.EntitySystem {
         private int IDCounter = EntityManager.START_ID;
         private int GetNextID() => IDCounter++;
 
-        public void UpdateBuffer() {
-            if(IsUnloaded) {
-                throw new EntityManagerException(ILLEGAL_MODIFICATION_UNLOADED);
-            }
-            if(IsIterating) {
-                throw new EntityManagerException(ILLEGAL_MUTATION);
+        private void TryUpdateBuffer() {
+            if(!bufferNeedsUpdate) {
+                return;
             }
             EntitiesBuffer.Clear();
             foreach(var kvp in Entities) {
                 var entity = kvp.Value;
-                EntitiesBuffer.Add((entity,entity.ID));
+                EntitiesBuffer.Add((entity, entity.ID));
             }
+            bufferNeedsUpdate = false;
         }
 
-        public void Iterate(Action<TEntity> action) {
-            if(IsUnloaded) {
-                throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
-            }
-            if(IsIterating) {
-                throw new EntityManagerException(ILLEGAL_ITERATION);
-            }
-            IsIterating = true;
-            foreach(var item in EntitiesBuffer) {
-                if(item.Entity.ID != item.ID) {
-                    continue;
-                }
-                action(item.Entity);
-                if(IsUnloaded) {
-                    IsIterating = false;
-                    return;
-                }
-            }
-            IsIterating = false;
-        }
+        private readonly Queue<(TEntity Entity,int ID)> additionQueue = new Queue<(TEntity Entity, int ID)>();
 
         public void Iterate<TData>(Action<TEntity,TData> action,TData data) {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
             if(IsIterating) {
+                /* This should prevent shitty programming practices and impossible to fix bugs.
+                 * This class is logically threaded around the trust in this assertion */
                 throw new EntityManagerException(ILLEGAL_ITERATION);
             }
+            IsIterating = true;
+            TryUpdateBuffer();
+            additionQueue.Clear();
             foreach(var item in EntitiesBuffer) {
+                /* Check if the entity was removed during another entity's invocated method call. I.e. Update() */
                 if(item.Entity.ID != item.ID) {
                     continue;
                 }
@@ -86,6 +70,15 @@ namespace TwelveEngine.EntitySystem {
                     IsIterating = false;
                     return;
                 }
+            }
+            while(additionQueue.TryDequeue(out var item)) {
+                /* This handles an weird edge case, where you add an entity and remove it back in the same frame
+                 * (or even weirder, if you add the entity back again and generate a new ID for it) */
+                if(item.Entity.ID != item.ID) {
+                    continue;
+                }
+                /* This loop is effectively recursive, if this action happens to add new entities */
+                action(item.Entity,data);
             }
             IsIterating = false;
         }
@@ -104,6 +97,8 @@ namespace TwelveEngine.EntitySystem {
             Container.Writer.AddEntity(entity);
             entity.Load();
             Entities.Add(entity.ID,entity);
+            bufferNeedsUpdate = true;
+            additionQueue.Enqueue((entity,entity.ID));
             return entity;
         }
 
@@ -121,6 +116,7 @@ namespace TwelveEngine.EntitySystem {
             entity.Remove();
             entity.Unload();
             Entities.Remove(entity.ID);
+            bufferNeedsUpdate = true;
             return entity;
         }
 
@@ -143,10 +139,21 @@ namespace TwelveEngine.EntitySystem {
         }
 
         private void Owner_Unload() {
+            if(IsUnloaded) {
+                throw new EntityManagerException("Entity manager is already unloaded!");
+            }
             IsUnloaded = true;
             if(Entities.Count <= 0) {
                 return;
             }
+
+            /* Just trying to drop as many references as possible, so GC can work faster
+             * to cleanup any entities with huge amounts of data in their object */
+            EntitiesBuffer.Clear();
+            additionQueue.Clear();
+
+            bufferNeedsUpdate = false;
+
             Queue<TEntity> entitiesCopy = new Queue<TEntity>(Entities.Count);
             foreach(var kvp in Entities) {
                 entitiesCopy.Enqueue(kvp.Value);
@@ -156,6 +163,7 @@ namespace TwelveEngine.EntitySystem {
                 entity.Unload();
                 Entities.Remove(entity.ID);
             }
+            Entities.Clear();
         }
     }
 }
