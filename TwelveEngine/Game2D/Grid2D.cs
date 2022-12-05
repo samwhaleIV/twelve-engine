@@ -89,7 +89,7 @@ namespace TwelveEngine.Game2D {
         }
 
         protected void RenderEntities(GameTime gameTime) {
-            Entities.IterateImmutable(Entity2D.Render,gameTime);
+            Entities.Iterate(Entity2D.Render,gameTime);
         }
 
         public int CalculateTileSize() {
@@ -192,7 +192,8 @@ namespace TwelveEngine.Game2D {
         private void Grid2D_OnUpdate(GameTime gameTime) {
             ScreenSpace = GetScreenSpace();
             UpdateInputs(gameTime);
-            Entities.IterateMutable(Entity2D.Update,gameTime);
+            Entities.UpdateBuffer();
+            Entities.Iterate(Entity2D.Update,gameTime);
         }
     }
 }

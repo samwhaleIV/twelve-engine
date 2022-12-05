@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine;
 using Elves.Battle.Sprite.Animation;
+using TwelveEngine.Game3D;
 
 namespace Elves {
     public class Screenspace3DSprite:TextureEntity {
@@ -23,7 +24,6 @@ namespace Elves {
         }
 
         private void Screenspace3DSprite_OnPreRender(GameTime gameTime) {
-            
             SetUVArea(TextureSource);
 
             var orthoArea = Owner.Camera.OrthographicArea;

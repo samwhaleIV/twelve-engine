@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Game3D {
     public struct VectorRectangle {
         private float x, y, width, height;
 

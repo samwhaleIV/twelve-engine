@@ -9,6 +9,7 @@
     <Import_RootNamespace>TwelveEngine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\PhysicsEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\TopDownPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\MapFormat\LayerEncodingMode.cs" />
@@ -20,10 +21,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\ObjectManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\PhysicsGameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\VectorRectangle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TypeParser.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\VectorRectangle.cs" />
     <Compile Include="..\TwelveEngine\Game2D\PhysicsGrid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />

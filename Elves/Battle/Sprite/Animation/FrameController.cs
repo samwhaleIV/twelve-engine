@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using TwelveEngine;
+using TwelveEngine.Shell;
 
 namespace Elves.Battle.Sprite.Animation {
     public sealed class FrameController {

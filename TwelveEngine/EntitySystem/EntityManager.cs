@@ -1,242 +1,161 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using TwelveEngine.EntitySystem.EntityContainer;
 using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
-    public static class EntityManager {
+    internal static class EntityManager {
         internal const int START_ID = 0;
+        internal const int STARTING_CAPACITY = 256;
     }
     public sealed partial class EntityManager<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {
 
-        private const string NO_ITERATION_ALLOWED = "Cannot iterate an Entity list recursively!";
-        private const string NO_MUTATION_ALLOWED = "Cannot modify Entity tables during immutable list iteration!";
+        private const string ILLEGAL_ITERATION = "Illegal nested iteration! Do not iterate inside of another iteration action.";
+        private const string ILLEGAL_MUTATION = "Cannot mutate entity buffer during an iteration action!";
 
-        private readonly TOwner owner;
+        private const string ILLEGAL_MODIFICATION_UNLOADED = "Cannot mutate contained entities, the entity manager is unloaded.";
+        private const string ILLEGAL_ITERATION_UNLOADED = "Cannot iterate entity list, the entity manager is unloaded.";
 
-        private readonly EntityContainer<TEntity,TOwner> container = new EntityContainer<TEntity,TOwner>();
+        private readonly TOwner Owner;
+        private readonly EntityContainer<TEntity,TOwner> Container = new EntityContainer<TEntity,TOwner>();
+
+        private bool IsIterating = false, IsUnloaded = false;
+
+        private readonly SortedList<int,TEntity> Entities = new SortedList<int,TEntity>(EntityManager.STARTING_CAPACITY);
+        private readonly List<(TEntity Entity, int ID)> EntitiesBuffer = new List<(TEntity Entity, int ID)>(EntityManager.STARTING_CAPACITY);
 
         public EntityManager(TOwner owner) {
+            if(owner == null) {
+                throw new ArgumentNullException(nameof(owner));
+            }
             owner.OnUnload += Owner_Unload;
-            this.owner = owner;
+            Owner = owner;
         }
 
         private int IDCounter = EntityManager.START_ID;
         private int GetNextID() => IDCounter++;
 
-        private TEntity[] _entityList = new TEntity[0];
-        private bool entityListQueued = false;
-
-        public bool Locked { get; private set; } = false;
-        public bool Paused { get; private set; } = false;
-        public bool Iterating { get; private set; } = false;
-
-        private void PauseChanges() {
-            if(Paused) {
-                return;
+        public void UpdateBuffer() {
+            if(IsUnloaded) {
+                throw new EntityManagerException(ILLEGAL_MODIFICATION_UNLOADED);
             }
-            Paused = true;
-        }
-        private void ResumeChanges() {
-            if(!Paused) {
-                return;
+            if(IsIterating) {
+                throw new EntityManagerException(ILLEGAL_MUTATION);
             }
-            Paused = false;
-            if(entityListQueued) {
-                TryUpdateList();
+            EntitiesBuffer.Clear();
+            foreach(var kvp in Entities) {
+                var entity = kvp.Value;
+                EntitiesBuffer.Add((entity,entity.ID));
             }
         }
 
-        private void AssertIteration() {
-            if(Iterating) {
-                throw new InvalidOperationException(NO_ITERATION_ALLOWED);
+        public void Iterate(Action<TEntity> action) {
+            if(IsUnloaded) {
+                throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
-        }
-        private void AssertMutation() {
-            if(Locked) {
-                throw new InvalidOperationException(NO_MUTATION_ALLOWED);
+            if(IsIterating) {
+                throw new EntityManagerException(ILLEGAL_ITERATION);
             }
-        }
-
-        public TEntity Search(Func<TEntity,bool> predicate) {
-            AssertIteration();
-            Iterating = true;
-
-            Locked = true;
-            TEntity entity = null;
-            for(var i = 0;i<_entityList.Length;i++) {
-                var currentEntity = _entityList[i];
-                if(!predicate.Invoke(currentEntity)) {
+            IsIterating = true;
+            foreach(var item in EntitiesBuffer) {
+                if(item.Entity.ID != item.ID) {
                     continue;
                 }
-                entity = currentEntity;
-                break;
+                action(item.Entity);
+                if(IsUnloaded) {
+                    IsIterating = false;
+                    return;
+                }
             }
-            Locked = false;
-
-            Iterating = false;
-            return entity;
+            IsIterating = false;
         }
 
-        public TEntity Search<TData>(Func<TEntity,TData,bool> predicate,TData data) {
-            AssertIteration();
-            Iterating = true;
-
-            Locked = true;
-            TEntity entity = null;
-            for(var i = 0;i<_entityList.Length;i++) {
-                var currentEntity = _entityList[i];
-                if(!predicate.Invoke(currentEntity,data)) {
+        public void Iterate<TData>(Action<TEntity,TData> action,TData data) {
+            if(IsUnloaded) {
+                throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
+            }
+            if(IsIterating) {
+                throw new EntityManagerException(ILLEGAL_ITERATION);
+            }
+            foreach(var item in EntitiesBuffer) {
+                if(item.Entity.ID != item.ID) {
                     continue;
                 }
-                entity = currentEntity;
-                break;
-            }
-            Locked = false;
-
-            Iterating = false;
-            return entity;
-        }
-
-        public void IterateImmutable(Action<TEntity> action) {
-            AssertIteration();
-            Iterating = true;
-
-            Locked = true;
-            for(var i = 0;i<_entityList.Length;i++) {
-                action(_entityList[i]);
-            }
-            Locked = false;
-
-            Iterating = false;
-        }
-
-        public void IterateMutable(Action<TEntity> action) {
-            AssertIteration();
-            Iterating = true;
-
-            PauseChanges();
-            for(var i = 0;i<_entityList.Length;i++) {
-                var entity = _entityList[i];
-                if(entity.IsDeleted) {
-                    continue;
+                action(item.Entity,data);
+                if(IsUnloaded) {
+                    IsIterating = false;
+                    return;
                 }
-                action(_entityList[i]);
             }
-            ResumeChanges();
-
-            Iterating = false;
-        }
-
-        public void IterateImmutable<TData>(Action<TEntity,TData> action,TData data) {
-            AssertIteration();
-            Iterating = true;
-
-            Locked = true;
-            for(var i = 0;i<_entityList.Length;i++) {
-                action(_entityList[i],data);
-            }
-            Locked = false;
-
-            Iterating = false;
-        }
-
-        public void IterateMutable<TData>(Action<TEntity,TData> action,TData data) {
-            AssertIteration();
-            Iterating = true;
-
-            PauseChanges();
-            for(var i = 0;i<_entityList.Length;i++) {
-                var entity = _entityList[i];
-                if(entity.IsDeleted) {
-                    continue;
-                }
-                action(_entityList[i],data);
-            }
-            ResumeChanges();
-
-            Iterating = false;
-        }
-
-        private TEntity[] GetEntityList() {
-            return container.IDs.Values.ToArray();
-        }
-
-        private void TryUpdateList() {
-            if(Paused) {
-                entityListQueued = true;
-                return;
-            }
-            _entityList = GetEntityList();
-            entityListQueued = false;
-        }
-
-        /* Non-asserted */
-        private void _clearEntities() {
-            var entityList = GetEntityList();
-            for(var i = 0;i < entityList.Length;i++) {
-                var entity = entityList[i];
-                _removeEntity(entity);
-            }
-        }
-
-        /* Non-asserted version */
-        private void _addEntity(TEntity entity) {
-            var ID = GetNextID();
-            entity.Register(ID,owner);
-            container.Writer.AddEntity(entity);
-            TryUpdateList();
-            entity.Load();
-            entity.IsDeleted = false;
-        }
-
-        /* Non-asserted version */
-        private void _removeEntity(TEntity entity) {
-            container.Writer.RemoveEntity(entity);
-            TryUpdateList();
-            entity.Unload();
-            entity.IsDeleted = true;
+            IsIterating = false;
         }
 
         public TEntity Add(TEntity entity) {
-            if(entity == null) {
-                throw new ArgumentNullException("entity");
+            if(IsUnloaded) {
+                throw new EntityManagerException(ILLEGAL_MODIFICATION_UNLOADED);
             }
-            AssertMutation();
-            _addEntity(entity);
+            if(entity == null) {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            if(entity.EntityManager != null) {
+                throw new EntityManagerException("Entity is already registered!");
+            }
+            entity.Register(GetNextID(),Owner,this);
+            Container.Writer.AddEntity(entity);
+            entity.Load();
+            Entities.Add(entity.ID,entity);
             return entity;
         }
-        public void Remove(TEntity entity) {
-            if(entity == null) {
-                throw new ArgumentNullException("entity");
+
+        public TEntity Remove(TEntity entity) {
+            if(IsUnloaded) {
+                throw new EntityManagerException(ILLEGAL_MODIFICATION_UNLOADED);
             }
-            AssertMutation();
-            _removeEntity(entity);
+            if(entity == null) {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            if(entity.EntityManager != this) {
+                throw new EntityManagerException("Cannot remove entity, it is not registered to this entity manager!");
+            }
+            Container.Writer.RemoveEntity(entity);
+            entity.Remove();
+            entity.Unload();
+            Entities.Remove(entity.ID);
+            return entity;
         }
 
         public void Add(params TEntity[] entities) {
-            AssertMutation();
-            PauseChanges();
-            foreach(var entity in entities) {
-                _addEntity(entity);
+            if(entities == null) {
+                throw new ArgumentNullException(nameof(entities));
             }
-            ResumeChanges();
+            foreach(var entity in entities) {
+                Add(entity);
+            }
         }
 
         public void Remove(params TEntity[] entities) {
-            AssertMutation();
-            PauseChanges();
-            foreach(var entity in entities) {
-                _removeEntity(entity);
+            if(entities == null) {
+                throw new ArgumentNullException(nameof(entities));
             }
-            ResumeChanges();
+            foreach(var entity in entities) {
+                Remove(entity);
+            }
         }
 
         private void Owner_Unload() {
-            AssertMutation();
-            PauseChanges();
-            _clearEntities();
-            ResumeChanges();
+            IsUnloaded = true;
+            if(Entities.Count <= 0) {
+                return;
+            }
+            Queue<TEntity> entitiesCopy = new Queue<TEntity>(Entities.Count);
+            foreach(var kvp in Entities) {
+                entitiesCopy.Enqueue(kvp.Value);
+            }
+            while(entitiesCopy.TryDequeue(out var entity)) {
+                Container.Writer.RemoveEntity(entity);
+                entity.Unload();
+                Entities.Remove(entity.ID);
+            }
         }
     }
 }

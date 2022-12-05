@@ -24,10 +24,12 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
 
         private void Entity_OnNameChanged(int entityID,string oldName) {
             var entity = container.IDs[entityID];
-            if(!string.IsNullOrEmpty(oldName)) {
+            if(oldName != null) {
                 container.Names.Remove(oldName);
             }
-            container.Names[entity.Name] = entity;
+            if(entity.HasName) {
+                container.Names[entity.Name] = entity;
+            }
         }
 
         internal void AddEntity(TEntity entity) {
@@ -36,8 +38,8 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
         }
 
         internal void RemoveEntity(TEntity entity) {
-            entity.OnNameChanged -= Entity_OnNameChanged;
             RemoveFromLists(entity);
+            entity.OnNameChanged -= Entity_OnNameChanged;
         }
     }
 }
