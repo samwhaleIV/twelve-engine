@@ -21,6 +21,8 @@ namespace Elves.Battle.Sprite {
         public BattleSprite(string textureName,FrameSet[] frameSets,int baseHeight) :base(textureName) {
             this.baseHeight = baseHeight;
 
+            PixelSmoothing = false;
+
             frameController = new FrameController(this,frameSets,baseHeight);
             positionController = new PositionController(this);
 

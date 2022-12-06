@@ -167,13 +167,18 @@ namespace TwelveEngine.Shell {
 
         private bool HasPendingState => _pendingGameState != null;
 
+        private void LoadState(GameState state) {
+            GraphicsDevice.Reset();
+            state.Load(this);
+        }
+
         public void SetState(Func<GameState> stateGenerator) {
             if(HasPendingState || pendingStateGenerator != null) {
                 /* Recursive loading! Preload all your assets to your heart's content! */
                 pendingStateGenerator = null;
                 _pendingGameState?.Unload();
                 _pendingGameState = stateGenerator.Invoke();
-                _pendingGameState.Load(this);
+                LoadState(_pendingGameState);
                 return;
             }
             if(!initialized) {
@@ -192,7 +197,7 @@ namespace TwelveEngine.Shell {
 
             oldState?.Unload();
             _pendingGameState = stateGenerator.Invoke();
-            _pendingGameState?.Load(this);
+            LoadState(_pendingGameState);
         }
         
         public void SetState(GameState state) => SetState(() => state);
@@ -377,6 +382,7 @@ namespace TwelveEngine.Shell {
                 _gameState.Render(proxyGameTime);
             } else {
                 GraphicsDevice.Clear(Color.Black);
+                /* Notice: No game state */
             }
             vcrDisplay.Render(trueGameTime);
 #if DEBUG

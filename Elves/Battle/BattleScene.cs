@@ -11,7 +11,7 @@ using Elves.UI.Font;
 namespace Elves.Battle {
     public class BattleScene:OrthoBackgroundState {
 
-        public BattleScene(string backgroundImage):base(backgroundImage) {
+        public BattleScene(string backgroundImage = "Backgrounds/checkerboard") :base(backgroundImage) {
 
             ScrollingBackground = true;
 
