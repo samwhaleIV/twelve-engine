@@ -86,7 +86,8 @@ namespace TwelveEngine.EntitySystem {
         private class RenderBufferSort:IComparer<TEntity> {
             public int Compare(TEntity a,TEntity b) {
                 if(a.Depth == b.Depth) {
-                    return a.ID.CompareTo(b.ID);
+                    return a.ID.CompareTo(b.ID); /* FIFO; oldest entity is rendered on the lowest virtual layer.
+                                                  * Perceptually, newer entities are 'closer'. */
                 } else {
                     return a.Depth.CompareTo(b.Depth);
                 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace TwelveEngine.Game3D.Entity.Types {
     public class Screenspace3DSprite:TextureEntity {
@@ -16,21 +17,27 @@ namespace TwelveEngine.Game3D.Entity.Types {
             OnPreRender += Screenspace3DSprite_OnPreRender;
         }
 
+        public Vector2 RotationOrigin { get; set; } = new Vector2(0.5f,0.5f);
+
         private void Screenspace3DSprite_OnPreRender(GameTime gameTime) {
+            /* This took 5 hours. I suck at math, apparently */
             SetUVArea(TextureSource);
 
             var orthoArea = Owner.Camera.OrthographicArea;
             var viewportSize = Owner.Game.Viewport.Bounds.Size.ToVector2();
 
-            Vector2 scale = orthoArea.Size / viewportSize;
+            float left = (Area.Left / viewportSize.X) * orthoArea.Width + orthoArea.Left;
+            float right = (Area.Right / viewportSize.X) * orthoArea.Width + orthoArea.Left;
 
-            Scale = new Vector3(Area.Size * scale,1f);
+            float top = (Area.Top / viewportSize.Y) * orthoArea.Height + orthoArea.Top;
+            float bottom = (Area.Bottom / viewportSize.Y) * orthoArea.Height + orthoArea.Top;
 
-            TopLeft = new Vector3(0f,0f,0f);
-            BottomRight = new Vector3(1f,-1f,0f);
+            float centerX = left + (right - left) * RotationOrigin.X;
+            float centerY = top + (bottom - top) * RotationOrigin.Y;
 
-            var position = orthoArea.TopLeft + new Vector2(0f,orthoArea.Height) + new Vector2(Area.X,-Area.Y) * scale;
-            Position = new Vector3(position,Position.Z);
+            TopLeft = new Vector3(left - centerX,centerY - top,0f);
+            BottomRight = new Vector3(right - centerX,centerY - bottom,0f);
+            Position = new Vector3(centerX,-centerY,Position.Z);
         }
     }
 }

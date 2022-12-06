@@ -63,7 +63,7 @@ namespace Elves.Menu {
                 firstTime = false;
             }
             TextureSource = grabBag.GetRandom(random);
-            Depth = random.NextSingle() > 0.5f ? DepthConstants.MiddleFar : DepthConstants.MiddleClose;
+            Depth = (DepthConstants.MiddleClose - DepthConstants.MiddleFar) * random.NextSingle() + DepthConstants.MiddleFar;
             X = random.NextSingle() * X_RANGE + MIN_X;
             WiggleRate = TimeSpan.FromSeconds(random.NextSingle() * WIGGLE_RATE_RANGE + WIGGLE_RATE_MIN);
             WiggleStrength = WIGGLE_RATE_MIN + random.NextSingle() * WIGGLE_STRENGTH_RANGE + WIGGLE_STRENGTH_MIN;
@@ -90,7 +90,7 @@ namespace Elves.Menu {
             Vector2 size = TextureSource.Size.ToVector2() * scale;
             float xValue = X * Game.Viewport.Width;
 
-            //Rotation = new Vector3(0f,0f,t * 360f * (RotationPolarity ? 1 : -1));
+            Rotation = new Vector3(0f,0f,t * 360f * (RotationPolarity ? 1 : -1));
 
             Vector2 position = Vector2.Lerp(
                 new Vector2(xValue,Game.Viewport.Height),
