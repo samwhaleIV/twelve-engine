@@ -16,13 +16,16 @@ namespace Elves.Menu {
 
         private const string MENU_SPRITE_ATLAS = "Menu/falling-elf";
 
+        private const float VERTICAL_SCALE_DIVIDEND = 70f;
+        private const float PLAY_BUTTON_SCALE = 0.75f;
+
         private static readonly Color BACKGROUND_TOP_COLOR = Color.FromNonPremultiplied(0,225,89,255);
         private static readonly Color BACKGROUND_BOTTOM_COLOR = Color.Black;
 
         private const float FOREGROUND_WATER_OPACITY = 0.592f;
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
-        public float GetMenuItemScale() => Game.Viewport.Height / 70f;
+        public float GetMenuItemScale() => Game.Viewport.Height / VERTICAL_SCALE_DIVIDEND;
 
         public MainMenu(bool debug3D = false):base(UITextures.Nothing,true,debug3D) {
             SetBackgroundColors(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
@@ -76,7 +79,7 @@ namespace Elves.Menu {
 
         private void PlayButton_OnUpdate(GameTime gameTime) {
             Rectangle bounds = Game.Viewport.Bounds;
-            float scale = GetMenuItemScale() / 2;
+            float scale = GetMenuItemScale() * PLAY_BUTTON_SCALE;
             Vector2 size = playButton.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new Vector2(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             playButton.Area = new VectorRectangle(center,size);

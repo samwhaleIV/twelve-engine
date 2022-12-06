@@ -7,7 +7,7 @@ using TwelveEngine.Game3D.Entity.Types;
 namespace Elves.Menu {
     public sealed class FloatingItem:Screenspace3DSprite {
 
-        public const int TOTAL_ITEM_COUNT = 12;
+        public const int TOTAL_ITEM_COUNT = 64;
 
         private const float MIN_DURATION = 20;
         private const float MAX_DURATION = 40;
@@ -19,8 +19,10 @@ namespace Elves.Menu {
         private const float WIGGLE_STRENGTH_MAX = 8;
         public const float WIGGLE_BASE_SCALE = 20;
 
-        private const float MIN_X = 1 / 8f;
-        private const float MAX_X = 7 / 8f;
+        private const float MIN_X = 0;
+        private const float MAX_X = 1;
+
+        private const int BUBBLE_GRAB_WEIGHT = 10;
 
         private const float WIGGLE_RATE_RANGE = WIGGLE_RATE_MAX - WIGGLE_RATE_MIN;
         private const float DURATION_RANGE = MAX_DURATION - MIN_DURATION;
@@ -28,7 +30,7 @@ namespace Elves.Menu {
         private const float X_RANGE = MAX_X - MIN_X;
 
         private static readonly (Rectangle TextureSource, int Weight)[] FloatingItemSources = new[]{
-                (new Rectangle(0,29,4,4),200),
+                (new Rectangle(0,29,4,4),BUBBLE_GRAB_WEIGHT),
                 (new Rectangle(4,29,23,7),1),
                 (new Rectangle(27,29,20,9),1),
                 (new Rectangle(0,36,9,23),1),
@@ -67,7 +69,7 @@ namespace Elves.Menu {
         public TimeSpan WiggleRate { get; set; }
         public float WiggleStrength { get; set; }
 
-        public bool SinWiggle { get; set; }
+        public bool RotationPolarity { get; set; }
 
         private Rectangle GetRandomFloatingItemSource() {
             int index = random.Next(0,GrabBag.Length);
@@ -92,15 +94,13 @@ namespace Elves.Menu {
             if(firstTime) {
                 StartTime = StartTime.Subtract(Duration * random.NextSingle());
                 firstTime = false;
-                TextureSource = GrabBag[0];
-            } else {
-                TextureSource = GetRandomFloatingItemSource();
             }
+            TextureSource = GetRandomFloatingItemSource();
             Depth = random.NextSingle() > 0.5f ? DepthConstants.MiddleFar : DepthConstants.MiddleClose;
             X = random.NextSingle() * X_RANGE + MIN_X;
             WiggleRate = TimeSpan.FromSeconds(random.NextSingle() * WIGGLE_RATE_RANGE + WIGGLE_RATE_MIN);
             WiggleStrength = WIGGLE_RATE_MIN + random.NextSingle() * WIGGLE_STRENGTH_RANGE + WIGGLE_STRENGTH_MIN;
-            SinWiggle = random.NextSingle() > 0.5;
+            RotationPolarity = random.NextSingle() > 0.5;
         }
 
         private bool needsReset = true;
@@ -122,13 +122,15 @@ namespace Elves.Menu {
             Vector2 size = TextureSource.Size.ToVector2() * scale;
             float xValue = X * Game.Viewport.Width;
 
+            Rotation = new Vector3(0f,0f,t * 360f * (RotationPolarity ? 1 : -1));
+
             Vector2 position = Vector2.Lerp(
                 new Vector2(xValue,Game.Viewport.Height),
-                new Vector2(xValue,-size.Y),t
+                new Vector2(xValue,-MathF.Max(size.X,size.Y)),t
             );
 
             var wiggleT = (float)(gameTime.TotalGameTime / WiggleRate % 1);
-            var offset = SinWiggle ? MathF.Sin(MathF.PI * 2 * wiggleT) : MathF.Cos(MathF.PI * 2 * wiggleT);
+            var offset = RotationPolarity ? MathF.Sin(MathF.PI * 2 * wiggleT) : MathF.Cos(MathF.PI * 2 * wiggleT);
             position.X += (offset * WiggleStrength) / WIGGLE_BASE_SCALE * scale;
 
             Area = new VectorRectangle(position-new Vector2(size.X*0.5f,0f),size);
