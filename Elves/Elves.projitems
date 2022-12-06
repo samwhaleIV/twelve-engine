@@ -24,7 +24,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\SpritePosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\IUVSequencer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Menu\FloatingItemData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Fonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\TwelvenFontData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Save\SaveData.cs" />

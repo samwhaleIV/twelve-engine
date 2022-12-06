@@ -72,14 +72,39 @@ namespace TwelveEngine.Game3D.Entity {
             UVBottomRight = new Vector2(textureArea.Right / textureWidth,textureArea.Bottom / textureHeight);
         }
 
+        public bool MirrorX { get; set; } = false;
+        public bool MirrorY { get; set; } = false;
+        public bool MirrorZ { get; set; } = false;
+
         private VertexPositionColorTexture[] GetVertices(Vector3 start,Vector3 end) {
 
-            var a = new VertexPositionColorTexture(start,TopLeftColor,UVTopLeft+UVOffset);
+            Vector2 uvTopLeft = UVTopLeft;
+            Vector2 uvBottomRight = UVBottomRight;
 
-            var b = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),TopRightColor,new Vector2(UVBottomRight.X,UVTopLeft.Y)+UVOffset);
-            var c = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),BottomLeftColor,new Vector2(UVTopLeft.X,UVBottomRight.Y)+UVOffset);
+            if(MirrorX) {
+                float value = uvTopLeft.X;
+                uvTopLeft.X = uvBottomRight.X;
+                uvBottomRight.X = value;
+            }
 
-            var d = new VertexPositionColorTexture(end,BottomRightColor,UVBottomRight+UVOffset);
+            if(MirrorY) {
+                float value = uvTopLeft.Y;
+                uvTopLeft.Y = uvBottomRight.Y;
+                uvBottomRight.Y = value;
+            }
+
+            if(MirrorZ) {
+                float value = start.X;
+                start.X = end.X;
+                end.X = value;
+            }
+
+            var a = new VertexPositionColorTexture(start,TopLeftColor,uvTopLeft+UVOffset);
+
+            var b = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),TopRightColor,new Vector2(uvBottomRight.X,uvTopLeft.Y)+UVOffset);
+            var c = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),BottomLeftColor,new Vector2(uvTopLeft.X,uvBottomRight.Y)+UVOffset);
+
+            var d = new VertexPositionColorTexture(end,BottomRightColor,uvBottomRight+UVOffset);
 
             return new VertexPositionColorTexture[] { a,b,c,b,d,c };
         }

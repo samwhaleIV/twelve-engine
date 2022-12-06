@@ -46,7 +46,8 @@ namespace Elves.Menu {
             fallingElf = new Screenspace3DSprite(menuTexture) {
                 TextureSource = new Rectangle(0,0,41,29),
                 PixelSmoothing = false,
-                Depth = DepthConstants.Middle
+                Depth = DepthConstants.Middle,
+                MirrorX = true
             };
             waterOverlay = new TextureEntity(UITextures.Nothing) {
                 Color = FOREGROUND_WATER_COLOR,
@@ -59,7 +60,7 @@ namespace Elves.Menu {
                 Depth = DepthConstants.SuperForeground
             };
             playButton = new Screenspace3DSprite(menuTexture) {
-                TextureSource = new Rectangle(95,0,38,20),
+                TextureSource = new Rectangle(0,78,38,20),
                 PixelSmoothing = false,
                 Depth = DepthConstants.SuperForeground
             };

@@ -22,44 +22,12 @@ namespace Elves.Menu {
         private const float MIN_X = 0;
         private const float MAX_X = 1;
 
-        private const int BUBBLE_GRAB_WEIGHT = 10;
 
         private const float WIGGLE_RATE_RANGE = WIGGLE_RATE_MAX - WIGGLE_RATE_MIN;
         private const float DURATION_RANGE = MAX_DURATION - MIN_DURATION;
         private const float WIGGLE_STRENGTH_RANGE = WIGGLE_STRENGTH_MAX - WIGGLE_STRENGTH_MIN;
         private const float X_RANGE = MAX_X - MIN_X;
 
-        private static readonly (Rectangle TextureSource, int Weight)[] FloatingItemSources = new[]{
-                (new Rectangle(0,29,4,4),BUBBLE_GRAB_WEIGHT),
-                (new Rectangle(4,29,23,7),1),
-                (new Rectangle(27,29,20,9),1),
-                (new Rectangle(0,36,9,23),1),
-                (new Rectangle(9,36,9,15),1),
-                (new Rectangle(27,38,9,23),1),
-                (new Rectangle(18,36,9,23),1),
-                (new Rectangle(36,38,23,9),1),
-                (new Rectangle(36,47,23,9),1),
-                (new Rectangle(27,38,9,23),1),
-                (new Rectangle(0,59,23,7),1)
-            };
-
-        private static readonly Rectangle[] GrabBag;
-
-        static FloatingItem() {
-            int total = 0;
-            foreach(var item in FloatingItemSources) {
-                total += item.Weight;
-            }
-            GrabBag = new Rectangle[total];
-            int i = 0;
-            foreach(var item in FloatingItemSources) {
-                int count = item.Weight;
-                while(count > 0) {
-                    count--;
-                    GrabBag[i++] = item.TextureSource;
-                }
-            }
-        }
 
         public TimeSpan StartTime { get; set; }
         public TimeSpan Duration { get; set; }
@@ -71,11 +39,6 @@ namespace Elves.Menu {
 
         public bool RotationPolarity { get; set; }
 
-        private Rectangle GetRandomFloatingItemSource() {
-            int index = random.Next(0,GrabBag.Length);
-            return GrabBag[index];
-        }
-
         private readonly Random random;
 
         public FloatingItem(Random random,Texture2D texture) : base(texture) {
@@ -86,6 +49,10 @@ namespace Elves.Menu {
 
         private bool firstTime = true;
 
+        private readonly static GrabBag<Rectangle> grabBag = FloatingItemData.GetGrabBag();
+
+        private bool RandomBoolean() => random.NextSingle() > 0.5f;
+
         private void Reset() {
             StartTime = Game.Time.TotalGameTime;
 
@@ -95,12 +62,13 @@ namespace Elves.Menu {
                 StartTime = StartTime.Subtract(Duration * random.NextSingle());
                 firstTime = false;
             }
-            TextureSource = GetRandomFloatingItemSource();
+            TextureSource = grabBag.GetRandom(random);
             Depth = random.NextSingle() > 0.5f ? DepthConstants.MiddleFar : DepthConstants.MiddleClose;
             X = random.NextSingle() * X_RANGE + MIN_X;
             WiggleRate = TimeSpan.FromSeconds(random.NextSingle() * WIGGLE_RATE_RANGE + WIGGLE_RATE_MIN);
             WiggleStrength = WIGGLE_RATE_MIN + random.NextSingle() * WIGGLE_STRENGTH_RANGE + WIGGLE_STRENGTH_MIN;
-            RotationPolarity = random.NextSingle() > 0.5;
+            RotationPolarity = RandomBoolean();
+            MirrorY = RandomBoolean();
         }
 
         private bool needsReset = true;
@@ -122,7 +90,7 @@ namespace Elves.Menu {
             Vector2 size = TextureSource.Size.ToVector2() * scale;
             float xValue = X * Game.Viewport.Width;
 
-            Rotation = new Vector3(0f,0f,t * 360f * (RotationPolarity ? 1 : -1));
+            //Rotation = new Vector3(0f,0f,t * 360f * (RotationPolarity ? 1 : -1));
 
             Vector2 position = Vector2.Lerp(
                 new Vector2(xValue,Game.Viewport.Height),
