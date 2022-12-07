@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TwelveEngine.EntitySystem.EntityContainer;
@@ -20,8 +21,19 @@ namespace TwelveEngine.EntitySystem {
 
         private bool IsIterating = false, IsUnloaded = false, IsIteratingSorted = false;
 
+        private readonly struct RegisteredEntity {
+
+            public readonly TEntity Value;
+            public readonly int RegisteredID;
+
+            public RegisteredEntity(TEntity entity) {
+                Value = entity;
+                RegisteredID = entity.ID;
+            }
+        }
+
         private readonly SortedList<int,TEntity> Entities = new SortedList<int,TEntity>(EntityManager.STARTING_CAPACITY);
-        private readonly List<(TEntity Entity, int ID)> EntitiesBuffer = new List<(TEntity Entity, int ID)>(EntityManager.STARTING_CAPACITY);
+        private readonly List<RegisteredEntity> EntitiesBuffer = new List<RegisteredEntity>(EntityManager.STARTING_CAPACITY);
         private bool bufferNeedsUpdate = false;
 
         public EntityManager(TOwner owner) {
@@ -42,14 +54,14 @@ namespace TwelveEngine.EntitySystem {
             EntitiesBuffer.Clear();
             foreach(var kvp in Entities) {
                 var entity = kvp.Value;
-                EntitiesBuffer.Add((entity, entity.ID));
+                EntitiesBuffer.Add(new RegisteredEntity(entity));
             }
             bufferNeedsUpdate = false;
         }
 
-        private readonly Queue<(TEntity Entity,int ID)> additionQueue = new Queue<(TEntity Entity, int ID)>();
+        private readonly Queue<RegisteredEntity> AdditionQueue = new Queue<RegisteredEntity>();
 
-        public void Iterate<TData>(Action<TEntity,TData> action,TData data) {
+        public void Update(GameTime gameTime) {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
@@ -60,25 +72,25 @@ namespace TwelveEngine.EntitySystem {
             }
             IsIterating = true;
             TryUpdateBuffer();
-            foreach(var item in EntitiesBuffer) {
+            foreach(var entity in EntitiesBuffer) {
                 /* Check if the entity was removed during another entity's invoked method call. I.e. Update() */
-                if(item.Entity.ID != item.ID) {
+                if(entity.Value.ID != entity.RegisteredID) {
                     continue;
                 }
-                action(item.Entity,data);
+                entity.Value.Update(gameTime);
                 if(IsUnloaded) {
                     IsIterating = false;
                     return;
                 }
             }
-            while(additionQueue.TryDequeue(out var item)) {
+            while(AdditionQueue.TryDequeue(out var entity)) {
                 /* This handles a weird edge case: where you add an entity and remove it back in the same frame
                  * (or even weirder, if you add the entity back again and generate a new ID for it) */
-                if(item.Entity.ID != item.ID) {
+                if(entity.Value.ID != entity.RegisteredID) {
                     continue;
                 }
                 /* This loop is effectively recursive, if this action happens to add new entities */
-                action(item.Entity,data);
+                entity.Value.Update(gameTime);
             }
             IsIterating = false;
         }
@@ -96,7 +108,7 @@ namespace TwelveEngine.EntitySystem {
 
         private readonly SortedSet<TEntity> renderBuffer = new SortedSet<TEntity>(new RenderBufferSort());
 
-        public void IterateDepthSorted<TData>(Action<TEntity,TData> action,TData data) {
+        public void Render(GameTime gameTime) {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
@@ -106,15 +118,31 @@ namespace TwelveEngine.EntitySystem {
             IsIteratingSorted = true;
             IsIterating = true;
             TryUpdateBuffer();
-
-            foreach(var item in Entities) {
-                renderBuffer.Add(item.Value);
+            foreach(var entity in Entities) {
+                renderBuffer.Add(entity.Value);
             }
             foreach(var entity in renderBuffer) {
-                action(entity,data);
+                entity.Render(gameTime);
             }
             renderBuffer.Clear();
 
+            IsIteratingSorted = false;
+            IsIterating = false;
+        }
+
+        public void PreRender(GameTime gameTime) {
+            if(IsUnloaded) {
+                throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
+            }
+            if(IsIterating || IsIteratingSorted) {
+                throw new EntityManagerException(ILLEGAL_ITERATION);
+            }
+            IsIteratingSorted = true;
+            IsIterating = true;
+            /* Prerendering is not sorted */
+            foreach(var entity in Entities) {
+                entity.Value.PreRender(gameTime);
+            }
             IsIteratingSorted = false;
             IsIterating = false;
         }
@@ -138,7 +166,7 @@ namespace TwelveEngine.EntitySystem {
             Entities.Add(entity.ID,entity);
             bufferNeedsUpdate = true;
             if(IsIterating) {
-                additionQueue.Enqueue((entity, entity.ID));
+                AdditionQueue.Enqueue(new RegisteredEntity(entity));
             }
             return entity;
         }

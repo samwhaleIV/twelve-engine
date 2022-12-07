@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
+using TwelveEngine.Game3D.Entity;
 using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
@@ -67,5 +69,29 @@ namespace TwelveEngine.EntitySystem {
         internal void Remove() {
             OnRemove?.Invoke();
         }
+
+        public bool IsVisible { get; set; } = true;
+
+        public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
+
+        public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
+
+        public void PreRender(GameTime gameTime) {
+            if(!IsVisible) {
+                return;
+            }
+            OnPreRender?.Invoke(gameTime);
+        }
+
+        public void Render(GameTime gameTime) {
+            if(!IsVisible) {
+                return;
+            }
+            OnRender?.Invoke(gameTime);
+        }
+
+        public void Update(Entity3D entity,GameTime gameTime) => entity.Update(gameTime);
+        public void PreRender(Entity3D entity,GameTime gameTime) => entity.PreRender(gameTime);
+        public void Render(Entity3D entity,GameTime gameTime) => entity.Render(gameTime);
     }
 }

@@ -16,6 +16,7 @@ namespace TwelveEngine.Game2D {
             OnUnload += Grid2D_OnUnload;
 
             OnRender += Grid2D_OnRender;
+            OnPreRender += Grid2D_OnPreRender;
             OnUpdate += Grid2D_OnUpdate;
         }
 
@@ -35,11 +36,6 @@ namespace TwelveEngine.Game2D {
 
         public Color BackgroundColor { get; set; } = Color.Black;
 
-        private void Grid2D_OnRender(GameTime gameTime) {
-            Game.GraphicsDevice.Clear(BackgroundColor);
-            ScreenSpace = GetScreenSpace();
-            RenderGrid(gameTime);
-        }
 
         private Camera _camera = null;
 
@@ -89,7 +85,7 @@ namespace TwelveEngine.Game2D {
         }
 
         protected void RenderEntities(GameTime gameTime) {
-            Entities.IterateDepthSorted(Entity2D.Render,gameTime);
+            Entities.Render(gameTime);
         }
 
         public int CalculateTileSize() {
@@ -192,7 +188,17 @@ namespace TwelveEngine.Game2D {
         private void Grid2D_OnUpdate(GameTime gameTime) {
             ScreenSpace = GetScreenSpace();
             UpdateInputs(gameTime);
-            Entities.Iterate(Entity2D.Update,gameTime);
+            Entities.Update(gameTime);
+        }
+
+        private void Grid2D_OnPreRender(GameTime gameTime) {
+            Entities.PreRender(gameTime);
+        }
+
+        private void Grid2D_OnRender(GameTime gameTime) {
+            Game.GraphicsDevice.Clear(BackgroundColor);
+            ScreenSpace = GetScreenSpace();
+            RenderGrid(gameTime);
         }
     }
 }

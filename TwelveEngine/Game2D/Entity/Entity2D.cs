@@ -1,5 +1,4 @@
-﻿using System;
-using TwelveEngine.EntitySystem;
+﻿using TwelveEngine.EntitySystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Shell.Input;
@@ -102,13 +101,5 @@ namespace TwelveEngine.Game2D.Entity {
                 location.Y >= Y &&
                 location.Y < Y + Height;
         }
-
-        public event Action<GameTime> OnUpdate, OnRender;
-
-        protected void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
-        protected void Render(GameTime gameTime) => OnRender?.Invoke(gameTime);
-
-        internal static void Update(Entity2D entity,GameTime gameTime) => entity.Update(gameTime);
-        internal static void Render(Entity2D entity,GameTime gameTime) => entity.Render(gameTime);
     }
 }

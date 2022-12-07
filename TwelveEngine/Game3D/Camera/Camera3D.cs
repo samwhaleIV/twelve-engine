@@ -5,7 +5,7 @@ namespace TwelveEngine.Game3D {
     public abstract class Camera3D {
 
         private Vector3 position = Vector3.Zero;
-        private float fieldOfView = 75f, nearPlane = 1f, farPlane = 1000f;
+        private float fieldOfView = 75f, nearPlane = 1f, farPlane = 100f;
 
         private bool orthographic = false;
 

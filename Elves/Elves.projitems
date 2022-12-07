@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DepthConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MemoryTestState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Menu\FloatingItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationMode.cs" />

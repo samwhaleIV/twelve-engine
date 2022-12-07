@@ -7,6 +7,7 @@ using TwelveEngine;
 using Elves.UI.Font;
 using Elves.UI;
 using Elves.Menu;
+using System.Diagnostics;
 
 namespace Elves {
     public sealed class Program {

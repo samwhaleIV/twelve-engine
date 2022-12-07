@@ -369,6 +369,8 @@ namespace TwelveEngine.Shell {
                 Func<GameState> generator = pendingStateGenerator;
                 pendingStateGenerator = null;
                 SetState(generator);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
         }
 
@@ -378,6 +380,7 @@ namespace TwelveEngine.Shell {
             watch.Start();
 #endif
             if(HasGameState) {
+                _gameState.ResetGraphicsState(GraphicsDevice);
                 _gameState.PreRender(proxyGameTime);
                 _gameState.Render(proxyGameTime);
             } else {

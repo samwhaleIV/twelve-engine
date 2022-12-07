@@ -37,23 +37,21 @@ namespace TwelveEngine.Game3D {
 
         private void World_OnRender(GameTime gameTime) {
             Game.GraphicsDevice.Clear(ClearColor);
-            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
         }
 
         private void World_OnUpdate(GameTime gameTime) {
             UpdateInputs(gameTime);
             _camera?.Update(AspectRatio); /* An entity might need to use orthographic projection information */
-            Entities.Iterate(Entity3D.Update,gameTime);
+            Entities.Update(gameTime);
             _camera?.Update(AspectRatio);
         }
 
         public void RenderEntities(GameTime gameTime) {
-            Entities.IterateDepthSorted(Entity3D.Render,gameTime);
+            Entities.Render(gameTime);
         }
 
         public void PreRenderEntities(GameTime gameTime) {
-            Entities.Iterate(Entity3D.PreRender,gameTime);
+            Entities.PreRender(gameTime);
         }
 
         private Camera3D _camera;

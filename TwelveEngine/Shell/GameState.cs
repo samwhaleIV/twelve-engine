@@ -54,5 +54,12 @@ namespace TwelveEngine.Shell {
             OnPreRender?.Invoke(gameTime);
             IsPreRendering = false;
         }
+
+        internal virtual void ResetGraphicsState(GraphicsDevice graphicsDevice) {
+            graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
+            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            graphicsDevice.BlendState = BlendState.AlphaBlend;
+            graphicsDevice.BlendFactor = Color.White;
+        }
     }
 }

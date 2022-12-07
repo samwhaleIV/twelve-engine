@@ -69,16 +69,11 @@ namespace Elves.Menu {
             nameBadge.OnUpdate += NameBadge_OnUpdate;
             playButton.OnUpdate += PlayButton_OnUpdate;
 
-            Mouse.OnPress += mouse => {
-                Game.SetState(new Battle.BattleScene());
-            };
-
             Entities.Add(fallingElf);
             Entities.Add(waterOverlay);
             Entities.Add(nameBadge);
             Entities.Add(playButton);
             AddFloatingItems(menuTexture);
-
         }
 
         private void PlayButton_OnUpdate(GameTime gameTime) {

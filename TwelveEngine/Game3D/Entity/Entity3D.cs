@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using TwelveEngine.EntitySystem;
 
 namespace TwelveEngine.Game3D.Entity {
@@ -72,29 +71,5 @@ namespace TwelveEngine.Game3D.Entity {
                 PositionValid = false;
             }
         }
-
-        public bool IsVisible { get; set; } = true;
-
-        public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
-
-        public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
-
-        public void PreRender(GameTime gameTime) {
-            if(!IsVisible) {
-                return;
-            }
-            OnPreRender?.Invoke(gameTime);
-        }
-
-        public void Render(GameTime gameTime) {
-            if(!IsVisible) {
-                return;
-            }
-            OnRender?.Invoke(gameTime);
-        }
-
-        public static void Update(Entity3D entity,GameTime gameTime) => entity.Update(gameTime);
-        public static void PreRender(Entity3D entity,GameTime gameTime) => entity.PreRender(gameTime);
-        public static void Render(Entity3D entity,GameTime gameTime) => entity.Render(gameTime);
     }
 }

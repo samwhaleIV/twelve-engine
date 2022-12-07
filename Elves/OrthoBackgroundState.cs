@@ -98,7 +98,7 @@ namespace Elves {
         private void SetOrthoCamera() {
             Camera = new AngleCamera() {
                 NearPlane = 0.1f,
-                FarPlane = 20f,
+                FarPlane = 100f,
                 FieldOfView = 75f,
                 Orthographic = !debug3D,
                 Angle = new Vector2(0f,180f),

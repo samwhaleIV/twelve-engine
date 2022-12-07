@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TwelveEngine.Shell {
 
@@ -19,59 +18,68 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        private readonly Dictionary<int,TimeoutSet> sets = new Dictionary<int,TimeoutSet>();
+        private enum QueueOperation { Add, Remove } 
 
-        private int idCounter = 1;
-        private TimeoutSet[] list = new TimeoutSet[0];
-
-        private bool listFrozen = false;
-        private void UpdateList() {
-            if(listFrozen) {
-                return;
+        private readonly struct PendingAction {
+            public readonly TimeoutSet Set;
+            public readonly QueueOperation Operation;
+            public PendingAction(TimeoutSet set,QueueOperation operation) {
+                Set = set;
+                Operation = operation;
             }
-            list = sets.Values.ToArray();
         }
 
-        private void PauseListUpdates() {
-            listFrozen = true;
-        }
-        private void ResumeListUpdates() {
-            listFrozen = false;
-        }
+        private int idCounter = 0;
+        private bool updating = false;
+
+        private readonly Dictionary<int,TimeoutSet> timeoutSets = new Dictionary<int,TimeoutSet>();
+        private readonly Queue<PendingAction> actionQueue = new Queue<PendingAction>();
 
         public int Add(Action action,TimeSpan timeout,TimeSpan currentTime) {
-            var ID = idCounter;
+            int ID = idCounter;
             idCounter += 1;
-            sets[ID] = new TimeoutSet(ID,action,currentTime + timeout);
-            UpdateList();
+            TimeoutSet set = new TimeoutSet(ID,action,currentTime + timeout);
+            if(updating) {
+                actionQueue.Enqueue(new PendingAction(set,QueueOperation.Add));
+            } else {
+                timeoutSets[ID] = set;
+            }
             return ID;
         }
 
         public bool Remove(int ID) {
-            if(!sets.ContainsKey(ID)) {
+            if(!timeoutSets.ContainsKey(ID)) {
                 return false;
             }
-            sets.Remove(ID);
-            UpdateList();
+            if(updating) {
+                actionQueue.Enqueue(new PendingAction(timeoutSets[ID],QueueOperation.Remove));
+            } else {
+                timeoutSets.Remove(ID);
+            }
             return true;
         }
 
         public void Update(TimeSpan currentTime) {
-            PauseListUpdates();
-            bool didChange = false;
-            for(var i = 0;i<list.Length;i++) {
-                var set = list[i];
+            updating = true;
+            foreach(var item in timeoutSets) {
+                TimeoutSet set = item.Value;
                 if(currentTime < set.EndTime) {
                     continue;
                 }
                 Remove(set.ID);
                 set.Action.Invoke();
-                didChange = true;
             }
-            ResumeListUpdates();
-            if(didChange) {
-                UpdateList();
+            foreach(var item in actionQueue) {
+                switch(item.Operation) {
+                    case QueueOperation.Add:
+                        timeoutSets.Add(item.Set.ID,item.Set);
+                        break;
+                    case QueueOperation.Remove:
+                        timeoutSets.Remove(item.Set.ID);
+                        break;
+                }
             }
+            updating = false;
         }
     }
 }
