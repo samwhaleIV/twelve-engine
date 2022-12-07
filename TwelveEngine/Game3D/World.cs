@@ -13,6 +13,7 @@ namespace TwelveEngine.Game3D {
 
         public World() {
             OnLoad += World_OnLoad;
+            OnUnload += World_OnUnload;
             OnUpdate += World_OnUpdate;
             OnRender += World_OnRender;
             OnWriteDebug += World_OnWriteDebug;
@@ -27,10 +28,40 @@ namespace TwelveEngine.Game3D {
             writer.WriteXY(angleCamera.Yaw,angleCamera.Pitch,"Yaw","Pitch");
         }
 
+        private VertexBuffer currentVertexBuffer = null;
+        private IndexBuffer currentIndexBuffer = null;
+
+
+        public void ApplyBuffer(SharedBuffer buffer) => ApplyBuffer(buffer.Vertices,buffer.Indices);
+        public void ApplySharedBuffer() => ApplyBuffer(sharedBuffer.Vertices,sharedBuffer.Indices);
+
+        public void ApplyBuffer(VertexBuffer vertices,IndexBuffer indices) {
+            if(currentVertexBuffer != vertices) {
+                GraphicsDevice.SetVertexBuffer(vertices);
+                currentVertexBuffer = vertices;
+            }
+            if(currentIndexBuffer != indices) {
+                GraphicsDevice.Indices = indices;
+                currentIndexBuffer = indices;
+            }
+        }
+
         public EntityManager<Entity3D,World> Entities { get; private set; }
 
+        private SharedBuffer sharedBuffer = null;
+        public SharedBuffer SharedBuffer => sharedBuffer;
+
         private void World_OnLoad() {
+            var sharedBuffer = new SharedBuffer();
+            sharedBuffer.Load(GraphicsDevice);
+            this.sharedBuffer = sharedBuffer;
             Entities = new EntityManager<Entity3D,World>(this);
+            ApplySharedBuffer();
+        }
+
+        private void World_OnUnload() {
+            sharedBuffer?.Unload();
+            sharedBuffer = null;
         }
 
         public Color ClearColor { get; set; } = Color.Black;
@@ -96,7 +127,7 @@ namespace TwelveEngine.Game3D {
             FireViewMatrixChanged(newCamera.ViewMatrix);
         }
 
-        public BufferSet CreateBufferSet<TVertices>(TVertices[] vertices) where TVertices:struct {
+        public BufferSet CreateBufferSet<TVertices>(TVertices[] vertices) where TVertices : struct {
             return BufferSet.Create(GraphicsDevice,vertices);
         }
     }
