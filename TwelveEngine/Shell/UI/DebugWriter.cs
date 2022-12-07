@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -78,24 +80,14 @@ namespace TwelveEngine.Shell.UI {
             writer.Append(": ");
         }
 
-        private string FormatNumber(float value) {
-            return string.Format("{0:0.00}",value);
-        }
-
-        private string FormatNumber(double value) {
-            return string.Format("{0:0.00}",value);
-        }
-
-        private string FlushString() {
-            var value = writer.ToString();
-            writer.Clear();
-            return value;
+        private void AppendNumber(double value) {
+            writer.AppendFormat("{0:0.00}",value);
         }
 
         private void DrawString() {
-            var text = FlushString();
             var position = GetPosition();
-            game.SpriteBatch.DrawString(Font,text,position,renderState.Color);
+            game.SpriteBatch.DrawString(Font,writer,position,renderState.Color);
+            writer.Clear();
         }
 
         public void SetColor(Color color) {
@@ -107,14 +99,14 @@ namespace TwelveEngine.Shell.UI {
 
         public void WriteTimeMS(TimeSpan time,string label = null) {
             WriteLabel(label);
-            writer.Append(FormatNumber(time.TotalMilliseconds));
+            AppendNumber(time.TotalMilliseconds);
             writer.Append("ms");
             DrawString();
         }
 
         public void WriteFPS(double fps) {
             WriteLabel("FPS");
-            writer.Append(FormatNumber(fps));
+            AppendNumber(fps);
             DrawString();
         }
 
@@ -146,17 +138,17 @@ namespace TwelveEngine.Shell.UI {
 
         public void WriteRange(float value,float max,string label = null) {
             WriteLabel(label);
-            writer.Append(FormatNumber(value));
+            AppendNumber(value);
             writer.Append(" / ");
-            writer.Append(FormatNumber(max));
+            AppendNumber(max);
             DrawString();
         }
 
         public void WriteRange(double value,double max,string label = null) {
             WriteLabel(label);
-            writer.Append(FormatNumber(value));
+            AppendNumber(value);
             writer.Append(" / ");
-            writer.Append(FormatNumber(max));
+            AppendNumber(max);
             DrawString();
         }
 
@@ -174,15 +166,15 @@ namespace TwelveEngine.Shell.UI {
 
         public void Write(TimeSpan time,string label = null) {
             WriteLabel(label);
-            writer.Append(time.ToString("hh\\:mm\\:ss\\:ff"));
+            writer.AppendFormat("{0:hh\\:mm\\:ss\\.ff}",time);
             DrawString();
         }
 
         public void Write(Vector2 vector,string label = null) {
             WriteLabel(label);
-            writer.Append(FormatNumber(vector.X));
+            AppendNumber(vector.X);
             writer.Append(", ");
-            writer.Append(FormatNumber(vector.Y));
+            AppendNumber(vector.Y);
             DrawString();
         }
 
@@ -197,11 +189,11 @@ namespace TwelveEngine.Shell.UI {
         public void Write(Vector3 vector,string label = null) {
             WriteLabel(label);
             writer.Append("X ");
-            writer.Append(FormatNumber(vector.X));
+            AppendNumber(vector.X);
             writer.Append("  Y ");
-            writer.Append(FormatNumber(vector.Y));
+            AppendNumber(vector.Y);
             writer.Append("  Z ");
-            writer.Append(FormatNumber(vector.Z));
+            AppendNumber(vector.Z);
             DrawString();
         }
 
@@ -210,13 +202,13 @@ namespace TwelveEngine.Shell.UI {
                 writer.Append(xLabel);
                 writer.Append(' ');
             }
-            writer.Append(FormatNumber(x));
+            AppendNumber(x);
             writer.Append("  ");
             if(yLabel != null) {
                 writer.Append(yLabel);
                 writer.Append(' ');
             }
-            writer.Append(FormatNumber(y));
+            AppendNumber(y);
             DrawString();
         }
 

@@ -60,10 +60,11 @@ namespace TwelveEngine.Game3D.Entity.Types {
             bufferSet = null;
         }
 
-        private void SetEffectWorldMatrix(Matrix matrix) => effect.World = matrix;
+        protected override void ApplyWorldMatrix(Matrix matrix) {
+            effect.World = matrix;
+        }
 
         private void GridLinesEntity_OnRender(GameTime gameTime) {
-            UpdateWorldMatrix(SetEffectWorldMatrix);
             bufferSet.Apply();
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();

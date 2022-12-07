@@ -41,7 +41,10 @@ namespace Elves.Menu {
 
         private readonly Random random;
 
-        public FloatingItem(Random random,Texture2D texture) : base(texture) {
+        private readonly MainMenu menu;
+
+        public FloatingItem(MainMenu menu,Random random,Texture2D texture) : base(texture) {
+            this.menu = menu;
             this.random = random;
             OnUpdate += FloatingItem_OnUpdate;
             PixelSmoothing = false;
@@ -78,7 +81,7 @@ namespace Elves.Menu {
                 Reset();
                 needsReset = false;
             }
-            float scale = (Owner as MainMenu).GetMenuItemScale();
+            float scale = menu.GetItemScale();
             float t = (float)((gameTime.TotalGameTime - StartTime) / Duration);
             if(t < 0) {
                 t = 0;

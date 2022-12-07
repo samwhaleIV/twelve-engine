@@ -4,6 +4,14 @@ using Microsoft.Xna.Framework;
 namespace TwelveEngine.Game3D.Entity {
     public abstract class WorldMatrixEntity:Entity3D {
 
+        public WorldMatrixEntity() {
+            OnRender += WorldMatrixEntity_OnRender;
+        }
+
+        private void WorldMatrixEntity_OnRender(GameTime gameTime) {
+            UpdateWorldMatrix();
+        }
+
         private Vector3? lastCameraPosition = null;
 
         private Matrix originMatrix, rotationMatrix, scaleMatrix, worldMatrix;
@@ -22,7 +30,9 @@ namespace TwelveEngine.Game3D.Entity {
             lastCameraPosition = cameraPosition;
         }
 
-        protected void UpdateWorldMatrix(Action<Matrix> onMatrixChanged) {
+        protected abstract void ApplyWorldMatrix(Matrix matrix);
+
+        private void UpdateWorldMatrix() {
             ValidateBillboard();
 
             if(WorldMatrixValid) {
@@ -34,7 +44,7 @@ namespace TwelveEngine.Game3D.Entity {
             worldMatrix = GetWorldMatrix();
             WorldMatrixValid = true;
 
-            onMatrixChanged?.Invoke(worldMatrix);
+            ApplyWorldMatrix(worldMatrix);
         }
 
         private Matrix GetWorldMatrix() {

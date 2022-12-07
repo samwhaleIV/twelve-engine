@@ -76,8 +76,11 @@ namespace TwelveEngine.Game3D.Entity {
         public bool MirrorY { get; set; } = false;
         public bool MirrorZ { get; set; } = false;
 
-        private VertexPositionColorTexture[] GetVertices(Vector3 start,Vector3 end) {
+        private const int VERTEX_COUNT = 6;
 
+        private readonly VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[VERTEX_COUNT];
+
+        private void UpdateVertices(Vector3 start,Vector3 end) {
             Vector2 uvTopLeft = UVTopLeft;
             Vector2 uvBottomRight = UVBottomRight;
 
@@ -99,18 +102,16 @@ namespace TwelveEngine.Game3D.Entity {
                 end.X = value;
             }
 
-            var a = new VertexPositionColorTexture(start,TopLeftColor,uvTopLeft+UVOffset);
-
-            var b = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),TopRightColor,new Vector2(uvBottomRight.X,uvTopLeft.Y)+UVOffset);
-            var c = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),BottomLeftColor,new Vector2(uvTopLeft.X,uvBottomRight.Y)+UVOffset);
-
-            var d = new VertexPositionColorTexture(end,BottomRightColor,uvBottomRight+UVOffset);
-
-            return new VertexPositionColorTexture[] { a,b,c,b,d,c };
+            vertices[0] = new VertexPositionColorTexture(start,TopLeftColor,uvTopLeft+UVOffset);
+            vertices[1] = new VertexPositionColorTexture(new Vector3(end.X,start.Y,start.Z),TopRightColor,new Vector2(uvBottomRight.X,uvTopLeft.Y)+UVOffset);
+            vertices[2] = new VertexPositionColorTexture(new Vector3(start.X,end.Y,end.Z),BottomLeftColor,new Vector2(uvTopLeft.X,uvBottomRight.Y)+UVOffset);
+            vertices[3] = vertices[1];
+            vertices[4] = new VertexPositionColorTexture(end,BottomRightColor,uvBottomRight+UVOffset);
+            vertices[5] = vertices[2];
         }
 
         private void TextureRectangle_OnLoad() {
-            bufferSet = Owner.CreateBufferSet(GetVertices(TopLeft,BottomRight));
+            bufferSet = Owner.CreateBufferSet(vertices);
             
             effect = new BasicEffect(Game.GraphicsDevice) {
                 TextureEnabled = true,
@@ -146,13 +147,15 @@ namespace TwelveEngine.Game3D.Entity {
 
         public bool PixelSmoothing { get; set; } = true;
 
-        private void SetEffectWorldMatrix(Matrix matrix) => effect.World = matrix;
+        protected override void ApplyWorldMatrix(Matrix matrix) {
+            effect.World = matrix;
+        }
 
         public float Alpha { get; set; } = 1f;
 
         private void TextureRectangle_OnRender(GameTime gameTime) {
-            UpdateWorldMatrix(SetEffectWorldMatrix);
-            bufferSet.VertexBuffer.SetData(GetVertices(TopLeft,BottomRight));
+            UpdateVertices(TopLeft,BottomRight);
+            bufferSet.VertexBuffer.SetData(vertices);
             bufferSet.Apply();
             var startingSamplerState = Owner.GraphicsDevice.SamplerStates[0];
             Owner.GraphicsDevice.SamplerStates[0] = PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap;

@@ -52,9 +52,8 @@ namespace TwelveEngine.EntitySystem {
                 return;
             }
             EntitiesBuffer.Clear();
-            foreach(var kvp in Entities) {
-                var entity = kvp.Value;
-                EntitiesBuffer.Add(new RegisteredEntity(entity));
+            foreach(var entity in Entities) {
+                EntitiesBuffer.Add(new RegisteredEntity(entity.Value));
             }
             bufferNeedsUpdate = false;
         }

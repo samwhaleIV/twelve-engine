@@ -54,13 +54,7 @@ namespace TwelveEngine.Shell {
         private readonly Stopwatch watch = new Stopwatch();
         private TimeSpan updateTime, renderTime;
 
-        private double GetFps() {
-            var totalSeconds = proxyGameTime.ElapsedGameTime.TotalSeconds;
-            if(totalSeconds == 0d) {
-                return 0d;
-            }
-            return 1d / totalSeconds;
-        }
+        private readonly FPSCounter fpsCounter = new FPSCounter();
 
         private void DrawGameTimeDebug(DebugWriter writer) {
             writer.ToBottomLeft();
@@ -68,7 +62,9 @@ namespace TwelveEngine.Shell {
             writer.WriteTimeMS(renderTime,"Render");
             writer.WriteTimeMS(updateTime,"Update");
 
-            writer.WriteFPS(GetFps());
+            fpsCounter.Update(proxyGameTime.TotalGameTime);
+            writer.WriteFPS(fpsCounter.Value);
+
             writer.Write(proxyGameTime.TotalGameTime);
         }
 #endif

@@ -25,7 +25,7 @@ namespace Elves.Menu {
         private const float FOREGROUND_WATER_OPACITY = 0.592f;
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
-        public float GetMenuItemScale() => Game.Viewport.Height / VERTICAL_SCALE_DIVIDEND;
+        public float GetItemScale() => Game.Viewport.Height / VERTICAL_SCALE_DIVIDEND;
 
         public MainMenu(bool debug3D = false):base(UITextures.Nothing,true,debug3D) {
             SetBackgroundColors(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
@@ -78,7 +78,7 @@ namespace Elves.Menu {
 
         private void PlayButton_OnUpdate(GameTime gameTime) {
             Rectangle bounds = Game.Viewport.Bounds;
-            float scale = GetMenuItemScale() * PLAY_BUTTON_SCALE;
+            float scale = GetItemScale() * PLAY_BUTTON_SCALE;
             Vector2 size = playButton.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new Vector2(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             playButton.Area = new VectorRectangle(center,size);
@@ -86,7 +86,7 @@ namespace Elves.Menu {
 
         private void NameBadge_OnUpdate(GameTime gameTime) {
             Rectangle bounds = Game.Viewport.Bounds;
-            float scale = GetMenuItemScale();
+            float scale = GetItemScale();
             Vector2 size = nameBadge.TextureSource.Size.ToVector2() * scale;
 
             Vector2 center = new Vector2(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (1/3f) - size.Y * 0.5f);
@@ -95,7 +95,7 @@ namespace Elves.Menu {
 
         private void AddFloatingItems(Texture2D texture) {
             for(int i = 0;i<FloatingItem.TOTAL_ITEM_COUNT;i++) {
-                var floatingItem = new FloatingItem(random,texture);
+                var floatingItem = new FloatingItem(this,random,texture);
                 floatingItems.Add(floatingItem);
                 Entities.Add(floatingItem);
             }
@@ -103,7 +103,7 @@ namespace Elves.Menu {
 
         private void FallingElf_OnUpdate(GameTime gameTime) {
             Rectangle bounds = Game.Viewport.Bounds;
-            float scale = GetMenuItemScale();
+            float scale = GetItemScale();
             Vector2 size = fallingElf.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new Vector2(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             var t = (float)(gameTime.TotalGameTime / TimeSpan.FromSeconds(8) % 1);

@@ -8,7 +8,7 @@ using System.Diagnostics;
 using TwelveEngine;
 
 ConfigLoader.LoadEngineConfig(new TwelveConfigSet());
-using var game = new GameManager();
+using var game = new GameManager(fullscreen: false,verticalSync: true);
 game.OnLoad += Game_OnLoad;
 
 void Game_OnLoad(GameManager game) {
