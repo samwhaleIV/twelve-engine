@@ -32,9 +32,24 @@ namespace TwelveEngine.EntitySystem {
             }
         }
 
-        private readonly SortedList<int,TEntity> Entities = new SortedList<int,TEntity>(EntityManager.STARTING_CAPACITY);
-        private readonly List<RegisteredEntity> EntitiesBuffer = new List<RegisteredEntity>(EntityManager.STARTING_CAPACITY);
-        private bool bufferNeedsUpdate = false;
+        private sealed class EntityComparer:IComparer<TEntity> {
+            public int Compare(TEntity a,TEntity b) {
+                if(a.Depth == b.Depth) {
+                    return a.ID.CompareTo(b.ID); /* FIFO; oldest entity is rendered on the lowest virtual layer.
+                                                  * Perceptually, newer entities are 'closer'. */
+                } else {
+                    return a.Depth.CompareTo(b.Depth);
+                }
+            }
+        }
+
+        private readonly LowMemorySortedSet<TEntity> Entities = new LowMemorySortedSet<TEntity>(EntityManager.STARTING_CAPACITY,new EntityComparer());
+        private readonly Queue<RegisteredEntity> EntitiesBuffer = new Queue<RegisteredEntity>(EntityManager.STARTING_CAPACITY);
+
+        private void Entity_OnDepthChanged(Entity<TOwner> entity) {
+            Entities.Remove(entity.ID);
+            Entities.Add(entity.ID,(TEntity)entity);
+        }
 
         public EntityManager(TOwner owner) {
             if(owner == null) {
@@ -47,13 +62,15 @@ namespace TwelveEngine.EntitySystem {
         private int IDCounter = EntityManager.START_ID;
         private int GetNextID() => IDCounter++;
 
+        private bool bufferNeedsUpdate = false;
+
         private void TryUpdateBuffer() {
             if(!bufferNeedsUpdate) {
                 return;
             }
             EntitiesBuffer.Clear();
-            foreach(var entity in Entities) {
-                EntitiesBuffer.Add(new RegisteredEntity(entity.Value));
+            for(int i = 0;i<Entities.Count;i++) {
+                EntitiesBuffer.Enqueue(new RegisteredEntity(Entities.List[i]));
             }
             bufferNeedsUpdate = false;
         }
@@ -94,19 +111,6 @@ namespace TwelveEngine.EntitySystem {
             IsIterating = false;
         }
 
-        private class RenderBufferSort:IComparer<TEntity> {
-            public int Compare(TEntity a,TEntity b) {
-                if(a.Depth == b.Depth) {
-                    return a.ID.CompareTo(b.ID); /* FIFO; oldest entity is rendered on the lowest virtual layer.
-                                                  * Perceptually, newer entities are 'closer'. */
-                } else {
-                    return a.Depth.CompareTo(b.Depth);
-                }
-            }
-        }
-
-        private readonly SortedSet<TEntity> renderBuffer = new SortedSet<TEntity>(new RenderBufferSort());
-
         public void Render(GameTime gameTime) {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
@@ -116,15 +120,9 @@ namespace TwelveEngine.EntitySystem {
             }
             IsIteratingSorted = true;
             IsIterating = true;
-            TryUpdateBuffer();
-            foreach(var entity in Entities) {
-                renderBuffer.Add(entity.Value);
+            for(int i = 0;i<Entities.Count;i++) {
+                Entities.List[i].Render(gameTime);
             }
-            foreach(var entity in renderBuffer) {
-                entity.Render(gameTime);
-            }
-            renderBuffer.Clear();
-
             IsIteratingSorted = false;
             IsIterating = false;
         }
@@ -138,9 +136,8 @@ namespace TwelveEngine.EntitySystem {
             }
             IsIteratingSorted = true;
             IsIterating = true;
-            /* Prerendering is not sorted */
-            foreach(var entity in Entities) {
-                entity.Value.PreRender(gameTime);
+            for(int i = 0;i<Entities.Count;i++) {
+                Entities.List[i].PreRender(gameTime);
             }
             IsIteratingSorted = false;
             IsIterating = false;
@@ -163,6 +160,7 @@ namespace TwelveEngine.EntitySystem {
             Container.Writer.AddEntity(entity);
             entity.Load();
             Entities.Add(entity.ID,entity);
+            entity.OnDepthChanged += Entity_OnDepthChanged;
             bufferNeedsUpdate = true;
             if(IsIterating) {
                 AdditionQueue.Enqueue(new RegisteredEntity(entity));
@@ -187,8 +185,8 @@ namespace TwelveEngine.EntitySystem {
                 );
             }
             Container.Writer.RemoveEntity(entity);
-            entity.Remove();
             entity.Unload();
+            entity.OnDepthChanged -= Entity_OnDepthChanged;
             Entities.Remove(entity.ID);
             bufferNeedsUpdate = true;
         }
@@ -220,21 +218,19 @@ namespace TwelveEngine.EntitySystem {
                 return;
             }
 
-            /* Just trying to drop as many references as possible, so GC can work faster
-             * to cleanup any entities with huge amounts of data in their object */
-            EntitiesBuffer.Clear();
             bufferNeedsUpdate = false;
 
             Queue<TEntity> entitiesCopy = new Queue<TEntity>(Entities.Count);
-            foreach(var kvp in Entities) {
-                entitiesCopy.Enqueue(kvp.Value);
+
+            for(int i = 0;i<Entities.Count;i++) {
+                entitiesCopy.Enqueue(Entities.List[i]);
             }
+
             while(entitiesCopy.TryDequeue(out var entity)) {
                 Container.Writer.RemoveEntity(entity);
+                entity.OnDepthChanged -= Entity_OnDepthChanged;
                 entity.Unload();
-                Entities.Remove(entity.ID);
             }
-            Entities.Clear();
         }
     }
 }

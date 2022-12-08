@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Shell.UI {
     public sealed class DebugWriter {
 
+        private const string NUMBER_FORMAT = "{0:0.00}";
+
         private readonly GameManager game;
 
         public DebugWriter(GameManager game) => this.game = game;
@@ -80,10 +82,6 @@ namespace TwelveEngine.Shell.UI {
             writer.Append(": ");
         }
 
-        private void AppendNumber(double value) {
-            writer.AppendFormat("{0:0.00}",value);
-        }
-
         private void DrawString() {
             var position = GetPosition();
             game.SpriteBatch.DrawString(Font,writer,position,renderState.Color);
@@ -99,14 +97,14 @@ namespace TwelveEngine.Shell.UI {
 
         public void WriteTimeMS(TimeSpan time,string label = null) {
             WriteLabel(label);
-            AppendNumber(time.TotalMilliseconds);
+            writer.AppendFormat(NUMBER_FORMAT,time.TotalMilliseconds);
             writer.Append("ms");
             DrawString();
         }
 
         public void WriteFPS(double fps) {
             WriteLabel("FPS");
-            AppendNumber(fps);
+            writer.AppendFormat(NUMBER_FORMAT,fps);
             DrawString();
         }
 
@@ -138,17 +136,17 @@ namespace TwelveEngine.Shell.UI {
 
         public void WriteRange(float value,float max,string label = null) {
             WriteLabel(label);
-            AppendNumber(value);
+            writer.AppendFormat(NUMBER_FORMAT,value);
             writer.Append(" / ");
-            AppendNumber(max);
+            writer.AppendFormat(NUMBER_FORMAT,max);
             DrawString();
         }
 
         public void WriteRange(double value,double max,string label = null) {
             WriteLabel(label);
-            AppendNumber(value);
+            writer.AppendFormat(NUMBER_FORMAT,value);
             writer.Append(" / ");
-            AppendNumber(max);
+            writer.AppendFormat(NUMBER_FORMAT,max);
             DrawString();
         }
 
@@ -170,14 +168,6 @@ namespace TwelveEngine.Shell.UI {
             DrawString();
         }
 
-        public void Write(Vector2 vector,string label = null) {
-            WriteLabel(label);
-            AppendNumber(vector.X);
-            writer.Append(", ");
-            AppendNumber(vector.Y);
-            DrawString();
-        }
-
         public void Write(Point point,string label = null) {
             WriteLabel(label);
             writer.Append(point.X);
@@ -186,14 +176,22 @@ namespace TwelveEngine.Shell.UI {
             DrawString();
         }
 
+        public void Write(Vector2 vector,string label = null) {
+            WriteLabel(label);
+            writer.AppendFormat(NUMBER_FORMAT,vector.X);
+            writer.Append(", ");
+            writer.AppendFormat(NUMBER_FORMAT,vector.Y);
+            DrawString();
+        }
+
         public void Write(Vector3 vector,string label = null) {
             WriteLabel(label);
             writer.Append("X ");
-            AppendNumber(vector.X);
+            writer.AppendFormat(NUMBER_FORMAT,vector.X);
             writer.Append("  Y ");
-            AppendNumber(vector.Y);
+            writer.AppendFormat(NUMBER_FORMAT,vector.Y);
             writer.Append("  Z ");
-            AppendNumber(vector.Z);
+            writer.AppendFormat(NUMBER_FORMAT,vector.Z);
             DrawString();
         }
 
@@ -202,13 +200,13 @@ namespace TwelveEngine.Shell.UI {
                 writer.Append(xLabel);
                 writer.Append(' ');
             }
-            AppendNumber(x);
+            writer.AppendFormat(NUMBER_FORMAT,x);
             writer.Append("  ");
             if(yLabel != null) {
                 writer.Append(yLabel);
                 writer.Append(' ');
             }
-            AppendNumber(y);
+            writer.AppendFormat(NUMBER_FORMAT,y);
             DrawString();
         }
 

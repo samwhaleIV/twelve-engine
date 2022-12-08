@@ -12,6 +12,7 @@ namespace TwelveEngine.Game3D.Entity {
 
         private Vector3 _position = Vector3.Zero;
         private Vector3 _rotation = Vector3.Zero;
+
         private Vector3 _scale = Vector3.One;
 
         protected override float GetDepth() {
@@ -30,7 +31,11 @@ namespace TwelveEngine.Game3D.Entity {
                 if(_position == value) {
                     return;
                 }
+                float oldZ = _position.Z;
                 _position = value;
+                if(oldZ != value.Z) {
+                    FireDepthChanged();
+                }
                 PositionValid = false;
                 WorldMatrixValid = false;
             }

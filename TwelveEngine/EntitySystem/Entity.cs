@@ -42,14 +42,30 @@ namespace TwelveEngine.EntitySystem {
             EntityManager = entityManager;
         }
 
-        protected event Action OnLoad, OnUnload, OnRemove;
+        protected event Action OnLoad, OnUnload;
+
+        internal event Action<Entity<TOwner>> OnDepthChanged;
 
         private float depth = 0f;
 
-        protected virtual float GetDepth() => depth;
-        protected virtual void SetDepth(float value) => depth = value;
+        protected void FireDepthChanged() => OnDepthChanged?.Invoke(this);
 
-        public float Depth { get => GetDepth(); set => SetDepth(value); }
+        protected virtual float GetDepth() {
+            return depth;
+        }
+
+        protected virtual void SetDepth(float value) {
+            if(depth == value) {
+                return;
+            }
+            depth = value;
+            OnDepthChanged?.Invoke(this);
+        }
+
+        public float Depth {
+            get => GetDepth();
+            set => SetDepth(value);
+        }
 
         internal void Load() {
             IsLoading = true;
@@ -64,10 +80,6 @@ namespace TwelveEngine.EntitySystem {
             Owner = null;
             Game = null;
             IsLoaded = false;
-        }
-
-        internal void Remove() {
-            OnRemove?.Invoke();
         }
 
         public bool IsVisible { get; set; } = true;

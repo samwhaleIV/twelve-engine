@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\LowMemorySortedSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\PhysicsEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity\TopDownPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\MapFormat\LayerEncodingMode.cs" />
