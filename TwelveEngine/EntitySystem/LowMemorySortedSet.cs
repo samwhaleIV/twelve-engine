@@ -7,12 +7,14 @@ namespace TwelveEngine.EntitySystem {
 
         private readonly IComparer<T> comparer;
 
-        //todo dynamically resizing list
-        public LowMemorySortedSet(int maxItems,IComparer<T> comparer) {
-            list = new T[maxItems];
-            idList = new int[maxItems];
+        private const int NO_ID = -1;
+        private bool IsEmptyID(int ID) => ID < 0;
+
+        public LowMemorySortedSet(int capacity,IComparer<T> comparer) {
+            list = new T[capacity];
+            idList = new int[capacity];
             for(int i = 0;i<idList.Length;i++) {
-                idList[i] = -1;
+                idList[i] = NO_ID;
             }
             this.comparer = comparer;
         }
@@ -38,8 +40,6 @@ namespace TwelveEngine.EntitySystem {
         /* Key == int ID */
         private Dictionary<int,IndexWrapper> lookupTable = new Dictionary<int,IndexWrapper>();
 
-        private bool IsEmptyID(int ID) => ID < 0;
-
         private int GetInsertionIndex(T value) {
             int index = Array.BinarySearch(list,0,Count,value,comparer);
             if(index >= 0) {
@@ -58,10 +58,31 @@ namespace TwelveEngine.EntitySystem {
             lookupTable[id] = wrapper;
         }
 
+        private void ResizeList() {
+            int newSize = (int)MathF.Pow(2,MathF.Ceiling(MathF.Log(Count + 1)/MathF.Log(2)));
+
+            T[] newList = new T[newSize];
+            int[] newIDList = new int[newSize];
+
+            for(int i = 0;i<Count;i++) {
+                newList[i] = list[i];
+                newIDList[i] = idList[i];
+            }
+            for(int i = Count;i<newSize;i++) {
+                newIDList[i] = NO_ID;
+            }
+
+            list = newList;
+            idList = newIDList;
+        }
+
         /* ID must start at 1 and not 0, so we can detect an empty spot in the buffer */
         public void Add(int ID,T value) {
             if(IsEmptyID(ID)) {
                 throw new ArgumentException("ID cannot be less than 0!","ID");
+            }
+            if(Count + 1 == list.Length) {
+                ResizeList();
             }
 
             int index = GetInsertionIndex(value);
