@@ -41,20 +41,11 @@ namespace TwelveEngine.EntitySystem {
         private bool IsEmptyID(int ID) => ID < 0;
 
         private int GetInsertionIndex(T value) {
-            //todo: convert this to a binary search, you lazy fuck!
-
-            int index = 0, comparison;
-            do {
-                T item = list[index];
-                if(IsEmptyID(idList[index])) { /* assumes id counter starts at 1, and 0 is virtual null */
-                    return index;
-                }
-                index += 1;
-                comparison = comparer.Compare(value,item);
-            } while(comparison == 1 && !(index > Count)); /* Sorted in ascending order */
-            index -= 1;
-
-            return index;
+            int index = Array.BinarySearch(list,0,Count,value,comparer);
+            if(index >= 0) {
+                return index;
+            }
+            return -index - 1;
         }
 
         private void UpdateIndexWrapper(int oldIndex,int newIndex) {
