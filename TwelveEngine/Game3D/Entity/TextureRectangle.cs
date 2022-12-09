@@ -27,6 +27,8 @@ namespace TwelveEngine.Game3D.Entity {
             OnUnload += TextureRectangle_OnUnload;
         }
 
+        private BufferSet bufferSet;
+
         public Vector2 UVOffset = Vector2.Zero;
 
         public Color TopLeftColor { get; set; } = Color.White;
@@ -74,7 +76,6 @@ namespace TwelveEngine.Game3D.Entity {
         public bool MirrorY { get; set; } = false;
         public bool MirrorZ { get; set; } = false;
 
-        private const int SharedBufferVertexCount = 6;
         private VertexPositionColorTexture[] GetVertices(Vector3 start,Vector3 end) {
 
             Vector2 uvTopLeft = UVTopLeft;
@@ -108,11 +109,9 @@ namespace TwelveEngine.Game3D.Entity {
             return new VertexPositionColorTexture[] { a,b,c,b,d,c };
         }
 
-        private int sharedBufferIndex = 0;
-
         private void TextureRectangle_OnLoad() {
-            sharedBufferIndex = Owner.SharedBuffer.Allocate(SharedBufferVertexCount);
-
+            bufferSet = Owner.CreateBufferSet(GetVertices(TopLeft,BottomRight));
+            
             effect = new BasicEffect(Game.GraphicsDevice) {
                 TextureEnabled = true,
                 VertexColorEnabled = true,
@@ -135,7 +134,8 @@ namespace TwelveEngine.Game3D.Entity {
         }
 
         private void TextureRectangle_OnUnload() {
-            Owner.SharedBuffer?.Release(sharedBufferIndex);
+            bufferSet?.Dispose();
+            bufferSet = null;
 
             Owner.OnProjectionMatrixChanged -= Owner_OnProjectionMatrixChanged;
             Owner.OnViewMatrixChanged -= Owner_OnViewMatrixChanged;
@@ -152,14 +152,14 @@ namespace TwelveEngine.Game3D.Entity {
 
         private void TextureRectangle_OnRender(GameTime gameTime) {
             UpdateWorldMatrix(SetEffectWorldMatrix);
-            Owner.SharedBuffer.SetVertices(sharedBufferIndex,GetVertices(TopLeft,BottomRight));
-            Owner.ApplySharedBuffer();
+            bufferSet.VertexBuffer.SetData(GetVertices(TopLeft,BottomRight));
+            bufferSet.Apply();
             var startingSamplerState = Owner.GraphicsDevice.SamplerStates[0];
             Owner.GraphicsDevice.SamplerStates[0] = PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap;
             effect.Alpha = Alpha;
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();
-                effect.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,0,sharedBufferIndex,SharedBufferVertexCount / 3);
+                effect.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,0,0,bufferSet.VertexCount / 3);
             }
             Owner.GraphicsDevice.SamplerStates[0] = startingSamplerState;
         }

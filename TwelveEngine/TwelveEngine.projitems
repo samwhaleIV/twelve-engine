@@ -21,9 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\ObjectManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\PhysicsGameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\VectorRectangle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game3D\BufferSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\Screenspace3DSprite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game3D\SharedBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TypeParser.cs" />
@@ -35,6 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\EntityContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\BufferSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\AngleCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\Camera3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Entity3D.cs" />

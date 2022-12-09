@@ -40,13 +40,13 @@ namespace TwelveEngine.Game3D {
             var vertexBuffer = new VertexBuffer(graphicsDevice,typeof(TVertex),vertices.Length,BufferUsage.WriteOnly);
             var indexBuffer = new IndexBuffer(graphicsDevice,IndexElementSize.SixteenBits,vertices.Length,BufferUsage.WriteOnly);
 
-            ushort[] indices = new ushort[indexBuffer.IndexCount];
-            for(ushort i = 0;i < indices.Length;i++) {
+            var indices = new short[indexBuffer.IndexCount];
+            for(short i = (short)(indices.Length-1);i>=0;i--) {
                 indices[i] = i;
             }
+            vertexBuffer.SetData(vertices);
             indexBuffer.SetData(indices);
 
-            vertexBuffer.SetData(vertices);
             return new BufferSet(graphicsDevice,vertexBuffer,indexBuffer,vertices.Length);
         }
     }
