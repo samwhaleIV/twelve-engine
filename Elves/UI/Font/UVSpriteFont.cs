@@ -7,17 +7,39 @@ using System.Text;
 namespace Elves.UI.Font {
     public sealed class UVSpriteFont {
 
+        private const int CHARACTER_QUEUE_SIZE = 16;
+        private const int CHARACTER_QUEUE_COUNT = 64;
+
         private readonly int lineHeight, letterSpacing, wordSpacing;
         private readonly Texture2D texture;
 
         private readonly Dictionary<char,Rectangle> glyphs;
 
-        public UVSpriteFont(Texture2D texture,int lineHeight,int letterSpacing,int wordSpacing,Dictionary<char,Rectangle> glyphs) {
+        private int characterQueueStartSize;
+
+        public UVSpriteFont(
+            Texture2D texture,
+            int lineHeight,
+            int letterSpacing,
+            int wordSpacing,
+            Dictionary<char,Rectangle> glyphs,
+            int? wordQueueSize = null,
+            int? wordQueuePoolSize = null
+        ) {
             this.texture = texture;
             this.lineHeight = lineHeight;
             this.letterSpacing = letterSpacing;
             this.wordSpacing = wordSpacing;
             this.glyphs = glyphs;
+
+            int characterQueueSize = wordQueueSize ?? CHARACTER_QUEUE_SIZE;
+            int characterQueueCount = wordQueuePoolSize ?? CHARACTER_QUEUE_COUNT;
+
+            characterQueueStartSize = characterQueueSize;
+
+            for(int i = 0;i<characterQueueCount;i++) {
+                characterQueuePool.Enqueue(new Queue<char>(characterQueueSize));
+            }
         }
 
         private Rectangle GlyphOrDefault(char character) {
@@ -37,10 +59,27 @@ namespace Elves.UI.Font {
             this.spriteBatch = spriteBatch;
         }
 
-        private Queue<char[]> words = new Queue<char[]>();
-        private Queue<char> wordBuffer = new Queue<char>();
+        private readonly Queue<Queue<char>> characterQueuePool = new Queue<Queue<char>>();
 
-        private int MeasureWordWidth(char[] word,int scale,int letterSpacing) {
+        private Queue<char> GetPooledCharacterQueue() {
+            Queue<char> queue;
+            if(characterQueuePool.Count <= 0) {
+                queue = new Queue<char>(characterQueueStartSize);
+            } else {
+                queue = characterQueuePool.Dequeue();
+            }
+            return queue;
+        }
+
+        private void ReturnPooledCharacterQueue(Queue<char> characterQueue) {
+            characterQueue.Clear();
+            characterQueuePool.Enqueue(characterQueue);
+        }
+
+        private readonly Queue<Queue<char>> words = new Queue<Queue<char>>();
+        private readonly Queue<char> wordBuffer = new Queue<char>();
+
+        private int MeasureWordWidth(Queue<char> word,int scale,int letterSpacing) {
             int width = 0;
             foreach(var character in word) {
                 Rectangle glyph = GlyphOrDefault(character);
@@ -52,13 +91,18 @@ namespace Elves.UI.Font {
 
         private void TryFlushWordBuffer() {
             if(wordBuffer.Count > 0) {
-                words.Enqueue(wordBuffer.ToArray());
+                var characterQueue = GetPooledCharacterQueue();
+                foreach(char character in wordBuffer) {
+                    characterQueue.Enqueue(character);
+                }
+                words.Enqueue(characterQueue);
                 wordBuffer.Clear();
             }
         }
 
         private void FillWordsQueue(StringBuilder stringBuilder) {
-            foreach(var character in stringBuilder.ToString()) {
+            for(int i = 0;i<stringBuilder.Length;i++) {
+                char character = stringBuilder[i];
                 if(character == ' ') {
                     TryFlushWordBuffer();
                     continue;
@@ -69,6 +113,9 @@ namespace Elves.UI.Font {
         }
 
         private void EmptyWordsQueue() {
+            foreach(var characterQueue in words) {
+                ReturnPooledCharacterQueue(characterQueue);
+            }
             words.Clear();
         }
 
