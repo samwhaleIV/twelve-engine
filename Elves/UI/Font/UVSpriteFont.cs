@@ -13,7 +13,7 @@ namespace Elves.UI.Font {
         private readonly int lineHeight, letterSpacing, wordSpacing;
         private readonly Texture2D texture;
 
-        private readonly Dictionary<char,Rectangle> glyphs;
+        private readonly Dictionary<char,Glyph> glyphs;
 
         private int characterQueueStartSize;
 
@@ -22,7 +22,7 @@ namespace Elves.UI.Font {
             int lineHeight,
             int letterSpacing,
             int wordSpacing,
-            Dictionary<char,Rectangle> glyphs,
+            Dictionary<char,Glyph> glyphs,
             int? wordQueueSize = null,
             int? wordQueuePoolSize = null
         ) {
@@ -42,9 +42,9 @@ namespace Elves.UI.Font {
             }
         }
 
-        private Rectangle GlyphOrDefault(char character) {
-            if(!glyphs.TryGetValue(character,out Rectangle value)) {
-                value = new Rectangle();
+        private Glyph GlyphOrDefault(char character) {
+            if(!glyphs.TryGetValue(character,out Glyph value)) {
+                value = new Glyph();
             }
             return value;
         }
@@ -82,8 +82,8 @@ namespace Elves.UI.Font {
         private int MeasureWordWidth(Queue<char> word,int scale,int letterSpacing) {
             int width = 0;
             foreach(var character in word) {
-                Rectangle glyph = GlyphOrDefault(character);
-                width += glyph.Width * scale + letterSpacing;
+                Glyph glyph = GlyphOrDefault(character);
+                width += glyph.Source.Width * scale + letterSpacing;
             }
             width -= letterSpacing;
             return width;
@@ -119,11 +119,12 @@ namespace Elves.UI.Font {
             words.Clear();
         }
 
-        private int DrawGlpyh(char character,int x,int y,int scale,Color color) {
-            Rectangle glyph = GlyphOrDefault(character);
-            Rectangle destination = new Rectangle(x,y,glyph.Width*scale,glyph.Height*scale);
-            spriteBatch.Draw(texture,destination,glyph,color);
-            return glyph.Width;
+        private int DrawGlyph(char character,int x,int y,int scale,Color color) {
+            Glyph glyph = GlyphOrDefault(character);
+            Rectangle glyphArea = glyph.Source;
+            Rectangle destination = new Rectangle(x,y+glyph.YOffset*scale,glyphArea.Width*scale,glyphArea.Height*scale);
+            spriteBatch.Draw(texture,destination,glyphArea,color);
+            return destination.Width;
         }
 
         public void Draw(StringBuilder stringBuilder,Point destination,int scale,Color? color = null,int? maxWidth = null) {
@@ -148,7 +149,7 @@ namespace Elves.UI.Font {
                     y += lineHeight;
                 }
                 foreach(var character in word) {
-                    x += DrawGlpyh(character,x,y,scale,glyphColor) * scale + letterSpacing;
+                    x += DrawGlyph(character,x,y,scale,glyphColor) + letterSpacing;
                 }
                 x = x - letterSpacing + wordSpacing;
             }
@@ -176,7 +177,7 @@ namespace Elves.UI.Font {
 
             foreach(var word in words) {
                 foreach(var character in word) {
-                    x += DrawGlpyh(character,x,y,scale,glyphColor) * scale + letterSpacing;
+                    x += DrawGlyph(character,x,y,scale,glyphColor) + letterSpacing;
                 }
                 x = x - letterSpacing + wordSpacing;
             }

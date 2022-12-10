@@ -23,7 +23,7 @@ namespace Elves.Battle {
                 Entities.Add(new HarmlessElf());
             };
 
-            var stringBuilder = new StringBuilder("Hello, world!");
+            var stringBuilder = new StringBuilder("Kerning? Never heard of her...");
             OnRender += gameTime => {
                 RenderEntities(gameTime);
 

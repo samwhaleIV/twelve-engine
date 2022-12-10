@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Fonts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Glyph.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\TwelvenFontData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Save\SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
