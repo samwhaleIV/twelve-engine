@@ -6,23 +6,23 @@ using System.Text;
 
 namespace Elves.UI.Battle {
 
-    public enum ButtonPosition { TopLeft, TopRight, BottomLeft, BottomRight }
+    public enum OffscreenDirection { Left, Right }
     public enum ButtonMoveDirection { Away, Back }
 
     public sealed class ActionButton:Button {
 
+        public ActionButton() {
+            Texture = UITextures.Panel;
+            TextureSource = new Rectangle(0,16,32,16);
+        }
+
         private const float MOVEMENT_DURATION = 200;
-
-        private const float PRESSED_DARKENING = 0.25f;
-        private const float COLOR_INTENSITY = 0.9f;
-
-        private static readonly Color PressedColor = Color.Lerp(Color.Black,Color.White,PRESSED_DARKENING);
 
         private static readonly TimeSpan MovementDuration = TimeSpan.FromMilliseconds(MOVEMENT_DURATION);
 
         public readonly StringBuilder Label = new StringBuilder();
 
-        public ButtonPosition Position { get; set; }
+        public OffscreenDirection OffscreenDirection { get; set; } = OffscreenDirection.Left;
 
         public ButtonMoveDirection MoveDirection { get; set; } = ButtonMoveDirection.Back;
         private TimeSpan MoveStart = -MovementDuration;
@@ -75,16 +75,39 @@ namespace Elves.UI.Battle {
         }
         public void MoveBack() => Move(ButtonMoveDirection.Back);
 
-        private Color GetPressedColor(Color tint) => Color.Lerp(PressedColor,tint,COLOR_INTENSITY);
-        private Color GetSelectedColor(Color tint) => Color.Lerp(Color.White,tint,COLOR_INTENSITY);
+        private static readonly Color PressedColor = Color.Lerp(Color.White,Color.Black,0.1f);
+        private static readonly Color SelectColor = Color.Lerp(Color.White,Color.Black,0.05f);
 
         private Color GetButtonColor(Color tint) {
             if(Pressed) {
-                return GetPressedColor(tint);
+                return PressedColor;
             } else if(Selected) {
-                return GetSelectedColor(tint);
+                return SelectColor;
             }
             return Color.White;
+        }
+
+        public void Update(Rectangle viewport,TimeSpan now) {
+            Rectangle area = Area;
+            float offscreenX;
+
+            if(OffscreenDirection == OffscreenDirection.Left) {
+                offscreenX = viewport.Left - area.Width;
+            } else {
+                offscreenX = viewport.Right;
+            }
+            
+            currentTime = now;
+            float t = GetAnimationNormal();
+            if(MoveDirection == ButtonMoveDirection.Back) {
+                t = 1 - t;
+            }
+            area.X = (int)((1 - t) * area.X + t * offscreenX);
+            Area = area;
+        }
+
+        public void DrawText(UVSpriteFont spriteFont,int scale) {
+            spriteFont.DrawCentered(Label,Area.Center,scale,Color.White);
         }
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {
@@ -93,59 +116,11 @@ namespace Elves.UI.Battle {
             }
             Color tint = color ?? Color.White;
             if(MoveDirection == ButtonMoveDirection.Away && moveAwayWhileActive) {
-                tint = GetSelectedColor(tint);
+                tint = PressedColor;
             } else {
                 tint = GetButtonColor(tint);
             }
-            base.Draw(spriteBatch,tint);
-        }
-
-        public void Update(
-            int width,
-            int height,
-            int centerX,
-            int centerY,
-            int minX,
-            int maxX,
-            int margin,
-            TimeSpan now
-        ) {
-            float x = centerX, offscreenX;
-            int y = centerY;
-            switch(Position) {
-                default:
-                case ButtonPosition.TopLeft:
-                    x -= margin + width;
-                    y -= margin + height;
-                    offscreenX = minX - width;
-                    break;
-                case ButtonPosition.TopRight:
-                    x += margin;
-                    y -=  margin + height;
-                    offscreenX = maxX;
-                    break;
-                case ButtonPosition.BottomLeft:
-                    x -= margin + width;
-                    y += margin;
-                    offscreenX = minX - width;
-                    break;
-                case ButtonPosition.BottomRight:
-                    x += margin;
-                    y += margin;
-                    offscreenX = maxX;
-                    break;
-            }
-            currentTime = now;
-            float t = GetAnimationNormal();
-            if(MoveDirection == ButtonMoveDirection.Back) {
-                t = 1 - t;
-            }
-            x = (1 - t) * x + t * offscreenX;
-            Area = new Rectangle((int)x,y,width,height);
-        }
-
-        public void DrawText(UVSpriteFont spriteFont,int scale) {
-            spriteFont.DrawCentered(Label,Area.Center,scale,Color.White);
+            spriteBatch.Draw(Texture,Area,TextureSource,tint);
         }
     }
 }

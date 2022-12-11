@@ -14,6 +14,7 @@ namespace Elves.Battle {
 
         private BattleUI battleUI;
 
+        public Color PlayerTint { get; set; } = Color.White;
         public Color Tint { get; set; } = Color.White;
 
         public BattleScene(string backgroundImage = "Backgrounds/checkerboard") :base(backgroundImage) {
@@ -57,11 +58,11 @@ namespace Elves.Battle {
         }
 
         private void BattleScene_OnUpdateUI(GameTime gameTime) {
-            battleUI.UpdateUI(GetUIScale());
+            battleUI.Update((int)GetUIScale());
         }
 
         private void BattleScene_OnRender(GameTime gameTime) {
-            battleUI.Render(GetUIScale(),Tint,Game.SpriteBatch);
+            battleUI.Render((int)GetUIScale(),Color.White,Tint,Game.SpriteBatch);
         }
     }
 }

@@ -14,8 +14,27 @@ namespace Elves.UI.Battle {
             this.game = game;
             foreach(var button in actionButtons) {
                 interactableElements.Add(button);
-                button.OnClick += TestButtonAnimation;
             }
+            TopLeftButton.OnClick += TestButtonAnimation;
+
+            playerHealthBar.Value = 1;
+            targetHealthBar.Value = 1;
+
+            TopRightButton.OnClick += () => {
+                playerHealthBar.DropHealthAnimate(Now);
+                playerHealthBar.Value -= 0.05f;
+                if(playerHealthBar.Value < 0) {
+                    playerHealthBar.Value = 1;
+                }
+            };
+
+            BottomRightButton.OnClick += () => {
+                targetHealthBar.DropHealthAnimate(Now);
+                targetHealthBar.Value -= 0.05f;
+                if(targetHealthBar.Value < 0) {
+                    targetHealthBar.Value = 1;
+                }
+            };
             interactableElements.Add(targetButton);
         }
 
@@ -24,16 +43,27 @@ namespace Elves.UI.Battle {
 
         private Button activeButton = null, pressedButton = null;
 
-        private readonly HealthBar playerHealthBar = new HealthBar(), targetHealthBar = new HealthBar();
+        private readonly HealthBar playerHealthBar = new HealthBar() {
+            Alignment = HealthBarAlignment.Left
+        };
+
+        private readonly HealthBar targetHealthBar = new HealthBar() {
+            Alignment = HealthBarAlignment.Right
+        };
 
         private readonly Tagline tagline = new Tagline();
 
         private ActionButton[] actionButtons = new ActionButton[] {
-            new ActionButton() { Position = ButtonPosition.TopLeft },
-            new ActionButton() { Position = ButtonPosition.TopRight },
-            new ActionButton() { Position = ButtonPosition.BottomLeft },
-            new ActionButton() { Position = ButtonPosition.BottomRight }
+            new ActionButton() { OffscreenDirection = OffscreenDirection.Left },
+            new ActionButton() { OffscreenDirection = OffscreenDirection.Left },
+            new ActionButton() { OffscreenDirection = OffscreenDirection.Right },
+            new ActionButton() { OffscreenDirection = OffscreenDirection.Right }
         };
+
+        private ActionButton TopLeftButton => actionButtons[0];
+        private ActionButton BottomLeftButton => actionButtons[1];
+        private ActionButton TopRightButton => actionButtons[2];
+        private ActionButton BottomRightButton => actionButtons[3];
 
         private readonly SpeechBox speechBox = new SpeechBox();
         private readonly TargetButton targetButton = new TargetButton();
@@ -56,11 +86,11 @@ namespace Elves.UI.Battle {
                     break;
                 }
             }
-            lastMousePosition = new Point(x,y);
             return newButton;
         }
 
         private void UpdateButtonFocus(int x,int y) {
+            lastMousePosition = new Point(x,y);
             var button = GetButtonAtPosition(x,y);
             if(activeButton != null) {
                 activeButton.Selected = false;
@@ -91,7 +121,7 @@ namespace Elves.UI.Battle {
         }
 
         public void MouseRelease(int x,int y) {
-            UpdateButtonFocus(x,y);
+            lastMousePosition = new Point(x,y);
             if(activeButton == null || pressedButton == null || pressedButton != activeButton) {
                 if(pressedButton == null) {
                     return;
@@ -106,25 +136,53 @@ namespace Elves.UI.Battle {
             button.Pressed = false;
         }
 
-        public void UpdateUI(int scale) {
+
+        public void Update(int scale) {
+
             Rectangle viewport = Viewport;
-            float baseHeight = viewport.Height * 0.2f;
-
-            float buttonScale = baseHeight / 15;
-            float margin = buttonScale / 2;
-
-
-
-            int buttonHeight = (int)(baseHeight - margin * 2f);
-            int buttonWidth = buttonHeight * 3;
+            TimeSpan now = Now;
 
             int centerX = viewport.Center.X;
+
+            int margin = scale;
+            int halfMargin = margin / 2;
+
+            int buttonHeight = viewport.Height / 4 - margin;
+            int buttonWidth = buttonHeight * 2;
+
             int buttonCenterY = (int)(viewport.Height * 0.75f);
 
+            int buttonMargin = halfMargin;
+
+            int bottomRowY = buttonCenterY + buttonMargin;
+            int topRowY = buttonCenterY - buttonMargin - buttonHeight;
+
+            BottomLeftButton.Area = new Rectangle(centerX-buttonMargin-buttonWidth,bottomRowY,buttonWidth,buttonHeight);
+            BottomRightButton.Area = new Rectangle(centerX+buttonMargin,bottomRowY,buttonWidth,buttonHeight);
+
+            TopLeftButton.Area = new Rectangle(centerX-buttonMargin-buttonWidth,topRowY,buttonWidth,buttonHeight);
+            TopRightButton.Area = new Rectangle(centerX+buttonMargin,topRowY,buttonWidth,buttonHeight);
+
+            int healthBarY = margin;
+
+            int playerHealthBarLeft = margin;
+            int playerHealthBarRight = centerX - margin;
+
+            int targetHealthBarLeft = centerX + margin;
+            int targetHealthBarRight = viewport.Right - margin;
+
+            int healthBarHeight = buttonHeight / 2;
+
+            playerHealthBar.Area = new Rectangle(playerHealthBarLeft,healthBarY,playerHealthBarRight-playerHealthBarLeft,healthBarHeight);
+            targetHealthBar.Area = new Rectangle(targetHealthBarLeft,healthBarY,targetHealthBarRight-targetHealthBarLeft,healthBarHeight);
+
             foreach(var button in actionButtons) {
-                button.Scale = buttonHeight / 15;
-                button.Update(buttonWidth,buttonHeight,centerX,buttonCenterY,viewport.X,viewport.Width,(int)margin,Now);
+                button.Update(viewport,now);
             }
+
+            playerHealthBar.Update(scale,Now);
+            targetHealthBar.Update(scale,Now);
+
             /* Update for buttons that are changing positions */
             UpdateButtonFocus(lastMousePosition.X,lastMousePosition.Y);
         }
@@ -144,11 +202,13 @@ namespace Elves.UI.Battle {
             moveDirection = !moveDirection;
         }
 
-        public void Render(int scale,Color tint,SpriteBatch spriteBatch) {
+        public void Render(int scale,Color playerTint,Color targetTint,SpriteBatch spriteBatch) {
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             foreach(var button in actionButtons) {
-                button.Draw(spriteBatch,tint);
+                button.Draw(spriteBatch,targetTint);
             }
+            playerHealthBar.Draw(spriteBatch,playerTint);
+            targetHealthBar.Draw(spriteBatch,targetTint);
             spriteBatch.End();
             Fonts.DefaultFont.Begin(spriteBatch);
             foreach(var button in actionButtons) {

@@ -7,7 +7,31 @@ using TwelveEngine.Game3D.Entity.Types;
 namespace Elves {
     public class OrthoBackgroundState:World {
 
-        private const int MAX_UI_SCALE = 8;
+        private readonly bool debug3D = false;
+
+        protected bool Debug3D => debug3D;
+
+        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true,bool debug3D = false) {
+            WriteDebugEnabled = debug3D;
+            this.backgroundImage = backgroundImage;
+            this.smoothBackground = smoothBackground;
+            this.debug3D = debug3D;
+            OnLoad += OrthoBackgroundState_OnLoad;
+            Initialize();
+        }
+
+        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true,bool debug3D = false) {
+            WriteDebugEnabled = debug3D;
+            backgroundImageTexture = backgroundImage;
+            this.smoothBackground = smoothBackground;
+            this.debug3D = debug3D;
+            OnLoad += OrthoBackgroundState_OnLoad;
+            Initialize();
+        }
+
+        private const float VERTICAL_SCALE_DIVIDEND = 70f;
+        public float GetUIScale() => Game.Viewport.Height / VERTICAL_SCALE_DIVIDEND;
+
         private const string BACKGROUND_ENTITY_NAME = "Background";
 
         public double ScrollingBackgroundPeriod { get; set; } = 60d;
@@ -35,12 +59,6 @@ namespace Elves {
             return colors;
         }
 
-        public int GetUIScale() {
-            int screenHeight = Game.Viewport.Height;
-            /* 2160 (4K) / 8 = 270 */
-            return Math.Min(Math.Max(screenHeight / 270 - 2,1),MAX_UI_SCALE);
-        }
-
         private TextureEntity background;
         protected TextureEntity Background => background;
 
@@ -65,26 +83,6 @@ namespace Elves {
         private readonly string backgroundImage;
         private readonly bool smoothBackground;
         private readonly Texture2D backgroundImageTexture;
-
-        private readonly bool debug3D = false;
-
-        protected bool Debug3D => debug3D;
-
-        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true,bool debug3D = false) {
-            this.backgroundImage = backgroundImage;
-            this.smoothBackground = smoothBackground;
-            this.debug3D = debug3D;
-            OnLoad += OrthoBackgroundState_OnLoad;
-            Initialize();
-        }
-
-        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true,bool debug3D = false) {
-            backgroundImageTexture = backgroundImage;
-            this.smoothBackground = smoothBackground;
-            this.debug3D = debug3D;
-            OnLoad += OrthoBackgroundState_OnLoad;
-            Initialize();
-        }
 
         private void OrthoBackgroundState_OnLoad() {
             if(debug3D) {
