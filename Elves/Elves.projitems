@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DepthConstants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MemoryTestState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Menu\FloatingItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationMode.cs" />
@@ -28,6 +27,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Menu\FloatingItemData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\BattleUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\HealthBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\SpeechBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\TagLine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\TargetButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Fonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Glyph.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\TwelvenFontData.cs" />

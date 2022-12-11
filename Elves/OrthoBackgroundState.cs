@@ -22,6 +22,13 @@ namespace Elves {
             backgroundColors[3] = bottomRight;
         }
 
+        public void SetBackgroundColor(Color color) {
+            backgroundColors[0] = color;
+            backgroundColors[1] = color;
+            backgroundColors[2] = color;
+            backgroundColors[3] = color;
+        }
+
         public Color[] GetBackgroundColors() {
             Color[] colors = new Color[backgroundColors.Length];
             backgroundColors.CopyTo(colors,0);

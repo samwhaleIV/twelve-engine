@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Shell.UI;
@@ -12,10 +11,12 @@ namespace TwelveEngine.Shell {
         public event Action OnLoad, OnUnload;
 
         public event Action<DebugWriter> OnWriteDebug;
-        public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
+        public event Action<GameTime> OnUpdate, OnRender, OnPreRender, OnUpdateUI;
 
         public bool IsLoaded { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
+
+        public bool IsUpdatingUI { get; private set; } = false;
 
         public bool IsUpdating { get; private set; } = false;
         public bool IsRendering { get; private set; } = false;
@@ -37,6 +38,12 @@ namespace TwelveEngine.Shell {
 
         internal void WriteDebug(DebugWriter writer) => OnWriteDebug?.Invoke(writer);
 
+        internal void UpdateUI(GameTime gameTime) {
+            IsUpdatingUI = true;
+            OnUpdateUI?.Invoke(gameTime);
+            IsUpdating = false;
+        }
+
         internal void Update(GameTime gameTime) {
             IsUpdating = true;
             OnUpdate?.Invoke(gameTime);
@@ -55,7 +62,7 @@ namespace TwelveEngine.Shell {
             IsPreRendering = false;
         }
 
-        internal virtual void ResetGraphicsState(GraphicsDevice graphicsDevice) {
+        protected internal virtual void ResetGraphicsState(GraphicsDevice graphicsDevice) {
             graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
             graphicsDevice.DepthStencilState = DepthStencilState.Default;
             graphicsDevice.BlendState = BlendState.AlphaBlend;
