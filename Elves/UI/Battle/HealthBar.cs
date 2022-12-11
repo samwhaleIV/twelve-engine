@@ -7,13 +7,6 @@ namespace Elves.UI.Battle {
 
     public sealed class HealthBar:UIElement {
 
-        private const float HEALTH_SLAP_STRENGTH = 2;
-        private const float LOST_HEALTH_COLOR_VALUE = 0.1f;
-        private const float HEALTH_DROP_DURATION = 100;
-        private const float HEALTH_FLASH_DURATION = 0.1f;
-
-        private static readonly Color HealthFlashColor = Color.White;
-
         public HealthBar() => Texture = UITextures.Panel;
 
         public HealthBarAlignment Alignment { get; set; } = HealthBarAlignment.Left;
@@ -37,20 +30,24 @@ namespace Elves.UI.Battle {
             var difference = Now - dropHealthAnimateStart;
             var t = (float)(difference / DropHealthDuration);
             if(t > 1) {
-                t = 1;
+                t = IsDead ? t : 1;
             } else if(t < 0) {
                 t = 0;
             }
             return t;
         }
 
-        private static readonly TimeSpan DropHealthDuration = TimeSpan.FromMilliseconds(HEALTH_DROP_DURATION);
+        public float WaveSpeed { get; set; } = 1f;
+        public float WaveStrength { get; set; } = 8;
 
-        private static readonly Color LostHealthColor = Color.FromNonPremultiplied(new Vector4(new Vector3(LOST_HEALTH_COLOR_VALUE),1f));
+        private bool IsDead => Value <= 0f;
 
-        private int GetStripYOffset(float xNormal,float t) {      
-            float scale = (1-t) * HEALTH_SLAP_STRENGTH * Scale;
-            float offset = -(MathF.Sin(t * MathF.PI * 2 + t * xNormal * 2) * scale);
+        private static TimeSpan DropHealthDuration => TimeSpan.FromMilliseconds(100);
+
+        private int GetStripYOffset(float xNormal,float t) {
+            float time = MathF.PI * 2 * t;
+            float distance = xNormal * MathF.PI * 2;
+            float offset = MathF.Sin((time + distance) * WaveSpeed) * WaveStrength / 19 * Scale;
             return (int)MathF.Round(offset);
         }
 
@@ -60,15 +57,21 @@ namespace Elves.UI.Battle {
             float healthDropNormal = GetDropHealthNormal();
             Point textureOffset = Point.Zero;
             if(Alignment == HealthBarAlignment.Left) {
-                color = xNormal < Value ? healthColor : LostHealthColor;
+                if(xNormal < Value) {
+                    color = healthColor;
+                } else {
+                    color = Color.White;
+                    textureOffset = new Point(32,0);
+                }
                 stripYOffset = GetStripYOffset(xNormal,healthDropNormal);
             } else {
-                color = xNormal < 1 - Value ? LostHealthColor : healthColor;
+                if(xNormal < 1 - Value) {
+                    color = Color.White;
+                    textureOffset = new Point(32,0);
+                } else {
+                    color = healthColor;
+                }
                 stripYOffset = GetStripYOffset(1-xNormal,healthDropNormal);
-            }
-            if(healthDropNormal < HEALTH_FLASH_DURATION) {
-                textureOffset = new Point(16,0);
-                color = HealthFlashColor;
             }
             return (color, stripYOffset, textureOffset);
         }
@@ -102,7 +105,7 @@ namespace Elves.UI.Battle {
             int overshoot = (pixelCount * pixelSize) - (Area.Width - pixelSize * 2);
 
             int offsetStripeX = area.X + pixelCount * pixelSize - overshoot;
-            stripeData = GetStripeData((pixelSize + pixelCount * pixelSize + halfPixelSize) / area.Width,healthColor);
+            stripeData = GetStripeData((area.Width - halfPixelSize - pixelSize) / area.Width,healthColor);
             spriteBatch.Draw(
                 Texture,
                 new Rectangle(offsetStripeX,area.Y+stripeData.YOffset,pixelSize,area.Height),

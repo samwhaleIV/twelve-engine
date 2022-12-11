@@ -43,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Menu\MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Save\SaveKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\UIColors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UITextures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\NineGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />

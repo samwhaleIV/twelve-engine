@@ -75,14 +75,11 @@ namespace Elves.UI.Battle {
         }
         public void MoveBack() => Move(ButtonMoveDirection.Back);
 
-        private static readonly Color PressedColor = Color.Lerp(Color.White,Color.Black,0.1f);
-        private static readonly Color SelectColor = Color.Lerp(Color.White,Color.Black,0.05f);
-
-        private Color GetButtonColor(Color tint) {
+        private Color GetButtonColor() {
             if(Pressed) {
-                return PressedColor;
+                return UIColors.PressedColor;
             } else if(Selected) {
-                return SelectColor;
+                return UIColors.SelectColor;
             }
             return Color.White;
         }
@@ -114,11 +111,11 @@ namespace Elves.UI.Battle {
             if(IsOffscreen) {
                 return;
             }
-            Color tint = color ?? Color.White;
+            Color tint;
             if(MoveDirection == ButtonMoveDirection.Away && moveAwayWhileActive) {
-                tint = PressedColor;
+                tint = UIColors.PressedColor;
             } else {
-                tint = GetButtonColor(tint);
+                tint = GetButtonColor();
             }
             spriteBatch.Draw(Texture,Area,TextureSource,tint);
         }
