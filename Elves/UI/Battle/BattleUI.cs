@@ -150,9 +150,9 @@ namespace Elves.UI.Battle {
             int buttonHeight = viewport.Height / 4 - margin;
             int buttonWidth = buttonHeight * 2;
 
-            int buttonCenterY = (int)(viewport.Height * 0.75f);
+            int buttonCenterY = (int)(viewport.Height * 0.75f) - margin * 2 + halfMargin;
 
-            int buttonMargin = halfMargin;
+            int buttonMargin = margin;
 
             int bottomRowY = buttonCenterY + buttonMargin;
             int topRowY = buttonCenterY - buttonMargin - buttonHeight;
@@ -163,13 +163,13 @@ namespace Elves.UI.Battle {
             TopLeftButton.Area = new Rectangle(centerX-buttonMargin-buttonWidth,topRowY,buttonWidth,buttonHeight);
             TopRightButton.Area = new Rectangle(centerX+buttonMargin,topRowY,buttonWidth,buttonHeight);
 
-            int healthBarY = margin;
+            int healthBarY = margin * 2;
 
-            int playerHealthBarLeft = margin;
+            int playerHealthBarLeft = margin * 2;
             int playerHealthBarRight = centerX - margin;
 
             int targetHealthBarLeft = centerX + margin;
-            int targetHealthBarRight = viewport.Right - margin;
+            int targetHealthBarRight = viewport.Right - margin * 2;
 
             int healthBarHeight = buttonHeight / 2;
 
