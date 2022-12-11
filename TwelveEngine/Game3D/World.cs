@@ -18,7 +18,12 @@ namespace TwelveEngine.Game3D {
             OnWriteDebug += World_OnWriteDebug;
         }
 
+        public bool WriteDebugEnabled { get; set; } = false;
+
         private void World_OnWriteDebug(DebugWriter writer) {
+            if(!WriteDebugEnabled) {
+                return;
+            }
             writer.ToTopLeft();
             writer.Write(Camera.Position);
             if(!(Camera is AngleCamera angleCamera)) {
@@ -40,6 +45,7 @@ namespace TwelveEngine.Game3D {
         }
 
         private void World_OnUpdate(GameTime gameTime) {
+            UpdateUI(gameTime);
             UpdateInputs(gameTime);
             _camera?.Update(AspectRatio); /* An entity might need to use orthographic projection information */
             Entities.Update(gameTime);

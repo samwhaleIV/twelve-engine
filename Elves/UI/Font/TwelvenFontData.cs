@@ -1,72 +1,48 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Elves.UI.Font {
     public static partial class Fonts {
 
-        private static Dictionary<char,Rectangle> GetUIFontData() => new Dictionary<char,Rectangle>() {
-            { 'A',new Rectangle(2,0,21,38) },
-            { 'B',new Rectangle(25,0,18,38) },
-            { 'C',new Rectangle(46,0,18,38) },
-            { 'D',new Rectangle(66,0,18,38) },
-            { 'E',new Rectangle(86,0,14,38) },
-            { 'F',new Rectangle(102,0,14,38) },
-            { 'G',new Rectangle(118,0,21,38) },
-            { 'H',new Rectangle(141,0,18,38) },
-            { 'I',new Rectangle(161,0,10,38) },
-            { 'J',new Rectangle(173,0,15,38) },
-            { 'K',new Rectangle(190,0,15,38) },
-            { 'L',new Rectangle(207,0,10,38) },
-            { 'M',new Rectangle(219,0,23,38) },
-            { 'N',new Rectangle(244,0,18,38) },
-            { 'O',new Rectangle(2,38,18,38) },
-            { 'P',new Rectangle(22,38,16,38) },
-            { 'Q',new Rectangle(40,38,18,38) },
-            { 'R',new Rectangle(60,38,18,38) },
-            { 'S',new Rectangle(80,38,18,38) },
-            { 'T',new Rectangle(100,38,18,38) },
-            { 'U',new Rectangle(120,38,20,38) },
-            { 'V',new Rectangle(142,38,18,38) },
-            { 'W',new Rectangle(162,38,28,38) },
-            { 'X',new Rectangle(192,38,18,38) },
-            { 'Y',new Rectangle(212,38,18,38) },
-            { 'Z',new Rectangle(232,38,18,38) },
-            { '1',new Rectangle(2,76,15,38) },
-            { '2',new Rectangle(19,76,18,38) },
-            { '3',new Rectangle(39,76,18,38) },
-            { '4',new Rectangle(61,76,20,38) },
-            { '5',new Rectangle(83,76,18,38) },
-            { '6',new Rectangle(103,76,18,38) },
-            { '7',new Rectangle(123,76,18,38) },
-            { '8',new Rectangle(143,76,18,38) },
-            { '9',new Rectangle(163,76,18,38) },
-            { '0',new Rectangle(183,76,18,38) },
-            { '/',new Rectangle(203,76,12,38) },
-            { '\\',new Rectangle(217,76,12,38) },
-            { '%',new Rectangle(231,76,12,38) },
-            { '!',new Rectangle(2,114,6,38) },
-            { '?',new Rectangle(10,114,18,38) },
-            { '(',new Rectangle(30,114,10,38) },
-            { ')',new Rectangle(42,114,10,38) },
-            { ':',new Rectangle(54,114,4,38) },
-            { ';',new Rectangle(60,114,5,38) },
-            { '\'',new Rectangle(67,114,3,38) },
-            { '"',new Rectangle(72,114,9,38) },
-            { ',',new Rectangle(83,114,5,38) },
-            { '.',new Rectangle(90,114,4,38) },
-            { '[',new Rectangle(96,114,10,38) },
-            { ']',new Rectangle(108,114,10,38) },
-            { '+',new Rectangle(120,114,14,38) },
-            { '-',new Rectangle(136,114,14,38) }, /* MINUS */
-            { '=',new Rectangle(152,114,14,38) },
-            { '<',new Rectangle(168,114,8,38) },
-            { '>',new Rectangle(178,114,8,38) },
-            { '&',new Rectangle(188,114,12,38) }, /* DIVIDE */
-            { '*',new Rectangle(202,114,11,38) }, /* MULTIPLY */
-            { '^',new Rectangle(215,114,8,38) },  /* HYPHEN */
-        };
+        public const int BAKED_CHARACTER_SPACING = 2;
+
+        private static Dictionary<char,Glyph> GetUIFontData() {
+            var glyphDictionary = new Dictionary<char,Glyph>();
+            
+            void AddRow(int x,int y,int height,int yOffset,params (char Value,int Width)[] characters) {
+                foreach(var character in characters) {
+                    glyphDictionary.Add(character.Value,new Glyph(x,y,character.Width,height,yOffset));
+                    x += BAKED_CHARACTER_SPACING + character.Width;
+                }
+            }
+
+            AddRow(2,2,34,0,
+                ('A', 21),('B', 18),('C', 18),('D', 18),('E', 14),('F', 14),('G', 21),('H', 18),('I', 10),
+                ('J', 15),('K', 15),('L', 10),('M', 23),('N', 18),('O', 18),('P', 16),('Q', 18),('R', 18),
+                ('S', 18),('T', 18),('U', 20),('V', 18),('W', 28),('X', 18),('Y', 18),('Z', 18),('1', 15),
+                ('2', 18),('3', 18),('4', 20),('5', 18),('6', 18),('7', 18),('8', 18),('9', 18),('0', 18)
+            );
+
+            AddRow(2,53,19,15,
+                ('a', 16),('c', 12),('e', 16),('m', 21),('n', 13),('o', 14),('r', 12),('s', 12),('u', 13),('v', 14),('w', 20),('x', 13),('z', 14)
+            );
+
+            glyphDictionary.Add('t',new Glyph(218,45,12,27,7));
+            glyphDictionary.Add('i',new Glyph(232,47,4,25,9));
+
+            AddRow(238,38,34,0,('b', 14),('d', 14),('f', 15),('k', 12),('l', 4),('h', 14));
+
+            AddRow(323,53,30,15,('g', 14),('p', 14),('q', 16),('y', 14));
+
+            glyphDictionary.Add('j',new Glyph(389,47,14,36,9));
+
+            AddRow(405,38,34,0,('!', 6),('?', 18),('(', 10),(')', 10),('[', 10),(']', 10),('/', 12),('\\', 12));
+
+            AddRow(509,45,20,7,('+', 14),('-', 14),('=', 14),('<', 8),('>', 8),('|', 12),('*', 11),('%', 12)); //overdraw
+            AddRow(618,67,8,29,(',', 5),('.', 4)); //overdraw
+            AddRow(631,49,15,11,(':', 4),(';', 5)); //overdraw
+            AddRow(644,38,8,0,('\'', 3),('\"', 9)); //overdraw
+
+            return glyphDictionary;
+        }
     }
 }

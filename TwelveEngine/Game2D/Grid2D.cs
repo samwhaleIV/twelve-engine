@@ -187,6 +187,7 @@ namespace TwelveEngine.Game2D {
 
         private void Grid2D_OnUpdate(GameTime gameTime) {
             ScreenSpace = GetScreenSpace();
+            UpdateUI(gameTime);
             UpdateInputs(gameTime);
             Entities.Update(gameTime);
         }

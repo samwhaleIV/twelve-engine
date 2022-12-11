@@ -12,7 +12,7 @@ using System.Diagnostics;
 namespace Elves {
     public sealed class Program {
 
-        public static GameState GetStartState() => new MainMenu(debug3D: false);
+        public static GameState GetStartState() => new BattleScene();
 
         private readonly string saveDirectory;
         private readonly string saveFilePath;

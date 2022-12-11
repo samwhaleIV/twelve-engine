@@ -81,7 +81,7 @@ namespace Elves.Menu {
                 Reset();
                 needsReset = false;
             }
-            float scale = menu.GetItemScale();
+            float scale = menu.GetUIScale();
             float t = (float)((gameTime.TotalGameTime - StartTime) / Duration);
             if(t < 0) {
                 t = 0;

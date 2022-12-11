@@ -7,7 +7,7 @@ using TwelveEngine.Shell;
 namespace TwelveEngine.EntitySystem {
     internal static class EntityManager {
         internal const int START_ID = 0;
-        internal const int STARTING_CAPACITY = 128;
+        internal const int STARTING_CAPACITY = 8;
     }
     public sealed partial class EntityManager<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {
 

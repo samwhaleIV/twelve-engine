@@ -81,13 +81,13 @@ namespace TwelveEngine.EntitySystem {
             if(IsEmptyID(ID)) {
                 throw new ArgumentException("ID cannot be less than 0!","ID");
             }
-            if(Count + 1 == list.Length) {
+            if(Count == list.Length) {
                 ResizeList();
             }
 
             int index = GetInsertionIndex(value);
 
-            int remainingItems = Count - index;
+            int remainingItems = Count - index - 1;
             for(int i = index + remainingItems;i >= index;i--) {
                 UpdateIndexWrapper(i,i+1);
                 list[i+1] = list[i];

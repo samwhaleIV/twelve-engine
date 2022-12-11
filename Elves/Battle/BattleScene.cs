@@ -7,43 +7,62 @@ using Elves.UI;
 using System.Text;
 using System;
 using Elves.UI.Font;
+using Elves.UI.Battle;
 
 namespace Elves.Battle {
     public class BattleScene:OrthoBackgroundState {
 
+        private BattleUI battleUI;
+
+        public Color PlayerTint { get; set; } = Color.White;
+        public Color Tint { get; set; } = Color.White;
+
         public BattleScene(string backgroundImage = "Backgrounds/checkerboard") :base(backgroundImage) {
+
+            OnLoad += BattleScene_OnLoad;
 
             ScrollingBackground = true;
 
-            SetBackgroundColors(Color.Red,Color.Purple,Color.Red,Color.Purple);
+            Mouse.OnPress += Mouse_OnPress;
+            Mouse.OnRelease += Mouse_OnRelease;
+            Mouse.OnMove += Mouse_OnMove;
 
-            var nineGrid = new NineGrid();
+            Input.OnAcceptDown += Input_OnAcceptDown;
 
-            OnLoad += () => {
-                Entities.Add(new HarmlessElf());
-            };
+            OnUpdateUI += BattleScene_OnUpdateUI;
+            OnRender += BattleScene_OnRender;
 
-            var stringBuilder = new StringBuilder("Hello, world!");
-            OnRender += gameTime => {
-                RenderEntities(gameTime);
+            Tint = Color.Red;
+            SetBackgroundColor(Color.Red);
+        }
 
-                Game.SpriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+        private void BattleScene_OnLoad() {
+            battleUI = new BattleUI(Game);
+            Entities.Add(new HarmlessElf());
+        }
 
-                int scale = GetUIScale();
+        private void Input_OnAcceptDown() {
+            battleUI.TestButtonAnimation();
+        }
 
-                Point size = new Point(250,100) * new Point(scale);
-                Point halfSize = size / new Point(2);
-                nineGrid.Area = new Rectangle(Game.Viewport.Bounds.Center-halfSize,size);
-                nineGrid.Scale = scale * 4;
-                nineGrid.Draw(Game.SpriteBatch);
+        private void Mouse_OnRelease(Point point) {
+            battleUI.MouseRelease(point.X,point.Y);
+        }
 
-                Game.SpriteBatch.End();
+        private void Mouse_OnPress(Point point) {
+            battleUI.MousePress(point.X,point.Y);
+        }
 
-                var font = Fonts.DefaultFont;
-                font.Begin(Game.SpriteBatch);
-                font.DrawCentered(stringBuilder,Game.Viewport.Bounds.Center,scale,Color.White);
-                font.End();
-            };
+        private void Mouse_OnMove(Point point) {
+            battleUI.MouseMoved(point.X,point.Y);
+        }
+
+        private void BattleScene_OnUpdateUI(GameTime gameTime) {
+            battleUI.Update((int)GetUIScale());
+        }
+
+        private void BattleScene_OnRender(GameTime gameTime) {
+            battleUI.Render((int)GetUIScale(),Color.White,Tint,Game.SpriteBatch);
         }
     }
 }

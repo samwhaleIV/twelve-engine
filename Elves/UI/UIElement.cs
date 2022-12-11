@@ -1,9 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TwelveEngine.Shell;
 
 namespace Elves.UI {
     public class UIElement {
@@ -24,11 +20,11 @@ namespace Elves.UI {
             _area = rectangle;
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch) {
+        public virtual void Draw(SpriteBatch spriteBatch,Color? color = null) {
             if(Texture == null) {
                 return;
             }
-            spriteBatch.Draw(Texture,Area,Color.White);
+            spriteBatch.Draw(Texture,Area,color ?? Color.White);
         }
     }
 }
