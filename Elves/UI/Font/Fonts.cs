@@ -18,7 +18,7 @@ namespace Elves.UI.Font {
                 return;
             }
             DefaultFont = new UVSpriteFont(UITextures.DefaultFont,34,1,8,GetUIFontData());
-            RetroFont = null;//todo
+            RetroFont = new UVSpriteFont(UITextures.RetroFont,10,1,4,GetRetroFontData());//todo
             IsLoaded = true;
         }
     }

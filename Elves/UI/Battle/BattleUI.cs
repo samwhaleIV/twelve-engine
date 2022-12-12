@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.UI.Font;
 using TwelveEngine.Shell;
+using System.Text;
 
 namespace Elves.UI.Battle {
 
@@ -24,7 +25,7 @@ namespace Elves.UI.Battle {
                 playerHealthBar.DropHealthAnimate(Now);
                 playerHealthBar.Value -= 0.05f;
                 if(playerHealthBar.Value < 0) {
-                    playerHealthBar.Value = 1;
+                    playerHealthBar.Value = 0;
                 }
             };
 
@@ -32,10 +33,15 @@ namespace Elves.UI.Battle {
                 targetHealthBar.DropHealthAnimate(Now);
                 targetHealthBar.Value -= 0.05f;
                 if(targetHealthBar.Value < 0) {
-                    targetHealthBar.Value = 1;
+                    targetHealthBar.Value = 0;
                 }
             };
             interactableElements.Add(targetButton);
+
+            TopLeftButton.Label.Append("TRY SPINNING");
+            TopRightButton.Label.Append("THATS A");
+            BottomLeftButton.Label.Append("NEAT");
+            BottomRightButton.Label.Append("TRICK");
         }
 
         private TimeSpan Now => game.Time.TotalGameTime;
@@ -147,29 +153,27 @@ namespace Elves.UI.Battle {
             int margin = scale;
             int halfMargin = margin / 2;
 
-            int buttonHeight = viewport.Height / 4 - margin;
+            int buttonHeight = viewport.Height / 4;
             int buttonWidth = buttonHeight * 2;
 
-            int buttonCenterY = (int)(viewport.Height * 0.75f) - margin * 2 + halfMargin;
+            int bottomRowY = viewport.Bottom - buttonHeight - margin;
+            int topRowY = bottomRowY - margin - buttonHeight;
 
-            int buttonMargin = margin;
+            int buttonXMargin = halfMargin;
 
-            int bottomRowY = buttonCenterY + buttonMargin;
-            int topRowY = buttonCenterY - buttonMargin - buttonHeight;
+            BottomLeftButton.Area = new Rectangle(centerX-buttonXMargin-buttonWidth,bottomRowY,buttonWidth,buttonHeight);
+            BottomRightButton.Area = new Rectangle(centerX+buttonXMargin,bottomRowY,buttonWidth,buttonHeight);
 
-            BottomLeftButton.Area = new Rectangle(centerX-buttonMargin-buttonWidth,bottomRowY,buttonWidth,buttonHeight);
-            BottomRightButton.Area = new Rectangle(centerX+buttonMargin,bottomRowY,buttonWidth,buttonHeight);
+            TopLeftButton.Area = new Rectangle(centerX-buttonXMargin-buttonWidth,topRowY,buttonWidth,buttonHeight);
+            TopRightButton.Area = new Rectangle(centerX+buttonXMargin,topRowY,buttonWidth,buttonHeight);
 
-            TopLeftButton.Area = new Rectangle(centerX-buttonMargin-buttonWidth,topRowY,buttonWidth,buttonHeight);
-            TopRightButton.Area = new Rectangle(centerX+buttonMargin,topRowY,buttonWidth,buttonHeight);
+            int healthBarY = margin;
 
-            int healthBarY = margin * 2;
+            int playerHealthBarLeft = margin;
+            int playerHealthBarRight = centerX - halfMargin;
 
-            int playerHealthBarLeft = margin * 2;
-            int playerHealthBarRight = centerX - margin;
-
-            int targetHealthBarLeft = centerX + margin;
-            int targetHealthBarRight = viewport.Right - margin * 2;
+            int targetHealthBarLeft = centerX + halfMargin;
+            int targetHealthBarRight = viewport.Right - margin;
 
             int healthBarHeight = buttonHeight / 2;
 
@@ -202,19 +206,41 @@ namespace Elves.UI.Battle {
             moveDirection = !moveDirection;
         }
 
-        public void Render(int scale,Color playerTint,Color targetTint,SpriteBatch spriteBatch) {
+        public void Render(
+            SpriteBatch spriteBatch,
+
+            UserRenderData playerData,
+            UserRenderData targetData
+        ) {
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             foreach(var button in actionButtons) {
-                button.Draw(spriteBatch,targetTint);
+                button.Draw(spriteBatch);
             }
-            playerHealthBar.Draw(spriteBatch,playerTint);
-            targetHealthBar.Draw(spriteBatch,targetTint);
+            playerHealthBar.Draw(spriteBatch,playerData.Color);
+            targetHealthBar.Draw(spriteBatch,targetData.Color);
             spriteBatch.End();
-            Fonts.DefaultFont.Begin(spriteBatch);
+
+            int usernameScale = playerHealthBar.Area.Height / 2 / Fonts.RetroFont.LineHeight;
+            Color usernameColor = Color.White;
+
+            int margin = playerHealthBar.Area.X;
+
+            Fonts.RetroFont.Begin(spriteBatch);
+            Fonts.RetroFont.Draw(
+                playerData.Name,
+                new Point(playerHealthBar.Area.X,playerHealthBar.Area.Bottom + margin),
+                usernameScale,usernameColor
+            );
+            Fonts.RetroFont.DrawRight(
+                targetData.Name,
+                new Point(targetHealthBar.Area.Right,targetHealthBar.Area.Bottom + margin),
+                usernameScale,usernameColor
+            );
+            int buttonTextScale = TopLeftButton.Area.Height / 6 / Fonts.RetroFont.LineHeight;
             foreach(var button in actionButtons) {
-                button.DrawText(Fonts.DefaultFont,scale);
+                button.DrawText(Fonts.RetroFont,buttonTextScale,Color.White);
             }
-            Fonts.DefaultFont.End();
+            Fonts.RetroFont.End();
         }
     }
 }

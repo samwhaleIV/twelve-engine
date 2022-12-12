@@ -17,6 +17,10 @@ namespace Elves.UI.Font {
 
         private int characterQueueStartSize;
 
+        public int LineHeight => lineHeight;
+        public int LeterSpacing => letterSpacing;
+        public int WordSpacing => wordSpacing;
+
         public UVSpriteFont(
             Texture2D texture,
             int lineHeight,
@@ -156,8 +160,44 @@ namespace Elves.UI.Font {
 
             EmptyWordsQueue();
         }
-        
+
+        public void DrawRight(StringBuilder stringBuilder,Point destination,int scale,Color? color = null) {
+            if(spriteBatch == null) {
+                return;
+            }
+
+            FillWordsQueue(stringBuilder);
+
+            int wordSpacing = this.wordSpacing * scale;
+            int letterSpacing = this.letterSpacing * scale;
+
+            int totalWidth = 0;
+            foreach(var word in words) {
+                int width = MeasureWordWidth(word,scale,letterSpacing);
+                totalWidth += width + wordSpacing;
+            }
+            totalWidth -= wordSpacing;
+
+            int x = destination.X - totalWidth;
+            int y = destination.Y;
+
+            Color glyphColor = color ?? Color.White;
+
+            foreach(var word in words) {
+                foreach(var character in word) {
+                    x += DrawGlyph(character,x,y,scale,glyphColor) + letterSpacing;
+                }
+                x = x - letterSpacing + wordSpacing;
+            }
+
+            EmptyWordsQueue();
+        }
+
         public void DrawCentered(StringBuilder stringBuilder,Point center,int scale,Color? color = null) {
+            if(spriteBatch == null) {
+                return;
+            }
+
             FillWordsQueue(stringBuilder);
 
             int wordSpacing = this.wordSpacing * scale;

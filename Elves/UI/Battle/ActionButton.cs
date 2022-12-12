@@ -11,6 +11,9 @@ namespace Elves.UI.Battle {
 
     public sealed class ActionButton:Button {
 
+        private static readonly Rectangle PressedTextureSource = new Rectangle(0,48,32,16);
+        private static readonly Rectangle SelectedTextureSource = new Rectangle(0,32,32,16);
+
         public ActionButton() {
             Texture = UITextures.Panel;
             TextureSource = new Rectangle(0,16,32,16);
@@ -75,13 +78,13 @@ namespace Elves.UI.Battle {
         }
         public void MoveBack() => Move(ButtonMoveDirection.Back);
 
-        private Color GetButtonColor() {
+        private Rectangle GetTextureSource() {
             if(Pressed) {
-                return UIColors.PressedColor;
+                return PressedTextureSource;
             } else if(Selected) {
-                return UIColors.SelectColor;
+                return SelectedTextureSource;
             }
-            return Color.White;
+            return TextureSource;
         }
 
         public void Update(Rectangle viewport,TimeSpan now) {
@@ -103,21 +106,19 @@ namespace Elves.UI.Battle {
             Area = area;
         }
 
-        public void DrawText(UVSpriteFont spriteFont,int scale) {
-            spriteFont.DrawCentered(Label,Area.Center,scale,Color.White);
+        public void DrawText(UVSpriteFont spriteFont,int scale,Color color) {
+            Point center = Area.Center;
+            if(Pressed) {
+                center.Y += Area.Height / 16;
+            }
+            spriteFont.DrawCentered(Label,center,scale,color);
         }
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {
             if(IsOffscreen) {
                 return;
             }
-            Color tint;
-            if(MoveDirection == ButtonMoveDirection.Away && moveAwayWhileActive) {
-                tint = UIColors.PressedColor;
-            } else {
-                tint = GetButtonColor();
-            }
-            spriteBatch.Draw(Texture,Area,TextureSource,tint);
+            spriteBatch.Draw(Texture,Area,GetTextureSource(),color??Color.White);
         }
     }
 }

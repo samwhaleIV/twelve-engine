@@ -8,14 +8,15 @@ using System.Text;
 using System;
 using Elves.UI.Font;
 using Elves.UI.Battle;
+using System.Xml.Linq;
 
 namespace Elves.Battle {
     public class BattleScene:OrthoBackgroundState {
 
         private BattleUI battleUI;
 
-        public Color PlayerTint { get; set; } = Color.White;
-        public Color Tint { get; set; } = Color.White;
+        public readonly UserRenderData playerRenderData = new UserRenderData();
+        public readonly UserRenderData targetRenderData = new UserRenderData();
 
         public BattleScene(string backgroundImage = "Backgrounds/checkerboard") :base(backgroundImage) {
 
@@ -32,8 +33,15 @@ namespace Elves.Battle {
             OnUpdateUI += BattleScene_OnUpdateUI;
             OnRender += BattleScene_OnRender;
 
-            Tint = Color.Red;
             SetBackgroundColor(Color.Red);
+
+            playerRenderData.Name = new StringBuilder("You".ToUpperInvariant());
+            playerRenderData.Health = 0.75f;
+            playerRenderData.Color = Color.White;
+
+            targetRenderData.Name = new StringBuilder("Harmless Elf".ToUpperInvariant());
+            targetRenderData.Health = 0.75f;
+            targetRenderData.Color = Color.Red;
         }
 
         private void BattleScene_OnLoad() {
@@ -62,7 +70,7 @@ namespace Elves.Battle {
         }
 
         private void BattleScene_OnRender(GameTime gameTime) {
-            battleUI.Render((int)GetUIScale(),Color.White,Tint,Game.SpriteBatch);
+            battleUI.Render(Game.SpriteBatch,playerRenderData,targetRenderData);
         }
     }
 }

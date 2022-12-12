@@ -3,15 +3,13 @@
 namespace Elves.UI.Font {
     public static partial class Fonts {
 
-        public const int BAKED_CHARACTER_SPACING = 2;
-
         private static Dictionary<char,Glyph> GetUIFontData() {
             var glyphDictionary = new Dictionary<char,Glyph>();
             
             void AddRow(int x,int y,int height,int yOffset,params (char Value,int Width)[] characters) {
                 foreach(var character in characters) {
                     glyphDictionary.Add(character.Value,new Glyph(x,y,character.Width,height,yOffset));
-                    x += BAKED_CHARACTER_SPACING + character.Width;
+                    x += 2 + character.Width;
                 }
             }
 
