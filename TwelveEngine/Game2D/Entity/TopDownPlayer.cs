@@ -61,7 +61,7 @@ namespace TwelveEngine.Game2D.Entity {
             Owner.OnUpdate -= Owner_OnUpdate;
         }
 
-        private void Owner_OnUpdate(GameTime gameTime) {
+        private void Owner_OnUpdate() {
             if(!CameraTracking) {
                 return;
             }
@@ -74,7 +74,7 @@ namespace TwelveEngine.Game2D.Entity {
             Owner.OnUpdate += Owner_OnUpdate;
         }
 
-        private void TopDownPlayer_OnUpdate(GameTime gameTime) {
+        private void TopDownPlayer_OnUpdate() {
             var force = Owner.Input.GetDelta2D() * Force;
             var velocity = Body.LinearVelocity;
             if(!(force.X == 0 || velocity.X == 0) && Math.Sign(force.X) != Math.Sign(velocity.X)) {

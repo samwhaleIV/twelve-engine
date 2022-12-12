@@ -282,7 +282,7 @@ namespace TwelveEngine.Shell {
             MouseState = GetMouseState();
             GamePadState = GetGamepadState();
 
-            _gameState.Update(proxyGameTime);
+            _gameState.Update();
 
             automationAgent.EndUpdate();
             if(framesToSkip >= 1) {
@@ -377,8 +377,8 @@ namespace TwelveEngine.Shell {
 #endif
             if(HasGameState) {
                 _gameState.ResetGraphicsState(GraphicsDevice);
-                _gameState.PreRender(proxyGameTime);
-                _gameState.Render(proxyGameTime);
+                _gameState.PreRender();
+                _gameState.Render();
             } else {
                 GraphicsDevice.Clear(Color.Black);
                 /* Notice: No game state */

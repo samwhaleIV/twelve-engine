@@ -18,8 +18,19 @@ namespace Elves.Battle {
         public readonly UserRenderData playerRenderData = new UserRenderData();
         public readonly UserRenderData targetRenderData = new UserRenderData();
 
-        public BattleScene(string backgroundImage = "Backgrounds/checkerboard") :base(backgroundImage) {
+        private void SetupUserData() {
+            playerRenderData.Name = new StringBuilder("You".ToUpperInvariant());
+            playerRenderData.Health = 0.75f;
+            playerRenderData.Color = Color.White;
 
+            targetRenderData.Name = new StringBuilder("Harmless Elf".ToUpperInvariant());
+            targetRenderData.Health = 0.75f;
+            targetRenderData.Color = Color.Red;
+
+            SetBackgroundColor(targetRenderData.Color);
+        }
+
+        public BattleScene(string backgroundImage = "Backgrounds/checkerboard") :base(backgroundImage) {
             OnLoad += BattleScene_OnLoad;
 
             ScrollingBackground = true;
@@ -28,29 +39,21 @@ namespace Elves.Battle {
             Mouse.OnRelease += Mouse_OnRelease;
             Mouse.OnMove += Mouse_OnMove;
 
-            Input.OnAcceptDown += Input_OnAcceptDown;
-
             OnUpdateUI += BattleScene_OnUpdateUI;
             OnRender += BattleScene_OnRender;
 
-            SetBackgroundColor(Color.Red);
+            SetupUserData();
+        }
 
-            playerRenderData.Name = new StringBuilder("You".ToUpperInvariant());
-            playerRenderData.Health = 0.75f;
-            playerRenderData.Color = Color.White;
-
-            targetRenderData.Name = new StringBuilder("Harmless Elf".ToUpperInvariant());
-            targetRenderData.Health = 0.75f;
-            targetRenderData.Color = Color.Red;
+        private void BattleUI_OnActionButtonClick(int ID) {
+            var button = battleUI.GetActionButton(ID);
+            button.SetState(Now,button.State.GetOffscreen());
         }
 
         private void BattleScene_OnLoad() {
             battleUI = new BattleUI(Game);
+            battleUI.OnActionButtonClick += BattleUI_OnActionButtonClick;
             Entities.Add(new HarmlessElf());
-        }
-
-        private void Input_OnAcceptDown() {
-            battleUI.TestButtonAnimation();
         }
 
         private void Mouse_OnRelease(Point point) {
@@ -65,11 +68,11 @@ namespace Elves.Battle {
             battleUI.MouseMoved(point.X,point.Y);
         }
 
-        private void BattleScene_OnUpdateUI(GameTime gameTime) {
+        private void BattleScene_OnUpdateUI() {
             battleUI.Update((int)GetUIScale());
         }
 
-        private void BattleScene_OnRender(GameTime gameTime) {
+        private void BattleScene_OnRender() {
             battleUI.Render(Game.SpriteBatch,playerRenderData,targetRenderData);
         }
     }

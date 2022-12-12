@@ -54,8 +54,8 @@ namespace Elves.Battle.Sprite.Animation {
             currentFrameSet = defaultFrameSet;
         }
 
-        public void UpdateUVArea(GameTime gameTime) {
-            sprite.SetUVArea(GetSpriteArea(gameTime));
+        public void UpdateUVArea(TimeSpan now) {
+            sprite.SetUVArea(GetSpriteArea(now));
         }
 
         private void ClearAnimation() {
@@ -102,8 +102,7 @@ namespace Elves.Battle.Sprite.Animation {
             return currentFrameSet.Frames[0];
         }
 
-        private Rectangle GetSpriteArea(GameTime gameTime) {
-            TimeSpan now = gameTime.TotalGameTime;
+        private Rectangle GetSpriteArea(TimeSpan now) {
             if(updateAnimationStart) {
                 animationStart = now;
                 updateAnimationStart = false;

@@ -13,7 +13,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         private RenderTarget2D renderTarget = null;
 
-        public Action<GameTime> RenderOnTarget { get; set; } = null;
+        public Action RenderOnTarget { get; set; } = null;
 
         public RenderTargetEntity() {
             OnLoad += RenderTargetEntity_OnLoad;
@@ -21,12 +21,12 @@ namespace TwelveEngine.Game3D.Entity.Types {
             OnPreRender += RenderTargetEntity_OnPreRender;
         }
 
-        private void RenderTargetEntity_OnPreRender(GameTime gameTime) {
+        private void RenderTargetEntity_OnPreRender() {
             if(RenderOnTarget == null) {
                 return;
             }
             Game.SetRenderTarget(renderTarget);
-            RenderOnTarget.Invoke(gameTime);
+            RenderOnTarget.Invoke();
             Game.RestoreRenderTarget();
         }
 

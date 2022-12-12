@@ -76,7 +76,7 @@ namespace Elves.Menu {
             Input.OnAcceptDown += () => Game.SetState(new Battle.BattleScene());
         }
 
-        private void PlayButton_OnUpdate(GameTime gameTime) {
+        private void PlayButton_OnUpdate() {
             Rectangle bounds = Game.Viewport.Bounds;
             float scale = GetUIScale() * PLAY_BUTTON_SCALE;
             Vector2 size = playButton.TextureSource.Size.ToVector2() * scale;
@@ -84,7 +84,7 @@ namespace Elves.Menu {
             playButton.Area = new VectorRectangle(center,size);
         }
 
-        private void NameBadge_OnUpdate(GameTime gameTime) {
+        private void NameBadge_OnUpdate() {
             Rectangle bounds = Game.Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = nameBadge.TextureSource.Size.ToVector2() * scale;
@@ -101,13 +101,13 @@ namespace Elves.Menu {
             }
         }
 
-        private void FallingElf_OnUpdate(GameTime gameTime) {
+        private void FallingElf_OnUpdate() {
             Rectangle bounds = Game.Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = fallingElf.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new Vector2(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
-            var t = (float)(gameTime.TotalGameTime / TimeSpan.FromSeconds(8) % 1);
-            var t2 = (float)(gameTime.TotalGameTime / TimeSpan.FromSeconds(16) % 1);
+            var t = (float)(Now / TimeSpan.FromSeconds(8) % 1);
+            var t2 = (float)(Now / TimeSpan.FromSeconds(16) % 1);
             var offset = MathF.Sin(MathF.PI * 2 * t);
             var offset2 = MathF.Cos(MathF.PI * 2 * t2);
             center.X += (offset * 8f) / FloatingItem.WIGGLE_BASE_SCALE * scale;

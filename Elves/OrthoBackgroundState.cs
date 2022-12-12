@@ -71,7 +71,7 @@ namespace Elves {
             OnUpdate += OrthoBackgroundState_OnUpdate;
         }
 
-        private void OrthoBackgroundState_OnUpdate(GameTime gameTime) {
+        private void OrthoBackgroundState_OnUpdate() {
             if(!debug3D || Camera == null) {
                 return;
             }
@@ -111,10 +111,10 @@ namespace Elves {
             };
         }
 
-        private void UpdateBackground(GameTime gameTime) {
+        private void UpdateBackground() {
             background.SetColors(backgroundColors);
             if(ScrollingBackground) {
-                double scrollT = gameTime.TotalGameTime.TotalSeconds / ScrollingBackgroundPeriod % 1d;
+                double scrollT = Now.TotalSeconds / ScrollingBackgroundPeriod % 1d;
                 background.UVOffset = new Vector2((float)scrollT,0f);
             } else {
                 background.UVOffset = Vector2.Zero;

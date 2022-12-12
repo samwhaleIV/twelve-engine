@@ -65,7 +65,7 @@ namespace TwelveEngine.Game2D {
 
         public int[,] GetLayer(int index) => layers[index];
 
-        protected override void RenderGrid(GameTime gameTime) {
+        protected override void RenderGrid() {
 
             TileRenderer?.CacheArea(ScreenSpace);
             Game.GraphicsDevice.Clear(Color.Black);
@@ -81,17 +81,17 @@ namespace TwelveEngine.Game2D {
 
                     spriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointClamp);
                     RenderLayers(LayerMode.BackgroundStart+1,1);
-                    RenderEntities(gameTime);
+                    RenderEntities();
                     spriteBatch.End();
                 } else {
                     spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
                     RenderLayers(LayerMode.BackgroundStart,LayerMode.BackgroundLength);
-                    RenderEntities(gameTime);
+                    RenderEntities();
                     drawing = true;
                 }
             } else {
                 spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-                RenderEntities(gameTime);
+                RenderEntities();
                 drawing = true;
             }
 

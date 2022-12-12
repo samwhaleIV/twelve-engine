@@ -153,7 +153,7 @@ namespace TwelveEngine.Game3D.Entity {
 
         public float Alpha { get; set; } = 1f;
 
-        private void TextureRectangle_OnRender(GameTime gameTime) {
+        private void TextureRectangle_OnRender() {
             UpdateVertices(TopLeft,BottomRight);
             bufferSet.VertexBuffer.SetData(vertices);
             bufferSet.Apply();

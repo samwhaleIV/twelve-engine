@@ -6,6 +6,7 @@ using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
     internal static class EntityManager {
+        internal const int NO_ID = -1;
         internal const int START_ID = 0;
         internal const int STARTING_CAPACITY = 8;
     }
@@ -76,7 +77,7 @@ namespace TwelveEngine.EntitySystem {
 
         private readonly Queue<RegisteredEntity> AdditionQueue = new Queue<RegisteredEntity>();
 
-        public void Update(GameTime gameTime) {
+        public void Update() {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
@@ -92,7 +93,7 @@ namespace TwelveEngine.EntitySystem {
                 if(entity.Value.ID != entity.RegisteredID) {
                     continue;
                 }
-                entity.Value.Update(gameTime);
+                entity.Value.Update();
                 if(IsUnloaded) {
                     IsIterating = false;
                     return;
@@ -105,12 +106,12 @@ namespace TwelveEngine.EntitySystem {
                     continue;
                 }
                 /* This loop is effectively recursive, if this action happens to add new entities */
-                entity.Value.Update(gameTime);
+                entity.Value.Update();
             }
             IsIterating = false;
         }
 
-        public void Render(GameTime gameTime) {
+        public void Render() {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
@@ -120,13 +121,13 @@ namespace TwelveEngine.EntitySystem {
             IsIteratingSorted = true;
             IsIterating = true;
             for(int i = 0;i<Entities.Count;i++) {
-                Entities.List[i].Render(gameTime);
+                Entities.List[i].Render();
             }
             IsIteratingSorted = false;
             IsIterating = false;
         }
 
-        public void PreRender(GameTime gameTime) {
+        public void PreRender() {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
@@ -136,7 +137,7 @@ namespace TwelveEngine.EntitySystem {
             IsIteratingSorted = true;
             IsIterating = true;
             for(int i = 0;i<Entities.Count;i++) {
-                Entities.List[i].PreRender(gameTime);
+                Entities.List[i].PreRender();
             }
             IsIteratingSorted = false;
             IsIterating = false;

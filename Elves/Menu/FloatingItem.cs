@@ -76,13 +76,13 @@ namespace Elves.Menu {
 
         private bool needsReset = true;
 
-        private void FloatingItem_OnUpdate(GameTime gameTime) {
+        private void FloatingItem_OnUpdate() {
             if(needsReset) {
                 Reset();
                 needsReset = false;
             }
             float scale = menu.GetUIScale();
-            float t = (float)((gameTime.TotalGameTime - StartTime) / Duration);
+            float t = (float)((Now - StartTime) / Duration);
             if(t < 0) {
                 t = 0;
             } else if(t > 1) {
@@ -100,7 +100,7 @@ namespace Elves.Menu {
                 new Vector2(xValue,-MathF.Max(size.X,size.Y)),t
             );
 
-            var wiggleT = (float)(gameTime.TotalGameTime / WiggleRate % 1);
+            var wiggleT = (float)(Now / WiggleRate % 1);
             var offset = RotationPolarity ? MathF.Sin(MathF.PI * 2 * wiggleT) : MathF.Cos(MathF.PI * 2 * wiggleT);
             position.X += (offset * WiggleStrength) / WIGGLE_BASE_SCALE * scale;
 

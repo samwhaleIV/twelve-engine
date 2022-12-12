@@ -32,7 +32,7 @@ namespace TwelveEngine.Game2D {
 
         public Rectangle UnitArea => new Rectangle(Point.Zero,Size.ToPoint());
 
-        protected abstract void RenderGrid(GameTime gameTime);
+        protected abstract void RenderGrid();
 
         public Color BackgroundColor { get; set; } = Color.Black;
 
@@ -84,8 +84,8 @@ namespace TwelveEngine.Game2D {
             return value;
         }
 
-        protected void RenderEntities(GameTime gameTime) {
-            Entities.Render(gameTime);
+        protected void RenderEntities() {
+            Entities.Render();
         }
 
         public int CalculateTileSize() {
@@ -185,21 +185,21 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        private void Grid2D_OnUpdate(GameTime gameTime) {
+        private void Grid2D_OnUpdate() {
             ScreenSpace = GetScreenSpace();
-            UpdateUI(gameTime);
-            UpdateInputs(gameTime);
-            Entities.Update(gameTime);
+            UpdateUI();
+            UpdateInputs();
+            Entities.Update();
         }
 
-        private void Grid2D_OnPreRender(GameTime gameTime) {
-            Entities.PreRender(gameTime);
+        private void Grid2D_OnPreRender() {
+            Entities.PreRender();
         }
 
-        private void Grid2D_OnRender(GameTime gameTime) {
+        private void Grid2D_OnRender() {
             Game.GraphicsDevice.Clear(BackgroundColor);
             ScreenSpace = GetScreenSpace();
-            RenderGrid(gameTime);
+            RenderGrid();
         }
     }
 }

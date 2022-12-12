@@ -61,7 +61,7 @@ namespace Elves.Battle.Sprite {
             updatePositionCallback = callback;
         }
 
-        public void UpdateScreenPosition(GameTime gameTime) {
+        public void UpdateScreenPosition(TimeSpan now) {
             Vector2 screenSize = sprite.Owner.Camera.OrthographicArea.Size;
             float scale = screenSize.Y;
             sprite.Scale = new Vector3(scale,scale,0) * (1f - SCREEN_EDGE_MARGIN);
@@ -71,7 +71,7 @@ namespace Elves.Battle.Sprite {
             } else {
                 Vector3 startPosition = GetPosition(oldPosition,screenSize.X);
                 Vector3 newPosition = GetPosition(spritePosition,screenSize.X);
-                float positionT = (float)((gameTime.TotalGameTime - positionChangeStart).TotalSeconds / POSITION_CHANGE_DURATION);
+                float positionT = (float)((now - positionChangeStart).TotalSeconds / POSITION_CHANGE_DURATION);
                 bool endSpritePosition = false;
                 if(positionT < 0f) {
                     positionT = 0f;

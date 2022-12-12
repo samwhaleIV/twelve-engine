@@ -27,9 +27,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Menu\FloatingItemData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ActionButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\BattleUI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonPosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonRenderData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\HealthBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\SpeechBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\TagLine.cs" />
@@ -45,6 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Save\SaveKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\UserRenderData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\AnimationInterpolator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIColors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UITextures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\NineGrid.cs" />
@@ -53,5 +57,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Save\" />
+    <Folder Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\" />
   </ItemGroup>
 </Project>

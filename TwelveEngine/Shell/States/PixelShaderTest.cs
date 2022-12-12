@@ -34,7 +34,7 @@ namespace TwelveEngine.Shell.States {
             texture2D = Game.Content.Load<Texture2D>(texture);
         }
 
-        private void ShaderTest_OnRender(GameTime gameTime) {
+        private void ShaderTest_OnRender() {
 
             Game.GraphicsDevice.Clear(Color.Black);
 

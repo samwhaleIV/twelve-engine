@@ -19,7 +19,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         public Vector2 RotationOrigin { get; set; } = new Vector2(0.5f,0.5f);
 
-        private void Screenspace3DSprite_OnPreRender(GameTime gameTime) {
+        private void Screenspace3DSprite_OnPreRender() {
             /* This took 5 hours. I suck at math, apparently */
             SetUVArea(TextureSource);
 

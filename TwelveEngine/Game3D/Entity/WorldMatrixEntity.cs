@@ -8,7 +8,7 @@ namespace TwelveEngine.Game3D.Entity {
             OnRender += WorldMatrixEntity_OnRender;
         }
 
-        private void WorldMatrixEntity_OnRender(GameTime gameTime) {
+        private void WorldMatrixEntity_OnRender() {
             UpdateWorldMatrix();
         }
 

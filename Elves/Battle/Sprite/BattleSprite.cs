@@ -30,9 +30,9 @@ namespace Elves.Battle.Sprite {
             OnUpdate +=BattleSprite_OnUpdate;
         }
 
-        private void BattleSprite_OnUpdate(GameTime gameTime) {
-            positionController.UpdateScreenPosition(gameTime);
-            frameController.UpdateUVArea(gameTime);
+        private void BattleSprite_OnUpdate() {
+            positionController.UpdateScreenPosition(Now);
+            frameController.UpdateUVArea(Now);
         }
 
         private void BattleSprite_OnLoad() {

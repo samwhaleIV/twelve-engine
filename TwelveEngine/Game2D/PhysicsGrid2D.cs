@@ -54,8 +54,8 @@ namespace TwelveEngine.Game2D {
             Objects.Unload();
         }
 
-        private void PhysicsGrid_OnUpdate(GameTime gameTime) {
-            _physicsWorld.Step((float)gameTime.ElapsedGameTime.TotalSeconds);
+        private void PhysicsGrid_OnUpdate() {
+            _physicsWorld.Step((float)Now.TotalSeconds);
         }
 
         public bool RenderObjectHitboxes { get; set; }
@@ -83,9 +83,9 @@ namespace TwelveEngine.Game2D {
             Game.SpriteBatch.Draw(BlankTexture,destination.Location,hitboxSource,HitboxColor,rotation,origin,destination.Size,SpriteEffects.None,depth);
         } 
 
-        protected override void RenderGrid(GameTime gameTime) {
+        protected override void RenderGrid() {
             Game.SpriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointClamp);
-            RenderEntities(gameTime);
+            RenderEntities();
             foreach(GameObject gameObject in Objects.GetEnumerable()) {
                 RenderObject(gameObject);
             }

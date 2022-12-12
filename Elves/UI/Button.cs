@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Elves.UI.Battle {
+namespace Elves.UI {
     public abstract class Button:UIElement {
 
         public bool Selected { get; set; }
@@ -11,13 +11,15 @@ namespace Elves.UI.Battle {
         protected virtual bool GetIsEnabled() => true;
 
         public Rectangle TextureSource { get; set; }
+        public int ID { get; set; }
 
-        public Action OnClick;
-        internal void Click() {
+        public Action<int> OnClick;
+
+        public void Click() {
             if(!IsEnabled) {
                 return;
             }
-            OnClick?.Invoke();
+            OnClick?.Invoke(ID);
         }
     }
 }
