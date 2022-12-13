@@ -45,6 +45,10 @@ namespace TwelveEngine {
             return Vector2.Lerp(start.ToVector2(),end.ToVector2(),GetValue()).ToPoint();
         }
 
+        public float Interpolate(float x,float y) {
+            return MathHelper.Lerp(x,y,GetValue());
+        }
+
         public Vector2 Interpolate(Vector2 start,Vector2 end) {
             return Vector2.Lerp(start,end,GetValue());
         }

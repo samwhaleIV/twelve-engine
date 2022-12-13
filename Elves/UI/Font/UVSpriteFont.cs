@@ -135,6 +135,9 @@ namespace Elves.UI.Font {
             if(spriteBatch == null) {
                 return;
             }
+            if(scale < 1) {
+                scale = 1;
+            }
 
             FillWordsQueue(stringBuilder);
 
@@ -164,6 +167,9 @@ namespace Elves.UI.Font {
         public void DrawRight(StringBuilder stringBuilder,Point destination,int scale,Color? color = null) {
             if(spriteBatch == null) {
                 return;
+            }
+            if(scale < 1) {
+                scale = 1;
             }
 
             FillWordsQueue(stringBuilder);
@@ -196,6 +202,9 @@ namespace Elves.UI.Font {
         public void DrawCentered(StringBuilder stringBuilder,Point center,int scale,Color? color = null) {
             if(spriteBatch == null) {
                 return;
+            }
+            if(scale < 1) {
+                scale = 1;
             }
 
             FillWordsQueue(stringBuilder);

@@ -35,7 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\HealthBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\SpeechBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\TagLine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\Tagline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\TargetButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Fonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Glyph.cs" />

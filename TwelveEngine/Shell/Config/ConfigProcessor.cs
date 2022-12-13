@@ -93,30 +93,32 @@ namespace TwelveEngine.Shell.Config {
             return true;
         }
 
+        private static readonly StringBuilder stringBuilder = new StringBuilder();
+
         public string Save(TPropertySet propertySet) {
-            var builder = new StringBuilder();
+            stringBuilder.Clear();
 
             foreach(var field in propertyFields) {
 
                 if(!tryGetValue(propertySet,field,out string value)) continue;
 
                 var propertyName = field.Name;
-                builder.Append(propertyName);
-                builder.Append(' ');
-                builder.Append(Constants.ConfigValueOperand);
-                builder.Append(' ');
-                builder.Append(value);
-                builder.AppendLine();
+                stringBuilder.Append(propertyName);
+                stringBuilder.Append(' ');
+                stringBuilder.Append(Constants.ConfigValueOperand);
+                stringBuilder.Append(' ');
+                stringBuilder.Append(value);
+                stringBuilder.AppendLine();
             }
 
-            if(builder.Length < 1) {
+            if(stringBuilder.Length < 1) {
                 return null;
             }
 
-            builder.Remove(builder.Length-1,1);
+            stringBuilder.Remove(stringBuilder.Length-1,1);
 
-            var contents = builder.ToString();
-            builder.Clear();
+            var contents = stringBuilder.ToString();
+            stringBuilder.Clear();
 
             return contents;
         }

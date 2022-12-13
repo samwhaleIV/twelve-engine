@@ -68,10 +68,11 @@ namespace Elves.UI.Battle {
 
         //todo...
         //private readonly TargetButton targetButton = new TargetButton();
-        //private readonly Tagline tagline = new Tagline();
+        private readonly Tagline tagline = new Tagline();
         private readonly SpeechBox speechBox = new SpeechBox();
 
         public SpeechBox SpeechBox => speechBox;
+        public Tagline Tagline => tagline;
       
         private readonly List<Button> interactableElements = new List<Button>();
         private static readonly Point OffscreenMousePosition = new Point(-1);
@@ -188,6 +189,7 @@ namespace Elves.UI.Battle {
             UpdateActionButtons(viewport,now,margin,halfMargin);
             UpdateHealthBars(viewport,scale,margin,halfMargin);
             speechBox.Update(now,viewport,margin);
+            tagline.Update(now,viewport,margin);
 
             /* Update for buttons that are changing positions */
             UpdateButtonFocus(lastMousePosition.X,lastMousePosition.Y);
@@ -233,7 +235,6 @@ namespace Elves.UI.Battle {
             RenderActionButtons(spriteBatch);
             RenderHealthBars(spriteBatch,playerData,targetData);
 
-            //todo... other elements
             spriteBatch.End();
 
             Fonts.RetroFont.Begin(spriteBatch);
@@ -248,6 +249,14 @@ namespace Elves.UI.Battle {
             Fonts.DefaultFont.Begin(spriteBatch);
             speechBox.DrawText(Fonts.DefaultFont);
             Fonts.DefaultFont.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            tagline.Draw(spriteBatch);
+            spriteBatch.End();
+
+            Fonts.RetroFont.Begin(spriteBatch);
+            tagline.DrawText(Fonts.RetroFont);
+            Fonts.RetroFont.End();
         }
     }
 }

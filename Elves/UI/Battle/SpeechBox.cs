@@ -74,7 +74,8 @@ namespace Elves.UI.Battle {
             if(!IsOffscreen) {
                 return;
             }
-            font.Draw(StringBuilder,(Area.Location+new Vector2(margin)).ToPoint(),5,Color.Black,(int)(Area.Width-margin));
+            int textScale = (int)(Area.Height/(font.LineHeight*4));
+            font.Draw(StringBuilder,(Area.Location+new Vector2(margin)).ToPoint(),textScale,Color.Black,(int)(Area.Width-margin));
         }
     }
 }

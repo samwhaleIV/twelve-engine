@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace TwelveEngine.Shell.Config {
     public static class ConfigWriter {
-        internal static void SaveKeyBinds(KeyBindSet keyBindSet,string path = null) {
+        public static void SaveKeyBinds(KeyBindSet keyBindSet,string path = null) {
             if(path == null) {
                 path = Constants.Config.KeyBindsFile;
             }
@@ -10,6 +11,7 @@ namespace TwelveEngine.Shell.Config {
             var contents = processor.Save(keyBindSet);
             
             File.WriteAllText(path,contents);
+            GC.Collect();
         }
 
         public static void SaveEngineConfig(string path = null) {
@@ -24,6 +26,7 @@ namespace TwelveEngine.Shell.Config {
             var contents = processor.Save(propertySet);
 
             File.WriteAllText(path,contents);
+            GC.Collect();
         }
     }
 }

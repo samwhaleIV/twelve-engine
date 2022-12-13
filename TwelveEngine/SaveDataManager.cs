@@ -26,7 +26,7 @@ namespace TwelveEngine {
 
         private static bool notifiedLackOfDirectoryCreationAuthority = false;
 
-        private static StringBuilder stringBuilder = new StringBuilder();
+        private static readonly StringBuilder stringBuilder = new StringBuilder();
 
         public static void Initialize(string saveFile,string saveDirectory,bool shouldCreateDirectory) {
             _shouldCreateDirectory = shouldCreateDirectory;
