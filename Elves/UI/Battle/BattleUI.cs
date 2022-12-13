@@ -229,7 +229,6 @@ namespace Elves.UI.Battle {
 
         public void Render(SpriteBatch spriteBatch,UserRenderData playerData,UserRenderData targetData) {
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-            speechBox.Draw(spriteBatch);
 
             RenderActionButtons(spriteBatch);
             RenderHealthBars(spriteBatch,playerData,targetData);
@@ -240,8 +239,15 @@ namespace Elves.UI.Battle {
             Fonts.RetroFont.Begin(spriteBatch);
             RenderUsernames(playerData,targetData);
             RenderActionButtonText();
-            speechBox.DrawText(Fonts.DefaultFont);
             Fonts.RetroFont.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            speechBox.Draw(spriteBatch);
+            spriteBatch.End();
+
+            Fonts.DefaultFont.Begin(spriteBatch);
+            speechBox.DrawText(Fonts.DefaultFont);
+            Fonts.DefaultFont.End();
         }
     }
 }

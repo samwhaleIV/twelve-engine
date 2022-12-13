@@ -3,21 +3,41 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Elves {
+namespace TwelveEngine {
+
+    public enum SaveValueType:int { String, Int, Flag, Bool }
+
+    public readonly struct SaveValue {
+        public SaveValue(SaveValueType type,object value) {
+            Type = type;
+            Value = value;
+        }
+        public readonly SaveValueType Type;
+        public readonly object Value;
+    }
+
     public sealed class SaveData {
 
-        private readonly Dictionary<SaveKey,SaveValue> dataTable = new Dictionary<SaveKey,SaveValue>();
+        private readonly Dictionary<int,SaveValue> dataTable;
         public int KeyCount => dataTable.Count;
 
-        private enum SaveValueType:int { String, Int, Flag, Bool }
+        public SaveData() {
+            dataTable = new Dictionary<int,SaveValue>();
+        }
 
-        private readonly struct SaveValue {
-            public SaveValue(SaveValueType type,object value) {
-                Type = type;
-                Value = value;
+        public SaveData(IEnumerable<KeyValuePair<int,SaveValue>> data) {
+            dataTable = dataTable = new Dictionary<int,SaveValue>(data);
+        }
+
+        public SaveData((int Key,SaveValue Value)[] data) {
+            dataTable = dataTable = new Dictionary<int,SaveValue>(data.Length);
+            foreach(var item in data) {
+                dataTable[item.Key] = item.Value;
             }
-            public readonly SaveValueType Type;
-            public readonly object Value;
+        }
+
+        public void Clear() {
+            dataTable.Clear();
         }
 
         public bool TrySave(string filePath,StringBuilder stringBuilder) {
@@ -26,10 +46,10 @@ namespace Elves {
                 using var fs = File.Open(filePath,FileMode.Create,FileAccess.Write);
                 using var bw = new BinaryWriter(fs,Encoding.UTF8);
                 Export(bw);
-                stringBuilder.AppendLine($"Wrote save data to \"{filePath}\".");
+                stringBuilder.Append($"Wrote save data to \"{filePath}\".");
                 success = true;
             } catch(Exception exception) {
-                stringBuilder.AppendLine(exception.ToString());
+                stringBuilder.Append(exception.ToString());
             }
             return success;
         }
@@ -37,24 +57,24 @@ namespace Elves {
         public bool TryLoad(string filePath,StringBuilder stringBuilder) {
             bool success = false;
             if(!File.Exists(filePath)) {
-                stringBuilder.AppendLine($"File \"{filePath}\" does not exist.");
+                stringBuilder.Append($"File \"{filePath}\" does not exist.");
                 return false;
             }
             try {
                 using var fs = File.Open(filePath,FileMode.Open,FileAccess.Read);
                 if(fs.Length <= 0) {
-                    stringBuilder.AppendLine($"Cannot read save data. File \"{filePath}\" is empty!");
+                    stringBuilder.Append($"Cannot read save data. File \"{filePath}\" is empty!");
                     success = false;
                 } else {
                     dataTable.Clear();
                     using var br = new BinaryReader(fs,Encoding.UTF8);
                     Import(br);
-                    stringBuilder.AppendLine($"Loaded save data from file \"{filePath}\".");
+                    stringBuilder.Append($"Loaded save data from file \"{filePath}\".");
                     success = true;
                 }
             } catch(Exception exception) {
                 dataTable.Clear();
-                stringBuilder.AppendLine(exception.ToString());
+                stringBuilder.Append(exception.ToString());
             }
             return success;
         }
@@ -62,7 +82,7 @@ namespace Elves {
         private void Export(BinaryWriter binaryWriter) {
             binaryWriter.Write(dataTable.Count);
             foreach(var item in dataTable) {
-                binaryWriter.Write((int)item.Key);
+                binaryWriter.Write(item.Key);
                 var valueType = item.Value.Type;
                 binaryWriter.Write((int)valueType);
                 switch(valueType) {
@@ -85,7 +105,7 @@ namespace Elves {
         private void Import(BinaryReader reader) {
             int itemCount = reader.ReadInt32();
             for(int i = 0;i<itemCount;i++) {
-                var key = (SaveKey)reader.ReadInt32();
+                var key = reader.ReadInt32();
                 var valueType = (SaveValueType)reader.ReadInt32();
                 switch(valueType) {
                     case SaveValueType.String:
@@ -105,7 +125,7 @@ namespace Elves {
             }
         }
 
-        public bool TryGetString(SaveKey key,out string value,string defaultValue = null) {
+        public bool TryGetString(int key,out string value,string defaultValue = null) {
             if(!dataTable.TryGetValue(key,out var saveValue)) {
                 value = defaultValue;
                 return false;
@@ -118,7 +138,7 @@ namespace Elves {
             return true;
         }
 
-        public bool TryGetInt(SaveKey key,out int value,int defaultValue = 0) {
+        public bool TryGetInt(int key,out int value,int defaultValue = 0) {
             if(!dataTable.TryGetValue(key,out var saveValue)) {
                 value = defaultValue;
                 return false;
@@ -131,7 +151,7 @@ namespace Elves {
             return true;
         }
 
-        public bool TryGetBool(SaveKey key,out bool value,bool defaultValue = false) {
+        public bool TryGetBool(int key,out bool value,bool defaultValue = false) {
             if(!dataTable.TryGetValue(key,out var saveValue)) {
                 value = defaultValue;
                 return false;
@@ -144,28 +164,28 @@ namespace Elves {
             return true;
         }
 
-        public bool HasKey(SaveKey key) {
+        public bool HasKey(int key) {
             return dataTable.ContainsKey(key);
         }
 
-        public void RemoveKey(SaveKey key) {
+        public void RemoveKey(int key) {
             dataTable.Remove(key);
         }
 
-        public void SetFlag(SaveKey key) {
+        public void SetFlag(int key) {
             dataTable[key] = new SaveValue(SaveValueType.Flag,null);
         }
 
-        public void SetValue(SaveKey key,string value) {
-            dataTable.Add(key,new SaveValue(SaveValueType.String,value));
+        public void SetValue(int key,string value) {
+            dataTable[key] = new SaveValue(SaveValueType.String,value);
         }
 
-        public void SetValue(SaveKey key,int value) {
-            dataTable.Add(key,new SaveValue(SaveValueType.Int,value));
+        public void SetValue(int key,int value) {
+            dataTable[key] = new SaveValue(SaveValueType.Int,value);
         }
 
-        public void SetValue(SaveKey key,bool value) {
-            dataTable.Add(key,new SaveValue(SaveValueType.Bool,value));
+        public void SetValue(int key,bool value) {
+            dataTable[key] = new SaveValue(SaveValueType.Bool,value);
         }
     }
 }

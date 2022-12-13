@@ -3,15 +3,15 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace TwelveEngine.Shell {
+namespace TwelveEngine {
 
     public static class Logger {
 
         private static StreamWriter streamWriter = null;
+        private static readonly StringBuilder stringBuilder = new StringBuilder();
 
         public static void CleanUp() {
-            AutoFlush = false;
-            WriteLine();
+            _autoFlush = false;
             Flush();
             streamWriter?.Dispose();
             streamWriter = null;
@@ -25,9 +25,10 @@ namespace TwelveEngine.Shell {
             try {
                 streamWriter = File.AppendText(Constants.LogFile);
             } catch(Exception exception) {
+                streamWriter = null;
                 WriteLine(exception.ToString());
             }
-            if(logFileExists) {
+            if(logFileExists && streamWriter != null) {
                 streamWriter.WriteLine();
             }
             WriteLine($"Logger started, current time (UTC): {DateTime.UtcNow}");
@@ -38,7 +39,20 @@ namespace TwelveEngine.Shell {
         private static extern bool AllocConsole();
 #endif
 
-        public static bool AutoFlush { get; set; } = false;
+        private static bool _autoFlush = false;
+
+        public static bool AutoFlush {
+            get => _autoFlush;
+            set {
+                if(value == _autoFlush) {
+                    return;
+                }
+                if(_autoFlush) {
+                    Flush();
+                }
+                _autoFlush = value;
+            }
+        }
 
         public static void WriteLine(string line) {
             Console.WriteLine(line);
@@ -46,19 +60,40 @@ namespace TwelveEngine.Shell {
                 return;
             }
             streamWriter.WriteLine(line);
-            if(AutoFlush) {
+            if(_autoFlush) {
                 streamWriter.Flush();
             }
         }
-        public static void WriteLine() => WriteLine(Environment.NewLine);
 
-        public static void Write(string line) {
-            Console.Write(line);
+        public static void WriteLine(StringBuilder line) {
+            Console.WriteLine(line);
             if(streamWriter == null) {
                 return;
             }
-            streamWriter.Write(line);
-            if(AutoFlush) {
+            streamWriter.WriteLine(line);
+            if(_autoFlush) {
+                streamWriter.Flush();
+            }
+        }
+
+        public static void Write(string text,bool checkAutoFlush = false) {
+            Console.Write(text);
+            if(streamWriter == null) {
+                return;
+            }
+            streamWriter.Write(text);
+            if(checkAutoFlush && _autoFlush) {
+                streamWriter.Flush();
+            }
+        }
+
+        public static void Write(StringBuilder text,bool checkAutoFlush = false) {
+            Console.Write(text);
+            if(streamWriter == null) {
+                return;
+            }
+            streamWriter.Write(text);
+            if(checkAutoFlush && _autoFlush) {
                 streamWriter.Flush();
             }
         }
@@ -70,17 +105,18 @@ namespace TwelveEngine.Shell {
             if(names.Length == 0) {
                 return;
             }
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(label);
-            stringBuilder.Append(": ");
+            var sb = stringBuilder;
+            sb.Clear();
+            sb.Append(label);
+            sb.Append(": ");
             for(int i = 0;i<names.Length;i++) {
-                stringBuilder.Append(names[i]);
-                stringBuilder.Append(" = ");
-                stringBuilder.Append(values[i] ? "Yes" : "No");
-                stringBuilder.Append(" | ");
+                sb.Append(names[i]);
+                sb.Append(" = ");
+                sb.Append(values[i] ? "Yes" : "No");
+                sb.Append(" | ");
             }
-            stringBuilder.Remove(stringBuilder.Length - 3, 3);
-            WriteLine(stringBuilder.ToString());
+            sb.Remove(stringBuilder.Length - 3, 3);
+            WriteLine(sb);
         }
 
         public static void Flush() {

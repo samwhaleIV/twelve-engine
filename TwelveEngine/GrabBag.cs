@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Elves {
+namespace TwelveEngine {
     public sealed class GrabBag<T> {
 
         private readonly T[] grabBag;

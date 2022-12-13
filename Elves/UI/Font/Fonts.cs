@@ -1,11 +1,4 @@
-﻿using Elves.UI;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TwelveEngine.Shell;
-
-namespace Elves.UI.Font {
+﻿namespace Elves.UI.Font {
     public static partial class Fonts {
 
         public static bool IsLoaded { get; private set; } = false;
@@ -18,7 +11,7 @@ namespace Elves.UI.Font {
                 return;
             }
             DefaultFont = new UVSpriteFont(UITextures.DefaultFont,34,1,8,GetUIFontData());
-            RetroFont = new UVSpriteFont(UITextures.RetroFont,10,1,4,GetRetroFontData());//todo
+            RetroFont = new UVSpriteFont(UITextures.RetroFont,10,1,4,GetRetroFontData());
             IsLoaded = true;
         }
     }

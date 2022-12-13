@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using TwelveEngine;
 using TwelveEngine.Shell;
 
 namespace Elves.Battle.Sprite.Animation {
@@ -36,7 +37,9 @@ namespace Elves.Battle.Sprite.Animation {
             if(!hasStaticFrameSet && !hasIdleFrameSet) {
                 defaultFrameArea = new Rectangle(0,0,baseHeight,baseHeight);
                 defaultFrameSet = FrameSet.CreateStatic(AnimationType.Static,defaultFrameArea);
-                Logger.WriteLine($"Battle sprite for \"{sprite.Name}\" is missing their frame sets! Resorting to an (ugly) fallback!");
+                Logger.Write("Battle sprite for ");
+                Logger.Write(sprite.Name);
+                Logger.WriteLine(" is missing their frame sets! Resorting to an (ugly) fallback!");
             } else if(hasStaticFrameSet && hasIdleFrameSet) {
                 defaultFrameArea = staticFrameSet.AreaOrDefault;
                 defaultFrameSet = idleFrameSet;

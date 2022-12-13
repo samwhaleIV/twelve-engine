@@ -26,7 +26,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\IUVSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Menu\FloatingItemData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ActionButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\BattleUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\IBattleUIAnimated.cs" />
@@ -42,21 +41,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Glyph.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\RetroFontData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\TwelvenFontData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Save\SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Menu\MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Save\SaveKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\UserRenderData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\AnimationInterpolator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIColors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UITextures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\UVSpriteFont.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Save\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\" />
   </ItemGroup>
 </Project>

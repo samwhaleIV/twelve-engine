@@ -7,24 +7,20 @@ using TwelveEngine.Game3D.Entity.Types;
 namespace Elves {
     public class OrthoBackgroundState:World {
 
-        private readonly bool debug3D = false;
+        private readonly bool debug3D = Program.HasFlag(Constants.Flags.Debug3D);
 
-        protected bool Debug3D => debug3D;
-
-        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true,bool debug3D = false) {
+        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true) {
             WriteDebugEnabled = debug3D;
             this.backgroundImage = backgroundImage;
             this.smoothBackground = smoothBackground;
-            this.debug3D = debug3D;
             OnLoad += OrthoBackgroundState_OnLoad;
             Initialize();
         }
 
-        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true,bool debug3D = false) {
+        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true) {
             WriteDebugEnabled = debug3D;
             backgroundImageTexture = backgroundImage;
             this.smoothBackground = smoothBackground;
-            this.debug3D = debug3D;
             OnLoad += OrthoBackgroundState_OnLoad;
             Initialize();
         }

@@ -2,20 +2,22 @@
 using TwelveEngine.Shell;
 using System.IO;
 using System;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Diagnostics;
 using TwelveEngine;
-using TwelveEngine.EntitySystem;
+using System.Collections.Generic;
 
 namespace ElvesDesktop {
     public static class Program {
+
+        private static HashSet<string> flags;
+
         private static void Game_OnLoad(GameManager game) {
 
-            string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"ElvesGame");
             game.Disposed += Game_Disposed;
             game.Exiting += Game_Exiting;
-            var program = new Elves.Program(game,saveDirectory,true);
+
+            Logger.AutoFlush = true;
+
+            Elves.Program.StartGame(game,flags);
         }
 
         private static void Game_Exiting(object sender,EventArgs e) {
@@ -27,11 +29,20 @@ namespace ElvesDesktop {
         }
 
         public static void Main(string[] args) {
+            flags = new HashSet<string>(args);
             ConfigLoader.LoadEngineConfig(new TwelveConfigSet());
-            using var game = new GameManager(fullscreen: false,verticalSync: true);
+            string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),Elves.Constants.SaveFolder);
+            SaveDataManager.Initialize(Elves.Constants.SaveFile,saveDirectory,true);
+
+            using var game = new GameManager(
+                fullscreen: flags.Contains(Elves.Constants.Flags.Fullscreen),
+                hardwareModeSwitch: flags.Contains(Elves.Constants.Flags.HardwareFullscreen),
+                verticalSync: !flags.Contains(Elves.Constants.Flags.NoVsync),
+                mouseVisible: flags.Contains(Elves.Constants.Flags.OSCursor)
+            );
+
             game.OnLoad += Game_OnLoad;
             game.Run();
         }
-
     }
 }

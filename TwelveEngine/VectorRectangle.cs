@@ -90,13 +90,13 @@ namespace TwelveEngine {
             }
         }
 
-        public Vector2 Center => Location + Size * 0.5f;
+        public Vector2 Center => new Vector2(_x + _width * 0.5f,_y + _height * 0.5f);
 
-        public float Top => X;
-        public float Bottom => Y + Height;
+        public float Top => _y;
+        public float Bottom => _y + _height;
 
-        public float Left => X;
-        public float Right => X + Width;
+        public float Left => _x;
+        public float Right => _x + _width;
 
         public Vector2 TopLeft => new Vector2(_x,_y);
         public Vector2 BottomRight => new Vector2(_x+_width,_y+_height);

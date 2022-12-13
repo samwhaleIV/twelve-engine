@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
-namespace TwelveEngine.Shell {
+namespace TwelveEngine {
     public readonly struct CPUTexture {
 
         private static Color[,] convertFlatData(Color[] data,int width,int height) {

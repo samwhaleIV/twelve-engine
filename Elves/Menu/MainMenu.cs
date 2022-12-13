@@ -25,7 +25,7 @@ namespace Elves.Menu {
         private const float FOREGROUND_WATER_OPACITY = 0.592f;
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
-        public MainMenu(bool debug3D = false):base(UITextures.Nothing,true,debug3D) {
+        public MainMenu():base(UITextures.Nothing,true) {
             SetBackgroundColors(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += MainMenu_OnLoad;
         }
