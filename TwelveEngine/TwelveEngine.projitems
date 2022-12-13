@@ -21,13 +21,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\ObjectManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Objects\PhysicsGameObject.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\VectorRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\Screenspace3DSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\FPSCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TypeParser.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game3D\VectorRectangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
     <Compile Include="..\TwelveEngine\Game2D\PhysicsGrid2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />

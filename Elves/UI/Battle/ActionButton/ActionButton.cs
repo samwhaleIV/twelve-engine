@@ -3,11 +3,16 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Text;
+using TwelveEngine;
 
 namespace Elves.UI.Battle {
-    public sealed class ActionButton:Button {
+    public sealed class ActionButton:Button, IBattleUIAnimated {
 
         private const float MOVEMENT_DURATION = 100;
+
+        bool IBattleUIAnimated.GetAnimationCompleted() {
+            return interpolator.IsFinished;
+        }
 
         private static readonly Rectangle PressedTextureSource = new Rectangle(0,48,32,16);
         private static readonly Rectangle SelectedTextureSource = new Rectangle(0,32,32,16);
@@ -49,18 +54,21 @@ namespace Elves.UI.Battle {
         public void Update(TimeSpan now,ButtonRenderData buttonRenderData) {
             interpolator.Now = now;
 
-            Rectangle startPosition = buttonRenderData.GetPosition(oldState);
-            Rectangle endPosition = buttonRenderData.GetPosition(currentState);
+            VectorRectangle startPosition = buttonRenderData.GetPosition(oldState);
+            VectorRectangle endPosition = buttonRenderData.GetPosition(currentState);
 
             Area = interpolator.Interpolate(startPosition,endPosition);
         }
 
         public void DrawText(UVSpriteFont spriteFont,int scale,Color color) {
-            Point center = Area.Center;
+            if(IsOffscreen) {
+                return;
+            }
+            Vector2 center = Area.Center;
             if(Pressed) {
                 center.Y += Area.Height / 16;
             }
-            spriteFont.DrawCentered(Label,center,scale,color);
+            spriteFont.DrawCentered(Label,center.ToPoint(),scale,color);
         }
 
         private Rectangle GetTextureSource() {
@@ -76,7 +84,7 @@ namespace Elves.UI.Battle {
             if(IsOffscreen) {
                 return;
             }
-            spriteBatch.Draw(Texture,Area,GetTextureSource(),color??Color.White);
+            spriteBatch.Draw(Texture,(Rectangle)Area,GetTextureSource(),color ?? Color.White);
         }
     }
 }

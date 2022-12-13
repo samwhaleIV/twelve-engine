@@ -8,7 +8,8 @@ namespace TwelveEngine.Shell.Automation {
 
         private const int RENDER_SIZE = 60;
         private const int SPACE = 4;
-        private const double ADVANCE_FRAME_TIMEOUT = 250;
+
+        private static readonly TimeSpan AdvanceFrameTimeout = TimeSpan.FromMilliseconds(250);
 
         private const int GLPYH_SIZE = 15;
 
@@ -126,7 +127,7 @@ namespace TwelveEngine.Shell.Automation {
 
             if(lastFrameAdvance.HasValue) {
                 var timeDifference = gameTime.TotalGameTime - lastFrameAdvance.Value;
-                if(timeDifference.TotalMilliseconds < ADVANCE_FRAME_TIMEOUT) {
+                if(timeDifference < AdvanceFrameTimeout) {
                     drawSymbol(ref x,smallAdvance ? Symbol.Advance : Symbol.AdvanceMany);
                 }
             }

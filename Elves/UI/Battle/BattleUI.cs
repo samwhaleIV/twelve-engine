@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.UI.Font;
 using TwelveEngine.Shell;
+using TwelveEngine;
 
 namespace Elves.UI.Battle {
 
@@ -68,7 +69,9 @@ namespace Elves.UI.Battle {
         //todo...
         //private readonly TargetButton targetButton = new TargetButton();
         //private readonly Tagline tagline = new Tagline();
-        //private readonly SpeechBox speechBox = new SpeechBox();
+        private readonly SpeechBox speechBox = new SpeechBox();
+
+        public SpeechBox SpeechBox => speechBox;
       
         private readonly List<Button> interactableElements = new List<Button>();
         private static readonly Point OffscreenMousePosition = new Point(-1);
@@ -136,11 +139,11 @@ namespace Elves.UI.Battle {
             button.Pressed = false;
         }
 
-        public void UpdateActionButtons(Rectangle viewport,TimeSpan now,int margin,int halfMargin) {
-            int buttonHeight = viewport.Height / 4;
-            int buttonWidth = buttonHeight * 2;
+        public void UpdateActionButtons(Rectangle viewport,TimeSpan now,float margin,float halfMargin) {
+            float buttonHeight = viewport.Height * 0.25f;
+            float buttonWidth = buttonHeight * 2;
 
-            int buttonCenterY = viewport.Bottom - margin - buttonHeight - halfMargin;
+            float buttonCenterY = viewport.Bottom - margin - buttonHeight - halfMargin;
 
             var buttonRenderData = new ButtonRenderData(
                 viewport,buttonWidth,buttonHeight,viewport.Center.X,buttonCenterY,halfMargin
@@ -151,35 +154,40 @@ namespace Elves.UI.Battle {
             }
         }
 
-        public void UpdateHealthBars(Rectangle viewport,int scale,int margin,int halfMargin) {
-            int healthBarY = margin;
+        public void UpdateHealthBars(Rectangle viewport,float scale,float margin,float halfMargin) {
+            float healthBarY = margin;
 
-            int centerX = viewport.Center.X;
+            float centerX = viewport.Center.X;
 
-            int playerHealthBarLeft = margin;
-            int playerHealthBarRight = centerX - halfMargin;
+            float playerHealthBarLeft = margin;
+            float playerHealthBarRight = centerX - halfMargin;
 
-            int targetHealthBarLeft = centerX + halfMargin;
-            int targetHealthBarRight = viewport.Right - margin;
+            float targetHealthBarLeft = centerX + halfMargin;
+            float targetHealthBarRight = viewport.Right - margin;
 
-            int healthBarHeight = viewport.Height / 8; /* Equal to half of action button height */
+            float healthBarHeight = viewport.Height * 0.125f; /* Equal to half of action button height */
 
-            playerHealthBar.Area = new Rectangle(playerHealthBarLeft,healthBarY,playerHealthBarRight-playerHealthBarLeft,healthBarHeight);
-            targetHealthBar.Area = new Rectangle(targetHealthBarLeft,healthBarY,targetHealthBarRight-targetHealthBarLeft,healthBarHeight);
+            playerHealthBar.Area = new VectorRectangle(
+                playerHealthBarLeft,healthBarY,playerHealthBarRight-playerHealthBarLeft,healthBarHeight
+            );
+            targetHealthBar.Area = new VectorRectangle(
+                targetHealthBarLeft,healthBarY,targetHealthBarRight-targetHealthBarLeft,healthBarHeight
+            );
 
             playerHealthBar.Update(scale,Now);
             targetHealthBar.Update(scale,Now);
         }
 
-        public void Update(int scale) {
+        public void Update(float scale) {
             Rectangle viewport = Viewport;
             TimeSpan now = Now;
 
-            int margin = scale;
-            int halfMargin = margin / 2;
+            float margin = scale;
+            float halfMargin = margin * 0.5f;
 
             UpdateActionButtons(viewport,now,margin,halfMargin);
             UpdateHealthBars(viewport,scale,margin,halfMargin);
+            speechBox.Update(viewport,margin);
 
             /* Update for buttons that are changing positions */
             UpdateButtonFocus(lastMousePosition.X,lastMousePosition.Y);
@@ -197,23 +205,23 @@ namespace Elves.UI.Battle {
         }
 
         private void RenderUsernames(UserRenderData playerData,UserRenderData targetData) {
-            int usernameScale = playerHealthBar.Area.Height / 2 / Fonts.RetroFont.LineHeight;
+            int usernameScale = (int)(playerHealthBar.Area.Height * 0.5f / Fonts.RetroFont.LineHeight);
             Color usernameColor = Color.White;
 
             Fonts.RetroFont.Draw(
                 playerData.Name,
-                new Point(playerHealthBar.Area.X,playerHealthBar.Area.Bottom + playerHealthBar.Area.Top),
+                new Point((int)playerHealthBar.Area.X,(int)(playerHealthBar.Area.Bottom + playerHealthBar.Area.Top)),
                 usernameScale,usernameColor
             );
             Fonts.RetroFont.DrawRight(
                 targetData.Name,
-                new Point(targetHealthBar.Area.Right,targetHealthBar.Area.Bottom + targetHealthBar.Area.Top),
+                new Point((int)targetHealthBar.Area.Right,(int)(targetHealthBar.Area.Bottom + targetHealthBar.Area.Top)),
                 usernameScale,usernameColor
             );
         }
 
         private void RenderActionButtonText() {
-            int buttonTextScale = ActionButton1.Area.Height / 6 / Fonts.RetroFont.LineHeight;
+            int buttonTextScale = (int)(ActionButton1.Area.Height / 6 / Fonts.RetroFont.LineHeight);
             foreach(var button in actionButtons) {
                 button.DrawText(Fonts.RetroFont,buttonTextScale,Color.White);
             }
@@ -221,6 +229,8 @@ namespace Elves.UI.Battle {
 
         public void Render(SpriteBatch spriteBatch,UserRenderData playerData,UserRenderData targetData) {
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            speechBox.Draw(spriteBatch);
+
             RenderActionButtons(spriteBatch);
             RenderHealthBars(spriteBatch,playerData,targetData);
 
@@ -230,6 +240,7 @@ namespace Elves.UI.Battle {
             Fonts.RetroFont.Begin(spriteBatch);
             RenderUsernames(playerData,targetData);
             RenderActionButtonText();
+            speechBox.DrawText(Fonts.DefaultFont);
             Fonts.RetroFont.End();
         }
     }

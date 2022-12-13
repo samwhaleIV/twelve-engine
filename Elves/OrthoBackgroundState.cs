@@ -34,7 +34,7 @@ namespace Elves {
 
         private const string BACKGROUND_ENTITY_NAME = "Background";
 
-        public double ScrollingBackgroundPeriod { get; set; } = 60d;
+        public TimeSpan ScrollingBackgroundPeriod { get; set; } = TimeSpan.FromSeconds(60);
         public bool ScrollingBackground { get; set; } = false;
 
         private readonly Color[] backgroundColors = new Color[4] { Color.White, Color.White, Color.White, Color.White };
@@ -114,7 +114,7 @@ namespace Elves {
         private void UpdateBackground() {
             background.SetColors(backgroundColors);
             if(ScrollingBackground) {
-                double scrollT = Now.TotalSeconds / ScrollingBackgroundPeriod % 1d;
+                double scrollT = Now / ScrollingBackgroundPeriod % 1d;
                 background.UVOffset = new Vector2((float)scrollT,0f);
             } else {
                 background.UVOffset = Vector2.Zero;

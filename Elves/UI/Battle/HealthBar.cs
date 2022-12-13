@@ -13,9 +13,9 @@ namespace Elves.UI.Battle {
         public float Value { get; set; } = 1f;
 
         private TimeSpan Now;
-        private int Scale;
+        private float Scale;
 
-        public void Update(int scale,TimeSpan now) {
+        public void Update(float scale,TimeSpan now) {
             Scale = scale;
             Now = now;
         }
@@ -77,10 +77,13 @@ namespace Elves.UI.Battle {
         }
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {
-            Rectangle area = Area;
+            if(Texture == null) {
+                return;
+            }
+            Rectangle area = (Rectangle)Area;
             Color healthColor = color ?? Color.White;
 
-            int pixelSize = Area.Height / 16;
+            int pixelSize = (int)(Area.Height * 0.0625f);
             pixelSize += 1;
 
             (Color Color, int YOffset, Point textureOffset) stripeData;
@@ -102,7 +105,7 @@ namespace Elves.UI.Battle {
                     new Rectangle(17+stripeData.textureOffset.X,stripeData.textureOffset.Y,1,16),
                 stripeData.Color);
             }
-            int overshoot = (pixelCount * pixelSize) - (Area.Width - pixelSize * 2);
+            int overshoot = (pixelCount * pixelSize) - (area.Width - pixelSize * 2);
 
             int offsetStripeX = area.X + pixelCount * pixelSize - overshoot;
             stripeData = GetStripeData((area.Width - halfPixelSize - pixelSize) / area.Width,healthColor);
@@ -120,5 +123,4 @@ namespace Elves.UI.Battle {
             stripeData.Color);
         }
     }
-
 }

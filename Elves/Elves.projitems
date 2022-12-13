@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ActionButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\BattleUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\IBattleUIAnimated.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonRenderData.cs" />
@@ -51,7 +52,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\AnimationInterpolator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIColors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UITextures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\NineGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Font\UVSpriteFont.cs" />
   </ItemGroup>

@@ -12,8 +12,8 @@ namespace Elves.Battle.Sprite {
         public Color AccentColor { get; set; } = Color.White;
         public float XOffset { get; set; } = 0f;
 
-        public void SetSpritePosition(SpritePosition spritePosition,Action callback) {
-            positionController.SetSpritePosition(spritePosition,callback);
+        public void SetSpritePosition(TimeSpan now,SpritePosition spritePosition,Action callback) {
+            positionController.SetSpritePosition(now,spritePosition,callback);
         }
 
         private readonly int baseHeight;
@@ -27,7 +27,7 @@ namespace Elves.Battle.Sprite {
             positionController = new PositionController(this);
 
             OnLoad += BattleSprite_OnLoad;
-            OnUpdate +=BattleSprite_OnUpdate;
+            OnUpdate += BattleSprite_OnUpdate;
         }
 
         private void BattleSprite_OnUpdate() {

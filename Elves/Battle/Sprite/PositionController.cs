@@ -6,7 +6,8 @@ namespace Elves.Battle.Sprite {
     public sealed class PositionController {
 
         private const float SCREEN_EDGE_MARGIN = 0.015f;
-        private const double POSITION_CHANGE_DURATION = 0.1f;
+
+        public TimeSpan PositionChangeDuration { get; set; } = TimeSpan.FromSeconds(0.1f);
 
         private static readonly Dictionary<SpritePosition,Vector3> positionTable = new Dictionary<SpritePosition,Vector3>() {
             {SpritePosition.Left,new Vector3(-0.4f,0f,DepthConstants.MiddleFar)},
@@ -50,14 +51,14 @@ namespace Elves.Battle.Sprite {
             callback?.Invoke();
         }
 
-        public void SetSpritePosition(SpritePosition spritePosition,Action callback) {
+        public void SetSpritePosition(TimeSpan now,SpritePosition spritePosition,Action callback) {
             if(positionAnimating) {
                 return;
             }
             positionAnimating = true;
             oldPosition = this.spritePosition;
             this.spritePosition = spritePosition;
-            positionChangeStart = sprite.Game.Time.TotalGameTime;
+            positionChangeStart = now;
             updatePositionCallback = callback;
         }
 
@@ -71,7 +72,7 @@ namespace Elves.Battle.Sprite {
             } else {
                 Vector3 startPosition = GetPosition(oldPosition,screenSize.X);
                 Vector3 newPosition = GetPosition(spritePosition,screenSize.X);
-                float positionT = (float)((now - positionChangeStart).TotalSeconds / POSITION_CHANGE_DURATION);
+                float positionT = (float)((now - positionChangeStart) / PositionChangeDuration);
                 bool endSpritePosition = false;
                 if(positionT < 0f) {
                     positionT = 0f;

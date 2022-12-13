@@ -1,22 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TwelveEngine;
 
 namespace Elves.UI {
     public class UIElement {
 
         protected Texture2D Texture { get; set; } = UITextures.Nothing;
 
-        public Rectangle Area {
+        public VectorRectangle Area {
             get => GetArea();
             set => SetArea(value);
         }
 
-        private Rectangle _area;
+        private VectorRectangle _area;
 
-        protected virtual Rectangle GetArea() {
+        protected virtual VectorRectangle GetArea() {
             return _area;
         }
-        protected virtual void SetArea(Rectangle rectangle) {
+        protected virtual void SetArea(VectorRectangle rectangle) {
             _area = rectangle;
         }
 
@@ -24,7 +25,7 @@ namespace Elves.UI {
             if(Texture == null) {
                 return;
             }
-            spriteBatch.Draw(Texture,Area,color ?? Color.White);
+            spriteBatch.Draw(Texture,(Rectangle)Area,color ?? Color.White);
         }
     }
 }

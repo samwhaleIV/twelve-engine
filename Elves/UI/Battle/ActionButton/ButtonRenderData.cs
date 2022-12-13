@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using TwelveEngine;
 
 namespace Elves.UI.Battle {
     public readonly struct ButtonRenderData {
 
-        public ButtonRenderData(Rectangle viewport,int width,int height,int centerX,int centerY,int halfMargin) {
+        public ButtonRenderData(Rectangle viewport,float width,float height,float centerX,float centerY,float halfMargin) {
             Viewport = viewport;
             Width = width;
             Height = height;
@@ -14,47 +15,47 @@ namespace Elves.UI.Battle {
 
         public readonly Rectangle Viewport;
 
-        public readonly int Width;
-        public readonly int Height;
+        public readonly float Width;
+        public readonly float Height;
 
-        public readonly int CenterX;
-        public readonly int CenterY;
+        public readonly float CenterX;
+        public readonly float CenterY;
 
-        public readonly int HalfMargin;
+        public readonly float HalfMargin;
 
-        public readonly int HalfWidth => Width / 2;
-        public readonly int HalfHeight => Height / 2;
+        public readonly float HalfWidth => Width * 0.5f;
+        public readonly float HalfHeight => Height * 0.5f;
 
-        public Rectangle GetPosition(ButtonState buttonState) {
+        public VectorRectangle GetPosition(ButtonState buttonState) {
 
-            Point position = buttonState.Position switch {
-                ButtonPosition.CenterLeft => new Point(        CenterX - HalfMargin - Width,    CenterY - HalfHeight),
-                ButtonPosition.CenterRight => new Point(       CenterX + HalfMargin,            CenterY - HalfHeight),
+            Vector2 position = buttonState.Position switch {
+                ButtonPosition.CenterLeft => new Vector2(        CenterX - HalfMargin - Width,    CenterY - HalfHeight),
+                ButtonPosition.CenterRight => new Vector2(       CenterX + HalfMargin,            CenterY - HalfHeight),
 
-                ButtonPosition.CenterBottom => new Point(      CenterX - HalfWidth,             CenterY + HalfMargin),
+                ButtonPosition.CenterBottom => new Vector2(      CenterX - HalfWidth,             CenterY + HalfMargin),
 
-                ButtonPosition.TopLeft => new Point(           CenterX - HalfMargin - Width,    CenterY - HalfMargin - Height),
-                ButtonPosition.TopRight => new Point(          CenterX + HalfMargin,            CenterY - HalfMargin - Height),
+                ButtonPosition.TopLeft => new Vector2(           CenterX - HalfMargin - Width,    CenterY - HalfMargin - Height),
+                ButtonPosition.TopRight => new Vector2(          CenterX + HalfMargin,            CenterY - HalfMargin - Height),
 
-                ButtonPosition.BottomLeft => new Point(        CenterX - HalfMargin - Width,    CenterY + HalfMargin),
-                ButtonPosition.BottomRight => new Point(       CenterX + HalfMargin,            CenterY + HalfMargin),
+                ButtonPosition.BottomLeft => new Vector2(        CenterX - HalfMargin - Width,    CenterY + HalfMargin),
+                ButtonPosition.BottomRight => new Vector2(       CenterX + HalfMargin,            CenterY + HalfMargin),
 
-                ButtonPosition.CenterMiddle or _ => new Point( CenterX - HalfWidth,             CenterY - HalfHeight)
+                ButtonPosition.CenterMiddle or _ => new Vector2( CenterX - HalfWidth,             CenterY - HalfHeight)
             };
 
             if(buttonState.OnScreen) {
-                return new Rectangle(position.X,position.Y,Width,Height);
+                return new VectorRectangle(position.X,position.Y,Width,Height);
             }
 
             if(buttonState.Position == ButtonPosition.CenterMiddle) {
-                return new Rectangle(position.X,Viewport.Bottom,Width,Height);
+                return new VectorRectangle(position.X,Viewport.Bottom,Width,Height);
             }
 
-            int centerX = position.X + Width / 2;
+            float centerX = position.X + Width * 0.5f;
             if(centerX < CenterX) {
-                return new Rectangle(Viewport.Left-Width,position.Y,Width,Height);
+                return new VectorRectangle(Viewport.Left-Width,position.Y,Width,Height);
             } else {
-                return new Rectangle(Viewport.Right,position.Y,Width,Height);
+                return new VectorRectangle(Viewport.Right,position.Y,Width,Height);
             }
 
         }

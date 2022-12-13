@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using TwelveEngine;
 
 namespace Elves.UI {
     public sealed class AnimationInterpolator {
@@ -42,8 +43,14 @@ namespace Elves.UI {
 
         public Rectangle Interpolate(Rectangle start,Rectangle end) {
             Point point = Interpolate(start.Location,end.Location);
-            start.Location = point;
-            return start;
+            Point size = Interpolate(start.Size,end.Size);
+            return new Rectangle(point,size);
+        }
+
+        public VectorRectangle Interpolate(VectorRectangle start,VectorRectangle end) {
+            Vector2 position = Interpolate(start.Location,end.Location);
+            Vector2 size = Interpolate(start.Size,end.Size);
+            return new VectorRectangle(position,size);
         }
     }
 }
