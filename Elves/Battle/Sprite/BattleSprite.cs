@@ -12,13 +12,13 @@ namespace Elves.Battle.Sprite {
         public Color AccentColor { get; set; } = Color.White;
         public float XOffset { get; set; } = 0f;
 
-        public void SetSpritePosition(TimeSpan now,SpritePosition spritePosition,Action callback) {
-            positionController.SetSpritePosition(now,spritePosition,callback);
+        public void SetSpritePosition(TimeSpan now,SpritePosition spritePosition) {
+            positionController.SetSpritePosition(now,spritePosition);
         }
 
         private readonly int baseHeight;
 
-        public BattleSprite(string textureName,FrameSet[] frameSets,int baseHeight) :base(textureName) {
+        public BattleSprite(string textureName,FrameSet[] frameSets,int baseHeight):base(textureName) {
             this.baseHeight = baseHeight;
 
             PixelSmoothing = false;

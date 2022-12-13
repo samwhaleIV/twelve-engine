@@ -187,7 +187,7 @@ namespace Elves.UI.Battle {
 
             UpdateActionButtons(viewport,now,margin,halfMargin);
             UpdateHealthBars(viewport,scale,margin,halfMargin);
-            speechBox.Update(viewport,margin);
+            speechBox.Update(now,viewport,margin);
 
             /* Update for buttons that are changing positions */
             UpdateButtonFocus(lastMousePosition.X,lastMousePosition.Y);

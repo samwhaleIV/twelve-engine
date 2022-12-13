@@ -4,12 +4,25 @@ using System;
 namespace TwelveEngine {
     public sealed class AnimationInterpolator {
 
-        public TimeSpan Duration { get; set; } = TimeSpan.Zero;
-        public TimeSpan Start { get; set; } = TimeSpan.Zero;
-        public TimeSpan Now { get; set; } = TimeSpan.Zero;
+        private readonly TimeSpan _duration;
 
-        public void SetToEnd() {
-            Start = Now - Duration;
+        public AnimationInterpolator(TimeSpan duration) {
+            _duration =  duration;
+            Start = -duration;
+        }
+
+        public TimeSpan Duration => _duration;
+
+        public TimeSpan Start { get; private set; } = TimeSpan.Zero;
+        public TimeSpan Now { get; private set; } = TimeSpan.Zero;
+
+        public void Reset(TimeSpan now) {
+            Now = now;
+            Start = now;
+        }
+
+        public void Update(TimeSpan now) {
+            Now = now;
         }
 
        public float GetValue() {
@@ -34,6 +47,10 @@ namespace TwelveEngine {
 
         public Vector2 Interpolate(Vector2 start,Vector2 end) {
             return Vector2.Lerp(start,end,GetValue());
+        }
+
+        public Vector3 Interpolate(Vector3 start,Vector3 end) {
+            return Vector3.Lerp(start,end,GetValue());
         }
 
         public Color Interpolate(Color start,Color end) {

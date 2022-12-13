@@ -28,7 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ActionButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\BattleUI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\IBattleUIAnimated.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\IBattleUIAnimated.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonRenderData.cs" />

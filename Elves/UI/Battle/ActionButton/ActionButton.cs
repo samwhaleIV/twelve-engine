@@ -20,14 +20,11 @@ namespace Elves.UI.Battle {
         public ActionButton() {
             Texture = UITextures.Panel;
             TextureSource = new Rectangle(0,16,32,16);
-            interpolator.SetToEnd();
         }
 
         public readonly StringBuilder Label = new StringBuilder();
 
-        public readonly AnimationInterpolator interpolator = new AnimationInterpolator() {
-            Duration = TimeSpan.FromMilliseconds(MOVEMENT_DURATION)
-        };
+        public readonly AnimationInterpolator interpolator = new AnimationInterpolator(TimeSpan.FromMilliseconds(MOVEMENT_DURATION));
 
         private ButtonState currentState = ButtonState.None, oldState = ButtonState.None;
 
@@ -38,21 +35,20 @@ namespace Elves.UI.Battle {
                     return;
                 }
                 currentState = value;
-                interpolator.SetToEnd();
             }
         }
 
         public void SetState(TimeSpan now,ButtonState buttonState) {
             oldState = currentState;
             currentState = buttonState;
-            interpolator.Start = now;
+            interpolator.Reset(now);
         }
 
         protected override bool GetIsEnabled() => currentState.OnScreen && interpolator.IsFinished;
         public bool IsOffscreen => !currentState.OnScreen && interpolator.IsFinished;
 
         public void Update(TimeSpan now,ButtonRenderData buttonRenderData) {
-            interpolator.Now = now;
+            interpolator.Update(now);
 
             VectorRectangle startPosition = buttonRenderData.GetPosition(oldState);
             VectorRectangle endPosition = buttonRenderData.GetPosition(currentState);

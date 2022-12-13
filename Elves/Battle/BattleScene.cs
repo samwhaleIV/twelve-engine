@@ -54,7 +54,7 @@ namespace Elves.Battle {
             battleUI = new BattleUI(Game);
             battleUI.OnActionButtonClick += BattleUI_OnActionButtonClick;
             var elf = new HarmlessElf();
-            elf.SetSpritePosition(Now,Sprite.SpritePosition.Left,() => { });
+            elf.SetSpritePosition(Now,Sprite.SpritePosition.Left);
             Entities.Add(elf);
         }
 

@@ -8,9 +8,11 @@ using TwelveEngine;
 namespace Elves.UI.Battle {
     public sealed class SpeechBox:UIElement, IBattleUIAnimated {
 
-        private readonly AnimationInterpolator interpolator = new AnimationInterpolator() {
-            Duration = TimeSpan.FromMilliseconds(200)
-        };
+        private readonly AnimationInterpolator interpolator = new AnimationInterpolator(TimeSpan.FromMilliseconds(200));
+
+        public SpeechBox() {
+            Texture = UITextures.Panel;
+        }
 
         bool IBattleUIAnimated.GetAnimationCompleted() {
             return interpolator.IsFinished;
@@ -28,18 +30,13 @@ namespace Elves.UI.Battle {
             }
         }
 
-        public SpeechBox() {
-            interpolator.SetToEnd();
-            Texture = UITextures.Panel;
-        }
-
         public void Show(TimeSpan now) {
-            interpolator.Now = now;
+            interpolator.Reset(now);
             _isShown = true;
         }
 
         public void Hide(TimeSpan now) {
-            interpolator.Now = now;
+            interpolator.Reset(now);
             _isShown = false;
         }
 
@@ -47,7 +44,8 @@ namespace Elves.UI.Battle {
 
         private float margin;
 
-        public void Update(Rectangle viewport,float margin) {
+        public void Update(TimeSpan now,Rectangle viewport,float margin) {
+            interpolator.Update(now);
             this.margin = margin;
 
             float height = viewport.Height * (2f/3f);
@@ -60,7 +58,6 @@ namespace Elves.UI.Battle {
 
             var onscreenArea = new VectorRectangle(x,y,width,height);
             var offscreenArea = new VectorRectangle(viewport.X,onscreenArea.Y,width,height);
-
             Area = IsShown ? interpolator.Interpolate(offscreenArea,onscreenArea) : interpolator.Interpolate(offscreenArea,onscreenArea);
         }
 
