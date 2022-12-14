@@ -13,7 +13,7 @@ namespace TwelveEngine.Game3D {
 
         public World() {
             OnLoad += World_OnLoad;
-            OnUpdate += World_OnUpdate;
+            OnUpdate += UpdateGame;
             OnRender += World_OnRender;
             OnWriteDebug += World_OnWriteDebug;
         }
@@ -40,24 +40,27 @@ namespace TwelveEngine.Game3D {
 
         public Color ClearColor { get; set; } = Color.Black;
 
-        private void World_OnRender(GameTime gameTime) {
+        private void World_OnRender() {
             Game.GraphicsDevice.Clear(ClearColor);
         }
 
-        private void World_OnUpdate(GameTime gameTime) {
-            UpdateUI(gameTime);
-            UpdateInputs(gameTime);
-            _camera?.Update(AspectRatio); /* An entity might need to use orthographic projection information */
-            Entities.Update(gameTime);
+        protected void UpdateCamera() {
             _camera?.Update(AspectRatio);
         }
 
-        public void RenderEntities(GameTime gameTime) {
-            Entities.Render(gameTime);
+        protected virtual void UpdateGame() {
+            UpdateInputs();
+            UpdateCamera(); /* An entity might need to use orthographic projection information */
+            Entities.Update();
+            UpdateCamera();
         }
 
-        public void PreRenderEntities(GameTime gameTime) {
-            Entities.PreRender(gameTime);
+        public void RenderEntities() {
+            Entities.Render();
+        }
+
+        public void PreRenderEntities() {
+            Entities.PreRender();
         }
 
         private Camera3D _camera;

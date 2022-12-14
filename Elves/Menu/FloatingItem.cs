@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using TwelveEngine.Game3D;
 using TwelveEngine.Game3D.Entity.Types;
+using TwelveEngine;
 
 namespace Elves.Menu {
     public sealed class FloatingItem:Screenspace3DSprite {
@@ -27,7 +28,6 @@ namespace Elves.Menu {
         private const float DURATION_RANGE = MAX_DURATION - MIN_DURATION;
         private const float WIGGLE_STRENGTH_RANGE = WIGGLE_STRENGTH_MAX - WIGGLE_STRENGTH_MIN;
         private const float X_RANGE = MAX_X - MIN_X;
-
 
         public TimeSpan StartTime { get; set; }
         public TimeSpan Duration { get; set; }
@@ -76,13 +76,13 @@ namespace Elves.Menu {
 
         private bool needsReset = true;
 
-        private void FloatingItem_OnUpdate(GameTime gameTime) {
+        private void FloatingItem_OnUpdate() {
             if(needsReset) {
                 Reset();
                 needsReset = false;
             }
             float scale = menu.GetUIScale();
-            float t = (float)((gameTime.TotalGameTime - StartTime) / Duration);
+            float t = (float)((Now - StartTime) / Duration);
             if(t < 0) {
                 t = 0;
             } else if(t > 1) {
@@ -100,11 +100,11 @@ namespace Elves.Menu {
                 new Vector2(xValue,-MathF.Max(size.X,size.Y)),t
             );
 
-            var wiggleT = (float)(gameTime.TotalGameTime / WiggleRate % 1);
+            var wiggleT = (float)(Now / WiggleRate % 1);
             var offset = RotationPolarity ? MathF.Sin(MathF.PI * 2 * wiggleT) : MathF.Cos(MathF.PI * 2 * wiggleT);
             position.X += (offset * WiggleStrength) / WIGGLE_BASE_SCALE * scale;
 
-            Area = new VectorRectangle(position-new Vector2(size.X*0.5f,0f),size);
+            Area = new VectorRectangle(position - new Vector2(size.X*0.5f,0f),size);
         }
     }
 }

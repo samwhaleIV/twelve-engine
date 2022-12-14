@@ -64,7 +64,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
             effect.World = matrix;
         }
 
-        private void GridLinesEntity_OnRender(GameTime gameTime) {
+        private void GridLinesEntity_OnRender() {
             bufferSet.Apply();
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();

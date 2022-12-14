@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ElvesDesktop": {
+      "commandName": "Project",
+      "commandLineArgs": "os-cursor"
+    }
+  }
+}

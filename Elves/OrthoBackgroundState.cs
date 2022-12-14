@@ -7,24 +7,20 @@ using TwelveEngine.Game3D.Entity.Types;
 namespace Elves {
     public class OrthoBackgroundState:World {
 
-        private readonly bool debug3D = false;
+        private readonly bool debug3D = Program.HasFlag(Constants.Flags.Debug3D);
 
-        protected bool Debug3D => debug3D;
-
-        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true,bool debug3D = false) {
+        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true) {
             WriteDebugEnabled = debug3D;
             this.backgroundImage = backgroundImage;
             this.smoothBackground = smoothBackground;
-            this.debug3D = debug3D;
             OnLoad += OrthoBackgroundState_OnLoad;
             Initialize();
         }
 
-        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true,bool debug3D = false) {
+        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true) {
             WriteDebugEnabled = debug3D;
             backgroundImageTexture = backgroundImage;
             this.smoothBackground = smoothBackground;
-            this.debug3D = debug3D;
             OnLoad += OrthoBackgroundState_OnLoad;
             Initialize();
         }
@@ -34,7 +30,7 @@ namespace Elves {
 
         private const string BACKGROUND_ENTITY_NAME = "Background";
 
-        public double ScrollingBackgroundPeriod { get; set; } = 60d;
+        public TimeSpan ScrollingBackgroundPeriod { get; set; } = Constants.AnimationTiming.ScrollingBackgroundDefault;
         public bool ScrollingBackground { get; set; } = false;
 
         private readonly Color[] backgroundColors = new Color[4] { Color.White, Color.White, Color.White, Color.White };
@@ -71,7 +67,7 @@ namespace Elves {
             OnUpdate += OrthoBackgroundState_OnUpdate;
         }
 
-        private void OrthoBackgroundState_OnUpdate(GameTime gameTime) {
+        private void OrthoBackgroundState_OnUpdate() {
             if(!debug3D || Camera == null) {
                 return;
             }
@@ -111,10 +107,10 @@ namespace Elves {
             };
         }
 
-        private void UpdateBackground(GameTime gameTime) {
+        private void UpdateBackground() {
             background.SetColors(backgroundColors);
             if(ScrollingBackground) {
-                double scrollT = gameTime.TotalGameTime.TotalSeconds / ScrollingBackgroundPeriod % 1d;
+                double scrollT = Now / ScrollingBackgroundPeriod % 1d;
                 background.UVOffset = new Vector2((float)scrollT,0f);
             } else {
                 background.UVOffset = Vector2.Zero;

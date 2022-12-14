@@ -10,7 +10,8 @@ namespace Elves.Battle.Sprite.Elves {
             AnimationFactory.CreateStatic(0,0,17,47),
             AnimationFactory.CreateIdleBlink(0,0,17,47,17,0,17,47)
         },baseHeight) {
-            AccentColor = Color.Red;
+            Color = Color.Red;
+            Name = "Harmless Elf";
         }
     }
 }

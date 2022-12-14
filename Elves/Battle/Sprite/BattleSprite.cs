@@ -9,16 +9,18 @@ namespace Elves.Battle.Sprite {
         private readonly FrameController frameController;
         private readonly PositionController positionController;
 
-        public Color AccentColor { get; set; } = Color.White;
+        public Color Color { get; set; } = Color.White;
         public float XOffset { get; set; } = 0f;
 
-        public void SetSpritePosition(SpritePosition spritePosition,Action callback) {
-            positionController.SetSpritePosition(spritePosition,callback);
+        public string Name { get; set; } = Constants.NoName;
+
+        public void SetSpritePosition(TimeSpan now,SpritePosition spritePosition) {
+            positionController.SetSpritePosition(now,spritePosition);
         }
 
         private readonly int baseHeight;
 
-        public BattleSprite(string textureName,FrameSet[] frameSets,int baseHeight) :base(textureName) {
+        public BattleSprite(string textureName,FrameSet[] frameSets,int baseHeight):base(textureName) {
             this.baseHeight = baseHeight;
 
             PixelSmoothing = false;
@@ -27,12 +29,12 @@ namespace Elves.Battle.Sprite {
             positionController = new PositionController(this);
 
             OnLoad += BattleSprite_OnLoad;
-            OnUpdate +=BattleSprite_OnUpdate;
+            OnUpdate += BattleSprite_OnUpdate;
         }
 
-        private void BattleSprite_OnUpdate(GameTime gameTime) {
-            positionController.UpdateScreenPosition(gameTime);
-            frameController.UpdateUVArea(gameTime);
+        private void BattleSprite_OnUpdate() {
+            positionController.UpdateScreenPosition(Now);
+            frameController.UpdateUVArea(Now);
         }
 
         private void BattleSprite_OnLoad() {

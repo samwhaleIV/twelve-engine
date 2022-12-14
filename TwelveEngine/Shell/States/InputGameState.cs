@@ -38,14 +38,14 @@ namespace TwelveEngine.Shell.States {
             mouseHandler.Update(Game.MouseState);
         }
 
-        protected void UpdateTimeoutInput(GameTime gameTime) {
-            timeoutManager.Update(gameTime.TotalGameTime);
+        protected void UpdateTimeoutInput() {
+            timeoutManager.Update(Now);
         }
 
-        protected void UpdateInputs(GameTime gameTime) {
+        protected void UpdateInputs() {
             UpdateMouseInput();
             UpdateImpulseInput();
-            UpdateTimeoutInput(gameTime);
+            UpdateTimeoutInput();
         }
     }
 }

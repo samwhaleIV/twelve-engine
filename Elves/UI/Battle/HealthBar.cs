@@ -13,14 +13,14 @@ namespace Elves.UI.Battle {
         public float Value { get; set; } = 1f;
 
         private TimeSpan Now;
-        private int Scale;
+        private float Scale;
 
-        public void Update(int scale,TimeSpan now) {
+        public void Update(float scale,TimeSpan now) {
             Scale = scale;
             Now = now;
         }
 
-        private TimeSpan dropHealthAnimateStart = TimeSpan.Zero - DropHealthDuration;
+        private TimeSpan dropHealthAnimateStart = TimeSpan.Zero - Constants.AnimationTiming.HealthDropDuration;
 
         public void DropHealthAnimate(TimeSpan now) {
             dropHealthAnimateStart = now;
@@ -28,7 +28,7 @@ namespace Elves.UI.Battle {
 
         private float GetDropHealthNormal() {
             var difference = Now - dropHealthAnimateStart;
-            var t = (float)(difference / DropHealthDuration);
+            var t = (float)(difference / Constants.AnimationTiming.HealthDropDuration);
             if(t > 1) {
                 t = IsDead ? t : 1;
             } else if(t < 0) {
@@ -41,8 +41,6 @@ namespace Elves.UI.Battle {
         public float WaveStrength { get; set; } = 8;
 
         private bool IsDead => Value <= 0f;
-
-        private static TimeSpan DropHealthDuration => TimeSpan.FromMilliseconds(100);
 
         private int GetStripYOffset(float xNormal,float t) {
             float time = MathF.PI * 2 * t;
@@ -77,15 +75,18 @@ namespace Elves.UI.Battle {
         }
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {
-            Rectangle area = Area;
+            if(Texture == null) {
+                return;
+            }
+            Rectangle area = (Rectangle)Area;
             Color healthColor = color ?? Color.White;
 
-            int pixelSize = Area.Height / 16;
+            int pixelSize = (int)(Area.Height * 0.0625f);
             pixelSize += 1;
 
             (Color Color, int YOffset, Point textureOffset) stripeData;
 
-            int pixelCount = (int)MathF.Ceiling((Area.Width - pixelSize * 2) / (float)pixelSize);
+            int pixelCount = (int)MathF.Ceiling((Area.Width - pixelSize * 2) / pixelSize);
             float halfPixelSize = pixelSize / 2;
 
             stripeData = GetStripeData(halfPixelSize / area.Width,healthColor);
@@ -102,7 +103,7 @@ namespace Elves.UI.Battle {
                     new Rectangle(17+stripeData.textureOffset.X,stripeData.textureOffset.Y,1,16),
                 stripeData.Color);
             }
-            int overshoot = (pixelCount * pixelSize) - (Area.Width - pixelSize * 2);
+            int overshoot = (pixelCount * pixelSize) - (area.Width - pixelSize * 2);
 
             int offsetStripeX = area.X + pixelCount * pixelSize - overshoot;
             stripeData = GetStripeData((area.Width - halfPixelSize - pixelSize) / area.Width,healthColor);
@@ -120,5 +121,4 @@ namespace Elves.UI.Battle {
             stripeData.Color);
         }
     }
-
 }

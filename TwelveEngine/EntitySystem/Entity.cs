@@ -6,7 +6,7 @@ using TwelveEngine.Shell;
 namespace TwelveEngine.EntitySystem {
     public abstract class Entity<TOwner> where TOwner:GameState {
 
-        private const int DEFAULT_ID = EntitySystem.EntityManager.START_ID - 1;
+        private const int DEFAULT_ID = EntitySystem.EntityManager.NO_ID;
 
         private string _name = null;
         private void SetName(string newName) {
@@ -32,6 +32,9 @@ namespace TwelveEngine.EntitySystem {
 
         public GameManager Game { get; private set; }
         public TOwner Owner { get; private set; } = null;
+
+        public TimeSpan Now => Owner?.Now ?? TimeSpan.Zero;
+        public GameTime Time => Owner?.Time ?? null;
 
         internal object EntityManager { get; private set; } = null;
 
@@ -84,26 +87,22 @@ namespace TwelveEngine.EntitySystem {
 
         public bool IsVisible { get; set; } = true;
 
-        public event Action<GameTime> OnUpdate, OnRender, OnPreRender;
+        public event Action OnUpdate, OnRender, OnPreRender;
 
-        public void Update(GameTime gameTime) => OnUpdate?.Invoke(gameTime);
+        public void Update() => OnUpdate?.Invoke();
 
-        public void PreRender(GameTime gameTime) {
+        public void PreRender() {
             if(!IsVisible) {
                 return;
             }
-            OnPreRender?.Invoke(gameTime);
+            OnPreRender?.Invoke();
         }
 
-        public void Render(GameTime gameTime) {
+        public void Render() {
             if(!IsVisible) {
                 return;
             }
-            OnRender?.Invoke(gameTime);
+            OnRender?.Invoke();
         }
-
-        public void Update(Entity3D entity,GameTime gameTime) => entity.Update(gameTime);
-        public void PreRender(Entity3D entity,GameTime gameTime) => entity.PreRender(gameTime);
-        public void Render(Entity3D entity,GameTime gameTime) => entity.Render(gameTime);
     }
 }

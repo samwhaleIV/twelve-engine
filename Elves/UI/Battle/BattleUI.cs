@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.UI.Font;
 using TwelveEngine.Shell;
+using TwelveEngine;
+using Elves.Battle;
 
 namespace Elves.UI.Battle {
 
@@ -12,76 +14,75 @@ namespace Elves.UI.Battle {
         private readonly GameManager game;
         public BattleUI(GameManager game) {
             this.game = game;
-            foreach(var button in actionButtons) {
-                interactableElements.Add(button);
-            }
-            TopLeftButton.OnClick += TestButtonAnimation;
 
             playerHealthBar.Value = 1;
             targetHealthBar.Value = 1;
 
-            TopRightButton.OnClick += () => {
-                playerHealthBar.DropHealthAnimate(Now);
-                playerHealthBar.Value -= 0.05f;
-                if(playerHealthBar.Value < 0) {
-                    playerHealthBar.Value = 1;
-                }
-            };
-
-            BottomRightButton.OnClick += () => {
-                targetHealthBar.DropHealthAnimate(Now);
-                targetHealthBar.Value -= 0.05f;
-                if(targetHealthBar.Value < 0) {
-                    targetHealthBar.Value = 1;
-                }
-            };
-            interactableElements.Add(targetButton);
+            foreach(var button in actionButtons) {
+                interactableElements.Add(button);
+                button.OnClick += ActionButtonClicked;
+            }
         }
+
+        public const int ACTION_BUTTON_1 = 0;
+        public const int ACTION_BUTTON_2 = 1;
+        public const int ACTION_BUTTON_3 = 2;
+        public const int ACTION_BUTTON_4 = 3;
+
+        private readonly ActionButton[] actionButtons = new ActionButton[] {
+            new ActionButton() { State = ButtonState.TopLeft, ID = ACTION_BUTTON_1 },
+            new ActionButton() { State = ButtonState.TopRight, ID = ACTION_BUTTON_2 },
+            new ActionButton() { State = ButtonState.BottomLeft, ID = ACTION_BUTTON_3 },
+            new ActionButton() { State = ButtonState.BottomRight, ID = ACTION_BUTTON_4 }
+        };
+
+        public ActionButton GetActionButton(int ID) {
+            if(ID >= actionButtons.Length || ID < 0) {
+                return null;
+            }
+            return actionButtons[ID];
+        }
+
+        public ActionButton ActionButton1 => actionButtons[ACTION_BUTTON_1];
+        public ActionButton ActionButton2 => actionButtons[ACTION_BUTTON_2];
+        public ActionButton ActionButton3 => actionButtons[ACTION_BUTTON_3];
+        public ActionButton ActionButton4 => actionButtons[ACTION_BUTTON_4];
 
         private TimeSpan Now => game.Time.TotalGameTime;
         private Rectangle Viewport => game.Viewport.Bounds;
 
         private Button activeButton = null, pressedButton = null;
 
-        private readonly HealthBar playerHealthBar = new HealthBar() {
-            Alignment = HealthBarAlignment.Left
-        };
+        private readonly HealthBar playerHealthBar = new HealthBar() { Alignment = HealthBarAlignment.Left };
+        private readonly HealthBar targetHealthBar = new HealthBar() { Alignment = HealthBarAlignment.Right };
 
-        private readonly HealthBar targetHealthBar = new HealthBar() {
-            Alignment = HealthBarAlignment.Right
-        };
+        public Action<int> OnActionButtonClick;
 
+        private void ActionButtonClicked(int ID) {
+            OnActionButtonClick?.Invoke(ID);
+        }
+
+        //todo...
+        //private readonly TargetButton targetButton = new TargetButton();
         private readonly Tagline tagline = new Tagline();
-
-        private ActionButton[] actionButtons = new ActionButton[] {
-            new ActionButton() { OffscreenDirection = OffscreenDirection.Left },
-            new ActionButton() { OffscreenDirection = OffscreenDirection.Left },
-            new ActionButton() { OffscreenDirection = OffscreenDirection.Right },
-            new ActionButton() { OffscreenDirection = OffscreenDirection.Right }
-        };
-
-        private ActionButton TopLeftButton => actionButtons[0];
-        private ActionButton BottomLeftButton => actionButtons[1];
-        private ActionButton TopRightButton => actionButtons[2];
-        private ActionButton BottomRightButton => actionButtons[3];
-
         private readonly SpeechBox speechBox = new SpeechBox();
-        private readonly TargetButton targetButton = new TargetButton();
 
+        public SpeechBox SpeechBox => speechBox;
+        public Tagline Tagline => tagline;
+      
         private readonly List<Button> interactableElements = new List<Button>();
-
         private static readonly Point OffscreenMousePosition = new Point(-1);
-
         private Point lastMousePosition = OffscreenMousePosition;
 
-        private Button GetButtonAtPosition(int x,int y) {
-            if(!Viewport.Contains(x,y)) {
+        private Button GetButtonAtPosition(Point position) {
+            if(!Viewport.Contains(position)) {
                 lastMousePosition = OffscreenMousePosition;
                 return null;
             }
             Button newButton = null;
-            foreach(var button in interactableElements) {
-                if(button.Area.Contains(x,y)) {
+            for(int i = interactableElements.Count-1;i>=0;i--) {
+                var button = interactableElements[i];
+                if(button.Area.Contains(position)) {
                     newButton = button;
                     break;
                 }
@@ -89,9 +90,9 @@ namespace Elves.UI.Battle {
             return newButton;
         }
 
-        private void UpdateButtonFocus(int x,int y) {
-            lastMousePosition = new Point(x,y);
-            var button = GetButtonAtPosition(x,y);
+        private void UpdateButtonFocus(Point position) {
+            lastMousePosition = position;
+            var button = GetButtonAtPosition(position);
             if(activeButton != null) {
                 activeButton.Selected = false;
             }
@@ -107,12 +108,12 @@ namespace Elves.UI.Battle {
             activeButton = button;
         }
 
-        public void MouseMoved(int x,int y) {
-            UpdateButtonFocus(x,y);
+        public void MouseMoved(Point position) {
+            UpdateButtonFocus(position);
         }
 
-        public void MousePress(int x,int y) {
-            UpdateButtonFocus(x,y);
+        public void MousePress(Point position) {
+            UpdateButtonFocus(position);
             if(activeButton == null) {
                 return;
             }
@@ -120,8 +121,8 @@ namespace Elves.UI.Battle {
             activeButton.Pressed = true;
         }
 
-        public void MouseRelease(int x,int y) {
-            lastMousePosition = new Point(x,y);
+        public void MouseRelease(Point position) {
+            lastMousePosition = position;
             if(activeButton == null || pressedButton == null || pressedButton != activeButton) {
                 if(pressedButton == null) {
                     return;
@@ -136,85 +137,134 @@ namespace Elves.UI.Battle {
             button.Pressed = false;
         }
 
+        public void UpdateActionButtons(Rectangle viewport,TimeSpan now,float margin,float halfMargin) {
+            float buttonHeight = viewport.Height * 0.25f;
+            float buttonWidth = buttonHeight * 2;
 
-        public void Update(int scale) {
+            float buttonCenterY = viewport.Bottom - margin - buttonHeight - halfMargin;
 
-            Rectangle viewport = Viewport;
-            TimeSpan now = Now;
-
-            int centerX = viewport.Center.X;
-
-            int margin = scale;
-            int halfMargin = margin / 2;
-
-            int buttonHeight = viewport.Height / 4 - margin;
-            int buttonWidth = buttonHeight * 2;
-
-            int buttonCenterY = (int)(viewport.Height * 0.75f);
-
-            int buttonMargin = halfMargin;
-
-            int bottomRowY = buttonCenterY + buttonMargin;
-            int topRowY = buttonCenterY - buttonMargin - buttonHeight;
-
-            BottomLeftButton.Area = new Rectangle(centerX-buttonMargin-buttonWidth,bottomRowY,buttonWidth,buttonHeight);
-            BottomRightButton.Area = new Rectangle(centerX+buttonMargin,bottomRowY,buttonWidth,buttonHeight);
-
-            TopLeftButton.Area = new Rectangle(centerX-buttonMargin-buttonWidth,topRowY,buttonWidth,buttonHeight);
-            TopRightButton.Area = new Rectangle(centerX+buttonMargin,topRowY,buttonWidth,buttonHeight);
-
-            int healthBarY = margin;
-
-            int playerHealthBarLeft = margin;
-            int playerHealthBarRight = centerX - margin;
-
-            int targetHealthBarLeft = centerX + margin;
-            int targetHealthBarRight = viewport.Right - margin;
-
-            int healthBarHeight = buttonHeight / 2;
-
-            playerHealthBar.Area = new Rectangle(playerHealthBarLeft,healthBarY,playerHealthBarRight-playerHealthBarLeft,healthBarHeight);
-            targetHealthBar.Area = new Rectangle(targetHealthBarLeft,healthBarY,targetHealthBarRight-targetHealthBarLeft,healthBarHeight);
+            var buttonRenderData = new ButtonRenderData(
+                viewport,buttonWidth,buttonHeight,viewport.Center.X,buttonCenterY,halfMargin
+            );
 
             foreach(var button in actionButtons) {
-                button.Update(viewport,now);
+                button.Update(now,buttonRenderData);
             }
+        }
+
+        public void UpdateHealthBars(Rectangle viewport,float scale,float margin,float halfMargin) {
+            float healthBarY = margin;
+
+            float centerX = viewport.Center.X;
+
+            float playerHealthBarLeft = margin;
+            float playerHealthBarRight = centerX - halfMargin;
+
+            float targetHealthBarLeft = centerX + halfMargin;
+            float targetHealthBarRight = viewport.Right - margin;
+
+            float healthBarHeight = viewport.Height * 0.125f; /* Equal to half of action button height */
+
+            playerHealthBar.Area = new VectorRectangle(
+                playerHealthBarLeft,healthBarY,playerHealthBarRight-playerHealthBarLeft,healthBarHeight
+            );
+            targetHealthBar.Area = new VectorRectangle(
+                targetHealthBarLeft,healthBarY,targetHealthBarRight-targetHealthBarLeft,healthBarHeight
+            );
 
             playerHealthBar.Update(scale,Now);
             targetHealthBar.Update(scale,Now);
+        }
+
+        public void Update(float scale) {
+            Rectangle viewport = Viewport;
+            TimeSpan now = Now;
+
+            float margin = scale;
+            float halfMargin = margin * 0.5f;
+
+            UpdateActionButtons(viewport,now,margin,halfMargin);
+            UpdateHealthBars(viewport,scale,margin,halfMargin);
+            speechBox.Update(now,viewport);
+            tagline.Update(now,viewport,margin);
 
             /* Update for buttons that are changing positions */
-            UpdateButtonFocus(lastMousePosition.X,lastMousePosition.Y);
+            UpdateButtonFocus(lastMousePosition);
         }
 
-        public bool moveDirection = true;
-
-        public void TestButtonAnimation() {
-            if(moveDirection) {
-                foreach(var button in actionButtons) {
-                    button.MoveAway();
-                }
-            } else {
-                foreach(var button in actionButtons) {
-                    button.MoveBack();
-                }
+        private void RenderActionButtons(SpriteBatch spriteBatch) {
+            foreach(var button in actionButtons) {
+                button.Draw(spriteBatch);
             }
-            moveDirection = !moveDirection;
         }
 
-        public void Render(int scale,Color playerTint,Color targetTint,SpriteBatch spriteBatch) {
+        private void RenderHealthBars(SpriteBatch spriteBatch,User playerData,User targetData) {
+            playerHealthBar.Value = (float)playerData.Health / playerData.MaxHealth;
+            targetHealthBar.Value = (float)targetData.Health / targetData.MaxHealth;
+
+            playerHealthBar.Draw(spriteBatch,playerData.Color);
+            targetHealthBar.Draw(spriteBatch,targetData.Color);
+        }
+
+        private void RenderUsernames(User playerData,User targetData) {
+            int usernameScale = (int)(playerHealthBar.Area.Height * 0.5f / Fonts.RetroFont.LineHeight);
+            Color usernameColor = Color.White;
+            if(playerData.Name != null) {
+                Fonts.RetroFont.Draw(
+                    playerData.Name,
+                    new Point((int)playerHealthBar.Area.X,(int)(playerHealthBar.Area.Bottom + playerHealthBar.Area.Top)),
+                    usernameScale,usernameColor
+                );
+            }
+            if(targetData.Name != null) {
+                Fonts.RetroFont.DrawRight(
+                    targetData.Name,
+                    new Point((int)targetHealthBar.Area.Right,(int)(targetHealthBar.Area.Bottom + targetHealthBar.Area.Top)),
+                    usernameScale,usernameColor
+                );
+            }
+        }
+
+        private void RenderActionButtonText() {
+            int buttonTextScale = (int)(ActionButton1.Area.Height / 50f);
+            foreach(var button in actionButtons) {
+                button.DrawText(Fonts.RetroFont,buttonTextScale,Color.White);
+            }
+        }
+
+        private void RenderTagline(SpriteBatch spriteBatch) {
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-            foreach(var button in actionButtons) {
-                button.Draw(spriteBatch,targetTint);
-            }
-            playerHealthBar.Draw(spriteBatch,playerTint);
-            targetHealthBar.Draw(spriteBatch,targetTint);
+            tagline.Draw(spriteBatch);
             spriteBatch.End();
-            Fonts.DefaultFont.Begin(spriteBatch);
-            foreach(var button in actionButtons) {
-                button.DrawText(Fonts.DefaultFont,scale);
-            }
-            Fonts.DefaultFont.End();
+            Fonts.RetroFont.Begin(spriteBatch);
+            tagline.DrawText(Fonts.RetroFont);
+            Fonts.RetroFont.End();
+        }
+
+        public void Render(SpriteBatch spriteBatch,User playerData,User targetData) {
+
+            Fonts.RetroFont.Begin(spriteBatch);
+            RenderUsernames(playerData,targetData);
+            Fonts.RetroFont.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            speechBox.Draw(spriteBatch,targetData.Color);
+            spriteBatch.End();
+
+            Fonts.RetroFont.Begin(spriteBatch);
+            speechBox.DrawText(Fonts.RetroFont);
+            Fonts.RetroFont.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            RenderActionButtons(spriteBatch);
+            RenderHealthBars(spriteBatch,playerData,targetData);
+            spriteBatch.End();
+
+            RenderTagline(spriteBatch);
+
+            Fonts.RetroFont.Begin(spriteBatch);
+            RenderActionButtonText();
+            Fonts.RetroFont.End();
         }
     }
 }
