@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Elves.UI.Font;
 using TwelveEngine.Shell;
 using TwelveEngine;
+using Elves.Battle;
 
 namespace Elves.UI.Battle {
 
@@ -21,11 +22,6 @@ namespace Elves.UI.Battle {
                 interactableElements.Add(button);
                 button.OnClick += ActionButtonClicked;
             }
-
-            ActionButton1.Label.Append("TRY SPINNING");
-            ActionButton2.Label.Append("THATS A");
-            ActionButton3.Label.Append("NEAT");
-            ActionButton4.Label.Append("TRICK");
         }
 
         public const int ACTION_BUTTON_1 = 0;
@@ -78,14 +74,15 @@ namespace Elves.UI.Battle {
         private static readonly Point OffscreenMousePosition = new Point(-1);
         private Point lastMousePosition = OffscreenMousePosition;
 
-        private Button GetButtonAtPosition(int x,int y) {
-            if(!Viewport.Contains(x,y)) {
+        private Button GetButtonAtPosition(Point position) {
+            if(!Viewport.Contains(position)) {
                 lastMousePosition = OffscreenMousePosition;
                 return null;
             }
             Button newButton = null;
-            foreach(var button in interactableElements) {
-                if(button.Area.Contains(x,y)) {
+            for(int i = interactableElements.Count-1;i>=0;i--) {
+                var button = interactableElements[i];
+                if(button.Area.Contains(position)) {
                     newButton = button;
                     break;
                 }
@@ -93,9 +90,9 @@ namespace Elves.UI.Battle {
             return newButton;
         }
 
-        private void UpdateButtonFocus(int x,int y) {
-            lastMousePosition = new Point(x,y);
-            var button = GetButtonAtPosition(x,y);
+        private void UpdateButtonFocus(Point position) {
+            lastMousePosition = position;
+            var button = GetButtonAtPosition(position);
             if(activeButton != null) {
                 activeButton.Selected = false;
             }
@@ -111,12 +108,12 @@ namespace Elves.UI.Battle {
             activeButton = button;
         }
 
-        public void MouseMoved(int x,int y) {
-            UpdateButtonFocus(x,y);
+        public void MouseMoved(Point position) {
+            UpdateButtonFocus(position);
         }
 
-        public void MousePress(int x,int y) {
-            UpdateButtonFocus(x,y);
+        public void MousePress(Point position) {
+            UpdateButtonFocus(position);
             if(activeButton == null) {
                 return;
             }
@@ -124,8 +121,8 @@ namespace Elves.UI.Battle {
             activeButton.Pressed = true;
         }
 
-        public void MouseRelease(int x,int y) {
-            lastMousePosition = new Point(x,y);
+        public void MouseRelease(Point position) {
+            lastMousePosition = position;
             if(activeButton == null || pressedButton == null || pressedButton != activeButton) {
                 if(pressedButton == null) {
                     return;
@@ -188,11 +185,11 @@ namespace Elves.UI.Battle {
 
             UpdateActionButtons(viewport,now,margin,halfMargin);
             UpdateHealthBars(viewport,scale,margin,halfMargin);
-            speechBox.Update(now,viewport,margin);
+            speechBox.Update(now,viewport);
             tagline.Update(now,viewport,margin);
 
             /* Update for buttons that are changing positions */
-            UpdateButtonFocus(lastMousePosition.X,lastMousePosition.Y);
+            UpdateButtonFocus(lastMousePosition);
         }
 
         private void RenderActionButtons(SpriteBatch spriteBatch) {
@@ -201,61 +198,72 @@ namespace Elves.UI.Battle {
             }
         }
 
-        private void RenderHealthBars(SpriteBatch spriteBatch,UserRenderData playerData,UserRenderData targetData) {
+        private void RenderHealthBars(SpriteBatch spriteBatch,User playerData,User targetData) {
+            playerHealthBar.Value = (float)playerData.Health / playerData.MaxHealth;
+            targetHealthBar.Value = (float)targetData.Health / targetData.MaxHealth;
+
             playerHealthBar.Draw(spriteBatch,playerData.Color);
             targetHealthBar.Draw(spriteBatch,targetData.Color);
         }
 
-        private void RenderUsernames(UserRenderData playerData,UserRenderData targetData) {
+        private void RenderUsernames(User playerData,User targetData) {
             int usernameScale = (int)(playerHealthBar.Area.Height * 0.5f / Fonts.RetroFont.LineHeight);
             Color usernameColor = Color.White;
-
-            Fonts.RetroFont.Draw(
-                playerData.Name,
-                new Point((int)playerHealthBar.Area.X,(int)(playerHealthBar.Area.Bottom + playerHealthBar.Area.Top)),
-                usernameScale,usernameColor
-            );
-            Fonts.RetroFont.DrawRight(
-                targetData.Name,
-                new Point((int)targetHealthBar.Area.Right,(int)(targetHealthBar.Area.Bottom + targetHealthBar.Area.Top)),
-                usernameScale,usernameColor
-            );
+            if(playerData.Name != null) {
+                Fonts.RetroFont.Draw(
+                    playerData.Name,
+                    new Point((int)playerHealthBar.Area.X,(int)(playerHealthBar.Area.Bottom + playerHealthBar.Area.Top)),
+                    usernameScale,usernameColor
+                );
+            }
+            if(targetData.Name != null) {
+                Fonts.RetroFont.DrawRight(
+                    targetData.Name,
+                    new Point((int)targetHealthBar.Area.Right,(int)(targetHealthBar.Area.Bottom + targetHealthBar.Area.Top)),
+                    usernameScale,usernameColor
+                );
+            }
         }
 
         private void RenderActionButtonText() {
-            int buttonTextScale = (int)(ActionButton1.Area.Height / 6 / Fonts.RetroFont.LineHeight);
+            int buttonTextScale = (int)(ActionButton1.Area.Height / 50f);
             foreach(var button in actionButtons) {
                 button.DrawText(Fonts.RetroFont,buttonTextScale,Color.White);
             }
         }
 
-        public void Render(SpriteBatch spriteBatch,UserRenderData playerData,UserRenderData targetData) {
-            spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-
-            RenderActionButtons(spriteBatch);
-            RenderHealthBars(spriteBatch,playerData,targetData);
-
-            spriteBatch.End();
-
-            Fonts.RetroFont.Begin(spriteBatch);
-            RenderUsernames(playerData,targetData);
-            RenderActionButtonText();
-            Fonts.RetroFont.End();
-
-            spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-            speechBox.Draw(spriteBatch);
-            spriteBatch.End();
-
-            Fonts.DefaultFont.Begin(spriteBatch);
-            speechBox.DrawText(Fonts.DefaultFont);
-            Fonts.DefaultFont.End();
-
+        private void RenderTagline(SpriteBatch spriteBatch) {
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             tagline.Draw(spriteBatch);
             spriteBatch.End();
-
             Fonts.RetroFont.Begin(spriteBatch);
             tagline.DrawText(Fonts.RetroFont);
+            Fonts.RetroFont.End();
+        }
+
+        public void Render(SpriteBatch spriteBatch,User playerData,User targetData) {
+
+            Fonts.RetroFont.Begin(spriteBatch);
+            RenderUsernames(playerData,targetData);
+            Fonts.RetroFont.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            speechBox.Draw(spriteBatch,targetData.Color);
+            spriteBatch.End();
+
+            Fonts.RetroFont.Begin(spriteBatch);
+            speechBox.DrawText(Fonts.RetroFont);
+            Fonts.RetroFont.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            RenderActionButtons(spriteBatch);
+            RenderHealthBars(spriteBatch,playerData,targetData);
+            spriteBatch.End();
+
+            RenderTagline(spriteBatch);
+
+            Fonts.RetroFont.Begin(spriteBatch);
+            RenderActionButtonText();
             Fonts.RetroFont.End();
         }
     }

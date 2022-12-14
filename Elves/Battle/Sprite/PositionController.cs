@@ -9,7 +9,7 @@ namespace Elves.Battle.Sprite {
 
         private const float SCREEN_EDGE_MARGIN = 0.015f;
 
-        private readonly AnimationInterpolator interpolator = new AnimationInterpolator(TimeSpan.FromSeconds(0.1f));
+        private readonly AnimationInterpolator interpolator = new AnimationInterpolator(Constants.AnimationTiming.TargetMovementDuration);
 
         private static readonly Dictionary<SpritePosition,Vector3> positionTable = new Dictionary<SpritePosition,Vector3>() {
             {SpritePosition.Left,new Vector3(-0.4f,0f,DepthConstants.MiddleFar)},
@@ -59,7 +59,7 @@ namespace Elves.Battle.Sprite {
             );
         }
 
-        bool IBattleUIAnimated.GetAnimationCompleted() {
+        public bool IsAnimationCompleted() {
             return interpolator.IsFinished;
         }
     }

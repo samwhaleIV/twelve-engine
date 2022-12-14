@@ -21,6 +21,17 @@ namespace TwelveEngine {
             Start = now;
         }
 
+        public void ResetCarryOver(TimeSpan now) {
+            if(!IsFinished) {
+                var progress = GetValue();
+                var inverseTime = (1f-progress) * Duration;
+                Start = now - inverseTime;
+            } else {
+                Start = now;
+            }
+            Now = now;
+        }
+
         public void Update(TimeSpan now) {
             Now = now;
         }
@@ -38,7 +49,7 @@ namespace TwelveEngine {
         public bool IsFinished => Now - Start >= Duration;
 
         public void Finish() {
-            Start = TimeSpan.MinValue;
+            Start = Now - Duration;
         }
 
         public Point Interpolate(Point start,Point end) {

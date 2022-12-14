@@ -9,8 +9,10 @@ namespace Elves.Battle.Sprite {
         private readonly FrameController frameController;
         private readonly PositionController positionController;
 
-        public Color AccentColor { get; set; } = Color.White;
+        public Color Color { get; set; } = Color.White;
         public float XOffset { get; set; } = 0f;
+
+        public string Name { get; set; } = Constants.NoName;
 
         public void SetSpritePosition(TimeSpan now,SpritePosition spritePosition) {
             positionController.SetSpritePosition(now,spritePosition);

@@ -72,8 +72,6 @@ namespace Elves.Menu {
             Entities.Add(nameBadge);
             Entities.Add(playButton);
             AddFloatingItems(menuTexture);
-
-            Input.OnAcceptDown += () => Game.SetState(new Battle.BattleScene());
         }
 
         private void PlayButton_OnUpdate() {

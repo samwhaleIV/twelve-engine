@@ -30,7 +30,7 @@ namespace Elves {
 
         private const string BACKGROUND_ENTITY_NAME = "Background";
 
-        public TimeSpan ScrollingBackgroundPeriod { get; set; } = TimeSpan.FromSeconds(60);
+        public TimeSpan ScrollingBackgroundPeriod { get; set; } = Constants.AnimationTiming.ScrollingBackgroundDefault;
         public bool ScrollingBackground { get; set; } = false;
 
         private readonly Color[] backgroundColors = new Color[4] { Color.White, Color.White, Color.White, Color.White };

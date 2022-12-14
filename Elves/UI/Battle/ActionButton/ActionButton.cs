@@ -8,9 +8,12 @@ using TwelveEngine;
 namespace Elves.UI.Battle {
     public sealed class ActionButton:Button, IBattleUIAnimated {
 
-        private const float MOVEMENT_DURATION = 100;
+        private const float MOVEMENT_DURATION = 150;
 
-        bool IBattleUIAnimated.GetAnimationCompleted() {
+        public readonly AnimationInterpolator interpolator = new AnimationInterpolator(Constants.AnimationTiming.ActionButtonMovement);
+
+
+        public bool IsAnimationCompleted() {
             return interpolator.IsFinished;
         }
 
@@ -23,8 +26,6 @@ namespace Elves.UI.Battle {
         }
 
         public readonly StringBuilder Label = new StringBuilder();
-
-        public readonly AnimationInterpolator interpolator = new AnimationInterpolator(TimeSpan.FromMilliseconds(MOVEMENT_DURATION));
 
         private ButtonState currentState = ButtonState.None, oldState = ButtonState.None;
 
@@ -41,6 +42,18 @@ namespace Elves.UI.Battle {
         public void SetState(TimeSpan now,ButtonState buttonState) {
             oldState = currentState;
             currentState = buttonState;
+            interpolator.Reset(now);
+        }
+
+        public void Hide(TimeSpan now) {
+            oldState = currentState;
+            currentState = currentState.GetOffscreen();
+            interpolator.Reset(now);
+        }
+
+        public void Show(TimeSpan now) {
+            oldState = currentState;
+            currentState = currentState.GetOnScreen();
             interpolator.Reset(now);
         }
 

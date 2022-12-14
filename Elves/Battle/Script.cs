@@ -1,37 +1,45 @@
-﻿using System;
+﻿using Elves.Battle.Sprite;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
-namespace Elves.Battle.Script {
+namespace Elves.Battle {
     public abstract class Script {
+        private BattleSequencer _sequencer;
+        public BattleSequencer Sequencer => _sequencer;
 
         private readonly Random random = new Random();
+        public abstract Task<int> Main();
 
-        private readonly IUVSequencer sequencer;
+        public BattleSprite BattleActor { get; set; } = null;
 
-        public Script(IUVSequencer sequencer) {
-            this.sequencer = sequencer;
+        protected async Task Tag(string tag) {
+            _sequencer.ShowTag(tag);
+            await _sequencer.ContinueButton();
+            _sequencer.HideTag();
         }
 
-        public abstract Task Main();
-
-        protected Task<int> GetOption(string[] options) {
-            return sequencer.GetOption(options);
-        }
-
-        protected Task Tag(string tag) {
-            return sequencer.Tag(tag);
-        }
-        protected Task Speech(string speech) {
-            return sequencer.Tag(speech);
+        protected async Task Speech(string speech) {
+            _sequencer.ShowSpeech(speech,BattleActor);
+            await _sequencer.ContinueButton();
+            _sequencer.HideSpeech(BattleActor);
         }
 
         protected async Task Tag(params string[] tags) {
-            foreach(var tag in tags) await sequencer.Tag(tag);
+            foreach(var tag in tags) {
+                _sequencer.ShowTag(tag);
+                await _sequencer.ContinueButton();
+            }
+            _sequencer.HideTag();
         }
+
         protected async Task Speech(params string[] speeches) {
-            foreach(var speech in speeches) await sequencer.Speech(speech);
+            foreach(var speech in speeches) {
+                _sequencer.ShowSpeech(speech,BattleActor);
+                await _sequencer.ContinueButton();
+            }
+            _sequencer.HideSpeech(BattleActor);
         }
 
         private readonly Dictionary<int,int> threadIndicies = new Dictionary<int,int>();
@@ -46,7 +54,7 @@ namespace Elves.Battle.Script {
 
         protected int GetThreadIndex(int threadID) {
             int index;
-            threadIndicies.TryGetValue(threadID, out index);
+            threadIndicies.TryGetValue(threadID,out index);
             return index;
         }
 
@@ -92,7 +100,9 @@ namespace Elves.Battle.Script {
             if(threadValue == null) {
                 return;
             }
-            await sequencer.Tag(threadValue);
+            _sequencer.ShowTag(threadValue);
+            await _sequencer.ContinueButton();
+            _sequencer.HideTag();
         }
 
         protected async Task SpeechThread(ThreadMode threadMode,string[] speeches,[CallerLineNumber] int threadID = 0) {
@@ -100,7 +110,17 @@ namespace Elves.Battle.Script {
             if(threadValue == null) {
                 return;
             }
-            await sequencer.Speech(threadValue);
+            _sequencer.ShowSpeech(threadValue,BattleActor);
+            await _sequencer.ContinueButton();
+            _sequencer.HideSpeech(BattleActor);
+        }
+
+        protected Task<int> GetButton(params string[] options) {
+            return _sequencer.GetButton(false,options);
+        }
+
+        internal void SetSequencer(BattleSequencer sequencer) {
+            _sequencer = sequencer;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Elves.UI.Battle {
         }
 
         public ButtonState GetOffscreen() => new ButtonState(Position, false);
-        public ButtonState GetOnscreen() => new ButtonState(Position, true);
+        public ButtonState GetOnScreen() => new ButtonState(Position, true);
         public ButtonState GetOpposite() => new ButtonState(Position, !OnScreen);
 
         public static ButtonState TopLeft = new ButtonState(ButtonPosition.TopLeft, true);

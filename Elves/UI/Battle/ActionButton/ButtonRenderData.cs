@@ -47,7 +47,7 @@ namespace Elves.UI.Battle {
                 return new VectorRectangle(position.X,position.Y,Width,Height);
             }
 
-            if(buttonState.Position == ButtonPosition.CenterMiddle) {
+            if(buttonState.Position == ButtonPosition.CenterMiddle || buttonState.Position == ButtonPosition.CenterBottom) {
                 return new VectorRectangle(position.X,Viewport.Bottom,Width,Height);
             }
 

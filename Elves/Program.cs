@@ -3,12 +3,13 @@ using Elves.Battle;
 using Elves.UI.Font;
 using Elves.UI;
 using System.Collections.Generic;
+using Elves.Battle.Battles;
 
 namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
-            return new BattleScene();
+            return new DebugBattle();
         }
 
         private static HashSet<string> _flags;

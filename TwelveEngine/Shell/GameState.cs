@@ -14,7 +14,7 @@ namespace TwelveEngine.Shell {
         public event Action OnLoad, OnUnload;
 
         public event Action<DebugWriter> OnWriteDebug;
-        public event Action OnUpdate, OnRender, OnPreRender, OnUpdateUI;
+        public event Action OnUpdate, OnRender, OnPreRender;
 
         public bool IsLoaded { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
@@ -39,12 +39,8 @@ namespace TwelveEngine.Shell {
             IsLoaded = false;
         }
 
-        internal void WriteDebug(DebugWriter writer) => OnWriteDebug?.Invoke(writer);
-
-        internal void UpdateUI() {
-            IsUpdatingUI = true;
-            OnUpdateUI?.Invoke();
-            IsUpdating = false;
+        internal void WriteDebug(DebugWriter writer) {
+            OnWriteDebug?.Invoke(writer);
         }
 
         internal void Update() {
