@@ -43,6 +43,9 @@ namespace TwelveEngine.Shell.States {
         }
 
         protected void UpdateInputs() {
+            if(!Game.IsActive) {
+                return;
+            }
             UpdateMouseInput();
             UpdateImpulseInput();
             UpdateTimeoutInput();

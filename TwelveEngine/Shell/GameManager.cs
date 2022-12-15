@@ -15,18 +15,17 @@ namespace TwelveEngine.Shell {
     public sealed partial class GameManager:Game {
 
         public GameManager(
-            bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool mouseVisible = true
+            bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true
         ) {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
 
             Logger.WriteBooleanSet("Context settings",new string[] {
-                "Fullscreen","HardwareModeSwitch","VerticalSync","MouseVisible"
+                "Fullscreen","HardwareModeSwitch","VerticalSync"
             },new bool[] {
-                fullscreen, hardwareModeSwitch, verticalSync, mouseVisible
+                fullscreen, hardwareModeSwitch, verticalSync
             });
 
             Content.RootDirectory = Constants.ContentDirectory;
-            IsMouseVisible = mouseVisible;
 
             graphicsDeviceManager.SynchronizeWithVerticalRetrace = verticalSync;
 
@@ -370,6 +369,14 @@ namespace TwelveEngine.Shell {
             }
         }
 
+        private void DrawCustomCursor() {
+            SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
+            Vector2 mousePosition = MouseState.Position.ToVector2();
+            Rectangle cursorArea = GetCursorArea();
+            SpriteBatch.Draw(_customCursorTexture,mousePosition,cursorArea,Color.White,0f,cursorArea.Size.ToVector2()*0.5f,new Vector2(CursorScale),SpriteEffects.None,1f);
+            SpriteBatch.End();
+        }
+
         protected override void Draw(GameTime trueGameTime) {
             rendering = true;
 #if DEBUG
@@ -395,7 +402,55 @@ namespace TwelveEngine.Shell {
             _gameState?.WriteDebug(debugWriter);
             SpriteBatch.End();
 #endif
+            if(_customCursorTexture == null) {
+                rendering = false;
+                return;
+            }
+
+            DrawCustomCursor();
             rendering = false;
+        }
+
+        private void UpdateCursorDisplay() {
+            if(IsActive && _customCursorTexture != null) {
+                IsMouseVisible = false;
+                return;
+            }
+            IsMouseVisible = true;
+        }
+
+        private Texture2D _customCursorTexture = null;
+
+        public Texture2D CustomCursorTexture {
+            get {
+                return _customCursorTexture;
+            }
+            set {
+                _customCursorTexture = value;
+                UpdateCursorDisplay();
+            }
+        }
+
+        public CursorState CursorState { get; set; } = CursorState.Default;
+
+        public float CursorScale { get; set; } = 1f;
+
+        private Rectangle GetCursorArea() {
+            if(!CursorSources.TryGetValue(CursorState,out var value)) {
+                return Rectangle.Empty;
+            }
+            return value;
+        }
+
+        public readonly Dictionary<CursorState,Rectangle> CursorSources = new Dictionary<CursorState,Rectangle>();
+
+        protected override void OnActivated(object sender,EventArgs args) {
+            base.OnActivated(sender,args);
+            UpdateCursorDisplay();
+        }
+        protected override void OnDeactivated(object sender,EventArgs args) {
+            base.OnDeactivated(sender,args);
+            UpdateCursorDisplay();
         }
     }
 }

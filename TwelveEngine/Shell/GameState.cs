@@ -26,6 +26,7 @@ namespace TwelveEngine.Shell {
         public bool IsPreRendering { get; private set; } = false;
 
         internal void Load(GameManager game) {
+            game.CursorState = CursorState.Default;
             IsLoading = true;
             Game = game;
             OnLoad?.Invoke();

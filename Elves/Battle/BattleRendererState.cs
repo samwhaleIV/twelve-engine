@@ -15,6 +15,7 @@ namespace Elves.Battle {
 
         protected void UpdateUI() {
             battleUI.Update((int)GetUIScale());
+            Game.CursorState = battleUI.GetCursorState();
         }
 
         private readonly User _player = new User();

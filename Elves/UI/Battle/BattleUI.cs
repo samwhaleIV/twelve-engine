@@ -176,6 +176,16 @@ namespace Elves.UI.Battle {
             targetHealthBar.Update(scale,Now);
         }
 
+        public CursorState GetCursorState() {
+            if(pressedButton != null && activeButton == pressedButton) {
+                return CursorState.Pressed;
+            }
+            if(activeButton != null && activeButton.IsEnabled) {
+                return CursorState.Interact;
+            }
+            return CursorState.Default;
+        }
+
         public void Update(float scale) {
             Rectangle viewport = Viewport;
             TimeSpan now = Now;

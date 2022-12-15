@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TypeParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnimationInterpolator.cs" />
+    <Compile Include="..\TwelveEngine\Shell\CursorState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigWriter.cs" />
