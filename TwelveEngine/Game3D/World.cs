@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game3D.Entity;
-using TwelveEngine.Shell.States;
+using TwelveEngine.Shell;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game3D {
@@ -26,7 +26,7 @@ namespace TwelveEngine.Game3D {
             }
             writer.ToTopLeft();
             writer.Write(Camera.Position);
-            if(!(Camera is AngleCamera angleCamera)) {
+            if(Camera is not AngleCamera angleCamera) {
                 return;
             }
             writer.WriteXY(angleCamera.Yaw,angleCamera.Pitch,"Yaw","Pitch");

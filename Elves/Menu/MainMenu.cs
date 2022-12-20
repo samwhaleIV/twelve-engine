@@ -1,15 +1,10 @@
-﻿using TwelveEngine.Shell.States;
-using Microsoft.Xna.Framework;
-using TwelveEngine.Game3D;
+﻿using Microsoft.Xna.Framework;
 using TwelveEngine.Game3D.Entity.Types;
 using Elves.UI;
 using TwelveEngine;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Xml.Linq;
-using Elves.UI.Font;
-using System.Text;
 
 namespace Elves.Menu {
     public sealed class MainMenu:OrthoBackgroundState {
@@ -35,9 +30,9 @@ namespace Elves.Menu {
         private Screenspace3DSprite nameBadge;
         private Screenspace3DSprite playButton;
 
-        private readonly List<Screenspace3DSprite> floatingItems = new List<Screenspace3DSprite>(FloatingItem.TOTAL_ITEM_COUNT);
+        private readonly List<Screenspace3DSprite> floatingItems = new(FloatingItem.TOTAL_ITEM_COUNT);
 
-        private readonly Random random = new Random();
+        private readonly Random random = new();
 
         private void MainMenu_OnLoad() {
             var menuTexture = Game.Content.Load<Texture2D>(MENU_SPRITE_ATLAS);
@@ -78,7 +73,7 @@ namespace Elves.Menu {
             Rectangle bounds = Game.Viewport.Bounds;
             float scale = GetUIScale() * PLAY_BUTTON_SCALE;
             Vector2 size = playButton.TextureSource.Size.ToVector2() * scale;
-            Vector2 center = new Vector2(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
+            Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             playButton.Area = new VectorRectangle(center,size);
         }
 
@@ -87,7 +82,7 @@ namespace Elves.Menu {
             float scale = GetUIScale();
             Vector2 size = nameBadge.TextureSource.Size.ToVector2() * scale;
 
-            Vector2 center = new Vector2(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (1/3f) - size.Y * 0.5f);
+            Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (1/3f) - size.Y * 0.5f);
             nameBadge.Area = new VectorRectangle(center,size);
         }
 
@@ -103,7 +98,7 @@ namespace Elves.Menu {
             Rectangle bounds = Game.Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = fallingElf.TextureSource.Size.ToVector2() * scale;
-            Vector2 center = new Vector2(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
+            Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             var t = (float)(Now / TimeSpan.FromSeconds(8) % 1);
             var t2 = (float)(Now / TimeSpan.FromSeconds(16) % 1);
             var offset = MathF.Sin(MathF.PI * 2 * t);

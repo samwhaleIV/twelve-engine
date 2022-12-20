@@ -5,10 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Shell.Input;
 using TwelveEngine.Shell.Automation;
-using TwelveEngine.Shell.States;
-using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Config;
-using System.Text;
 using System.Collections.Generic;
 
 namespace TwelveEngine.Shell {
@@ -45,8 +42,9 @@ namespace TwelveEngine.Shell {
             keyBinds = KeyBinds.Load(out KeyBindSet keyBindSet);
 
             keyWatcherSet = new HotkeySet(GetDebugControls(keyBindSet));
-
+#if DEBUG
             debugWriter = new DebugWriter(this);
+#endif
         }
 
 #if DEBUG
@@ -101,10 +99,12 @@ namespace TwelveEngine.Shell {
         private readonly HotkeySet keyWatcherSet;
         private readonly KeyBinds keyBinds;
 
-        private readonly AutomationAgent automationAgent = new AutomationAgent();
-        private readonly ProxyGameTime proxyGameTime = new ProxyGameTime();
+        private readonly AutomationAgent automationAgent = new();
+        private readonly ProxyGameTime proxyGameTime = new();
 
+#if DEBUG
         private readonly DebugWriter debugWriter;
+#endif
 
         /* Public access */
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
@@ -143,7 +143,7 @@ namespace TwelveEngine.Shell {
 
         private void TogglePaused() => SetPaused(!gamePaused);
 
-        private GamePadState GetGamepadState() {
+        private static GamePadState GetGamepadState() {
             var state = GamePad.GetState(Constants.Config.GamePadIndex,GamePadDeadZone.Circular);
             return state;
         }
@@ -198,17 +198,6 @@ namespace TwelveEngine.Shell {
         public void SetState(GameState state) => SetState(() => state);
 
         public void SetState<TState>() where TState : GameState, new() => SetState(new TState());
-
-        public void SetState<TState, TData>(TData data) where TState : DataGameState<TData>, new() {
-            GameState load() {
-                var state = new TState();
-                state.SetData(data);
-                return state;
-            }
-            SetState(load);
-        }
-
-        public void SetState<TState>(string data) where TState : DataGameState<string>, new() => SetState<TState,string>(data);
 
         protected override void Initialize() {
             Window.AllowUserResizing = true;
@@ -364,8 +353,7 @@ namespace TwelveEngine.Shell {
                 Func<GameState> generator = pendingStateGenerator;
                 pendingStateGenerator = null;
                 SetState(generator);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                GC.Collect(-1,GCCollectionMode.Forced,true);
             }
         }
 
@@ -442,7 +430,7 @@ namespace TwelveEngine.Shell {
             return value;
         }
 
-        public readonly Dictionary<CursorState,Rectangle> CursorSources = new Dictionary<CursorState,Rectangle>();
+        public readonly Dictionary<CursorState,Rectangle> CursorSources = new();
 
         protected override void OnActivated(object sender,EventArgs args) {
             base.OnActivated(sender,args);

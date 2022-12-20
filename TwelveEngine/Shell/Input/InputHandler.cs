@@ -38,7 +38,7 @@ namespace TwelveEngine.Shell.Input {
 
         private static InputMethod _inputMethod = InputMethod.Unknown;
 
-        public InputMethod Method {
+        public static InputMethod Method {
             get => _inputMethod;
             private set {
                 _inputMethod = value;
@@ -47,7 +47,7 @@ namespace TwelveEngine.Shell.Input {
 
         public GamePadType GamePadType { get; set; } = GamePadType.Default;
 
-        private KeyState getImpulseState(
+        private KeyState GetImpulseState(
             Impulse impulse,KeyboardState keyboardState,GamePadState gamePadState
         ) {
             bool keyboard = keyboardState.IsKeyDown(keyBinds[impulse]);
@@ -70,7 +70,7 @@ namespace TwelveEngine.Shell.Input {
         public void Update(KeyboardState keyboardState,GamePadState gamePadState) {
             foreach(Impulse impulse in impulses) {
 
-                var newState = getImpulseState(impulse,keyboardState,gamePadState);
+                var newState = GetImpulseState(impulse,keyboardState,gamePadState);
                 var oldState = impulseStates[impulse];
 
                 if(newState == oldState) {

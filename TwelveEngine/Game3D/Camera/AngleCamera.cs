@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using TwelveEngine.Shell.States;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.Game3D {
     public sealed class AngleCamera:Camera3D {
@@ -38,11 +38,12 @@ namespace TwelveEngine.Game3D {
         }
 
         public Vector2 Angle {
-            get => new Vector2(Yaw,Pitch);
+            get => new(Yaw,Pitch);
             set => SetAngle(value.X,value.Y);
         }
 
-        private float NormalizeAngle(float degrees) => (degrees % 360 + 360) % 360;
+        /* What the fuck is happening here? */
+        private static float NormalizeAngle(float degrees) => (degrees % 360 + 360) % 360;
 
         private float ClampPitch(float pitch) {
             return limitPitch ? Math.Clamp(pitch,MinPitch,MaxPitch) : pitch;

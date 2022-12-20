@@ -32,13 +32,13 @@ namespace TwelveEngine.Shell {
         private int idCounter = 0;
         private bool updating = false;
 
-        private readonly Dictionary<int,TimeoutSet> timeoutSets = new Dictionary<int,TimeoutSet>();
-        private readonly Queue<PendingAction> actionQueue = new Queue<PendingAction>();
+        private readonly Dictionary<int,TimeoutSet> timeoutSets = new();
+        private readonly Queue<PendingAction> actionQueue = new();
 
         public int Add(Action action,TimeSpan timeout,TimeSpan currentTime) {
             int ID = idCounter;
             idCounter += 1;
-            TimeoutSet set = new TimeoutSet(ID,action,currentTime + timeout);
+            TimeoutSet set = new(ID,action,currentTime + timeout);
             if(updating) {
                 actionQueue.Enqueue(new PendingAction(set,QueueOperation.Add));
             } else {

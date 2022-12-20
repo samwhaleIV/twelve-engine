@@ -13,7 +13,7 @@ namespace TwelveEngine {
         public static string SaveDirectory => _saveDirectory;
         public static string SaveFilePath => _saveFilePath;
 
-        private static SaveData _saveData = new SaveData();
+        private static SaveData _saveData = new();
 
         public static SaveData Data {
             get {
@@ -26,7 +26,7 @@ namespace TwelveEngine {
 
         private static bool notifiedLackOfDirectoryCreationAuthority = false;
 
-        private static readonly StringBuilder stringBuilder = new StringBuilder();
+        private static readonly StringBuilder stringBuilder = new();
 
         public static void Initialize(string saveFile,string saveDirectory,bool shouldCreateDirectory) {
             _shouldCreateDirectory = shouldCreateDirectory;

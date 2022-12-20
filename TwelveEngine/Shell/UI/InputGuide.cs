@@ -20,8 +20,8 @@ namespace TwelveEngine.Shell.UI {
 
         private Texture2D gamePadTexture, keyboardTexture;
 
-        private readonly GamePadMap gamePadMap = new GamePadMap();
-        private readonly KeyboardMap keyboardMap = new KeyboardMap();
+        private readonly GamePadMap gamePadMap = new();
+        private readonly KeyboardMap keyboardMap = new();
 
         private SpriteFont guideFont;
         private GameManager game;
@@ -47,7 +47,7 @@ namespace TwelveEngine.Shell.UI {
             this.descriptions = descriptions;
         }
 
-        private readonly Stack<(Impulse,string)[]> descriptionStack = new Stack<(Impulse,string)[]>();
+        private readonly Stack<(Impulse,string)[]> descriptionStack = new();
 
         public void ClearDescriptions() => descriptions = null;
 
@@ -61,13 +61,13 @@ namespace TwelveEngine.Shell.UI {
             descriptions = result;
         }
 
-        private int calculateStackHeight(int glyphSize) {
+        private int CalculateStackHeight(int glyphSize) {
             return (glyphSize + VerticalPadding) * descriptions.Length - VerticalPadding;
         }
 
-        private void renderGuide<TKey>(Texture2D texture,GlyphMap<TKey> map,Func<Impulse,TKey> getKey,Point sourceOffset) {
-            Point glyphSize = new Point(map.GlyphSize * GlyphScale);
-            Point location = new Point(ScreenEdgePadding,(int)(game.Viewport.Height * 0.5f - calculateStackHeight(glyphSize.Y) * 0.5f));
+        private void RenderGuide<TKey>(Texture2D texture,GlyphMap<TKey> map,Func<Impulse,TKey> getKey,Point sourceOffset) {
+            Point glyphSize = new(map.GlyphSize * GlyphScale);
+            Point location = new(ScreenEdgePadding,(int)(game.Viewport.Height * 0.5f - CalculateStackHeight(glyphSize.Y) * 0.5f));
 
             for(int i = 0;i<descriptions.Length;i++) {
                 var description = descriptions[i];
@@ -85,7 +85,7 @@ namespace TwelveEngine.Shell.UI {
             }
         }
 
-        private Point getGamepadBlockOffset() {
+        private Point GetGamepadBlockOffset() {
             return input.GamePadType switch {
                 GamePadType.SonyPlaystation => new Point(gamePadMap.BlockSize,0),
                 GamePadType.NintendoSwitch => new Point(0,gamePadMap.BlockSize),
@@ -97,13 +97,13 @@ namespace TwelveEngine.Shell.UI {
             if(descriptions == null) {
                 return;
             }
-            switch(input.Method) {
+            switch(InputHandler.Method) {
                 default: return;
                 case InputMethod.Keyboard:
-                    renderGuide(keyboardTexture,keyboardMap,input.GetKeyboardBind,Point.Zero);
+                    RenderGuide(keyboardTexture,keyboardMap,input.GetKeyboardBind,Point.Zero);
                     return;
                 case InputMethod.GamePad:
-                    renderGuide(gamePadTexture,gamePadMap,input.GetGamePadBind,getGamepadBlockOffset());
+                    RenderGuide(gamePadTexture,gamePadMap,input.GetGamePadBind,GetGamepadBlockOffset());
                     return;
             }
         }

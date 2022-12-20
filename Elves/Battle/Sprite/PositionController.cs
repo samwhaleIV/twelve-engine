@@ -9,9 +9,9 @@ namespace Elves.Battle.Sprite {
 
         private const float SCREEN_EDGE_MARGIN = 0.015f;
 
-        private readonly AnimationInterpolator interpolator = new AnimationInterpolator(Constants.AnimationTiming.TargetMovementDuration);
+        private readonly AnimationInterpolator interpolator = new(Constants.AnimationTiming.TargetMovementDuration);
 
-        private static readonly Dictionary<SpritePosition,Vector3> positionTable = new Dictionary<SpritePosition,Vector3>() {
+        private static readonly Dictionary<SpritePosition,Vector3> positionTable = new() {
             {SpritePosition.Left,new Vector3(-0.4f,0f,DepthConstants.MiddleFar)},
             {SpritePosition.Right,new Vector3(0.4f,0f,DepthConstants.MiddleClose)},
             {SpritePosition.Center,new Vector3(-0f,0f,DepthConstants.Middle)},
@@ -27,11 +27,11 @@ namespace Elves.Battle.Sprite {
         private Vector3 GetPosition(SpritePosition spritePosition,float screenWidth) {
             var position = positionTable[spritePosition];
             if(spritePosition != SpritePosition.Center) {
-                position.X = position.X + sprite.XOffset * Math.Sign(position.X);
+                position.X += sprite.XOffset * Math.Sign(position.X);
             }
             float aspectRatio = sprite.Owner.AspectRatio;
             if(aspectRatio < 1) {
-                position.X = position.X * screenWidth;
+                position.X *= screenWidth;
             } else {
                 position.X = position.X * screenWidth / aspectRatio;
             }

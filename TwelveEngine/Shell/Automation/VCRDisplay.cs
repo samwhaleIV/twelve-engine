@@ -20,19 +20,19 @@ namespace TwelveEngine.Shell.Automation {
 
         private enum Symbol { Record, Play, Pause, Load, Advance, AdvanceMany };
 
-        private readonly Dictionary<Symbol,Rectangle> symbolSources = new Dictionary<Symbol,Rectangle>() {
-            { Symbol.Record, getSource(new Point(1,1)) },
-            { Symbol.Play, getSource(new Point(17,1)) },
-            { Symbol.Pause, getSource(new Point(1,17),new Point(-1,0)) },
+        private readonly Dictionary<Symbol,Rectangle> symbolSources = new() {
+            { Symbol.Record, GetSource(new Point(1,1)) },
+            { Symbol.Play, GetSource(new Point(17,1)) },
+            { Symbol.Pause, GetSource(new Point(1,17),new Point(-1,0)) },
 
-            { Symbol.Load, getSource(new Point(17,17)) },
-            { Symbol.Advance, getSource(new Point(33,1)) },
-            { Symbol.AdvanceMany, getSource(new Point(49,1)) }
+            { Symbol.Load, GetSource(new Point(17,17)) },
+            { Symbol.Advance, GetSource(new Point(33,1)) },
+            { Symbol.AdvanceMany, GetSource(new Point(49,1)) }
         };
 
-        private static Rectangle getSource(Point source,Point? sizeOffset = null) {
+        private static Rectangle GetSource(Point source,Point? sizeOffset = null) {
             Point offset = sizeOffset ?? Point.Zero;
-            Rectangle recetangle = new Rectangle {
+            Rectangle recetangle = new() {
                 X = source.X,
                 Y = source.Y,
                 Width = GLPYH_SIZE + offset.X,
@@ -41,7 +41,7 @@ namespace TwelveEngine.Shell.Automation {
             return recetangle;
         }
 
-        private Mode getMode() {
+        private Mode GetMode() {
             var automationAgent = gameManager.AutomationAgent;
             if(automationAgent.PlaybackActive) {
                 return Mode.Playback;
@@ -68,7 +68,7 @@ namespace TwelveEngine.Shell.Automation {
             spriteBatch = gameManager.SpriteBatch;
         }
 
-        private void drawSymbol(ref int x,Symbol symbol) {
+        private void DrawSymbol(ref int x,Symbol symbol) {
             var destination = new Rectangle(
                 x,SPACE,RENDER_SIZE,RENDER_SIZE
             );
@@ -92,7 +92,7 @@ namespace TwelveEngine.Shell.Automation {
         }
 
         internal void Render(GameTime gameTime) {
-            var mode = getMode();
+            var mode = GetMode();
 
             int x = SPACE;
 
@@ -112,23 +112,23 @@ namespace TwelveEngine.Shell.Automation {
 
             if(hasMode) {
                 if(mode == Mode.Playback) {
-                    drawSymbol(ref x,Symbol.Play);
+                    DrawSymbol(ref x,Symbol.Play);
                 } else {
-                    drawSymbol(ref x,Symbol.Record);
+                    DrawSymbol(ref x,Symbol.Record);
                 }
             }
 
             if(paused) {
-                drawSymbol(ref x,Symbol.Pause);
+                DrawSymbol(ref x,Symbol.Pause);
             }
             if(loading) {
-                drawSymbol(ref x,Symbol.Load);
+                DrawSymbol(ref x,Symbol.Load);
             }
 
             if(lastFrameAdvance.HasValue) {
                 var timeDifference = gameTime.TotalGameTime - lastFrameAdvance.Value;
                 if(timeDifference < AdvanceFrameTimeout) {
-                    drawSymbol(ref x,smallAdvance ? Symbol.Advance : Symbol.AdvanceMany);
+                    DrawSymbol(ref x,smallAdvance ? Symbol.Advance : Symbol.AdvanceMany);
                 }
             }
 

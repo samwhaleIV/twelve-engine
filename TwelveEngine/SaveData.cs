@@ -26,13 +26,13 @@ namespace TwelveEngine {
         }
 
         public SaveData(IEnumerable<KeyValuePair<int,SaveValue>> data) {
-            dataTable = dataTable = new Dictionary<int,SaveValue>(data);
+            dataTable = new Dictionary<int,SaveValue>(data);
         }
 
         public SaveData((int Key,SaveValue Value)[] data) {
-            dataTable = dataTable = new Dictionary<int,SaveValue>(data.Length);
-            foreach(var item in data) {
-                dataTable[item.Key] = item.Value;
+            dataTable = new Dictionary<int,SaveValue>(data.Length);
+            foreach(var (Key, Value) in data) {
+                dataTable[Key] = Value;
             }
         }
 
@@ -107,21 +107,12 @@ namespace TwelveEngine {
             for(int i = 0;i<itemCount;i++) {
                 var key = reader.ReadInt32();
                 var valueType = (SaveValueType)reader.ReadInt32();
-                switch(valueType) {
-                    case SaveValueType.String:
-                        dataTable[key] = new SaveValue(valueType,reader.ReadString());
-                        break;
-                    case SaveValueType.Int:
-                        dataTable[key] = new SaveValue(valueType,reader.ReadInt32());
-                        break;
-                    case SaveValueType.Bool:
-                        dataTable[key] = new SaveValue(valueType,reader.ReadBoolean());
-                        break;
-                    default:
-                    case SaveValueType.Flag:
-                        dataTable[key] = new SaveValue(SaveValueType.Flag,null);
-                        break;
-                }
+                dataTable[key] = valueType switch {
+                    SaveValueType.String => new SaveValue(valueType,reader.ReadString()),
+                    SaveValueType.Int => new SaveValue(valueType,reader.ReadInt32()),
+                    SaveValueType.Bool => new SaveValue(valueType,reader.ReadBoolean()),
+                    _ => new SaveValue(SaveValueType.Flag,null),
+                };
             }
         }
 

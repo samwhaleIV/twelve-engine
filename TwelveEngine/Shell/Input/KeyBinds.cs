@@ -13,13 +13,13 @@ namespace TwelveEngine.Shell.Input {
         private KeyBinds(KeyBindSet keyBindSet) {
             defaultSet = keyBindSet;
             var invalidBinds = GetBinds(keyBindSet);
-            this.binds = validateBinds(invalidBinds);
+            this.binds = ValidateBinds(invalidBinds);
         }
 
-        private readonly HashSet<Keys> validKeys = getValidKeysSet();
-        private readonly HashSet<Keys> existingKeys = new HashSet<Keys>();
+        private readonly HashSet<Keys> validKeys = GetValidKeysSet();
+        private readonly HashSet<Keys> existingKeys = new();
 
-        private static HashSet<Keys> getValidKeysSet() {
+        private static HashSet<Keys> GetValidKeysSet() {
             var hashSet = new HashSet<Keys>();
             var list = KeyboardMap.GetKeys();
 
@@ -37,7 +37,7 @@ namespace TwelveEngine.Shell.Input {
             return validKeys.Contains(key) && !existingKeys.Contains(key);
         }
 
-        private Dictionary<Impulse,Keys> validateBinds(Dictionary<Impulse,Keys> binds) {
+        private Dictionary<Impulse,Keys> ValidateBinds(Dictionary<Impulse,Keys> binds) {
             var existingKeys = new HashSet<Keys>();
             foreach(var bind in binds) {
                 var key = bind.Value;
@@ -49,7 +49,7 @@ namespace TwelveEngine.Shell.Input {
             return binds;
         }
 
-        private void setKey(Impulse impulse,Keys value) {
+        private void SetKey(Impulse impulse,Keys value) {
             if(!IsKeyValid(value)) {
                 return;
             }
@@ -62,7 +62,7 @@ namespace TwelveEngine.Shell.Input {
 
         public Keys this[Impulse type] {
             get => binds[type];
-            set => setKey(type,value);
+            set => SetKey(type,value);
         }
 
         public void Save(string path = null) {

@@ -19,7 +19,7 @@ namespace TwelveEngine.Shell.UI {
 
         public int Padding { get; set; } = Constants.ScreenEdgePadding;
 
-        private readonly StringBuilder writer = new StringBuilder();
+        private readonly StringBuilder writer = new();
 
         private (Vector2 Position, Corner Corner,int LineHeight,Color Color) renderState;
 
@@ -27,7 +27,7 @@ namespace TwelveEngine.Shell.UI {
             return viewport.Width - padding;
         }
 
-        private static int GetStartYBottom(Viewport viewport,int padding,int lineHeight) {
+        private static int GetStartYBottom(Viewport viewport,int lineHeight) {
             return viewport.Height - lineHeight;
         }
 
@@ -43,11 +43,11 @@ namespace TwelveEngine.Shell.UI {
                     x = GetStartXRight(viewport,padding);
                     break;
                 case Corner.BottomLeft:
-                    y = GetStartYBottom(viewport,padding,lineHeight);
+                    y = GetStartYBottom(viewport,lineHeight);
                     break;
                 case Corner.BottomRight:
                     x = GetStartXRight(viewport,padding);
-                    y = GetStartYBottom(viewport,padding,lineHeight);
+                    y = GetStartYBottom(viewport,lineHeight);
                     break;
             }
 

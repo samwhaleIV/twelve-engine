@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using TwelveEngine.Game3D.Entity.Types;
 using Elves.Battle.Sprite.Animation;
 using Microsoft.Xna.Framework.Graphics;

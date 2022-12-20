@@ -1,15 +1,14 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using TwelveEngine.Shell.Input;
 using TwelveEngine.Shell.UI;
 
-namespace TwelveEngine.Shell.States {
+namespace TwelveEngine.Shell {
     public class InputGameState:GameState {
 
-        private readonly TimeoutManager timeoutManager = new TimeoutManager();
-        private readonly MouseHandler mouseHandler = new MouseHandler();
-        private readonly InputHandler inputHandler = new InputHandler();
-        private readonly InputGuide inputGuide = new InputGuide();
+        private readonly TimeoutManager timeoutManager = new();
+        private readonly MouseHandler mouseHandler = new();
+        private readonly InputHandler inputHandler = new();
+        private readonly InputGuide inputGuide = new();
 
         public InputHandler Input => inputHandler;
         public MouseHandler Mouse => mouseHandler;

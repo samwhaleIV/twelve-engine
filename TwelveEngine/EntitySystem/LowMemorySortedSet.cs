@@ -8,7 +8,7 @@ namespace TwelveEngine.EntitySystem {
         private readonly IComparer<T> comparer;
 
         private const int NO_ID = -1;
-        private bool IsEmptyID(int ID) => ID < 0;
+        private static bool IsEmptyID(int ID) => ID < 0;
 
         public LowMemorySortedSet(int capacity,IComparer<T> comparer) {
             list = new T[capacity];
@@ -38,7 +38,7 @@ namespace TwelveEngine.EntitySystem {
         public int Count => lookupTable.Count;
 
         /* Key == int ID */
-        private Dictionary<int,IndexWrapper> lookupTable = new Dictionary<int,IndexWrapper>();
+        private readonly Dictionary<int,IndexWrapper> lookupTable = new();
 
         private int GetInsertionIndex(T value) {
             int index = Array.BinarySearch(list,0,Count,value,comparer);
@@ -79,7 +79,7 @@ namespace TwelveEngine.EntitySystem {
         /* ID must start at 1 and not 0, so we can detect an empty spot in the buffer */
         public void Add(int ID,T value) {
             if(IsEmptyID(ID)) {
-                throw new ArgumentException("ID cannot be less than 0!","ID");
+                throw new ArgumentException("ID cannot be less than 0!",nameof(ID));
             }
             if(Count == list.Length) {
                 ResizeList();

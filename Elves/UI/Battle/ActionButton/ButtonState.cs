@@ -11,21 +11,21 @@ namespace Elves.UI.Battle {
             OnScreen = onScreen;
         }
 
-        public ButtonState GetOffscreen() => new ButtonState(Position, false);
-        public ButtonState GetOnScreen() => new ButtonState(Position, true);
-        public ButtonState GetOpposite() => new ButtonState(Position, !OnScreen);
+        public ButtonState GetOffscreen() => new(Position, false);
+        public ButtonState GetOnScreen() => new(Position, true);
+        public ButtonState GetOpposite() => new(Position, !OnScreen);
 
-        public static ButtonState TopLeft = new ButtonState(ButtonPosition.TopLeft, true);
-        public static ButtonState TopRight = new ButtonState(ButtonPosition.TopRight, true);
-        public static ButtonState BottomLeft = new ButtonState(ButtonPosition.BottomLeft, true);
-        public static ButtonState BottomRight = new ButtonState(ButtonPosition.BottomRight, true);
+        public static readonly ButtonState TopLeft = new(ButtonPosition.TopLeft, true);
+        public static readonly ButtonState TopRight = new(ButtonPosition.TopRight, true);
+        public static readonly ButtonState BottomLeft = new(ButtonPosition.BottomLeft, true);
+        public static readonly ButtonState BottomRight = new(ButtonPosition.BottomRight, true);
 
-        public static ButtonState CenterLeft = new ButtonState(ButtonPosition.CenterLeft, true);
-        public static ButtonState CenterMiddle = new ButtonState(ButtonPosition.CenterMiddle, true);
-        public static ButtonState CenterRight = new ButtonState(ButtonPosition.CenterRight, true);
-        public static ButtonState CenterBottom = new ButtonState(ButtonPosition.CenterBottom, true);
+        public static readonly ButtonState CenterLeft = new(ButtonPosition.CenterLeft, true);
+        public static readonly ButtonState CenterMiddle = new(ButtonPosition.CenterMiddle, true);
+        public static readonly ButtonState CenterRight = new(ButtonPosition.CenterRight, true);
+        public static readonly ButtonState CenterBottom = new(ButtonPosition.CenterBottom, true);
 
-        public static ButtonState None => new ButtonState(ButtonPosition.None, false);
+        public static readonly ButtonState None = new(ButtonPosition.None, false);
 
         public static bool operator == (ButtonState a, ButtonState b) {
             return a.OnScreen == b.OnScreen && a.Position == b.Position;
@@ -36,7 +36,7 @@ namespace Elves.UI.Battle {
         }
 
         public override bool Equals(object obj) {
-            if(!(obj is ButtonState)) {
+            if(obj is not ButtonState) {
                 return false;
             }
             return (ButtonState)obj == this;

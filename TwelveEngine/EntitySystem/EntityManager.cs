@@ -17,7 +17,7 @@ namespace TwelveEngine.EntitySystem {
         private const string ILLEGAL_ITERATION_UNLOADED = "Cannot iterate entity list, the entity manager is unloaded.";
 
         private readonly TOwner Owner;
-        private readonly EntityContainer<TEntity,TOwner> Container = new EntityContainer<TEntity,TOwner>();
+        private readonly EntityContainer<TEntity,TOwner> Container = new();
 
         private bool IsIterating = false, IsUnloaded = false, IsIteratingSorted = false;
 
@@ -43,8 +43,8 @@ namespace TwelveEngine.EntitySystem {
             }
         }
 
-        private readonly LowMemorySortedSet<TEntity> Entities = new LowMemorySortedSet<TEntity>(EntityManager.STARTING_CAPACITY,new EntityComparer());
-        private readonly Queue<RegisteredEntity> EntitiesBuffer = new Queue<RegisteredEntity>(EntityManager.STARTING_CAPACITY);
+        private readonly LowMemorySortedSet<TEntity> Entities = new(EntityManager.STARTING_CAPACITY,new EntityComparer());
+        private readonly Queue<RegisteredEntity> EntitiesBuffer = new(EntityManager.STARTING_CAPACITY);
 
         private void Entity_OnDepthChanged(Entity<TOwner> entity) {
             Entities.Remove(entity.ID);
@@ -75,7 +75,7 @@ namespace TwelveEngine.EntitySystem {
             bufferNeedsUpdate = false;
         }
 
-        private readonly Queue<RegisteredEntity> AdditionQueue = new Queue<RegisteredEntity>();
+        private readonly Queue<RegisteredEntity> AdditionQueue = new();
 
         public void Update() {
             if(IsUnloaded) {
@@ -220,7 +220,7 @@ namespace TwelveEngine.EntitySystem {
 
             bufferNeedsUpdate = false;
 
-            Queue<TEntity> entitiesCopy = new Queue<TEntity>(Entities.Count);
+            Queue<TEntity> entitiesCopy = new(Entities.Count);
 
             for(int i = 0;i<Entities.Count;i++) {
                 entitiesCopy.Enqueue(Entities.List[i]);

@@ -53,9 +53,11 @@ namespace Elves.UI.Battle {
 
         private bool IsDead => Value <= 0f;
 
+        private const float PI2 = MathF.PI * 2;
+
         private int GetStripYOffset(float xNormal,float t) {
-            float time = MathF.PI * 2 * t;
-            float distance = xNormal * MathF.PI * 2;
+            float time = PI2 * t;
+            float distance = xNormal * PI2;
             float offset = MathF.Sin((time + distance) * WaveSpeed) * WaveStrength / 19 * Scale;
             return (int)MathF.Round(offset);
         }

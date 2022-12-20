@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace TwelveEngine.Shell.Automation {
     internal static class IO {
-        private static InputFrame[] readFileData(BinaryReader reader) {
+        private static InputFrame[] ReadFileData(BinaryReader reader) {
             var frameCount = reader.ReadInt32();
 
             InputFrame[] frames = new InputFrame[frameCount];
@@ -15,7 +15,7 @@ namespace TwelveEngine.Shell.Automation {
                 return frames;
             }
 
-            SerialInputFrame lastFrame = new SerialInputFrame();
+            SerialInputFrame lastFrame = new();
             for(var i = 0;i < frameCount;i++) {
                 var serialFrame = new SerialInputFrame(lastFrame,reader);
                 frames[i] = new InputFrame(serialFrame);
@@ -24,7 +24,7 @@ namespace TwelveEngine.Shell.Automation {
             return frames;
         }
 
-        private static void writeFileData(BinaryWriter writer,InputFrame[] frames) {
+        private static void WriteFileData(BinaryWriter writer,InputFrame[] frames) {
             var frameCount = frames.Length;
 
             writer.Write(frameCount);
@@ -33,7 +33,7 @@ namespace TwelveEngine.Shell.Automation {
                 return;
             }
 
-            SerialInputFrame lastFrame = new SerialInputFrame();
+            SerialInputFrame lastFrame = new();
             for(var i = 0;i < frameCount;i++) {
                 var newFrame = new SerialInputFrame(frames[i]);
                 newFrame.Export(writer,lastFrame);
@@ -59,33 +59,30 @@ namespace TwelveEngine.Shell.Automation {
                 }
                 using var reader = new BinaryReader(stream,Encoding.Default,false);
                 stream.Seek(0,SeekOrigin.Begin);
-                frames = readFileData(reader);
+                frames = ReadFileData(reader);
             }
 
-            if(frames == null) {
-                frames = new InputFrame[0];
-            }
-            return frames;
+            return frames ?? Array.Empty<InputFrame>();
         }
 
         internal static async Task WritePlaybackFrames(string path,InputFrame[] frames) {
             byte[] fileData;
             using(var stream = new MemoryStream()) {
                 using(var writer = new BinaryWriter(stream,Encoding.Default,true)) {
-                    writeFileData(writer,frames);
+                    WriteFileData(writer,frames);
                 }
                 fileData = stream.ToArray();
             }
 
             using(var stream = new MemoryStream()) {
                 using(var compressor = new DeflateStream(stream,CompressionMode.Compress)) {
-                    await compressor.WriteAsync(fileData,0,fileData.Length);
+                    await compressor.WriteAsync(fileData);
                 }
                 fileData = stream.ToArray();
             }
 
             using(var stream = File.Open(path,FileMode.Create,FileAccess.Write,FileShare.None)) {
-                await stream.WriteAsync(fileData,0,fileData.Length);
+                await stream.WriteAsync(fileData);
             }
         }
 

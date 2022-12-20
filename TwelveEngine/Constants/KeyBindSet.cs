@@ -26,7 +26,7 @@ namespace TwelveEngine.Shell.Config {
 }
 namespace TwelveEngine.Shell.Input {
     public sealed partial class KeyBinds {
-        private static Dictionary<Impulse,Keys> GetBinds(KeyBindSet keyBindSet) => new Dictionary<Impulse,Keys>() {
+        private static Dictionary<Impulse,Keys> GetBinds(KeyBindSet keyBindSet) => new() {
             { Impulse.Up, keyBindSet.Up },
             { Impulse.Down, keyBindSet.Down },
             { Impulse.Left, keyBindSet.Left },

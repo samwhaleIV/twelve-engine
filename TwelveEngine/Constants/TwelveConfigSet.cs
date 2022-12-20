@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine.Shell.Config {
+﻿using System;
+
+namespace TwelveEngine.Shell.Config {
     public class TwelveConfigSet {
 
         public int RenderScale = 8;
@@ -13,7 +15,7 @@
 
         public string KeyBindsFile = Constants.DefaultKeyBindsFile;
 
-        public string[] CPUTextures = new string[] { };
+        public string[] CPUTextures = Array.Empty<string>();
 
         public bool ShowCollision = false;
     }

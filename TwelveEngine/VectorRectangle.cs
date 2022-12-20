@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace TwelveEngine {
     public struct VectorRectangle {
@@ -75,7 +76,7 @@ namespace TwelveEngine {
         public float Height { get => _height; set => _height = value; }
 
         public Vector2 Size {
-            get => new Vector2(_width,_height);
+            get => new(_width,_height);
             set {
                 _width = value.X;
                 _height = value.Y;
@@ -83,14 +84,14 @@ namespace TwelveEngine {
         }
 
         public Vector2 Location {
-            get => new Vector2(_x,_y);
+            get => new(_x,_y);
             set {
                 _x = value.X;
                 _y = value.Y;
             }
         }
 
-        public Vector2 Center => new Vector2(_x + _width * 0.5f,_y + _height * 0.5f);
+        public Vector2 Center => new(_x + _width * 0.5f,_y + _height * 0.5f);
 
         public float Top => _y;
         public float Bottom => _y + _height;
@@ -98,12 +99,12 @@ namespace TwelveEngine {
         public float Left => _x;
         public float Right => _x + _width;
 
-        public Vector2 TopLeft => new Vector2(_x,_y);
-        public Vector2 BottomRight => new Vector2(_x+_width,_y+_height);
+        public Vector2 TopLeft => new(_x,_y);
+        public Vector2 BottomRight => new(_x+_width,_y+_height);
 
-        public static readonly VectorRectangle Zero = new VectorRectangle(0,0,0,0);
-        public static readonly VectorRectangle One = new VectorRectangle(0,0,1,1);
-        public static readonly VectorRectangle Empty = new VectorRectangle(Vector2.Zero,Vector2.Zero);
+        public static readonly VectorRectangle Zero = new(0,0,0,0);
+        public static readonly VectorRectangle One = new(0,0,1,1);
+        public static readonly VectorRectangle Empty = new(Vector2.Zero,Vector2.Zero);
 
         public bool Contains(Point point) {
             return _x <= point.X && point.X < _x + _width && _y <= point.Y && point.Y < _y + _height;
@@ -130,7 +131,7 @@ namespace TwelveEngine {
         }
 
         public override int GetHashCode() {
-            return (_x, _y, _width, _height).GetHashCode();
+            return HashCode.Combine(_x,_y,_width,_height);
         }
 
         public override bool Equals(object obj) {

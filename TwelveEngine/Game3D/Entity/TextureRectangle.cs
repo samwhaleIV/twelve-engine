@@ -85,21 +85,15 @@ namespace TwelveEngine.Game3D.Entity {
             Vector2 uvBottomRight = UVBottomRight;
 
             if(MirrorX) {
-                float value = uvTopLeft.X;
-                uvTopLeft.X = uvBottomRight.X;
-                uvBottomRight.X = value;
+                (uvBottomRight.X, uvTopLeft.X) = (uvTopLeft.X, uvBottomRight.X);
             }
 
             if(MirrorY) {
-                float value = uvTopLeft.Y;
-                uvTopLeft.Y = uvBottomRight.Y;
-                uvBottomRight.Y = value;
+                (uvBottomRight.Y, uvTopLeft.Y) = (uvTopLeft.Y, uvBottomRight.Y);
             }
 
             if(MirrorZ) {
-                float value = start.X;
-                start.X = end.X;
-                end.X = value;
+                (end.X, start.X) = (start.X, end.X);
             }
 
             vertices[0] = new VertexPositionColorTexture(start,TopLeftColor,uvTopLeft+UVOffset);

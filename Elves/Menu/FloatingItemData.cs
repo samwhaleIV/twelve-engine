@@ -11,7 +11,7 @@ namespace Elves.Menu {
             return (new Rectangle(x,y,width,height), ELF_GRAB_WEIGHT);
         }
 
-        public static GrabBag<Rectangle> GetGrabBag() => new GrabBag<Rectangle>(new[]{
+        public static GrabBag<Rectangle> GetGrabBag() => new(new[]{
             (new Rectangle(38,78,4,4),BUBBLE_GRAB_WEIGHT),
             GetElfItem(0,31,7,23),
             GetElfItem(7,31,7,23),

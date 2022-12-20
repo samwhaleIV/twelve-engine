@@ -6,16 +6,16 @@ namespace Elves.UI.Font {
             var glyphDictionary = new Dictionary<char,Glyph>();
 
             void AddRow(int x,int y,int height,int yOffset,params (char Value, int Width)[] characters) {
-                foreach(var character in characters) {
-                    char lowercase = char.ToLowerInvariant(character.Value);
+                foreach(var (Value, Width) in characters) {
+                    char lowercase = char.ToLowerInvariant(Value);
 
-                    Glyph glyph = new Glyph(x,y,character.Width,height,yOffset);
-                    x += 2 + character.Width;
+                    Glyph glyph = new(x,y,Width,height,yOffset);
+                    x += 2 + Width;
 
-                    if(lowercase != character.Value) {
+                    if(lowercase != Value) {
                         glyphDictionary.Add(lowercase,glyph);
                     }
-                    glyphDictionary.Add(character.Value,glyph);
+                    glyphDictionary.Add(Value,glyph);
                 }
             }
 

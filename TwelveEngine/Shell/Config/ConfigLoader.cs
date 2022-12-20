@@ -4,9 +4,7 @@ namespace TwelveEngine.Shell.Config {
     public static class ConfigLoader {
 
         internal static KeyBindSet LoadKeyBinds(string path = null) {
-            if(path == null) {
-                path = Constants.Config.KeyBindsFile;
-            }
+            path ??= Constants.Config.KeyBindsFile;
             if(!File.Exists(path)) {
                 return new KeyBindSet();
             }
@@ -29,9 +27,7 @@ namespace TwelveEngine.Shell.Config {
         }
 
         public static TPropertySet LoadEngineConfig<TPropertySet>(string path = null) where TPropertySet : TwelveConfigSet, new() {
-            if(path == null) {
-                path = Constants.EngineConfigFile;
-            }
+            path ??= Constants.EngineConfigFile;
 
             TPropertySet propertySet;
             if(!File.Exists(path)) {

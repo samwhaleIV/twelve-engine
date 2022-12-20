@@ -75,15 +75,14 @@ namespace Elves.UI.Battle {
                 lastMousePosition = OffscreenMousePosition;
                 return null;
             }
-            Button newButton = null;
+            Button button;
             for(int i = interactableElements.Count-1;i>=0;i--) {
-                var button = interactableElements[i];
+                button = interactableElements[i];
                 if(button.Area.Contains(position)) {
-                    newButton = button;
-                    break;
+                    return button;
                 }
             }
-            return newButton;
+            return null;
         }
 
         private void UpdateButtonFocus(Point position) {

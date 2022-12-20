@@ -7,16 +7,17 @@ namespace TwelveEngine {
 
         public GrabBag((T Value,int Weight)[] set) {
             int total = 0;
-            foreach(var item in set) {
-                total += item.Weight;
+            int i;
+            for(i = 0;i < set.Length;i++) {
+                total += set[i].Weight;
             }
             grabBag = new T[total];
-            int i = 0;
-            foreach(var item in set) {
-                int count = item.Weight;
+            for(i = 0;i < set.Length;i++) {
+                (T Value, int Weight) = set[i];
+                int count = Weight;
                 while(count > 0) {
                     count--;
-                    grabBag[i++] = item.Value;
+                    grabBag[i++] = Value;
                 }
             }
         }

@@ -7,9 +7,9 @@ namespace Elves.UI.Font {
             var glyphDictionary = new Dictionary<char,Glyph>();
             
             void AddRow(int x,int y,int height,int yOffset,params (char Value,int Width)[] characters) {
-                foreach(var character in characters) {
-                    glyphDictionary.Add(character.Value,new Glyph(x,y,character.Width,height,yOffset));
-                    x += 2 + character.Width;
+                foreach(var (Value, Width) in characters) {
+                    glyphDictionary.Add(Value,new Glyph(x,y,Width,height,yOffset));
+                    x += 2 + Width;
                 }
             }
 

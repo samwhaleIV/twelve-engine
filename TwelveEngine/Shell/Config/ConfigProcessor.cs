@@ -14,7 +14,7 @@ namespace TwelveEngine.Shell.Config {
             propertyFields = propertySetType.GetFields(BindingFlags.Instance | BindingFlags.Public);
         }
 
-        private Dictionary<string,string> getFileProperties(string[] lines) {
+        private static Dictionary<string,string> GetFileProperties(string[] lines) {
             var dictionary = new Dictionary<string,string>();
             foreach(var line in lines) {
                 int splitIndex = line.IndexOf(Constants.ConfigValueOperand);
@@ -30,7 +30,7 @@ namespace TwelveEngine.Shell.Config {
             return dictionary;
         }
 
-        private Dictionary<string,int> getNameTable(FieldInfo[] fields) {
+        private static Dictionary<string,int> GetNameTable(FieldInfo[] fields) {
             var table = new Dictionary<string,int>();
             for(var i = 0;i < fields.Length;i++) {
                 var field = fields[i];
@@ -39,9 +39,9 @@ namespace TwelveEngine.Shell.Config {
             return table;
         }
 
-        private TPropertySet getPropertySet(Dictionary<string,string> fileProperties) {
+        private TPropertySet GetPropertySet(Dictionary<string,string> fileProperties) {
             var propertySet = new TPropertySet();
-            var nameTable = getNameTable(propertyFields);
+            var nameTable = GetNameTable(propertyFields);
 
             foreach(var item in fileProperties) {
                 var propertyName = item.Key;
@@ -52,13 +52,13 @@ namespace TwelveEngine.Shell.Config {
                 var propertyValue = item.Value;
                 var fieldIndex = nameTable[propertyName];
                 var field = propertyFields[fieldIndex];
-                applyProperty(propertySet,field,propertyValue);
+                ApplyProperty(propertySet,field,propertyValue);
             }
 
             return propertySet;
         }
 
-        private void applyProperty(TPropertySet set,FieldInfo field,string propertyValue) {
+        private static void ApplyProperty(TPropertySet set,FieldInfo field,string propertyValue) {
             var typeName = field.FieldType.FullName;
 
             if(!TypeParser.TryGetType(typeName,out var type)) {
@@ -74,11 +74,11 @@ namespace TwelveEngine.Shell.Config {
         }
 
         public TPropertySet Load(string[] lines) {
-            var fileProperties = getFileProperties(lines);
-            return getPropertySet(fileProperties);
+            var fileProperties = GetFileProperties(lines);
+            return GetPropertySet(fileProperties);
         }
 
-        private bool tryGetValue(TPropertySet propertySet,FieldInfo field,out string value) {
+        private static bool TryGetValue(TPropertySet propertySet,FieldInfo field,out string value) {
             if(!TypeParser.TryGetType(field.FieldType.FullName,out var type)) {
                 value = null;
                 return false;
@@ -93,14 +93,14 @@ namespace TwelveEngine.Shell.Config {
             return true;
         }
 
-        private static readonly StringBuilder stringBuilder = new StringBuilder();
+        private static readonly StringBuilder stringBuilder = new();
 
         public string Save(TPropertySet propertySet) {
             stringBuilder.Clear();
 
             foreach(var field in propertyFields) {
 
-                if(!tryGetValue(propertySet,field,out string value)) continue;
+                if(!TryGetValue(propertySet,field,out string value)) continue;
 
                 var propertyName = field.Name;
                 stringBuilder.Append(propertyName);

@@ -38,8 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\GridLinesEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\World.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\States\DataGameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\States\InputGameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\InputGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RenderTargetStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\DebugWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\Corner.cs" />

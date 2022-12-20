@@ -8,70 +8,70 @@ namespace TwelveEngine.Shell.Config {
         private static readonly Type keysType = typeof(Keys);
 
         private static readonly Dictionary<PropertyType,(string TypeName,Func<string,object> Objectify,Func<object,string> Stringify)> types =
-            new Dictionary<PropertyType,(string,Func<string,object>,Func<object,string>)>() {
+            new() {
 
             { PropertyType.Bool, (typeof(bool).FullName, i => {
                 if(!bool.TryParse(i,out var o)) return null; return o;
-            }, i => export(i).ToLowerInvariant())},
+            }, i => Export(i).ToLowerInvariant())},
 
             { PropertyType.Byte, (typeof(byte).FullName, i => {
                 if(!byte.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.SByte, (typeof(sbyte).FullName, i => {
                 if(!sbyte.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.Char, (typeof(char).FullName, i => {
                 if(!char.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.Decimal, (typeof(decimal).FullName, i => {
                 if(!decimal.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.Double, (typeof(double).FullName, i => {
                 if(!double.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.Float, (typeof(float).FullName, i => {
                 if(!float.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.Int, (typeof(int).FullName, i => {
                 if(!int.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.Uint, (typeof(uint).FullName, i => {
                 if(!uint.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.Long, (typeof(long).FullName, i => {
                 if(!long.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.ULong, (typeof(ulong).FullName, i => {
                 if(!ulong.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.Short, (typeof(short).FullName, i => {
                 if(!short.TryParse(i,out var o)) return null; return o;
-                }, export)},
+                }, Export)},
 
             { PropertyType.UShort, (typeof(ushort).FullName, i => {
                 if(!ushort.TryParse(i,out var o)) return null; return o;
-            }, export)},
+            }, Export)},
 
             { PropertyType.String, (typeof(string).FullName, i => {
                 if(string.IsNullOrEmpty(i)) return null; return i;
-            }, export)},
+            }, Export)},
 
-            { PropertyType.StringArray, (typeof(string[]).FullName, parseArray, exportArray)},
-            { PropertyType.XNAKeys, (keysType.FullName, parseKeys, export)}
+            { PropertyType.StringArray, (typeof(string[]).FullName, ParseArray, ExportArray)},
+            { PropertyType.XNAKeys, (keysType.FullName, ParseKeys, Export)}
 
         };
 
-        private static Dictionary<string,PropertyType> getValidTypes() {
+        private static Dictionary<string,PropertyType> GetValidTypes() {
             var validTypes = new Dictionary<string,PropertyType>();
             foreach(var type in types) {
                 var propertyType = type.Key;
@@ -82,26 +82,26 @@ namespace TwelveEngine.Shell.Config {
             return validTypes;
         }
 
-        private static readonly Dictionary<string,PropertyType> validTypes = getValidTypes();
+        private static readonly Dictionary<string,PropertyType> validTypes = GetValidTypes();
 
-        private static string export(object value) => value.ToString();
+        private static string Export(object value) => value.ToString();
 
                                                           /* This space is intentional |
                                                                                        V   */
         private static readonly string ARRAY_JOINT = $"{Constants.ConfigArrayDelimiter} "; 
 
-        private static string exportArray(object value) {
+        private static string ExportArray(object value) {
             return string.Join(ARRAY_JOINT,(object[])value);
         }
 
-        private static object parseKeys(string value) {
+        private static object ParseKeys(string value) {
             if(!Enum.TryParse(keysType,value,out object cast)) {
                 return null;
             }
             return cast;
         }
 
-        private static object parseArray(string value) {
+        private static object ParseArray(string value) {
             if(string.IsNullOrEmpty(value)) {
                 return null;
             }
