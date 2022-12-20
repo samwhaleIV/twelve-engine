@@ -1,18 +1,110 @@
 ﻿using Elves.Battle.Sprite;
+using Elves.Battle.Sprite.Animation;
+using Elves.UI;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using TwelveEngine;
 
 namespace Elves.Battle {
     public abstract class Script {
+        public abstract Task<BattleResult> Main();
+
         private BattleSequencer _sequencer;
-        public BattleSequencer Sequencer => _sequencer;
 
-        private readonly Random random = new Random();
-        public abstract Task<int> Main();
+        private readonly Random _random = Program.HasFlag(Constants.Flags.FixedBattleRandom) ? new Random(Constants.Battle.FixedSeed) : new Random();
+        private BattleSprite _actorSprite;
 
-        public BattleSprite BattleActor { get; set; } = null;
+        private UserData _playerData, _actorData;
+
+        private readonly Dictionary<int,int> _threadIndicies = new();
+
+        protected int LastThreadIndex { get; private set; }
+        protected int LastThreadSize { get; private set; }
+        protected bool LastThreadAtEnd { get; private set; }
+
+        public BattleResult WinCondition {
+            get {
+                bool playerAlive = Player.IsAlive;
+                bool actorAlive = Actor.IsAlive;
+
+                if(playerAlive == actorAlive) {
+                    return BattleResult.Stalemate;
+                }
+                if(!Player.IsAlive) {
+                    return BattleResult.PlayerLost;
+                }
+                return BattleResult.PlayerWon;
+            }
+        }
+
+        public bool EverybodyIsAlive => Player.IsAlive && Actor.IsAlive;
+
+        public bool EveryBodyIsDead => Player.IsDead && Actor.IsDead;
+
+        public UserData Player {
+            get {
+                var data = _playerData;
+                if(data == null) {
+                    Logger.WriteLine("Player UserData is null, creating a generic one.");
+                    data = new UserData() {
+                        Name = Constants.Battle.PlayerName
+                    };
+                    _playerData = data;
+                }
+                return data;
+            }
+        }
+
+        public UserData Actor {
+            get {
+                var data = _actorData;
+                if(data == null) {
+                    Logger.WriteLine("Actor UserData is null, creating a generic one.");
+                    data = new UserData() {
+                        Name = Constants.Battle.NoName
+                    };
+                    _actorData = data;
+                }
+                return data;
+            }
+        }
+
+        protected void CreatePlayer(string name = null) {
+            _playerData = new UserData() {
+                Name = string.IsNullOrEmpty(name) ? Constants.Battle.PlayerName : name
+            };
+        }
+
+        protected void CreateActor(BattleSprite sprite) {
+            _sequencer.Entities.Add(sprite);
+            SetActor(sprite);
+        }
+
+        private void SetActor(BattleSprite sprite) {
+            _sequencer.SetBackgroundColor(sprite.UserData.Color);
+            _actorData = sprite.UserData;
+            _actorSprite = sprite;
+        }
+
+        private static BattleSprite GetFallbackSprite() {
+            BattleSprite battleSprite = new(
+                UITextures.MissingTexture,160,
+                AnimationFactory.CreateStatic(0,0,96,160)
+            );
+            return battleSprite;
+        }
+
+        public BattleSprite ActorSprite {
+            get {
+                if(_actorSprite == null) {
+                    CreateActor(GetFallbackSprite());
+                }
+                return _actorSprite;
+            }
+            set => SetActor(value);
+        }
 
         protected async Task Tag(string tag) {
             _sequencer.ShowTag(tag);
@@ -21,9 +113,9 @@ namespace Elves.Battle {
         }
 
         protected async Task Speech(string speech) {
-            _sequencer.ShowSpeech(speech,BattleActor);
+            _sequencer.ShowSpeech(speech,ActorSprite);
             await _sequencer.ContinueButton();
-            _sequencer.HideSpeech(BattleActor);
+            _sequencer.HideSpeech(ActorSprite);
         }
 
         protected async Task Tag(params string[] tags) {
@@ -36,38 +128,27 @@ namespace Elves.Battle {
 
         protected async Task Speech(params string[] speeches) {
             foreach(var speech in speeches) {
-                _sequencer.ShowSpeech(speech,BattleActor);
+                _sequencer.ShowSpeech(speech,ActorSprite);
                 await _sequencer.ContinueButton();
             }
-            _sequencer.HideSpeech(BattleActor);
+            _sequencer.HideSpeech(ActorSprite);
         }
 
-        private readonly Dictionary<int,int> threadIndicies = new Dictionary<int,int>();
-
-        private int lastThreadIndex = 0;
-        private int lastThreadSize = 0;
-        private bool lastThreadAtEnd = false;
-
-        protected int LastThreadIndex => lastThreadIndex;
-        protected int LastThreadSize => lastThreadSize;
-        protected bool LastThreadAtEnd => lastThreadAtEnd;
-
         protected int GetThreadIndex(int threadID) {
-            int index;
-            threadIndicies.TryGetValue(threadID,out index);
+            _threadIndicies.TryGetValue(threadID,out int index);
             return index;
         }
 
         private void SetThreadIndex(int threadID,int index) {
-            threadIndicies[threadID] = index;
+            _threadIndicies[threadID] = index;
         }
 
         private string GetThreadValue(int threadID,ThreadMode threadMode,string[] values) {
             int index = GetThreadIndex(threadID);
 
-            lastThreadIndex = index;
-            lastThreadAtEnd = index >= values.Length - 1;
-            lastThreadSize = values.Length;
+            LastThreadIndex = index;
+            LastThreadAtEnd = index >= values.Length - 1;
+            LastThreadSize = values.Length;
 
             if(threadMode.HasFlag(ThreadMode.NoRepeat) && index >= values.Length) {
                 return null;
@@ -75,7 +156,7 @@ namespace Elves.Battle {
 
             string value = values[index];
             if(threadMode.HasFlag(ThreadMode.Random)) {
-                index = random.Next(0,values.Length);
+                index = _random.Next(0,values.Length);
             } else {
                 index += 1;
                 if(index >= values.Length) {
@@ -110,13 +191,17 @@ namespace Elves.Battle {
             if(threadValue == null) {
                 return;
             }
-            _sequencer.ShowSpeech(threadValue,BattleActor);
+            _sequencer.ShowSpeech(threadValue,ActorSprite);
             await _sequencer.ContinueButton();
-            _sequencer.HideSpeech(BattleActor);
+            _sequencer.HideSpeech(ActorSprite);
         }
 
         protected Task<int> GetButton(params string[] options) {
             return _sequencer.GetButton(false,options);
+        }
+
+        protected Task Continue() {
+            return _sequencer.ContinueButton();
         }
 
         internal void SetSequencer(BattleSequencer sequencer) {

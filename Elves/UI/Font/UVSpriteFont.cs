@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,11 +16,23 @@ namespace Elves.UI.Font {
 
         private readonly Dictionary<char,Glyph> glyphs;
 
-        private int characterQueueStartSize;
+        private readonly int characterQueueStartSize;
 
         public int LineHeight => lineHeight;
         public int LeterSpacing => letterSpacing;
         public int WordSpacing => wordSpacing;
+
+        private const char SPACE_CHARACTER = ' ';
+
+        public float LineSpace { get; set; } = Constants.DefaultLineSpacing;
+
+        public Color DefaultColor { get; set; } = Color.White;
+
+        private readonly Queue<Queue<char>> characterQueuePool = new();
+        private readonly Queue<Queue<char>> words = new();
+        private readonly Queue<char> wordBuffer = new();
+
+        private SpriteBatch spriteBatch = null;
 
         public UVSpriteFont(
             Texture2D texture,
@@ -39,11 +52,11 @@ namespace Elves.UI.Font {
             int characterQueueSize = wordQueueSize ?? CHARACTER_QUEUE_SIZE;
             int characterQueueCount = wordQueuePoolSize ?? CHARACTER_QUEUE_COUNT;
 
-            characterQueueStartSize = characterQueueSize;
-
             for(int i = 0;i<characterQueueCount;i++) {
                 characterQueuePool.Enqueue(new Queue<char>(characterQueueSize));
             }
+
+            characterQueueStartSize = characterQueueSize;
         }
 
         private Glyph GlyphOrDefault(char character) {
@@ -53,17 +66,27 @@ namespace Elves.UI.Font {
             return value;
         }
 
-        private SpriteBatch spriteBatch = null;
+        private void AssertSpriteBatch() {
+            if(spriteBatch == null) {
+                throw new InvalidOperationException("Cannot draw text before calling begin method!");
+            }
+        }
 
         public void Begin(SpriteBatch spriteBatch) {
             if(this.spriteBatch != null) {
-                this.spriteBatch.End();
+                throw new InvalidOperationException("Cannot begin sprite font after having already called begin!");
             }
             spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
             this.spriteBatch = spriteBatch;
         }
 
-        private readonly Queue<Queue<char>> characterQueuePool = new Queue<Queue<char>>();
+        public void End() {
+            if(spriteBatch == null) {
+                throw new InvalidOperationException("Cannot end sprite font before calling begin method!");
+            }
+            spriteBatch.End();
+            spriteBatch = null;
+        }
 
         private Queue<char> GetPooledCharacterQueue() {
             Queue<char> queue;
@@ -80,9 +103,6 @@ namespace Elves.UI.Font {
             characterQueuePool.Enqueue(characterQueue);
         }
 
-        private readonly Queue<Queue<char>> words = new Queue<Queue<char>>();
-        private readonly Queue<char> wordBuffer = new Queue<char>();
-
         private int MeasureWordWidth(Queue<char> word,int scale,int letterSpacing) {
             int width = 0;
             foreach(var character in word) {
@@ -94,20 +114,33 @@ namespace Elves.UI.Font {
         }
 
         private void TryFlushWordBuffer() {
-            if(wordBuffer.Count > 0) {
-                var characterQueue = GetPooledCharacterQueue();
-                foreach(char character in wordBuffer) {
-                    characterQueue.Enqueue(character);
-                }
-                words.Enqueue(characterQueue);
-                wordBuffer.Clear();
+            if(wordBuffer.Count <= 0) {
+                return;
             }
+            var characterQueue = GetPooledCharacterQueue();
+            foreach(char character in wordBuffer) {
+                characterQueue.Enqueue(character);
+            }
+            words.Enqueue(characterQueue);
+            wordBuffer.Clear();
         }
 
         private void FillWordsQueue(StringBuilder stringBuilder) {
             for(int i = 0;i<stringBuilder.Length;i++) {
                 char character = stringBuilder[i];
-                if(character == ' ') {
+                if(character == SPACE_CHARACTER) {
+                    TryFlushWordBuffer();
+                    continue;
+                }
+                wordBuffer.Enqueue(character);
+            }
+            TryFlushWordBuffer();
+        }
+
+        private void FillWordsQueue(string text) {
+            for(int i = 0;i<text.Length;i++) {
+                char character = text[i];
+                if(character == SPACE_CHARACTER) {
                     TryFlushWordBuffer();
                     continue;
                 }
@@ -129,54 +162,50 @@ namespace Elves.UI.Font {
                 return 0;
             }
             Rectangle glyphArea = glyph.Source;
-            Rectangle destination = new Rectangle(x,y+glyph.YOffset*scale,glyphArea.Width*scale,glyphArea.Height*scale);
+            Rectangle destination = new(x,y+glyph.YOffset*scale,glyphArea.Width*scale,glyphArea.Height*scale);
             spriteBatch.Draw(texture,destination,glyphArea,color);
             return destination.Width;
         }
 
-        public void Draw(StringBuilder stringBuilder,Point destination,int scale,Color? color = null,int? maxWidth = null,float lineSpace = 0.25f) {
-            if(spriteBatch == null) {
-                return;
-            }
+        private void DrawLineBreaking(Point destination,int scale,Color color,int maxWidth) {
             if(scale < 1) {
                 scale = 1;
             }
 
-            FillWordsQueue(stringBuilder);
-
             int x = destination.X, y = destination.Y;
 
-            int lineHeight = (int)((1f + lineSpace) * this.lineHeight * scale);
-
-            Color glyphColor = color ?? Color.White;
+            int lineHeight = (int)(LineSpace * this.lineHeight * scale);
 
             int wordSpacing = this.wordSpacing * scale;
             int letterSpacing = this.letterSpacing * scale;
 
+            int maxX = destination.X + maxWidth;
 
-            foreach(var word in words) {
-                if(maxWidth.HasValue && x + MeasureWordWidth(word,scale,letterSpacing) > destination.X + maxWidth.Value) {
-                    x = destination.X;
-                    y += lineHeight;
+            if(maxWidth <= 0) {
+                foreach(var word in words) {
+                    foreach(var character in word) {
+                        x += DrawGlyph(character,x,y,scale,color) + letterSpacing;
+                    }
+                    x = x - letterSpacing + wordSpacing;
                 }
-                foreach(var character in word) {
-                    x += DrawGlyph(character,x,y,scale,glyphColor) + letterSpacing;
+            } else {
+                foreach(var word in words) {
+                    if(x + MeasureWordWidth(word,scale,letterSpacing) > maxX) {
+                        x = destination.X;
+                        y += lineHeight;
+                    }
+                    foreach(var character in word) {
+                        x += DrawGlyph(character,x,y,scale,color) + letterSpacing;
+                    }
+                    x = x - letterSpacing + wordSpacing;
                 }
-                x = x - letterSpacing + wordSpacing;
             }
-
-            EmptyWordsQueue();
         }
 
-        public void DrawRight(StringBuilder stringBuilder,Point destination,int scale,Color? color = null) {
-            if(spriteBatch == null) {
-                return;
-            }
+        private void DrawRight(Point destination,int scale,Color color) {
             if(scale < 1) {
                 scale = 1;
             }
-
-            FillWordsQueue(stringBuilder);
 
             int wordSpacing = this.wordSpacing * scale;
             int letterSpacing = this.letterSpacing * scale;
@@ -191,27 +220,18 @@ namespace Elves.UI.Font {
             int x = destination.X - totalWidth;
             int y = destination.Y;
 
-            Color glyphColor = color ?? Color.White;
-
             foreach(var word in words) {
                 foreach(var character in word) {
-                    x += DrawGlyph(character,x,y,scale,glyphColor) + letterSpacing;
+                    x += DrawGlyph(character,x,y,scale,color) + letterSpacing;
                 }
                 x = x - letterSpacing + wordSpacing;
             }
-
-            EmptyWordsQueue();
         }
 
-        public void DrawCentered(StringBuilder stringBuilder,Point center,int scale,Color? color = null) {
-            if(spriteBatch == null) {
-                return;
-            }
+        private void DrawCentered(Point center,int scale,Color color) {
             if(scale < 1) {
                 scale = 1;
             }
-
-            FillWordsQueue(stringBuilder);
 
             int wordSpacing = this.wordSpacing * scale;
             int letterSpacing = this.letterSpacing * scale;
@@ -226,24 +246,54 @@ namespace Elves.UI.Font {
             int x = center.X - totalWidth / 2;
             int y = center.Y - lineHeight * scale / 2;
 
-            Color glyphColor = color ?? Color.White;
-
             foreach(var word in words) {
                 foreach(var character in word) {
-                    x += DrawGlyph(character,x,y,scale,glyphColor) + letterSpacing;
+                    x += DrawGlyph(character,x,y,scale,color) + letterSpacing;
                 }
                 x = x - letterSpacing + wordSpacing;
             }
+        }
 
+        public void Draw(StringBuilder stringBuilder,Point destination,int scale,Color? color = null,int maxWidth = 0) {
+            AssertSpriteBatch();
+            FillWordsQueue(stringBuilder);
+            DrawLineBreaking(destination,scale,color ?? DefaultColor,maxWidth);
             EmptyWordsQueue();
         }
-        
-        public void End() {
-            if(spriteBatch == null) {
-                return;
-            }
-            spriteBatch.End();
-            spriteBatch = null;
+
+        public void Draw(string text,Point destination,int scale,Color? color = null,int maxWidth = 0) {
+            AssertSpriteBatch();
+            FillWordsQueue(text);
+            DrawLineBreaking(destination,scale,color ?? DefaultColor,maxWidth);
+            EmptyWordsQueue();
+        }
+
+        public void DrawRight(StringBuilder stringBuilder,Point destination,int scale,Color? color = null) {
+            AssertSpriteBatch();
+            FillWordsQueue(stringBuilder);
+            DrawRight(destination,scale,color ?? DefaultColor);
+            EmptyWordsQueue();
+        }
+
+        public void DrawRight(string text,Point destination,int scale,Color? color = null) {
+            AssertSpriteBatch();
+            FillWordsQueue(text);
+            DrawRight(destination,scale,color ?? DefaultColor);
+            EmptyWordsQueue();
+        }
+
+        public void DrawCentered(StringBuilder stringBuilder,Point center,int scale,Color? color = null) {
+            AssertSpriteBatch();
+            FillWordsQueue(stringBuilder);
+            DrawCentered(center,scale,color ?? DefaultColor);
+            EmptyWordsQueue();
+        }
+
+        public void DrawCentered(string text,Point center,int scale,Color? color = null) {
+            AssertSpriteBatch();
+            FillWordsQueue(text);
+            DrawCentered(center,scale,color ?? DefaultColor);
+            EmptyWordsQueue();
         }
     }
 }

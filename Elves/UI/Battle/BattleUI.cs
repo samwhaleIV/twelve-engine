@@ -14,10 +14,6 @@ namespace Elves.UI.Battle {
         private readonly GameManager game;
         public BattleUI(GameManager game) {
             this.game = game;
-
-            playerHealthBar.Value = 1;
-            targetHealthBar.Value = 1;
-
             foreach(var button in actionButtons) {
                 interactableElements.Add(button);
                 button.OnClick += ActionButtonClicked;
@@ -53,8 +49,8 @@ namespace Elves.UI.Battle {
 
         private Button activeButton = null, pressedButton = null;
 
-        private readonly HealthBar playerHealthBar = new HealthBar() { Alignment = HealthBarAlignment.Left };
-        private readonly HealthBar targetHealthBar = new HealthBar() { Alignment = HealthBarAlignment.Right };
+        private readonly HealthBar playerHealthBar = new() { Alignment = HealthBarAlignment.Left };
+        private readonly HealthBar targetHealthBar = new() { Alignment = HealthBarAlignment.Right };
 
         public Action<int> OnActionButtonClick;
 
@@ -64,14 +60,14 @@ namespace Elves.UI.Battle {
 
         //todo...
         //private readonly TargetButton targetButton = new TargetButton();
-        private readonly Tagline tagline = new Tagline();
-        private readonly SpeechBox speechBox = new SpeechBox();
+        private readonly Tagline tagline = new();
+        private readonly SpeechBox speechBox = new();
 
         public SpeechBox SpeechBox => speechBox;
         public Tagline Tagline => tagline;
       
-        private readonly List<Button> interactableElements = new List<Button>();
-        private static readonly Point OffscreenMousePosition = new Point(-1);
+        private readonly List<Button> interactableElements = new();
+        private static readonly Point OffscreenMousePosition = new(-1);
         private Point lastMousePosition = OffscreenMousePosition;
 
         private Button GetButtonAtPosition(Point position) {
@@ -208,25 +204,29 @@ namespace Elves.UI.Battle {
             }
         }
 
-        private void RenderHealthBars(SpriteBatch spriteBatch,User playerData,User targetData) {
-            playerHealthBar.Value = (float)playerData.Health / playerData.MaxHealth;
-            targetHealthBar.Value = (float)targetData.Health / targetData.MaxHealth;
+        private void RenderHealthBars(SpriteBatch spriteBatch,UserData playerData,UserData targetData) {
+            if(playerData != null) {
+                playerHealthBar.Value = playerData.HealthFraction;
+                playerHealthBar.Draw(spriteBatch,playerData.Color);
 
-            playerHealthBar.Draw(spriteBatch,playerData.Color);
-            targetHealthBar.Draw(spriteBatch,targetData.Color);
+            }
+            if(targetData != null) {
+                targetHealthBar.Value = targetData.HealthFraction;
+                targetHealthBar.Draw(spriteBatch,targetData.Color);
+            }
         }
 
-        private void RenderUsernames(User playerData,User targetData) {
+        private void RenderUsernames(UserData playerData,UserData targetData) {
             int usernameScale = (int)(playerHealthBar.Area.Height * 0.5f / Fonts.RetroFont.LineHeight);
             Color usernameColor = Color.White;
-            if(playerData.Name != null) {
+            if(playerData != null && playerData.Name != null) {
                 Fonts.RetroFont.Draw(
                     playerData.Name,
                     new Point((int)playerHealthBar.Area.X,(int)(playerHealthBar.Area.Bottom + playerHealthBar.Area.Top)),
                     usernameScale,usernameColor
                 );
             }
-            if(targetData.Name != null) {
+            if(targetData != null && targetData.Name != null) {
                 Fonts.RetroFont.DrawRight(
                     targetData.Name,
                     new Point((int)targetHealthBar.Area.Right,(int)(targetHealthBar.Area.Bottom + targetHealthBar.Area.Top)),
@@ -251,7 +251,7 @@ namespace Elves.UI.Battle {
             Fonts.RetroFont.End();
         }
 
-        public void Render(SpriteBatch spriteBatch,User playerData,User targetData) {
+        public void Render(SpriteBatch spriteBatch,UserData playerData,UserData targetData) {
 
             Fonts.RetroFont.Begin(spriteBatch);
             RenderUsernames(playerData,targetData);

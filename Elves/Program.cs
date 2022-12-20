@@ -5,12 +5,17 @@ using Elves.UI;
 using System.Collections.Generic;
 using Elves.Battle.Battles;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
-            return new DebugBattle();
+            var battle = new BattleSequencer(new DebugBattle(),"Backgrounds/checkerboard");
+            battle.OnBattleFinished += battleResult => {
+                Console.WriteLine($"Battle result: {Enum.GetName(typeof(BattleResult),battleResult)}");
+            };
+            return battle;
         }
 
         private static HashSet<string> _flags;

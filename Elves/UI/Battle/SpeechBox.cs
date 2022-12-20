@@ -6,7 +6,7 @@ using System.Text;
 using TwelveEngine;
 
 namespace Elves.UI.Battle {
-    public sealed class SpeechBox:UIElement, IBattleUIAnimated {
+    public sealed class SpeechBox:UIElement {
 
         private readonly AnimationInterpolator interpolator = new AnimationInterpolator(Constants.AnimationTiming.SpeechBoxMovement);
 
@@ -14,9 +14,7 @@ namespace Elves.UI.Battle {
             Texture = UITextures.Panel;
         }
 
-        public bool IsAnimationCompleted() {
-            return interpolator.IsFinished;
-        }
+        public bool AnimationIsFinished => interpolator.IsFinished;
 
         public bool LeftSided { get; set; } = false;
 

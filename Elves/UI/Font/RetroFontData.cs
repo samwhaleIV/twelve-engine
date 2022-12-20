@@ -7,8 +7,15 @@ namespace Elves.UI.Font {
 
             void AddRow(int x,int y,int height,int yOffset,params (char Value, int Width)[] characters) {
                 foreach(var character in characters) {
-                    glyphDictionary.Add(character.Value,new Glyph(x,y,character.Width,height,yOffset));
+                    char lowercase = char.ToLowerInvariant(character.Value);
+
+                    Glyph glyph = new Glyph(x,y,character.Width,height,yOffset);
                     x += 2 + character.Width;
+
+                    if(lowercase != character.Value) {
+                        glyphDictionary.Add(lowercase,glyph);
+                    }
+                    glyphDictionary.Add(character.Value,glyph);
                 }
             }
 
@@ -24,6 +31,16 @@ namespace Elves.UI.Font {
             AddRow(2,26,10,0,
                 ('0', 6),('1', 4),('2', 6),('3', 6),('4', 7),('5', 6),('6', 6),
                 ('7', 6),('8', 6),('9', 6)
+            );
+
+            AddRow(2,38,10,0,
+                ('/',4),('\\', 4),('+', 6),('-', 6),('=', 6),('%', 8),
+                ('(',3),(')',3),('[', 3),(']', 3),('!',4),
+                ('?',6),('*',4),('<',4),('>',4)
+            );
+
+            AddRow(80,25,12,-1,
+                ('.', 2),(',', 2),('\'', 2),(':', 2),(';', 2),('\"', 5)
             );
 
             return glyphDictionary;

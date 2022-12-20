@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using TwelveEngine;
 
 namespace Elves.Battle.Sprite {
-    public sealed class PositionController:IBattleUIAnimated {
+    public sealed class PositionController {
 
         private const float SCREEN_EDGE_MARGIN = 0.015f;
 
@@ -59,8 +59,6 @@ namespace Elves.Battle.Sprite {
             );
         }
 
-        public bool IsAnimationCompleted() {
-            return interpolator.IsFinished;
-        }
+        public bool AnimationIsFinished => interpolator.IsFinished;
     }
 }

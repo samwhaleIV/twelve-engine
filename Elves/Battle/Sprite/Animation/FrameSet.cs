@@ -17,8 +17,7 @@ namespace Elves.Battle.Sprite.Animation {
 
         public Rectangle AreaOrDefault => FrameCount <= 0 ? Rectangle.Empty : Frames[0];
 
-        private 
-            FrameSet(int ID,Rectangle[] frames,TimeSpan frameLength,AnimationMode animationMode) {
+        private FrameSet(int ID,Rectangle[] frames,TimeSpan frameLength,AnimationMode animationMode) {
             this.ID = ID;
             Frames = frames;
             FrameLength = frameLength;
@@ -26,11 +25,13 @@ namespace Elves.Battle.Sprite.Animation {
             AnimationMode = animationMode;
         }
 
+        private static readonly TimeSpan StaticDuration = TimeSpan.FromSeconds(1);
+
         public static FrameSet CreateStatic(int ID,Rectangle frame) {
-            return new FrameSet(ID,new Rectangle[1] { frame },TimeSpan.Zero,AnimationMode.Static);
+            return new FrameSet(ID,new Rectangle[1] { frame },StaticDuration,AnimationMode.Static);
         }
         public static FrameSet CreateStatic(AnimationType animation,Rectangle frame) {
-            return new FrameSet((int)animation,new Rectangle[1] { frame },TimeSpan.Zero,AnimationMode.Static);
+            return new FrameSet((int)animation,new Rectangle[1] { frame },StaticDuration,AnimationMode.Static);
         }
         public static FrameSet CreateAnimated(int animationTypeID,AnimationMode animationMode,TimeSpan frameLength,params Rectangle[] frames) {
             return new FrameSet(animationTypeID,frames,frameLength,animationMode);

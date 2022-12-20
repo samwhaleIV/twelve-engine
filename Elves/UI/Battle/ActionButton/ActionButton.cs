@@ -6,16 +6,11 @@ using System.Text;
 using TwelveEngine;
 
 namespace Elves.UI.Battle {
-    public sealed class ActionButton:Button, IBattleUIAnimated {
-
-        private const float MOVEMENT_DURATION = 150;
+    public sealed class ActionButton:Button {
 
         public readonly AnimationInterpolator interpolator = new AnimationInterpolator(Constants.AnimationTiming.ActionButtonMovement);
 
-
-        public bool IsAnimationCompleted() {
-            return interpolator.IsFinished;
-        }
+        public bool AnimationIsFinished => interpolator.IsFinished;
 
         private static readonly Rectangle PressedTextureSource = new Rectangle(0,48,32,16);
         private static readonly Rectangle SelectedTextureSource = new Rectangle(0,32,32,16);

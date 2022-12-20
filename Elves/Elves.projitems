@@ -9,9 +9,9 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Battles\DebugBattle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\ElfBattleException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Script.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\ThreadPicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\BattleScript.cs" />
@@ -31,7 +31,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ActionButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\BattleUI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\IBattleUIAnimated.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ButtonRenderData.cs" />
@@ -48,7 +47,7 @@
     <Compile Include="..\Elves\Battle\BattleRendererState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Menu\MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\UserData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIColors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UITextures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />

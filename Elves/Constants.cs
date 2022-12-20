@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace Elves {
     public static class Constants {
-        public const int DefaultHealth = 100;
-        public const string NoName = "<No Name>";
-
         public const string SaveFolder = "ElvesGame";
         public const string SaveFile = "elves.save";
 
         public const float Debug3DMovementSpeed = 0.75f;
         public const float Debug3DLookSpeed = 10f;
+
+        public const float DefaultLineSpacing = 1.25f;
 
         public static class Flags {
             public const string Debug3D = "debug-3d";
@@ -17,6 +17,16 @@ namespace Elves {
             public const string HardwareFullscreen = "hw-fullscreen";
             public const string NoVsync = "no-vsync";
             public const string OSCursor = "os-cursor";
+            public const string FixedBattleRandom = "no-random-battle";
+        }
+
+        public static class Battle {
+            public const int FixedSeed = 27;
+            public const int DefaultHealth = 100;
+            public const string NoName = "<No Name>";
+            public const string PlayerName = "You";
+            public const string ContinueText = "Continue";
+            public static readonly Color DefaultUserColor = Color.White;
         }
 
         public static class AnimationTiming {
