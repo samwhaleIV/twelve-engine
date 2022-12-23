@@ -35,7 +35,7 @@ namespace Elves {
 
         private readonly Color[] backgroundColors = new Color[4] { Color.White, Color.White, Color.White, Color.White };
 
-        public void SetBackgroundColors(Color topLeft,Color topRight,Color bottomLeft,Color bottomRight) {
+        public void SetBackgroundColor(Color topLeft,Color topRight,Color bottomLeft,Color bottomRight) {
             backgroundColors[0] = topLeft;
             backgroundColors[1] = topRight;
             backgroundColors[2] = bottomLeft;
@@ -49,7 +49,7 @@ namespace Elves {
             backgroundColors[3] = color;
         }
 
-        public Color[] GetBackgroundColors() {
+        public Color[] GetBackgroundColor() {
             Color[] colors = new Color[backgroundColors.Length];
             backgroundColors.CopyTo(colors,0);
             return colors;

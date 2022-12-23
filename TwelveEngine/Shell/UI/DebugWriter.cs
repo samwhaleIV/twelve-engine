@@ -33,7 +33,7 @@ namespace TwelveEngine.Shell.UI {
 
         private void Begin(Corner corner,Vector2? offset = null,Color? color = null) {
             var padding = Padding;
-            float x = padding, y = padding;
+            float x = padding, y = (padding / 2) + 1;
 
             var viewport = game.Viewport;
             var lineHeight = Font.LineSpacing;

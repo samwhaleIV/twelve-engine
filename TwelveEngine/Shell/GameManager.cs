@@ -7,6 +7,7 @@ using TwelveEngine.Shell.Input;
 using TwelveEngine.Shell.Automation;
 using TwelveEngine.Shell.Config;
 using System.Collections.Generic;
+using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Shell {
     public sealed partial class GameManager:Game {
@@ -48,10 +49,10 @@ namespace TwelveEngine.Shell {
         }
 
 #if DEBUG
-        private readonly Stopwatch watch = new Stopwatch();
+        private readonly Stopwatch watch = new();
         private TimeSpan updateTime, renderTime;
 
-        private readonly FPSCounter fpsCounter = new FPSCounter();
+        private readonly FPSCounter fpsCounter = new();
 
         private void DrawGameTimeDebug(DebugWriter writer) {
             writer.ToBottomLeft();

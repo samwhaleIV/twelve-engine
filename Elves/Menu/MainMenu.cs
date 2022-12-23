@@ -8,10 +8,6 @@ using System.Collections.Generic;
 
 namespace Elves.Menu {
     public sealed class MainMenu:OrthoBackgroundState {
-
-        private const string MENU_SPRITE_ATLAS = "Menu/falling-elf";
-
-
         private const float PLAY_BUTTON_SCALE = 0.75f;
 
         private static readonly Color BACKGROUND_TOP_COLOR = Color.FromNonPremultiplied(0,225,89,255);
@@ -21,7 +17,7 @@ namespace Elves.Menu {
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
         public MainMenu():base(UITextures.Nothing,true) {
-            SetBackgroundColors(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
+            SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += MainMenu_OnLoad;
         }
 
@@ -35,7 +31,7 @@ namespace Elves.Menu {
         private readonly Random random = new();
 
         private void MainMenu_OnLoad() {
-            var menuTexture = Game.Content.Load<Texture2D>(MENU_SPRITE_ATLAS);
+            var menuTexture = UITextures.Menu;
             fallingElf = new Screenspace3DSprite(menuTexture) {
                 TextureSource = new Rectangle(0,0,41,29),
                 PixelSmoothing = false,

@@ -65,8 +65,6 @@ namespace TwelveEngine.Game3D {
             var angleMatrix = Matrix.CreateFromAxisAngle(left,pitch);
             Forward = Vector3.Transform(Forward,angleMatrix);
             Up = Vector3.Transform(Vector3.Up,angleMatrix);
-
-            InvalidateViewMatrix();
         }
 
         public void AddAngle(float yaw,float pitch) {

@@ -112,28 +112,11 @@ namespace TwelveEngine.Game3D.Entity {
                 VertexColorEnabled = true,
                 LightingEnabled = false
             };
-
-            Owner.OnProjectionMatrixChanged += Owner_OnProjectionMatrixChanged;
-            Owner.OnViewMatrixChanged += Owner_OnViewMatrixChanged;
-
-            effect.View = Owner.ViewMatrix;
-            effect.Projection = Owner.ProjectionMatrix;
-        }
-
-        private void Owner_OnViewMatrixChanged(Matrix viewMatrix) {
-            effect.View = viewMatrix;
-        }
-
-        private void Owner_OnProjectionMatrixChanged(Matrix projectionMatrix) {
-            effect.Projection = projectionMatrix;
         }
 
         private void TextureRectangle_OnUnload() {
             bufferSet?.Dispose();
             bufferSet = null;
-
-            Owner.OnProjectionMatrixChanged -= Owner_OnProjectionMatrixChanged;
-            Owner.OnViewMatrixChanged -= Owner_OnViewMatrixChanged;
 
             effect?.Dispose();
             effect = null;
@@ -151,6 +134,8 @@ namespace TwelveEngine.Game3D.Entity {
             UpdateVertices(TopLeft,BottomRight);
             bufferSet.VertexBuffer.SetData(vertices);
             bufferSet.Apply();
+            effect.View = Owner.ViewMatrix;
+            effect.Projection = Owner.ProjectionMatrix;
             var startingSamplerState = Owner.GraphicsDevice.SamplerStates[0];
             Owner.GraphicsDevice.SamplerStates[0] = PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap;
             effect.Alpha = Alpha;

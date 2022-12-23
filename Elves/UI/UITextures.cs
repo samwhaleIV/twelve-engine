@@ -9,6 +9,8 @@ namespace Elves.UI {
         public static Texture2D Panel { get; private set; }
         public static Texture2D Nothing { get; private set; }
 
+        public static Texture2D Menu { get; private set; }
+
         public static Texture2D MissingTexture { get; private set; }
 
         public static bool IsLoaded { get; private set; } = false;
@@ -23,6 +25,8 @@ namespace Elves.UI {
             DefaultFont = content.Load<Texture2D>("UI/twelven-font");
             Panel = content.Load<Texture2D>("UI/panel");
             Nothing  = content.Load<Texture2D>("UI/nothing");
+
+            Menu = content.Load<Texture2D>("Menu/falling-elf");
 
             MissingTexture = content.Load<Texture2D>("MissingTexture");
 

@@ -24,14 +24,6 @@ namespace TwelveEngine.Game3D.Entity.Types {
             OnRender += GridLinesEntity_OnRender;
         }
 
-        private void UpdateEffectViewMatrix(Matrix viewMatrix) {
-            effect.View = viewMatrix;
-        }
-
-        private void UpdateEffectProjectionMatrix(Matrix projectionMatrix) {
-            effect.Projection = projectionMatrix;
-        }
-
         private void GridLinesEntity_OnLoad() {
             bufferSet = Owner.CreateBufferSet(GetVertices(cellSize,gridSize));
 
@@ -40,19 +32,10 @@ namespace TwelveEngine.Game3D.Entity.Types {
                 LightingEnabled = false,
                 VertexColorEnabled = true
             };
-
-            UpdateEffectProjectionMatrix(Owner.ProjectionMatrix);
-            UpdateEffectViewMatrix(Owner.ViewMatrix);
-
-            Owner.OnProjectionMatrixChanged += UpdateEffectProjectionMatrix;
-            Owner.OnViewMatrixChanged += UpdateEffectViewMatrix;
         }
 
         
         private void GridLinesEntity_OnUnload() {
-            Owner.OnProjectionMatrixChanged -= UpdateEffectProjectionMatrix;
-            Owner.OnViewMatrixChanged -= UpdateEffectViewMatrix;
-
             effect?.Dispose();
             effect = null;
 
@@ -66,6 +49,8 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         private void GridLinesEntity_OnRender() {
             bufferSet.Apply();
+            effect.View = Owner.ViewMatrix;
+            effect.Projection = Owner.ProjectionMatrix;
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();
                 effect.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList,0,0,bufferSet.VertexCount / 2);
