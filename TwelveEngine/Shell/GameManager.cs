@@ -74,8 +74,8 @@ namespace TwelveEngine.Shell {
             (keyBindSet.Playback, automationAgent.TogglePlayback),
             (keyBindSet.Recording, automationAgent.ToggleRecording),
 
-            (keyBindSet.PauseGame, TogglePaused),
-            (keyBindSet.AdvanceFrame, QueueAdvanceFrame)
+            (keyBindSet.PauseGame, () => SetPaused(!gamePaused)),
+            (keyBindSet.AdvanceFrame, () => advanceFrameQueued = true)
         };
 
         private void AutomationAgent_PlaybackStopped() {
@@ -126,7 +126,7 @@ namespace TwelveEngine.Shell {
             set => SetPaused(value);
         }
 
-        private void SetPaused(bool paused) {
+        public void SetPaused(bool paused) {
             if(gamePaused == paused) {
                 return;
             }
@@ -138,7 +138,6 @@ namespace TwelveEngine.Shell {
             gamePaused = paused;
         }
 
-        private void TogglePaused() => SetPaused(!gamePaused);
 
         private static GamePadState GetGamepadState() {
             var state = GamePad.GetState(Constants.Config.GamePadIndex,GamePadDeadZone.Circular);
@@ -254,14 +253,15 @@ namespace TwelveEngine.Shell {
         }
 
         private bool advanceFrameQueued = false;
-        private void QueueAdvanceFrame() => advanceFrameQueued = true;
 
         private void AdvanceFrame(KeyboardState keyboardState,GameTime gameTime) {
+            int frameAdvance = 0;
             if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
 
                 shouldAdvanceFrame = false;
                 framesToSkip = Constants.ShiftFrameSkip;
                 vcrDisplay.AdvanceFramesMany(gameTime);
+                frameAdvance = Constants.ShiftFrameSkip;
 
             } else if(gamePaused && !shouldAdvanceFrame) {
 
@@ -269,8 +269,12 @@ namespace TwelveEngine.Shell {
                 proxyGameTime.AddSimTime(simTime);
                 shouldAdvanceFrame = true;
                 vcrDisplay.AdvanceFrame(gameTime);
+                frameAdvance = 1;
+            }
 
-                Console.WriteLine($"[Automation Agent] Advanced to frame {automationAgent.FrameNumber + 1}");
+            if(frameAdvance > 0 && automationAgent.PlaybackActive) {
+                int maxFrame = automationAgent.PlaybackFrameCount.HasValue ? automationAgent.PlaybackFrameCount.Value - 1 : int.MaxValue;
+                Console.WriteLine($"[Automation Agent] Advanced to frame {MathF.Min(automationAgent.FrameNumber + frameAdvance,maxFrame)}");
             }
         }
 
@@ -292,13 +296,12 @@ namespace TwelveEngine.Shell {
             _gameState.Update();
 
             automationAgent.EndUpdate();
-            if(framesToSkip >= 1) {
-                FastForward();
-            }
         }
 
         private void FastForward() {
-            if(fastForwarding) return;
+            if(fastForwarding) {
+                return;
+            }
             fastForwarding = true;
             int count = framesToSkip;
             framesToSkip = 0;
