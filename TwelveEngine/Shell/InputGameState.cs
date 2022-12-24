@@ -29,25 +29,15 @@ namespace TwelveEngine.Shell {
             return timeoutManager.Add(action,delay,Game.Time.TotalGameTime);
         }
 
-        protected void UpdateImpulseInput() {
-            inputHandler.Update(Game.KeyboardState,Game.GamePadState);
-        }
-
-        protected void UpdateMouseInput() {
-            mouseHandler.Update(Game.MouseState);
-        }
-
-        protected void UpdateTimeoutInput() {
-            timeoutManager.Update(Now);
-        }
+        protected bool InputEnabled => Game.IsActive && !IsTransitioning;
 
         protected void UpdateInputs() {
-            if(!Game.IsActive) {
+            mouseHandler.Update(Game.MouseState,InputEnabled);
+            if(!InputEnabled) {
                 return;
             }
-            UpdateMouseInput();
-            UpdateImpulseInput();
-            UpdateTimeoutInput();
+            inputHandler.Update(Game.KeyboardState,Game.GamePadState);
+            timeoutManager.Update(Now);
         }
     }
 }

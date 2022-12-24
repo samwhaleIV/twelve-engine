@@ -18,6 +18,7 @@ namespace Elves {
             public const string NoVsync = "no-vsync";
             public const string OSCursor = "os-cursor";
             public const string FixedBattleRandom = "no-random-battle";
+            public const string DrawDebug = "draw-debug";
         }
 
         public static class Battle {

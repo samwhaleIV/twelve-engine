@@ -6,6 +6,8 @@ namespace TwelveEngine {
         public const double MaxFrameDelta = 1000 / 15d;
         public const double SimFrameTime = 1000 / 60d;
 
+        public const int EmptyTextureSize = 64;
+
         public const int ObjectLayerIndex = 1;
         public const int CollisionLayerIndex = 2;
         public const int ShiftFrameSkip = 30;

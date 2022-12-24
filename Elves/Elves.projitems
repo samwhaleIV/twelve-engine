@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Menu\FloatingItemData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OrthoBackgroundState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SnowTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StateTransitionTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\ActionButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\BattleUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Button.cs" />

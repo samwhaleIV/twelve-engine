@@ -90,8 +90,9 @@ namespace TwelveEngine.Game3D.Entity.Types {
         public SamplerState SamplerState { get; set; } = null;
 
         private void ParticleSystem_OnRender() {
+            Matrix scaleMatrix = Matrix.CreateScale(Scale);
             Matrix translationMatrix = Matrix.CreateWorld(Position + new Vector3(-0.5f,-0.5f,0),Vector3.Forward,Vector3.Up);
-            worldViewProjectionMatrixParameter.SetValue(translationMatrix * Owner.ViewMatrix * Owner.ProjectionMatrix);
+            worldViewProjectionMatrixParameter.SetValue(scaleMatrix * translationMatrix * Owner.ViewMatrix * Owner.ProjectionMatrix);
             textureSamplerParameter.SetValue(Texture);
             UpdatePositions();
             UpdateVertices();

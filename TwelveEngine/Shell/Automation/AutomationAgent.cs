@@ -48,7 +48,7 @@ namespace TwelveEngine.Shell.Automation {
             recording = false;
 
             await IO.WritePlaybackFrames(path,frames);
-            Debug.WriteLine($"Recording saved to '{path}'.");
+            Console.WriteLine($"[Automation Agent] Recording saved to '{path}'.");
         }
 
         internal async Task StartPlayback() {
@@ -69,7 +69,7 @@ namespace TwelveEngine.Shell.Automation {
             playbackActive = true;
             playbackLoading = false;
             PlaybackStarted?.Invoke();
-            Debug.WriteLine($"Playing input file '{path}'");
+            Console.WriteLine($"[Automation Agent] Playing input file '{path}'");
         }
 
         internal event Action PlaybackStopped, PlaybackStarted;
@@ -148,7 +148,7 @@ namespace TwelveEngine.Shell.Automation {
             if(recording) outputBuffer.Enqueue(recordingFrame);
             if(playbackActive && frameNumber >= playbackFrames.Length) {
                 StopPlayback();
-                Debug.WriteLine("Playback stopped automatically.");
+                Console.WriteLine("[Automation Agent] Playback stopped automatically.");
             }
         }
 

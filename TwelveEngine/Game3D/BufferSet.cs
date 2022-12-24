@@ -38,11 +38,11 @@ namespace TwelveEngine.Game3D {
 
         internal static BufferSet Create<TVertex>(GraphicsDevice graphicsDevice,TVertex[] vertices) where TVertex : struct {
             var vertexBuffer = new VertexBuffer(graphicsDevice,typeof(TVertex),vertices.Length,BufferUsage.WriteOnly);
-            var indexBuffer = new IndexBuffer(graphicsDevice,IndexElementSize.SixteenBits,vertices.Length,BufferUsage.WriteOnly);
+            var indexBuffer = new IndexBuffer(graphicsDevice,IndexElementSize.ThirtyTwoBits,vertices.Length,BufferUsage.WriteOnly);
 
-            var indices = new short[indexBuffer.IndexCount];
+            var indices = new int[indexBuffer.IndexCount];
             for(int i = 0;i < indices.Length;i++) {
-                indices[i] = (short)i;
+                indices[i] = i;
             }
             vertexBuffer.SetData(vertices);
             indexBuffer.SetData(indices);
@@ -52,11 +52,11 @@ namespace TwelveEngine.Game3D {
 
         internal static BufferSet Create<TVertex>(GraphicsDevice graphicsDevice,int vertexCount) where TVertex : struct {
             var vertexBuffer = new VertexBuffer(graphicsDevice,typeof(TVertex),vertexCount,BufferUsage.WriteOnly);
-            var indexBuffer = new IndexBuffer(graphicsDevice,IndexElementSize.SixteenBits,vertexCount,BufferUsage.WriteOnly);
+            var indexBuffer = new IndexBuffer(graphicsDevice,IndexElementSize.ThirtyTwoBits,vertexCount,BufferUsage.WriteOnly);
 
-            var indices = new short[indexBuffer.IndexCount];
+            var indices = new int[indexBuffer.IndexCount];
             for(int i = 0;i < indices.Length;i++) {
-                indices[i] = (short)i;
+                indices[i] = i;
             }
             indexBuffer.SetData(indices);
 

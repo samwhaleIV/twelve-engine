@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using TwelveEngine;
 using TwelveEngine.Game3D.Entity.Types;
 
@@ -11,8 +9,8 @@ namespace Elves {
 
     public sealed class FallingSnowParticleSystem:ParticleSystem {
 
-        private const int SNOW_COUNT = 128;
-        private const float TIME_BASE = 20f;
+        private const int SNOW_COUNT = 30000;
+        private const float TIME_BASE = 10f;
 
         private const float SWAY_SCALE = 1 / 5f;
         private const float PARTICLE_SIZE = 0.025f;
@@ -23,14 +21,13 @@ namespace Elves {
         private const float MIN_Y = 1 / 5f;
         private const float Y_RANGE = 2 / 3f;
 
-        private const float DEPTH_RANGE = 0.5f;
+        private const float DEPTH_RANGE = 1f;
 
         private readonly Random random = new Random();
 
         private readonly Vector2[] p_velocity = new Vector2[SNOW_COUNT];
         private readonly float[] p_centerX = new float[SNOW_COUNT];
         private readonly TimeSpan[] p_startTime = new TimeSpan[SNOW_COUNT];
-        private readonly bool[] p_polarity = new bool[SNOW_COUNT];
 
         public FallingSnowParticleSystem() : base(SNOW_COUNT) {
 
@@ -56,7 +53,7 @@ namespace Elves {
             Vector2 vector;
             float x = MIN_X + random.NextSingle() * X_RANGE;
             vector.X = (RandomBool() ? x : -x) * MathHelper.TwoPi;
-            vector.Y = (MIN_Y + random.NextSingle() * Y_RANGE) * TIME_BASE;
+            vector.Y = 1f / ((MIN_Y + random.NextSingle() * Y_RANGE) * TIME_BASE);
             return vector;
         }
 
@@ -64,11 +61,6 @@ namespace Elves {
             p_startTime[index] = Now;
             p_velocity[index] = GetVelocity();
             p_centerX[index] = random.NextSingle();
-            p_polarity[index] = RandomBool();
-        }
-
-        private float SinOrCos(float value,bool polarity) {
-            return polarity ? MathF.Sin(value) : MathF.Cos(value);
         }
 
         protected override void UpdatePositions() {
@@ -81,9 +73,9 @@ namespace Elves {
                 position = p_position[i];
                 velocity = p_velocity[i];
 
-                t = (float)(Time.TotalGameTime-p_startTime[i]).TotalSeconds / velocity.Y;
+                t = (float)(Time.TotalGameTime-p_startTime[i]).TotalSeconds * velocity.Y;
 
-                position.X = p_centerX[i] + SinOrCos(Math.Abs(velocity.X) * t,p_polarity[i]) * Math.Sign(velocity.X) * SWAY_SCALE;
+                position.X = p_centerX[i] + MathF.Sin(MathF.Abs(velocity.X) * t) * MathF.Sign(velocity.X) * SWAY_SCALE;
 
                 position.Y = MathHelper.Lerp(1,0,t);
                 p_position[i] = position;
