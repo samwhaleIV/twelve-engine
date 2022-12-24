@@ -268,6 +268,7 @@ namespace TwelveEngine.Shell {
                 TimeSpan simTime = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
                 proxyGameTime.AddSimTime(simTime);
                 shouldAdvanceFrame = true;
+                framesToSkip = 0;
                 vcrDisplay.AdvanceFrame(gameTime);
                 frameAdvance = 1;
             }
@@ -336,6 +337,9 @@ namespace TwelveEngine.Shell {
                 if(_pendingGameState != null) {
                     _gameState = _pendingGameState;
                     _pendingGameState = null;
+                    if(gamePaused) {
+                        shouldAdvanceFrame = true;
+                    }
                 } else {
                     watch.Stop();
                     updateTime = watch.Elapsed;

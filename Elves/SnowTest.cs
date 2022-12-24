@@ -89,9 +89,12 @@ namespace Elves {
 
     public sealed class SnowTest:OrthoBackgroundState {
 
-        public SnowTest():base(UITextures.Nothing,false) {
+        public SnowTest(bool fadeIn = false):base(UITextures.Nothing,false) {
             OnLoad += SnowTest_OnLoad;
             SetBackgroundColor(Color.Black);
+            if(fadeIn) {
+                TransitionIn(TimeSpan.FromSeconds(0.125f));
+            }
         }
 
         private void SnowTest_OnLoad() {

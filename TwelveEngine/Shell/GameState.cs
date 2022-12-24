@@ -57,10 +57,7 @@ namespace TwelveEngine.Shell {
             hasStartTime = true;
         }
 
-        private bool hasUpdated = false;
-
         internal void Update() {
-            hasUpdated = true;
             if(!hasStartTime) {
                 UpdateStartTime();
             }
@@ -81,11 +78,6 @@ namespace TwelveEngine.Shell {
         }
 
         internal void Render() {
-            if(!hasUpdated) {
-                /* This is an edge case with the automation controls when we swap a game state.
-                 * This ensures update has been called at least once for the render function to work properly */
-                Update();
-            }
             IsRendering = true;
             OnRender?.Invoke();
             if(TransitionState == TransitionState.Out) {
