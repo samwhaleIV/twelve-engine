@@ -54,20 +54,31 @@ namespace TwelveEngine.Shell {
         }
 
         private readonly Stopwatch watch = new();
-        private TimeSpan updateTime, renderTime;
+        private TimeSpan updateDuration, renderDuration;
 
         private readonly FPSCounter fpsCounter = new();
 
-        private void DrawGameTimeDebug(DebugWriter writer) {
+        private readonly FrameTimeSmoother updateDurationSmoother = new();
+        private readonly FrameTimeSmoother renderDurationSmoother = new();
+
+        private void DrawGameTimeDebug(GameTime trueGameTime,DebugWriter writer) {
+
+            TimeSpan trueNow = trueGameTime.TotalGameTime;
+
+            writer.ToBottomRight();
+
+            renderDurationSmoother.Update(trueNow,renderDuration);
+            writer.WriteTimeMS(renderDurationSmoother.Average,"R");
+
+            updateDurationSmoother.Update(trueNow,updateDuration);
+            writer.WriteTimeMS(updateDurationSmoother.Average,"U");
+
             writer.ToBottomLeft();
 
-            writer.WriteTimeMS(renderTime,"Render");
-            writer.WriteTimeMS(updateTime,"Update");
+            fpsCounter.Update(trueNow);
+            writer.WriteFPS(fpsCounter.FPS);
 
-            fpsCounter.Update(proxyGameTime.TotalGameTime);
-            writer.WriteFPS(fpsCounter.Value);
-
-            writer.Write(proxyGameTime.TotalGameTime);
+            writer.Write(proxyGameTime.TotalGameTime,"PT");
         }
 
         private (Keys key, Action action)[] GetDebugControls(KeyBindSet keyBindSet) => new (Keys, Action)[]{
@@ -192,7 +203,7 @@ namespace TwelveEngine.Shell {
             _pendingGameState = stateGenerator.Invoke();
             LoadState(_pendingGameState);
             string stateName = _pendingGameState.Name;
-            Logger.WriteLine($"[{proxyGameTime.TotalGameTime}] Loaded game state - {(string.IsNullOrWhiteSpace(stateName) ? "<No Name>" : stateName)}");
+            Logger.WriteLine($"[{proxyGameTime.TotalGameTime}] Loaded game state - {(string.IsNullOrEmpty(stateName) ? "<No Name>" : stateName)}");
         }
         
         public void SetState(GameState state) => SetState(() => state);
@@ -330,20 +341,30 @@ namespace TwelveEngine.Shell {
 
         private bool HasGameState => _gameState != null;
 
+        private void HotSwapPendingState() {
+            _gameState = _pendingGameState;
+            _pendingGameState = null;
+            if(!gamePaused) {
+                return;
+            }
+            shouldAdvanceFrame = true;
+        }
+
+        private TimeSpan ReadWatchAndReset() {
+            watch.Stop();
+            TimeSpan elapsed = watch.Elapsed;
+            watch.Reset();
+            return elapsed;
+        }
+
         protected override void Update(GameTime gameTime) {
             updating = true;
             watch.Start();
             if(!HasGameState) {
                 if(_pendingGameState != null) {
-                    _gameState = _pendingGameState;
-                    _pendingGameState = null;
-                    if(gamePaused) {
-                        shouldAdvanceFrame = true;
-                    }
+                    HotSwapPendingState();
                 } else {
-                    watch.Stop();
-                    updateTime = watch.Elapsed;
-                    watch.Reset();
+                    updateDuration = ReadWatchAndReset();
                     updating = false;
                     return;
                 }
@@ -364,9 +385,7 @@ namespace TwelveEngine.Shell {
             } else if(framesToSkip > 0) {
                 FastForward();
             }
-            watch.Stop();
-            updateTime = watch.Elapsed;
-            watch.Reset();
+            updateDuration = ReadWatchAndReset();
             updating = false;
         }
 
@@ -379,9 +398,7 @@ namespace TwelveEngine.Shell {
             pendingStateGenerator = null;
             SetState(generator);
             GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
-            watch.Stop();
-            Logger.WriteLine($"GC and state swap, elapsed time: {watch.Elapsed}");
-            watch.Reset();
+            Logger.WriteLine($"GC and state swap, elapsed time: {ReadWatchAndReset()}");
         }
 
         private void DrawCustomCursor() {
@@ -417,7 +434,7 @@ namespace TwelveEngine.Shell {
             SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp);
 
             if(drawDebug) {
-                DrawGameTimeDebug(debugWriter);
+                DrawGameTimeDebug(trueGameTime,debugWriter);
                 gameState?.WriteDebug(debugWriter);
             }
 
@@ -426,9 +443,7 @@ namespace TwelveEngine.Shell {
                 DrawCustomCursor();
             }
 
-            watch.Stop();
-            updateTime = watch.Elapsed;
-            watch.Reset();
+            renderDuration = ReadWatchAndReset();
 
             rendering = false;
             TryApplyPendingStateGenerator();

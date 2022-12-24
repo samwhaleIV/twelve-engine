@@ -11,7 +11,6 @@ namespace Elves {
     public static class Program {
 #pragma warning disable CS0162 // Unreachable code detected
         public static GameState GetStartState() {
-            return new StateTransitionTest();
             return new SnowTest();
 
             var battle = new BattleSequencer(new DebugBattle(),"Backgrounds/checkerboard");

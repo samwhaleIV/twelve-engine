@@ -16,6 +16,8 @@ namespace TwelveEngine.Shell {
         public event Action<DebugWriter> OnWriteDebug;
         public event Action OnUpdate, OnRender, OnPreRender;
 
+        public TransitionRenderer TransitionRenderer = TransitionRenderer.Default;
+
         public bool IsLoaded { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
 
@@ -81,9 +83,9 @@ namespace TwelveEngine.Shell {
             IsRendering = true;
             OnRender?.Invoke();
             if(TransitionState == TransitionState.Out) {
-                RenderTransitionOut(TransitionT);
+                TransitionRenderer.DrawOut(Game,TransitionT);
             } else if(TransitionState == TransitionState.In) {
-                RenderTransitionIn(TransitionT);
+                TransitionRenderer.DrawIn(Game,TransitionT);
             }
             IsRendering = false;
         }
@@ -138,19 +140,5 @@ namespace TwelveEngine.Shell {
             graphicsDevice.BlendFactor = Color.White;
         }
 
-        protected static void BasicTransition(Texture2D texture,Rectangle bounds,SpriteBatch spriteBatch,float t) {
-            /* Linear fade in/out to black */
-            spriteBatch.Begin(SpriteSortMode.Immediate,BlendState.AlphaBlend,SamplerState.PointClamp);
-            spriteBatch.Draw(texture,bounds,Color.FromNonPremultiplied(new Vector4(0,0,0,t)));
-            spriteBatch.End();
-        }
-
-        protected virtual void RenderTransitionIn(float t) {
-            BasicTransition(Game.EmptyTexture,Game.Viewport.Bounds,Game.SpriteBatch,1-t);
-        }
-
-        protected virtual void RenderTransitionOut(float t) {
-            BasicTransition(Game.EmptyTexture,Game.Viewport.Bounds,Game.SpriteBatch,t);
-        }
     }
 }

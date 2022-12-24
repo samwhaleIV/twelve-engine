@@ -17,10 +17,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveDataManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\FrameTimeSmoother.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\FPSCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TypeParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnimationInterpolator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionState.cs" />
     <Compile Include="..\TwelveEngine\Shell\CursorState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
