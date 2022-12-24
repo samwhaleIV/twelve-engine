@@ -85,21 +85,15 @@ namespace TwelveEngine.Game3D.Entity {
             Vector2 uvBottomRight = UVBottomRight;
 
             if(MirrorX) {
-                float value = uvTopLeft.X;
-                uvTopLeft.X = uvBottomRight.X;
-                uvBottomRight.X = value;
+                (uvBottomRight.X, uvTopLeft.X) = (uvTopLeft.X, uvBottomRight.X);
             }
 
             if(MirrorY) {
-                float value = uvTopLeft.Y;
-                uvTopLeft.Y = uvBottomRight.Y;
-                uvBottomRight.Y = value;
+                (uvBottomRight.Y, uvTopLeft.Y) = (uvTopLeft.Y, uvBottomRight.Y);
             }
 
             if(MirrorZ) {
-                float value = start.X;
-                start.X = end.X;
-                end.X = value;
+                (end.X, start.X) = (start.X, end.X);
             }
 
             vertices[0] = new VertexPositionColorTexture(start,TopLeftColor,uvTopLeft+UVOffset);
@@ -118,28 +112,11 @@ namespace TwelveEngine.Game3D.Entity {
                 VertexColorEnabled = true,
                 LightingEnabled = false
             };
-
-            Owner.OnProjectionMatrixChanged += Owner_OnProjectionMatrixChanged;
-            Owner.OnViewMatrixChanged += Owner_OnViewMatrixChanged;
-
-            effect.View = Owner.ViewMatrix;
-            effect.Projection = Owner.ProjectionMatrix;
-        }
-
-        private void Owner_OnViewMatrixChanged(Matrix viewMatrix) {
-            effect.View = viewMatrix;
-        }
-
-        private void Owner_OnProjectionMatrixChanged(Matrix projectionMatrix) {
-            effect.Projection = projectionMatrix;
         }
 
         private void TextureRectangle_OnUnload() {
             bufferSet?.Dispose();
             bufferSet = null;
-
-            Owner.OnProjectionMatrixChanged -= Owner_OnProjectionMatrixChanged;
-            Owner.OnViewMatrixChanged -= Owner_OnViewMatrixChanged;
 
             effect?.Dispose();
             effect = null;
@@ -157,6 +134,8 @@ namespace TwelveEngine.Game3D.Entity {
             UpdateVertices(TopLeft,BottomRight);
             bufferSet.VertexBuffer.SetData(vertices);
             bufferSet.Apply();
+            effect.View = Owner.ViewMatrix;
+            effect.Projection = Owner.ProjectionMatrix;
             var startingSamplerState = Owner.GraphicsDevice.SamplerStates[0];
             Owner.GraphicsDevice.SamplerStates[0] = PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap;
             effect.Alpha = Alpha;

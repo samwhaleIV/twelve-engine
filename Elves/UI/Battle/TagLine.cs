@@ -10,19 +10,17 @@ namespace Elves.UI.Battle {
 
         private const int DEFAULT_BUFFER_SIZE = 128;
 
-        private readonly AnimationInterpolator textPositionInterpolator = new AnimationInterpolator(Constants.AnimationTiming.TaglineTextMovement);
-        private readonly AnimationInterpolator elementDisplayInterpolator = new AnimationInterpolator(Constants.AnimationTiming.TaglineMovement);
+        private readonly AnimationInterpolator textPositionInterpolator = new(Constants.AnimationTiming.TaglineTextMovement);
+        private readonly AnimationInterpolator elementDisplayInterpolator = new(Constants.AnimationTiming.TaglineMovement);
 
-        private StringBuilder _oldText = new StringBuilder(DEFAULT_BUFFER_SIZE);
-        private StringBuilder _currentText = new StringBuilder(DEFAULT_BUFFER_SIZE);
+        private StringBuilder _oldText = new(DEFAULT_BUFFER_SIZE);
+        private StringBuilder _currentText = new(DEFAULT_BUFFER_SIZE);
 
         public StringBuilder OldText => _oldText;
         public StringBuilder CurrentText => _currentText;
 
         private void SwapTexts() {
-            StringBuilder sb = _oldText;
-            _oldText = _currentText;
-            _currentText = sb;
+            (_currentText, _oldText) = (_oldText, _currentText);
         }
 
         public void Show(TimeSpan now) {

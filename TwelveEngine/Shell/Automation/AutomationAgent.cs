@@ -31,14 +31,14 @@ namespace TwelveEngine.Shell.Automation {
 
         internal void StartRecording() {
             if(recording) {
-                throw new Exception("Cannot start recording, recording is already happening!");
+                throw new InvalidOperationException("Cannot start recording, recording is already happening!");
             }
             outputBuffer = new Queue<InputFrame>();
             recording = true;
         }
         internal async Task StopRecording() {
             if(!recording) {
-                throw new Exception("Cannot stop recording, we never started!");
+                throw new InvalidOperationException("Cannot stop recording, we never started!");
             }
             var path = IO.PrepareOutputPath();
 
@@ -48,7 +48,7 @@ namespace TwelveEngine.Shell.Automation {
             recording = false;
 
             await IO.WritePlaybackFrames(path,frames);
-            Debug.WriteLine($"Recording saved to '{path}'.");
+            Console.WriteLine($"[Automation Agent] Recording saved to '{path}'.");
         }
 
         internal async Task StartPlayback() {
@@ -56,7 +56,7 @@ namespace TwelveEngine.Shell.Automation {
                 return;
             }
             if(playbackActive) {
-                throw new Exception("Cannot start playback, playback is already active!");
+                throw new InvalidOperationException("Cannot start playback, playback is already active!");
             }
             var path = IO.GetPlaybackFile();
             if(string.IsNullOrWhiteSpace(path)) {
@@ -69,14 +69,14 @@ namespace TwelveEngine.Shell.Automation {
             playbackActive = true;
             playbackLoading = false;
             PlaybackStarted?.Invoke();
-            Debug.WriteLine($"Playing input file '{path}'");
+            Console.WriteLine($"[Automation Agent] Playing input file '{path}'");
         }
 
         internal event Action PlaybackStopped, PlaybackStarted;
 
         internal void StopPlayback() {
             if(!playbackActive) {
-                throw new Exception("Cannot stop playback, playback is not active!");
+                throw new InvalidOperationException("Cannot stop playback, playback is not active!");
             }
             playbackFrames = null;
             playbackActive = false;
@@ -148,7 +148,7 @@ namespace TwelveEngine.Shell.Automation {
             if(recording) outputBuffer.Enqueue(recordingFrame);
             if(playbackActive && frameNumber >= playbackFrames.Length) {
                 StopPlayback();
-                Debug.WriteLine("Playback stopped automatically.");
+                Console.WriteLine("[Automation Agent] Playback stopped automatically.");
             }
         }
 

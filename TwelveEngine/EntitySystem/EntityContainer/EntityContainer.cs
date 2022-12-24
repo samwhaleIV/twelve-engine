@@ -8,8 +8,8 @@ namespace TwelveEngine.EntitySystem.EntityContainer {
             containerWriter = new ContainerWriter<TEntity,TOwner>(this);
         }
 
-        private readonly Dictionary<int,TEntity> entityDictionary = new Dictionary<int,TEntity>();
-        private readonly Dictionary<string,TEntity> namedEntities = new Dictionary<string,TEntity>();
+        private readonly Dictionary<int,TEntity> entityDictionary = new();
+        private readonly Dictionary<string,TEntity> namedEntities = new();
 
         internal Dictionary<int,TEntity> IDs => entityDictionary;
         internal Dictionary<string,TEntity> Names => namedEntities;

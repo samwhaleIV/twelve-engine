@@ -1,17 +1,24 @@
 ﻿using Microsoft.Xna.Framework;
 using Elves.Battle.Sprite.Animation;
+using System;
 
 namespace Elves.Battle.Sprite.Elves {
     public sealed class HarmlessElf:BattleSprite {
-
-        private const int BASE_HEIGHT = 47;
-
-        public HarmlessElf(int baseHeight = BASE_HEIGHT) : base("Elves/harmless-elf",new FrameSet[] {
+        public HarmlessElf() : base("Elves/harmless-elf",47,
             AnimationFactory.CreateStatic(0,0,17,47),
-            AnimationFactory.CreateIdleBlink(0,0,17,47,17,0,17,47)
-        },baseHeight) {
-            Color = Color.Red;
-            Name = "Harmless Elf";
+            AnimationFactory.CreateIdleBlink(0,0,17,47,17,0,17,47),
+
+            AnimationFactory.CreateSlideshowAndBack(
+                AnimationType.Hurt,
+                AnimationMode.Once,
+                new Rectangle(0,47,17,47),3,
+                TimeSpan.FromMilliseconds(50)
+            ),
+
+            AnimationFactory.CreateDead(34,0,17,47)
+        ) {
+            UserData.Color = Color.Red;
+            UserData.Name = "Harmless Elf";
         }
     }
 }

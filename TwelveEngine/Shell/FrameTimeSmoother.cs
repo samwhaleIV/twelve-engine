@@ -1,31 +1,34 @@
 ﻿using System;
 
 namespace TwelveEngine.Shell {
-    public sealed class FPSCounter {
+    public sealed class FrameTimeSmoother {
 
         public static TimeSpan DefaultFrequency => TimeSpan.FromMilliseconds(250);
 
         private readonly TimeSpan frequency;
 
-        public FPSCounter(TimeSpan? frequency = null) {
+        public FrameTimeSmoother(TimeSpan? frequency = null) {
             this.frequency = frequency ?? DefaultFrequency;
         }
 
         private int frameCount;
         private TimeSpan startTime;
 
-        public void Update(TimeSpan currentTime) {
+        private TimeSpan accumulator;
+
+        public void Update(TimeSpan currentTime,TimeSpan elapsedTime) {
             frameCount += 1;
+            accumulator += elapsedTime;
             double t = (currentTime - startTime) / frequency;
             if(t < 1) {
                 return;
             }
-            TimeSpan duration = t * frequency;
-            FPS = frameCount / duration.TotalSeconds;
+            Average = accumulator / frameCount;
+            accumulator = TimeSpan.Zero;
             frameCount = 0;
             startTime = currentTime;
         }
 
-        public double FPS { get; private set; }
+        public TimeSpan Average { get; private set; } = TimeSpan.Zero;
     }
 }

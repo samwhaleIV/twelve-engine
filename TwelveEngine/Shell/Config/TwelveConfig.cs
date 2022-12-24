@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Shell.Config {
     public sealed class TwelveConfig {
@@ -16,10 +17,10 @@ namespace TwelveEngine.Shell.Config {
         public string DefaultPlaybackFile { get; private set; }
         public string KeyBindsFile { get; private set; }
 
-        private static PlayerIndex _gamePadIndex;
+        private PlayerIndex _gamePadIndex;
         public PlayerIndex GamePadIndex => _gamePadIndex;
 
-        private void setGamePadIndex(int value) {
+        private void SetGamePadIndex(int value) {
             var minValue = (int)PlayerIndex.One;
             var maxValue = (int)PlayerIndex.Four;
             if(value < minValue) {
@@ -30,25 +31,25 @@ namespace TwelveEngine.Shell.Config {
             _gamePadIndex = (PlayerIndex)value;
         }
 
-        private static T[] getArrayCopy<T>(T[] array) {
+        private static T[] GetArrayCopy<T>(T[] array) {
             var copy = new T[array.Length];
             array.CopyTo(copy,0);
             return copy;
         }
 
-        private string[] _cpuTextures = new string[0];
-        public string[] CPUTextures => getArrayCopy(_cpuTextures);
+        private string[] _cpuTextures = Array.Empty<string>();
+        public string[] CPUTextures => GetArrayCopy(_cpuTextures);
 
-        private void setCPUTextures(string[] textures) {
+        private void SetCPUTextures(string[] textures) {
             if(textures != null) _cpuTextures = textures;
         }
 
-        public void Save(string path = null) => ConfigWriter.SaveEngineConfig(path);
+        public static void Save(string path = null) => ConfigWriter.SaveEngineConfig(path);
 
         internal void Import(TwelveConfigSet set) {
             RenderScale = set.RenderScale;
             TileSize = set.TileSize;
-            setGamePadIndex(set.GamePadIndex);
+            SetGamePadIndex(set.GamePadIndex);
 
             InteractSize = set.InteractSize;
 
@@ -57,13 +58,13 @@ namespace TwelveEngine.Shell.Config {
             PlayerImage = set.PlayerImage;
             Tileset = set.Tileset;
 
-            setCPUTextures(set.CPUTextures);
+            SetCPUTextures(set.CPUTextures);
             ShowCollision = set.ShowCollision;
 
             KeyBindsFile = set.KeyBindsFile;
         }
 
-        internal TwelveConfigSet Export() => new TwelveConfigSet {
+        internal TwelveConfigSet Export() => new() {
             RenderScale = RenderScale,
             TileSize = TileSize,
             GamePadIndex = (int)GamePadIndex,

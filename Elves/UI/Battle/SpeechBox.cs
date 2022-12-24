@@ -6,17 +6,15 @@ using System.Text;
 using TwelveEngine;
 
 namespace Elves.UI.Battle {
-    public sealed class SpeechBox:UIElement, IBattleUIAnimated {
+    public sealed class SpeechBox:UIElement {
 
-        private readonly AnimationInterpolator interpolator = new AnimationInterpolator(Constants.AnimationTiming.SpeechBoxMovement);
+        private readonly AnimationInterpolator interpolator = new(Constants.AnimationTiming.SpeechBoxMovement);
 
         public SpeechBox() {
             Texture = UITextures.Panel;
         }
 
-        public bool IsAnimationCompleted() {
-            return interpolator.IsFinished;
-        }
+        public bool AnimationIsFinished => interpolator.IsFinished;
 
         public bool LeftSided { get; set; } = false;
 
@@ -46,7 +44,7 @@ namespace Elves.UI.Battle {
             _isShown = false;
         }
 
-        public readonly StringBuilder Text = new StringBuilder();
+        public readonly StringBuilder Text = new();
 
         public void Update(TimeSpan now,Rectangle viewport) {
             interpolator.Update(now);
@@ -64,7 +62,7 @@ namespace Elves.UI.Battle {
             Area = IsShown ? interpolator.Interpolate(offscreenArea,onscreenArea) : interpolator.Interpolate(onscreenArea,offscreenArea);
         }
 
-        private static readonly Rectangle TextureSource = new Rectangle(32,16,64,48);
+        private static readonly Rectangle TextureSource = new(32,16,64,48);
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {
             if(IsOffscreen || Texture == null) {

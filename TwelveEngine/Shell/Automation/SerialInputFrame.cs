@@ -46,14 +46,14 @@ namespace TwelveEngine.Shell.Automation {
             rightButton = (byte)mouse.RightButton;
         }
 
-        private static short intToShort(int value) {
+        private static short IntToShort(int value) {
             return (short)Math.Max(short.MinValue,Math.Min(short.MaxValue,value));
         }
-        private static int longToInt(long value) {
+        private static int LongToInt(long value) {
             return (int)Math.Max(int.MinValue,Math.Min(int.MaxValue,value));
         }
 
-        private bool mouseDataEqual(SerialInputFrame frame) {
+        private bool MouseDataEqual(SerialInputFrame frame) {
             /* Sorted by frequency */
             return mouseX == frame.mouseX &&
                    mouseY == frame.mouseY &&
@@ -67,17 +67,17 @@ namespace TwelveEngine.Shell.Automation {
         }
 
         internal void Export(BinaryWriter writer,SerialInputFrame lastFrame) {
-            writer.Write(longToInt(elapsedTime));
+            writer.Write(LongToInt(elapsedTime));
 
-            if(mouseDataEqual(lastFrame)) {
+            if(MouseDataEqual(lastFrame)) {
                 writer.Write((byte)1);
             } else {
                 writer.Write((byte)0);
-                writer.Write(intToShort(mouseX));
-                writer.Write(intToShort(mouseY));
+                writer.Write(IntToShort(mouseX));
+                writer.Write(IntToShort(mouseY));
 
-                writer.Write(intToShort(scrollX));
-                writer.Write(intToShort(scrollY));
+                writer.Write(IntToShort(scrollX));
+                writer.Write(IntToShort(scrollY));
 
                 writer.Write(xButton1);
                 writer.Write(xButton2);

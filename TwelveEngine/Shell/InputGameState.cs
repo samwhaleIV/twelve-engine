@@ -1,15 +1,14 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using TwelveEngine.Shell.Input;
 using TwelveEngine.Shell.UI;
 
-namespace TwelveEngine.Shell.States {
+namespace TwelveEngine.Shell {
     public class InputGameState:GameState {
 
-        private readonly TimeoutManager timeoutManager = new TimeoutManager();
-        private readonly MouseHandler mouseHandler = new MouseHandler();
-        private readonly InputHandler inputHandler = new InputHandler();
-        private readonly InputGuide inputGuide = new InputGuide();
+        private readonly TimeoutManager timeoutManager = new();
+        private readonly MouseHandler mouseHandler = new();
+        private readonly InputHandler inputHandler = new();
+        private readonly InputGuide inputGuide = new();
 
         public InputHandler Input => inputHandler;
         public MouseHandler Mouse => mouseHandler;
@@ -30,22 +29,15 @@ namespace TwelveEngine.Shell.States {
             return timeoutManager.Add(action,delay,Game.Time.TotalGameTime);
         }
 
-        protected void UpdateImpulseInput() {
-            inputHandler.Update(Game.KeyboardState,Game.GamePadState);
-        }
-
-        protected void UpdateMouseInput() {
-            mouseHandler.Update(Game.MouseState);
-        }
-
-        protected void UpdateTimeoutInput() {
-            timeoutManager.Update(Now);
-        }
+        protected bool InputEnabled => Game.IsActive && !IsTransitioning;
 
         protected void UpdateInputs() {
-            UpdateMouseInput();
-            UpdateImpulseInput();
-            UpdateTimeoutInput();
+            mouseHandler.Update(Game.MouseState,InputEnabled);
+            if(!InputEnabled) {
+                return;
+            }
+            inputHandler.Update(Game.KeyboardState,Game.GamePadState);
+            timeoutManager.Update(Now);
         }
     }
 }

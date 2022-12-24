@@ -30,7 +30,7 @@ namespace ContentBuilder {
             GraphicsProfile = Environment.GetEnvironmentVariable("profile") ?? DEFAULT_GRAPHICS_PROFILE;
         }
 
-        private static readonly Preprocessors preprocessors = new Preprocessors() {
+        private static readonly Preprocessors preprocessors = new() {
             ChromaKey = CHROMA_KEY,
             TextureFormat = TEXTURE_FORMAT
         };
@@ -67,8 +67,7 @@ namespace ContentBuilder {
         }
 
         private static string GetContentDirectoryName(string directory) {
-            string[] segments = directory.Split(Path.DirectorySeparatorChar);
-            return segments[segments.Length - 1];
+            return directory.Split(Path.DirectorySeparatorChar)[^1];
         }
 
         private static void AddMGCBSettings(StringBuilder builder) {
@@ -100,7 +99,7 @@ namespace ContentBuilder {
         }
 
         private static string GetMGCBFile(string directory,string defaultContent,string outputRoot) {
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new();
             builder.AppendLine("# DO NOT EXECUTE OUTSIDE OF A BUILD PROCESS #");
             builder.AppendLine();
             builder.AppendLine("# ---- Start Auto-Generated MGCB File ---- #");
@@ -135,7 +134,7 @@ namespace ContentBuilder {
         }
 
         private static string GetDirectoryContent(string directory,string outputRoot) {
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new();
             AddDirectory(builder,directory,outputRoot);
             return builder.ToString();
         }
@@ -150,6 +149,7 @@ namespace ContentBuilder {
             return GetDirectoryContent(directory,outputRoot);
         }
 
+#pragma warning disable IDE0051 // Remove unused private members
         private static void DeleteMGCBCache() {
             /* Forces the content pipeline to rebuild this MGCB file */
             string bin = BIN_FOLDER;
@@ -161,6 +161,7 @@ namespace ContentBuilder {
                 Directory.Delete(obj);
             }
         }
+#pragma warning restore IDE0051 // Remove unused private members
 
         private static void AssertContentRoot(string contentRoot) {
             if(!Directory.Exists(contentRoot)) {

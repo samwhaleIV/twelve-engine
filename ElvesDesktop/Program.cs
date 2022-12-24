@@ -38,7 +38,7 @@ namespace ElvesDesktop {
                 fullscreen: flags.Contains(Elves.Constants.Flags.Fullscreen),
                 hardwareModeSwitch: flags.Contains(Elves.Constants.Flags.HardwareFullscreen),
                 verticalSync: !flags.Contains(Elves.Constants.Flags.NoVsync),
-                mouseVisible: flags.Contains(Elves.Constants.Flags.OSCursor)
+                drawDebug: flags.Contains(Elves.Constants.Flags.DrawDebug)
             );
 
             game.OnLoad += Game_OnLoad;

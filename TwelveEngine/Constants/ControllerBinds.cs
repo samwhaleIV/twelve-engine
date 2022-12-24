@@ -20,7 +20,7 @@ namespace TwelveEngine.Shell.Input {
     }
 
     public sealed partial class InputHandler {
-        private static Dictionary<Impulse,Buttons> GetControllerBinds() => new Dictionary<Impulse,Buttons>() {
+        private static Dictionary<Impulse,Buttons> GetControllerBinds() => new() {
             { Impulse.Up, Up },
             { Impulse.Down, Down },
             { Impulse.Left, Left },

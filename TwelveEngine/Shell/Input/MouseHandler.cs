@@ -25,7 +25,7 @@ namespace TwelveEngine.Shell.Input {
             OnScroll?.Invoke(Position,delta > 0 ? ScrollDirection.Up : ScrollDirection.Down);
         }
 
-        public void Update(MouseState mouseState) {
+        public void Update(MouseState mouseState,bool fireEvents = true) {
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }
@@ -34,7 +34,7 @@ namespace TwelveEngine.Shell.Input {
             Position = mouseState.Position;
             Delta = lastState.Position - Position;
 
-            if(mouseState.LeftButton != lastState.LeftButton) {
+            if(fireEvents && mouseState.LeftButton != lastState.LeftButton) {
                 if(mouseState.LeftButton == ButtonState.Pressed) {
                     Capturing = true;
                     OnPress?.Invoke(Position);
@@ -46,11 +46,11 @@ namespace TwelveEngine.Shell.Input {
 
             int scrollDelta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
 
-            if(scrollDelta != 0) {
+            if(fireEvents && scrollDelta != 0) {
                 FireScrollEvent(scrollDelta);
             }
 
-            if(Position != lastState.Position) {
+            if(fireEvents && Position != lastState.Position) {
                 OnMove?.Invoke(Position);
             }
 

@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace TwelveEngine {
     public readonly struct CPUTexture {
 
-        private static Color[,] convertFlatData(Color[] data,int width,int height) {
+        private static Color[,] ConvertFlatData(Color[] data,int width,int height) {
             var data2D = new Color[width,height];
             for(int i = 0;i<data.Length;i++) {
                 int x = i % width;
@@ -17,7 +18,7 @@ namespace TwelveEngine {
         }
 
         internal CPUTexture(Color[] data,int width,int height,string name) {
-            Data = convertFlatData(data,width,height);
+            Data = ConvertFlatData(data,width,height);
             Width = width;
             Height = height;
             Name = name;
@@ -28,7 +29,7 @@ namespace TwelveEngine {
         public readonly Color[,] Data;
         public readonly string Name;
 
-        public static readonly CPUTexture Default = new CPUTexture(new Color[0],0,0,null);
+        public static readonly CPUTexture Default = new(Array.Empty<Color>(),0,0,null);
 
         private static Dictionary<string,CPUTexture> cpuTextures;
 

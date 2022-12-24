@@ -11,15 +11,20 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\LowMemorySortedSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\ParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\Screenspace3DSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveDataManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\FrameTimeSmoother.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\FPSCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\PropertyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\TypeParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnimationInterpolator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionState.cs" />
+    <Compile Include="..\TwelveEngine\Shell\CursorState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Config\ConfigWriter.cs" />
@@ -37,8 +42,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\GridLinesEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\World.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\States\DataGameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\States\InputGameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\InputGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RenderTargetStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\DebugWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\Corner.cs" />

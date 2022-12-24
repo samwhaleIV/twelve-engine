@@ -15,13 +15,11 @@ namespace Elves.Battle {
 
         protected void UpdateUI() {
             battleUI.Update((int)GetUIScale());
+            Game.CursorState = battleUI.GetCursorState();
         }
 
-        private readonly User _player = new User();
-        private readonly User _target = new User();
-
-        public User Player => _player;
-        public User Target => _target;
+        protected abstract UserData GetPlayerData();
+        protected abstract UserData GetTargetData();
 
         protected abstract void ActionButtonClicked(int ID);
 
@@ -40,7 +38,7 @@ namespace Elves.Battle {
         }
 
         private void BattleScene_OnRender() {
-            battleUI.Render(Game.SpriteBatch,_player,_target);
+            battleUI.Render(Game.SpriteBatch,GetPlayerData(),GetTargetData());
         }
     }
 }

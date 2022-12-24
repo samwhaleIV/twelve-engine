@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace TwelveEngine.Shell.Input {
     public sealed partial class InputHandler {
 
-        private Dictionary<Impulse,(Action,Action)> GetEndpoints() => new Dictionary<Impulse,(Action, Action)>() {
+        private Dictionary<Impulse,(Action,Action)> GetEndpoints() => new() {
 
             {Impulse.Accept,(
                 () => OnAcceptDown?.Invoke(),

@@ -8,7 +8,7 @@ namespace TwelveEngine {
     public static class Logger {
 
         private static StreamWriter streamWriter = null;
-        private static readonly StringBuilder stringBuilder = new StringBuilder();
+        private static readonly StringBuilder stringBuilder = new();
 
         public static void CleanUp() {
             _autoFlush = false;

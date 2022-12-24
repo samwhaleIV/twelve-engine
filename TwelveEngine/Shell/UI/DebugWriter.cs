@@ -19,43 +19,50 @@ namespace TwelveEngine.Shell.UI {
 
         public int Padding { get; set; } = Constants.ScreenEdgePadding;
 
-        private readonly StringBuilder writer = new StringBuilder();
+        private readonly StringBuilder writer = new();
+        private readonly StringBuilder reverseBuffer = new();
 
         private (Vector2 Position, Corner Corner,int LineHeight,Color Color) renderState;
 
-        private static int GetStartXRight(Viewport viewport,int padding) {
-            return viewport.Width - padding;
+        private void DrawString() {
+            var position = GetPosition();
+            bool rightSide = renderState.Corner == Corner.BottomRight || renderState.Corner == Corner.TopRight;
+            if(rightSide) {
+                /* RTL text rendering draws text in FIFO, so we have to reverse it to LIFO with a buffer */
+                for(int i = writer.Length-1;i>=0;i--) {
+                    reverseBuffer.Append(writer[i]);
+                }
+                game.SpriteBatch.DrawString(Font,reverseBuffer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,true);
+                reverseBuffer.Clear();
+            } else {
+                game.SpriteBatch.DrawString(Font,writer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,false);
+            }
+            writer.Clear();
         }
 
-        private static int GetStartYBottom(Viewport viewport,int padding,int lineHeight) {
-            return viewport.Height - lineHeight;
-        }
-
-        private void Begin(Corner corner,Vector2? offset = null,Color? color = null) {
+        private void Begin(Corner corner,Color? color = null) {
+            /* The positioning here is pretty hacky, but it is the underlying problem of the default SpriteFont implementation */
             var padding = Padding;
-            float x = padding, y = padding;
+            float x = padding, y = padding / 2 + 1;
 
             var viewport = game.Viewport;
             var lineHeight = Font.LineSpacing;
 
             switch(corner) {
                 case Corner.TopRight:
-                    x = GetStartXRight(viewport,padding);
+                    /* For example, when drawing RTL text, positioning is off by 1 pixel. And who could possibly know why? */
+                    x = viewport.Width - padding + 1;
                     break;
                 case Corner.BottomLeft:
-                    y = GetStartYBottom(viewport,padding,lineHeight);
+                    y = viewport.Height - lineHeight;
                     break;
                 case Corner.BottomRight:
-                    x = GetStartXRight(viewport,padding);
-                    y = GetStartYBottom(viewport,padding,lineHeight);
+                    x = viewport.Width - padding + 1;
+                    y = viewport.Height - lineHeight;
                     break;
             }
 
-            var position = new Vector2(x,y);
-            if(offset.HasValue) {
-                position += offset.Value;
-            }
-            renderState = (position, corner, lineHeight, color ?? Color.White);
+            renderState = (new Vector2(x,y), corner, lineHeight, color ?? Color.White);
         }
 
         private Vector2 GetPosition() {
@@ -82,12 +89,6 @@ namespace TwelveEngine.Shell.UI {
             writer.Append(": ");
         }
 
-        private void DrawString() {
-            var position = GetPosition();
-            game.SpriteBatch.DrawString(Font,writer,position,renderState.Color);
-            writer.Clear();
-        }
-
         public void SetColor(Color color) {
             renderState.Color = color;
         }
@@ -104,7 +105,7 @@ namespace TwelveEngine.Shell.UI {
 
         public void WriteFPS(double fps) {
             WriteLabel("FPS");
-            writer.AppendFormat(NUMBER_FORMAT,fps);
+            writer.AppendFormat("{0:0}",fps);
             DrawString();
         }
 
@@ -164,7 +165,7 @@ namespace TwelveEngine.Shell.UI {
 
         public void Write(TimeSpan time,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat("{0:hh\\:mm\\:ss\\.ff}",time);
+            writer.AppendFormat("{0:hh\\:mm\\:ss\\.f}",time);
             DrawString();
         }
 
@@ -210,10 +211,20 @@ namespace TwelveEngine.Shell.UI {
             DrawString();
         }
 
-        public void ToTopLeft(Color? color = null) => Begin(Corner.TopLeft,Vector2.Zero,color);
-        public void ToTopRight(int maxWidth = 0,Color? color = null) => Begin(Corner.TopRight,new Vector2(-maxWidth,0f),color);
+        public void ToTopLeft(Color? color = null) {
+            Begin(Corner.TopLeft,color);
+        }
 
-        public void ToBottomLeft(Color? color = null) => Begin(Corner.BottomLeft,Vector2.Zero,color);
-        public void ToBottomRight(int maxWidth = 0,Color? color = null) => Begin(Corner.BottomRight,new Vector2(-maxWidth,0f),color);
+        public void ToTopRight(Color? color = null) {
+            Begin(Corner.TopRight,color);
+        }
+
+        public void ToBottomLeft(Color? color = null) {
+            Begin(Corner.BottomLeft,color);
+        }
+
+        public void ToBottomRight(Color? color = null) {
+            Begin(Corner.BottomRight,color);
+        }
     }
 }

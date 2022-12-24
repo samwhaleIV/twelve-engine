@@ -10,7 +10,18 @@ namespace Elves.UI.Battle {
         public HealthBar() => Texture = UITextures.Panel;
 
         public HealthBarAlignment Alignment { get; set; } = HealthBarAlignment.Left;
-        public float Value { get; set; } = 1f;
+
+        private float _value;
+
+        public float Value {
+            get => _value;
+            set {
+                if(value < _value) {
+                    DropHealthAnimate(Now);
+                }
+                _value = value;
+            }
+        }
 
         private TimeSpan Now;
         private float Scale;
@@ -42,17 +53,18 @@ namespace Elves.UI.Battle {
 
         private bool IsDead => Value <= 0f;
 
+        private const float PI2 = MathF.PI * 2;
+
         private int GetStripYOffset(float xNormal,float t) {
-            float time = MathF.PI * 2 * t;
-            float distance = xNormal * MathF.PI * 2;
+            float time = PI2 * t;
+            float distance = xNormal * PI2;
             float offset = MathF.Sin((time + distance) * WaveSpeed) * WaveStrength / 19 * Scale;
             return (int)MathF.Round(offset);
         }
 
-        private (Color Color,int YOffset,Point textureOffset) GetStripeData(float xNormal,Color healthColor) {
+        private (Color Color,int YOffset,Point textureOffset) GetStripeData(float xNormal,float healthNormal,Color healthColor) {
             Color color;
             int stripYOffset;
-            float healthDropNormal = GetDropHealthNormal();
             Point textureOffset = Point.Zero;
             if(Alignment == HealthBarAlignment.Left) {
                 if(xNormal < Value) {
@@ -61,7 +73,7 @@ namespace Elves.UI.Battle {
                     color = Color.White;
                     textureOffset = new Point(32,0);
                 }
-                stripYOffset = GetStripYOffset(xNormal,healthDropNormal);
+                stripYOffset = GetStripYOffset(xNormal,healthNormal);
             } else {
                 if(xNormal < 1 - Value) {
                     color = Color.White;
@@ -69,7 +81,7 @@ namespace Elves.UI.Battle {
                 } else {
                     color = healthColor;
                 }
-                stripYOffset = GetStripYOffset(1-xNormal,healthDropNormal);
+                stripYOffset = GetStripYOffset(1-xNormal,healthNormal);
             }
             return (color, stripYOffset, textureOffset);
         }
@@ -89,14 +101,16 @@ namespace Elves.UI.Battle {
             int pixelCount = (int)MathF.Ceiling((Area.Width - pixelSize * 2) / pixelSize);
             float halfPixelSize = pixelSize / 2;
 
-            stripeData = GetStripeData(halfPixelSize / area.Width,healthColor);
+            float healthNormal = GetDropHealthNormal();
+
+            stripeData = GetStripeData(halfPixelSize / area.Width,healthNormal,healthColor);
             spriteBatch.Draw(
                 Texture,
                 new Rectangle(area.X,area.Y + stripeData.YOffset,pixelSize,area.Height),
                 new Rectangle(16+stripeData.textureOffset.X,stripeData.textureOffset.Y,1,16),
             stripeData.Color);
             for(int i = 1;i<pixelCount;i++) {
-                stripeData = GetStripeData((pixelSize + i * pixelSize + halfPixelSize) / area.Width,healthColor);
+                stripeData = GetStripeData((pixelSize + i * pixelSize + halfPixelSize) / area.Width,healthNormal,healthColor);
                 spriteBatch.Draw(
                     Texture,
                     new Rectangle(area.X + i * pixelSize,area.Y + stripeData.YOffset,pixelSize,area.Height),
@@ -106,14 +120,14 @@ namespace Elves.UI.Battle {
             int overshoot = (pixelCount * pixelSize) - (area.Width - pixelSize * 2);
 
             int offsetStripeX = area.X + pixelCount * pixelSize - overshoot;
-            stripeData = GetStripeData((area.Width - halfPixelSize - pixelSize) / area.Width,healthColor);
+            stripeData = GetStripeData((area.Width - halfPixelSize - pixelSize) / area.Width,healthNormal,healthColor);
             spriteBatch.Draw(
                 Texture,
                 new Rectangle(offsetStripeX,area.Y+stripeData.YOffset,pixelSize,area.Height),
                 new Rectangle(17+stripeData.textureOffset.X,stripeData.textureOffset.Y,1,16),
             stripeData.Color);
 
-            stripeData = GetStripeData((area.Width - halfPixelSize) / area.Width,healthColor);
+            stripeData = GetStripeData((area.Width - halfPixelSize) / area.Width,healthNormal,healthColor);
             spriteBatch.Draw(
                 Texture,
                 new Rectangle(area.Right - pixelSize,area.Y + stripeData.YOffset,pixelSize,area.Height),
