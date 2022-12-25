@@ -21,20 +21,22 @@ namespace TwelveEngine.Shell.Input {
         public int XDelta => Delta.X;
         public int YDelta => Delta.Y;
 
-        private void FireScrollEvent(int delta) {
-            OnScroll?.Invoke(Position,delta > 0 ? ScrollDirection.Up : ScrollDirection.Down);
-        }
-
-        public void Update(MouseState mouseState,bool fireEvents = true) {
+        public void Update(MouseState mouseState,Rectangle bounds,bool fireEvents = true) {
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }
             var lastState = this.lastState.Value;
-
             Position = mouseState.Position;
+            this.lastState = mouseState;
             Delta = lastState.Position - Position;
 
-            if(fireEvents && mouseState.LeftButton != lastState.LeftButton) {
+            if(!fireEvents) {
+                Delta = Point.Zero;
+                Capturing = false;
+                return;
+            }
+
+            if(mouseState.LeftButton != lastState.LeftButton) {
                 if(mouseState.LeftButton == ButtonState.Pressed) {
                     Capturing = true;
                     OnPress?.Invoke(Position);
@@ -46,15 +48,13 @@ namespace TwelveEngine.Shell.Input {
 
             int scrollDelta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
 
-            if(fireEvents && scrollDelta != 0) {
-                FireScrollEvent(scrollDelta);
+            if(scrollDelta != 0) {
+                OnScroll?.Invoke(Position,scrollDelta > 0 ? ScrollDirection.Up : ScrollDirection.Down);
             }
 
-            if(fireEvents && Position != lastState.Position) {
+            if(Position != lastState.Position) {
                 OnMove?.Invoke(Position);
             }
-
-            this.lastState = mouseState;
         }
     }
 }

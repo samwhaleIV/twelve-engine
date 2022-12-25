@@ -4,6 +4,7 @@ using System.IO;
 using System;
 using TwelveEngine;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ElvesDesktop {
     public static class Program {
@@ -28,11 +29,30 @@ namespace ElvesDesktop {
             Logger.CleanUp();
         }
 
+        private static void LogFlags() {
+            var sb = new StringBuilder();
+            sb.Append("[Elves Flags] { ");
+            foreach(var flag in flags) {
+                sb.Append(flag);
+                sb.Append(", ");
+            }
+            sb.Remove(sb.Length-2,2);
+            sb.Append(" }");
+            Logger.WriteLine(sb);
+        }
+
         public static void Main(string[] args) {
             flags = new HashSet<string>(args);
-            ConfigLoader.LoadEngineConfig(new TwelveConfigSet());
+            LogFlags();
+
+            ConfigLoader.LoadEngineConfig(new TwelveConfigSet() {
+                HWFullScreenWidth = 1920,
+                HWFullScreenHeight = 1080
+            });
             string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),Elves.Constants.SaveFolder);
             SaveDataManager.Initialize(Elves.Constants.SaveFile,saveDirectory,true);
+
+            GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
 
             using var game = new GameManager(
                 fullscreen: flags.Contains(Elves.Constants.Flags.Fullscreen),

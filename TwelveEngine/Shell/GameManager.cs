@@ -22,17 +22,23 @@ namespace TwelveEngine.Shell {
             this.drawDebug = drawDebug;
 
             Logger.WriteBooleanSet("Context settings",new string[] {
-                "Fullscreen","HardwareModeSwitch","VerticalSync"
+                "Fullscreen","HardwareModeSwitch","VerticalSync","DrawDebug"
             },new bool[] {
-                fullscreen, hardwareModeSwitch, verticalSync
+                fullscreen, hardwareModeSwitch, verticalSync, drawDebug
             });
 
             Content.RootDirectory = Constants.ContentDirectory;
 
             graphicsDeviceManager.SynchronizeWithVerticalRetrace = verticalSync;
 
-            graphicsDeviceManager.IsFullScreen = fullscreen;
+            graphicsDeviceManager.IsFullScreen = hardwareModeSwitch || fullscreen;
             graphicsDeviceManager.HardwareModeSwitch = hardwareModeSwitch;
+
+            if(hardwareModeSwitch) {
+                DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+                graphicsDeviceManager.PreferredBackBufferWidth = Constants.Config.HWFullScreenWidth ?? displayMode.Width;
+                graphicsDeviceManager.PreferredBackBufferHeight = Constants.Config.HWFullScreenHeight ?? displayMode.Height;
+            }
 
             IsFixedTimeStep = false;
 

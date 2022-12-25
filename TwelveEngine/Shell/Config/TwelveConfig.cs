@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Shell.Config {
@@ -16,6 +18,9 @@ namespace TwelveEngine.Shell.Config {
         public string PlaybackFolder { get; private set; }
         public string DefaultPlaybackFile { get; private set; }
         public string KeyBindsFile { get; private set; }
+
+        public int? HWFullScreenWidth { get; private set; }
+        public int? HWFullScreenHeight { get; private set; }
 
         private PlayerIndex _gamePadIndex;
         public PlayerIndex GamePadIndex => _gamePadIndex;
@@ -62,6 +67,9 @@ namespace TwelveEngine.Shell.Config {
             ShowCollision = set.ShowCollision;
 
             KeyBindsFile = set.KeyBindsFile;
+
+            HWFullScreenWidth = set.HWFullScreenWidth;
+            HWFullScreenHeight = set.HWFullScreenHeight;
         }
 
         internal TwelveConfigSet Export() => new() {
@@ -78,7 +86,30 @@ namespace TwelveEngine.Shell.Config {
             CPUTextures = CPUTextures,
             ShowCollision = ShowCollision,
 
-            KeyBindsFile = KeyBindsFile
+            KeyBindsFile = KeyBindsFile,
+            HWFullScreenWidth = HWFullScreenWidth,
+            HWFullScreenHeight = HWFullScreenHeight
         };
+
+        internal void Write(StringBuilder sb) {
+            sb.AppendLine("[TwelveConfig Settings] {");
+            sb.AppendLine($"   RenderScale = {RenderScale}");
+            sb.AppendLine($"   TileSize = {TileSize}");
+            sb.AppendLine($"   GamePadIndex = {GamePadIndex}");
+            sb.AppendLine($"   InteractSize = {InteractSize}");
+
+            sb.AppendLine($"   PlaybackFolder = {PlaybackFolder}");
+            sb.AppendLine($"   DefaultPlaybackFile = {DefaultPlaybackFile}");
+            sb.AppendLine($"   PlayerImage = {PlayerImage}");
+            sb.AppendLine($"   Tileset = {Tileset}");
+
+            sb.AppendLine($"   CPUTextures = {(CPUTextures.Length <= 0 ? "<None>" : string.Join(",",CPUTextures))}");
+            sb.AppendLine($"   ShowCollision = {ShowCollision}");
+
+            sb.AppendLine($"   KeyBindsFile = {KeyBindsFile}");
+            sb.AppendLine($"   HWFullScreenWidth = {HWFullScreenWidth}");
+            sb.AppendLine($"   HWFullScreenHeight = {HWFullScreenHeight}");
+            sb.Append("}");
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace TwelveEngine.Shell.Config {
     public static class ConfigLoader {
@@ -17,17 +18,27 @@ namespace TwelveEngine.Shell.Config {
             return keyBindSet;
         }
 
-        public static TPropertySet LoadEngineConfig<TPropertySet>(TPropertySet propertySet) where TPropertySet : TwelveConfigSet, new() {
-
+        private static TPropertySet LoadEngineConfig<TPropertySet>(TPropertySet propertySet,bool logProgramSource) where TPropertySet : TwelveConfigSet, new() {
+            if(logProgramSource) {
+                Logger.WriteLine($"Loading engine config from a programmed property set.");
+            }
             var engineConfig = new TwelveConfig();
             engineConfig.Import(propertySet);
             Constants.Config = engineConfig;
-
+            var sb = new StringBuilder();
+            Constants.Config.Write(sb);
+            Logger.WriteLine(sb);
             return propertySet;
+        }
+
+        public static TPropertySet LoadEngineConfig<TPropertySet>(TPropertySet propertySet) where TPropertySet : TwelveConfigSet, new() {
+            return LoadEngineConfig(propertySet,true);
         }
 
         public static TPropertySet LoadEngineConfig<TPropertySet>(string path = null) where TPropertySet : TwelveConfigSet, new() {
             path ??= Constants.EngineConfigFile;
+
+            Logger.WriteLine($"Loading engine config from file \"{path}\".");
 
             TPropertySet propertySet;
             if(!File.Exists(path)) {
@@ -38,7 +49,7 @@ namespace TwelveEngine.Shell.Config {
                 propertySet = processor.Load(lines);
             }
 
-            return LoadEngineConfig(propertySet);
+            return LoadEngineConfig(propertySet,false);
         }
 
         public static void LoadEngineConfig(string path = null) => LoadEngineConfig<TwelveConfigSet>(path);

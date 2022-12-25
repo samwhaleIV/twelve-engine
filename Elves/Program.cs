@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using Elves.Battle.Battles;
 using Microsoft.Xna.Framework;
 using System;
+using Elves.Menu;
 
 namespace Elves {
     public static class Program {
 #pragma warning disable CS0162 // Unreachable code detected
         public static GameState GetStartState() {
             return new SnowTest();
+            return new MainMenu();    
 
             var battle = new BattleSequencer(new DebugBattle(),"Backgrounds/checkerboard");
 

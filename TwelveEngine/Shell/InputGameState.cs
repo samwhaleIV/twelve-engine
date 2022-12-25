@@ -32,7 +32,7 @@ namespace TwelveEngine.Shell {
         protected bool InputEnabled => Game.IsActive && !IsTransitioning;
 
         protected void UpdateInputs() {
-            mouseHandler.Update(Game.MouseState,InputEnabled);
+            mouseHandler.Update(Game.MouseState,Game.Viewport.Bounds,InputEnabled);
             if(!InputEnabled) {
                 return;
             }

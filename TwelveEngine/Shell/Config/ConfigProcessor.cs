@@ -58,6 +58,10 @@ namespace TwelveEngine.Shell.Config {
             return propertySet;
         }
 
+        private static bool IsNullableType(PropertyType propertyType) {
+            return propertyType == PropertyType.IntNullable;
+        }
+
         private static void ApplyProperty(TPropertySet set,FieldInfo field,string propertyValue) {
             var typeName = field.FieldType.FullName;
 
@@ -66,10 +70,9 @@ namespace TwelveEngine.Shell.Config {
             }
 
             object boxedValue = TypeParser.Parse(type,propertyValue);
-            if(boxedValue == null) {
+            if(boxedValue == null && !IsNullableType(type)) {
                 return;
             }
-
             field.SetValue(set,boxedValue);
         }
 

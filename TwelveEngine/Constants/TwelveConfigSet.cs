@@ -8,6 +8,9 @@ namespace TwelveEngine.Shell.Config {
         public int GamePadIndex = 0;
         public float InteractSize = 0.25f;
 
+        public int? HWFullScreenWidth = null;
+        public int? HWFullScreenHeight = null;
+
         public string PlaybackFolder = "playback";
         public string DefaultPlaybackFile = "default" + '.' + Constants.PlaybackFileExt;
         public string PlayerImage = "player";

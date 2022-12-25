@@ -5,7 +5,7 @@ namespace TwelveEngine {
 
         private readonly T[] grabBag;
 
-        public GrabBag((T Value,int Weight)[] set) {
+        public GrabBag(params (T Value,int Weight)[] set) {
             int total = 0;
             int i;
             for(i = 0;i < set.Length;i++) {

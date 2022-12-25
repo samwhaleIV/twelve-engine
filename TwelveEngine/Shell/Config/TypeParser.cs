@@ -7,9 +7,7 @@ namespace TwelveEngine.Shell.Config {
 
         private static readonly Type keysType = typeof(Keys);
 
-        private static readonly Dictionary<PropertyType,(string TypeName,Func<string,object> Objectify,Func<object,string> Stringify)> types =
-            new() {
-
+        private static readonly Dictionary<PropertyType,(string TypeName,Func<string,object> Objectify,Func<object,string> Stringify)> types = new() {
             { PropertyType.Bool, (typeof(bool).FullName, i => {
                 if(!bool.TryParse(i,out var o)) return null; return o;
             }, i => Export(i).ToLowerInvariant())},
@@ -56,7 +54,7 @@ namespace TwelveEngine.Shell.Config {
 
             { PropertyType.Short, (typeof(short).FullName, i => {
                 if(!short.TryParse(i,out var o)) return null; return o;
-                }, Export)},
+            }, Export)},
 
             { PropertyType.UShort, (typeof(ushort).FullName, i => {
                 if(!ushort.TryParse(i,out var o)) return null; return o;
@@ -67,7 +65,11 @@ namespace TwelveEngine.Shell.Config {
             }, Export)},
 
             { PropertyType.StringArray, (typeof(string[]).FullName, ParseArray, ExportArray)},
-            { PropertyType.XNAKeys, (keysType.FullName, ParseKeys, Export)}
+            { PropertyType.XNAKeys, (keysType.FullName, ParseKeys, Export)},
+
+            { PropertyType.IntNullable, (typeof(int?).FullName, i => {
+                if(!int.TryParse(i,out var o)) return null; return o;
+            }, Export)},
 
         };
 

@@ -48,6 +48,7 @@ namespace Elves.Menu {
             this.random = random;
             OnUpdate += FloatingItem_OnUpdate;
             PixelSmoothing = false;
+            Depth = (DepthConstants.MiddleClose - DepthConstants.MiddleFar) * random.NextSingle() + DepthConstants.MiddleFar;
         }
 
         private bool firstTime = true;
@@ -66,7 +67,6 @@ namespace Elves.Menu {
                 firstTime = false;
             }
             TextureSource = grabBag.GetRandom(random);
-            Depth = (DepthConstants.MiddleClose - DepthConstants.MiddleFar) * random.NextSingle() + DepthConstants.MiddleFar;
             X = random.NextSingle() * X_RANGE + MIN_X;
             WiggleRate = TimeSpan.FromSeconds(random.NextSingle() * WIGGLE_RATE_RANGE + WIGGLE_RATE_MIN);
             WiggleStrength = WIGGLE_RATE_MIN + random.NextSingle() * WIGGLE_STRENGTH_RANGE + WIGGLE_STRENGTH_MIN;
