@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 namespace ContentBuilder {
     internal sealed class Preprocessors:Dictionary<string,Action<StringBuilder>> {
@@ -14,6 +15,7 @@ namespace ContentBuilder {
             Add(".dae", AddModel);
             Add(".fbx", AddAnimatedModel);
             Add(".fx", AddEffect);
+            Add(".ogg",AddAudio);
         }
 
         private void AddImage(StringBuilder builder) {
@@ -64,6 +66,12 @@ namespace ContentBuilder {
             builder.AppendLine("/importer:EffectImporter");
             builder.AppendLine("/processor:EffectProcessor");
             builder.AppendLine("/processorParam:DebugMode=Auto");
+        }
+
+        private void AddAudio(StringBuilder builder) {
+            builder.AppendLine("/importer:OggImporter");
+            builder.AppendLine("/processor:SongProcessor");
+            builder.AppendLine("/processorParam:Quality=Best");
         }
     }
 }

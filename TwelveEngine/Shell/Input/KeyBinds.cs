@@ -1,108 +1,185 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Shell.Input.Glyphs;
-using TwelveEngine.Shell.Config;
 using System.IO;
+using System;
 
 namespace TwelveEngine.Shell.Input {
-    public sealed partial class KeyBinds {
+    public static class KeyBinds {
 
-        private readonly Dictionary<Impulse,Keys> binds;
-        private readonly KeyBindSet defaultSet;
+        private static Dictionary<Impulse,Keys> GetBinds(KeyBindSet keyBindSet) => new() {
+            { Impulse.Up, keyBindSet.Up },
+            { Impulse.Down, keyBindSet.Down },
+            { Impulse.Left, keyBindSet.Left },
+            { Impulse.Right, keyBindSet.Right },
 
-        private KeyBinds(KeyBindSet keyBindSet) {
-            defaultSet = keyBindSet;
-            var invalidBinds = GetBinds(keyBindSet);
-            this.binds = ValidateBinds(invalidBinds);
+            { Impulse.Accept, keyBindSet.Accept },
+            { Impulse.Cancel, keyBindSet.Cancel },
+
+            { Impulse.Ascend, keyBindSet.Ascend },
+            { Impulse.Descend, keyBindSet.Descend },
+
+            { Impulse.Toggle, keyBindSet.Toggle }
+        };
+
+        private static readonly Dictionary<Impulse,Keys> impulses = GetBinds(new KeyBindSet());
+
+        public static Keys Get(Impulse type) {
+            return impulses[type];
         }
 
-        private readonly HashSet<Keys> validKeys = GetValidKeysSet();
-        private readonly HashSet<Keys> existingKeys = new();
+        public static bool TryGet(Impulse type,out Keys key) {
+            var hasImpulse = impulses.TryGetValue(type, out key);
+            if(!hasImpulse) {
+                key = Keys.None;
+            }
+            return hasImpulse;
+        }
+
+        public static bool HasImpulse(Impulse type) {
+            return impulses.ContainsKey(type);
+        }
+
+        public static void Set(Impulse type,Keys key) {
+            if(!validKeys.Contains(key)) {
+                return;
+            }
+            impulses[type] = key;
+        }
+
+        public static bool TrySave(string path) {
+            bool success = false;
+            try {
+                using var stream = File.OpenWrite(path);
+                using var writer = new BinaryWriter(stream);
+                Export(writer);
+                writer.Close();
+                success = true;
+            } catch(Exception exception) {
+                Logger.WriteLine($"Failure saving key binds: {exception}");
+            }
+            if(success) {
+                Logger.WriteLine($"Saved key binds to \"{path}\"");
+            }
+            return success;
+        }
+
+        public static bool TryLoad(string path) {
+            bool success = false;
+            if(!File.Exists(path)) {
+                Logger.WriteLine("Key binds file does not exist, loading defaults.");
+                return false;
+            }
+            try {
+                using var stream = File.OpenRead(path);
+                using var reader = new BinaryReader(stream);
+                Import(reader);
+                reader.Close();
+                success = true;
+            } catch(Exception exception) {
+                Logger.WriteLine($"[Key Binds] Failed to load key binds from path \"{path}\": {exception}");
+            }
+            if(success) {
+                Logger.WriteLine($"[Key Binds] Loaded key binds from path \"{path}\".");
+            }
+            return success;
+        }
+
+        public static void Export(BinaryWriter writer) {
+            writer.Write(impulses.Count);
+            foreach(var (impulse,key) in impulses) {
+                writer.Write((int)impulse);
+                writer.Write((int)key);
+            }
+        }
+
+        public static void Import(BinaryReader reader) {
+            int count = reader.ReadInt32();
+            for(var i = 0;i<count;i++) {
+                var impulse = (Impulse)reader.ReadInt32();
+                var key = (Keys)reader.ReadInt32();
+                if(!validKeys.Contains(key)) {
+                    continue;
+                }
+                impulses[impulse] = key;
+            }
+        }
+
+        private static readonly Keys[] ValidKeysList = new Keys[] {
+            Keys.OemTilde,
+            Keys.D1,
+            Keys.D2,
+            Keys.D3,
+            Keys.D4,
+            Keys.D5,
+            Keys.D6,
+            Keys.D7,
+            Keys.Tab,
+            Keys.Q,
+            Keys.W,
+            Keys.E,
+            Keys.R,
+            Keys.T,
+            Keys.Y,
+            Keys.U,
+            Keys.Space,
+            Keys.A,
+            Keys.S,
+            Keys.D,
+            Keys.F,
+            Keys.G,
+            Keys.H,
+            Keys.J,
+            Keys.LeftShift,
+            Keys.Z,
+            Keys.X,
+            Keys.C,
+            Keys.V,
+            Keys.B,
+            Keys.N,
+            Keys.M,
+            Keys.Up,
+            Keys.Down,
+            Keys.Left,
+            Keys.Right,
+            Keys.Insert,
+            Keys.Home,
+            Keys.PageUp,
+            Keys.PageDown,
+            Keys.D8,
+            Keys.D9,
+            Keys.D0,
+            Keys.OemMinus,
+            Keys.OemPlus,
+            Keys.Back,
+            Keys.OemComma,
+            Keys.OemPeriod,
+            Keys.I,
+            Keys.O,
+            Keys.P,
+            Keys.OemOpenBrackets,
+            Keys.OemCloseBrackets,
+            Keys.OemBackslash,
+            Keys.OemQuestion,
+            Keys.LeftControl,
+            Keys.K,
+            Keys.L,
+            Keys.OemSemicolon,
+            Keys.OemQuotes,
+            Keys.Enter,
+            Keys.Delete,
+            Keys.End,
+            Keys.Escape
+        };
+
+        private static readonly HashSet<Keys> validKeys = GetValidKeysSet();
 
         private static HashSet<Keys> GetValidKeysSet() {
-            var hashSet = new HashSet<Keys>();
-            var list = KeyboardMap.GetKeys();
-
+            HashSet<Keys> hashSet = new();
+            Keys[] list = ValidKeysList;
             foreach(var key in list) {
                 hashSet.Add(key);
             }
             return hashSet;
-        }
-
-        /* Verifies that the key is valid (i.e. we have a glyph for it) and that there are no duplicate entries */
-        public bool IsKeyValid(Keys key) {
-            return validKeys.Contains(key) && !existingKeys.Contains(key);
-        }
-        public bool IsKeyValid(Keys key,HashSet<Keys> existingKeys) {
-            return validKeys.Contains(key) && !existingKeys.Contains(key);
-        }
-
-        private Dictionary<Impulse,Keys> ValidateBinds(Dictionary<Impulse,Keys> binds) {
-            var existingKeys = new HashSet<Keys>();
-            foreach(var bind in binds) {
-                var key = bind.Value;
-                if(!IsKeyValid(key,existingKeys)) {
-                    return GetBinds(new KeyBindSet());
-                }
-                existingKeys.Add(key);
-            }
-            return binds;
-        }
-
-        private void SetKey(Impulse impulse,Keys value) {
-            if(!IsKeyValid(value)) {
-                return;
-            }
-            var oldValue = binds[impulse];
-            existingKeys.Remove(oldValue);
-
-            existingKeys.Add(value);
-            binds[impulse] = value;
-        }
-
-        public Keys this[Impulse type] {
-            get => binds[type];
-            set => SetKey(type,value);
-        }
-
-        public void Save(string path = null) {
-            var keyBindSet = defaultSet;
-
-            keyBindSet.Up = this[Impulse.Up];
-            keyBindSet.Down = this[Impulse.Down];
-            keyBindSet.Left = this[Impulse.Left];
-            keyBindSet.Right = this[Impulse.Right];
-            keyBindSet.Accept = this[Impulse.Accept];
-            keyBindSet.Cancel = this[Impulse.Cancel];
-
-            ConfigWriter.SaveKeyBinds(keyBindSet,path);
-        }
-
-        public static KeyBinds Load(string path = null) {
-            var keyBindSet = ConfigLoader.LoadKeyBinds(path);
-            return new KeyBinds(keyBindSet);
-        }
-
-        internal static KeyBinds Load(out KeyBindSet keyBindSet,string path = null) {
-            keyBindSet = ConfigLoader.LoadKeyBinds(path);
-            return new KeyBinds(keyBindSet);
-        }
-
-        public void Export(BinaryWriter writer) {
-            writer.Write(binds.Count);
-            foreach(var bind in binds) {
-                writer.Write((int)bind.Key);
-                writer.Write((int)bind.Value);
-            }
-        }
-
-        public void Import(BinaryReader reader) {
-            int count = reader.ReadInt32();
-            for(var i = 0;i<count;i++) {
-                var bind = (Impulse)reader.ReadInt32();
-                var key = (Keys)reader.ReadInt32();
-                binds[bind] = key;
-            }
         }
     }
 }

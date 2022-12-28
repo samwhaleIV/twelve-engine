@@ -14,7 +14,6 @@ namespace TwelveEngine.Game3D {
         public World() {
             OnLoad += World_OnLoad;
             OnUpdate += UpdateGame;
-            OnRender += World_OnRender;
             OnWriteDebug += World_OnWriteDebug;
         }
 
@@ -36,12 +35,6 @@ namespace TwelveEngine.Game3D {
 
         private void World_OnLoad() {
             Entities = new EntityManager<Entity3D,World>(this);
-        }
-
-        public Color ClearColor { get; set; } = Color.Black;
-
-        private void World_OnRender() {
-            Game.GraphicsDevice.Clear(ClearColor);
         }
 
         protected void UpdateCamera() {
@@ -72,6 +65,14 @@ namespace TwelveEngine.Game3D {
 
         public BufferSet CreateBufferSet<TVertices>(TVertices[] vertices) where TVertices:struct {
             return BufferSet.Create(GraphicsDevice,vertices);
+        }
+
+        public override void ResetGraphicsState(GraphicsDevice graphicsDevice) {
+            graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
+            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            graphicsDevice.BlendState = BlendState.AlphaBlend;
+            graphicsDevice.BlendFactor = Color.White;
+            Game.GraphicsDevice.Clear(ClearColor);
         }
     }
 }

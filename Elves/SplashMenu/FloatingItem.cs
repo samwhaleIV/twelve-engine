@@ -5,7 +5,7 @@ using TwelveEngine.Game3D;
 using TwelveEngine.Game3D.Entity.Types;
 using TwelveEngine;
 
-namespace Elves.Menu {
+namespace Elves.SplashMenu {
     public sealed class FloatingItem:Screenspace3DSprite {
 
         public const int TOTAL_ITEM_COUNT = 64;
@@ -41,9 +41,9 @@ namespace Elves.Menu {
 
         private readonly Random random;
 
-        private readonly MainMenu menu;
+        private readonly SplashMenuState menu;
 
-        public FloatingItem(MainMenu menu,Random random,Texture2D texture) : base(texture) {
+        public FloatingItem(SplashMenuState menu,Random random,Texture2D texture) : base(texture) {
             this.menu = menu;
             this.random = random;
             OnUpdate += FloatingItem_OnUpdate;

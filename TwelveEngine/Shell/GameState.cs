@@ -1,15 +1,23 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Shell {
     public class GameState {
 
+        public StateData Data { get; internal set; }
+
+        public bool HasFlag(StateFlags flag) {
+            return Data.Flags.HasFlag(flag);
+        }
+
         public GameManager Game { get; private set; } = null;
+        public ContentManager Content => Game?.Content;
 
         public TimeSpan Now => Game?.Time.TotalGameTime ?? TimeSpan.Zero;
-        public GameTime Time => Game?.Time ?? null;
+        public GameTime Time => Game?.Time;
 
         public event Action OnLoad, OnUnload;
 
@@ -59,6 +67,14 @@ namespace TwelveEngine.Shell {
             hasStartTime = true;
         }
 
+        private void HandleTransitionOut(TransitionData data) {
+            if(data.Generator != null) {
+                Game.SetState(data.Generator,data.Data);
+            } else {
+                Game.SetState(data.State,data.Data);
+            }
+        }
+
         internal void Update() {
             if(!hasStartTime) {
                 UpdateStartTime();
@@ -72,9 +88,9 @@ namespace TwelveEngine.Shell {
             if(TransitionT < 1f) {
                 return;
             }
-            if(TransitionState == TransitionState.Out) {
-                Game.SetState(newGameState);
-                newGameState = null;
+            if(TransitionState == TransitionState.Out && transitionOutData.HasValue) {
+                HandleTransitionOut(transitionOutData.Value);
+                transitionOutData = null;
             }
             TransitionState = TransitionState.None;
         }
@@ -103,7 +119,7 @@ namespace TwelveEngine.Shell {
         private TimeSpan transitionStartTime = TimeSpan.Zero;
         private TimeSpan transitionDuration = TimeSpan.Zero;
 
-        private GameState newGameState = null;
+        private TransitionData? transitionOutData = null;
 
         public float TransitionT {
             get {
@@ -120,24 +136,30 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        public void TransitionOut(GameState gameState,TimeSpan duration) {
+        public void TransitionOut(TransitionData transitionData) {
+            if(transitionData.Generator != null && transitionData.State != null) {
+                throw new InvalidOperationException("Transition out data cannot contain two game state values.");
+            }
             TransitionState = TransitionState.Out;
             transitionStartTime = Now;
-            transitionDuration = duration;
-            newGameState = gameState;
+            transitionDuration = transitionData.Duration;
+            transitionOutData = transitionData;
         }
 
         public void TransitionIn(TimeSpan duration) {
             TransitionState = TransitionState.In;
             transitionDuration = duration;
-            newGameState = null;
+            transitionOutData = null;
         }
+
+        public Color ClearColor { get; set; } = Color.Black;
 
         public virtual void ResetGraphicsState(GraphicsDevice graphicsDevice) {
             graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
-            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            graphicsDevice.DepthStencilState = DepthStencilState.None;
             graphicsDevice.BlendState = BlendState.AlphaBlend;
             graphicsDevice.BlendFactor = Color.White;
+            Game.GraphicsDevice.Clear(ClearColor);
         }
 
     }

@@ -371,3 +371,6 @@ FodyWeavers.xsd
 
 #Auto-Generated MGCB files
 Content/*.mgcb
+
+#Game Music Files
+Content/Elves/Music/*.ogg

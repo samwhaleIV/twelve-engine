@@ -6,8 +6,8 @@ using System;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
-namespace Elves.Menu {
-    public sealed class MainMenu:OrthoBackgroundState {
+namespace Elves.SplashMenu {
+    public sealed class SplashMenuState:OrthoBackgroundState {
         private const float PLAY_BUTTON_SCALE = 0.75f;
 
         private static readonly Color BACKGROUND_TOP_COLOR = Color.FromNonPremultiplied(0,225,89,255);
@@ -16,10 +16,10 @@ namespace Elves.Menu {
         private const float FOREGROUND_WATER_OPACITY = 0.592f;
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
-        public MainMenu():base(UITextures.Nothing,true) {
-            Name = "Elves Main Menu";
+        public SplashMenuState():base(UITextures.Nothing,true) {
+            Name = "Elves Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
-            OnLoad += MainMenu_OnLoad;
+            OnLoad += SplashMenuState_OnLoad;
         }
 
         private Screenspace3DSprite fallingElf;
@@ -31,7 +31,7 @@ namespace Elves.Menu {
 
         private readonly Random random = new();
 
-        private void MainMenu_OnLoad() {
+        private void SplashMenuState_OnLoad() {
             var menuTexture = UITextures.Menu;
             fallingElf = new Screenspace3DSprite(menuTexture) {
                 TextureSource = new Rectangle(0,0,41,29),

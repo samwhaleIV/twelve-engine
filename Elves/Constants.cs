@@ -13,12 +13,8 @@ namespace Elves {
 
         public static class Flags {
             public const string Debug3D = "debug-3d";
-            public const string Fullscreen = "fullscreen";
-            public const string HardwareFullscreen = "hw-fullscreen";
-            public const string NoVsync = "no-vsync";
             public const string OSCursor = "os-cursor";
             public const string FixedBattleRandom = "no-random-battle";
-            public const string DrawDebug = "draw-debug";
         }
 
         public static class Battle {

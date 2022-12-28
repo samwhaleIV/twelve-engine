@@ -21,7 +21,14 @@ namespace TwelveEngine.Shell.Input {
         public int XDelta => Delta.X;
         public int YDelta => Delta.Y;
 
-        public void Update(MouseState mouseState,Rectangle bounds,bool fireEvents = true) {
+        public void Import(MouseHandler oldHandler) {
+            Position = oldHandler.Position;
+            Delta = oldHandler.Delta;
+            Capturing = oldHandler.Capturing;
+            lastState = oldHandler.lastState;
+        }
+
+        public void Update(MouseState mouseState,bool fireEvents = true) {
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }

@@ -6,14 +6,20 @@ using System.Collections.Generic;
 using Elves.Battle.Battles;
 using Microsoft.Xna.Framework;
 using System;
-using Elves.Menu;
+using Elves.SplashMenu;
+using Elves.TestStates;
+using TwelveEngine;
+
+#pragma warning disable CS0162
+#pragma warning disable CS0028
 
 namespace Elves {
     public static class Program {
-#pragma warning disable CS0162 // Unreachable code detected
+
         public static GameState GetStartState() {
-            return new SnowTest();
-            return new MainMenu();    
+            return new StateTransitionTest();
+            return new SongTest();
+            return new SplashMenuState();   
 
             var battle = new BattleSequencer(new DebugBattle(),"Backgrounds/checkerboard");
 
@@ -22,33 +28,24 @@ namespace Elves {
             };
             return battle;
         }
-#pragma warning restore CS0162 // Unreachable code detected
-
-        private static HashSet<string> _flags;
-
-        public static bool HasFlag(string flag) {
-            return _flags.Contains(flag);
-        }
-
-        private static GameManager _game;
-        public static GameManager Game => _game;
 
         private static void SetCustomCursor() {
-            _game.CustomCursorTexture = UITextures.Panel;
-            _game.CursorSources.Add(CursorState.Default,new Rectangle(64,0,8,8));
-            _game.CursorSources.Add(CursorState.Interact,new Rectangle(64,8,8,8));
-            _game.CursorSources.Add(CursorState.Pressed,new Rectangle(72,8,8,8));
-            _game.CursorScale = 8;
+            var game = Game;
+            game.CustomCursorTexture = UITextures.Panel;
+            game.CursorSources.Add(CursorState.Default,new Rectangle(64,0,8,8));
+            game.CursorSources.Add(CursorState.Interact,new Rectangle(64,8,8,8));
+            game.CursorSources.Add(CursorState.Pressed,new Rectangle(72,8,8,8));
+            game.CursorScale = 8;
         }
+        public static GameManager Game { get; private set; }
 
-        public static void StartGame(GameManager game,HashSet<string> flags) {
-            _game = game;
-            _flags = flags;
+        public static void Main(GameManager game) {
+            Game = game;
 
             UITextures.Load(game);
             Fonts.Load();
 
-            if(!flags.Contains(Constants.Flags.OSCursor)) {
+            if(!Flags.Get(Constants.Flags.OSCursor)) {
                 SetCustomCursor();
             }
 
@@ -56,3 +53,6 @@ namespace Elves {
         }
     }
 }
+
+#pragma warning restore CS0162
+#pragma warning restore CS0028

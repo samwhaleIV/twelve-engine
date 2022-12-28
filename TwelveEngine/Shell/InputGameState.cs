@@ -1,24 +1,36 @@
 ﻿using System;
 using TwelveEngine.Shell.Input;
-using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Shell {
     public class InputGameState:GameState {
 
         private readonly TimeoutManager timeoutManager = new();
-        private readonly MouseHandler mouseHandler = new();
-        private readonly InputHandler inputHandler = new();
-        private readonly InputGuide inputGuide = new();
 
-        public InputHandler Input => inputHandler;
-        public MouseHandler Mouse => mouseHandler;
-        public InputGuide InputGuide => inputGuide;
+        public InputHandler Input { get; private set; } = new InputHandler();
+        public MouseHandler Mouse { get; private set; } = new MouseHandler();
 
-        public InputGameState() => OnLoad += InputGameState_OnLoad;
+        private static InputHandler oldInputHandler;
+        private static MouseHandler oldMouseHandler;
+
+        public InputGameState() {
+            OnLoad += InputGameState_OnLoad;
+            OnUnload += InputGameState_OnUnload;
+        }
+
+        private void InputGameState_OnUnload() {
+            oldInputHandler = Input;
+            oldMouseHandler = Mouse;
+        }
 
         private void InputGameState_OnLoad() {
-            inputHandler.Load(Game.KeyBinds);
-            inputGuide.Load(Game,Input);
+            if(HasFlag(StateFlags.CarryKeyboardInput)) {
+                Input.Import(oldInputHandler);
+            }
+            if(HasFlag(StateFlags.CarryMouseInput)) {
+                Mouse.Import(oldMouseHandler);
+            }
+            oldInputHandler = null;
+            oldMouseHandler = null;
         }
 
         public bool ClearTimeout(int ID) {
@@ -29,14 +41,18 @@ namespace TwelveEngine.Shell {
             return timeoutManager.Add(action,delay,Game.Time.TotalGameTime);
         }
 
-        protected bool InputEnabled => Game.IsActive && !IsTransitioning;
+        protected bool InputEnabled {
+            get {
+                return Game.IsActive && !IsTransitioning;
+            }
+        }
 
         protected void UpdateInputs() {
-            mouseHandler.Update(Game.MouseState,Game.Viewport.Bounds,InputEnabled);
+            Mouse.Update(Game.MouseState,InputEnabled);
             if(!InputEnabled) {
                 return;
             }
-            inputHandler.Update(Game.KeyboardState,Game.GamePadState);
+            Input.Update(Game.KeyboardState,Game.GamePadState);
             timeoutManager.Update(Now);
         }
     }

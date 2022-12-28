@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using TwelveEngine;
 
-namespace Elves.Menu {
+namespace Elves.SplashMenu {
     public static class FloatingItemData {
 
         private const int BUBBLE_GRAB_WEIGHT = 10;

@@ -5,7 +5,7 @@ using System;
 using TwelveEngine;
 using TwelveEngine.Game3D.Entity.Types;
 
-namespace Elves {
+namespace Elves.TestStates {
 
     public sealed class FallingSnowParticleSystem:ParticleSystem {
 
@@ -24,7 +24,7 @@ namespace Elves {
 
         private const float COSINE_RADIUS = 0.0625f;
 
-        private readonly Random random = new Random();
+        private readonly Random random = new();
 
         private readonly Vector2[] p_velocity = new Vector2[SNOW_COUNT];
         private readonly float[] p_centerX = new float[SNOW_COUNT];

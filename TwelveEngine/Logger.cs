@@ -17,13 +17,13 @@ namespace TwelveEngine {
             streamWriter = null;
         }
 
-        static Logger() {
+        public static void Initialize(string logFile) {
 #if DEBUG
             AllocConsole();
 #endif
-            bool logFileExists = File.Exists(Constants.LogFile);
+            bool logFileExists = File.Exists(logFile);
             try {
-                streamWriter = File.AppendText(Constants.LogFile);
+                streamWriter = File.AppendText(logFile);
             } catch(Exception exception) {
                 streamWriter = null;
                 WriteLine(exception.ToString());
