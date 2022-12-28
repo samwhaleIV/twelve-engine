@@ -37,10 +37,13 @@ namespace Elves {
             game.CursorSources.Add(CursorState.Pressed,new Rectangle(72,8,8,8));
             game.CursorScale = 8;
         }
-        public static GameManager Game { get; private set; }
 
-        public static void Main(GameManager game) {
+        public static GameManager Game { get; private set; }
+        public static SaveData SaveData { get; private set; }
+
+        public static void Main(GameManager game,SaveData saveData) {
             Game = game;
+            SaveData = saveData;
 
             UITextures.Load(game);
             Fonts.Load();

@@ -28,7 +28,7 @@ namespace ElvesDesktop {
         }
 
         protected override void OnGameLoad(GameManager game) {
-            Elves.Program.Main(game);
+            Elves.Program.Main(game,SaveData);
         }
     }
 }

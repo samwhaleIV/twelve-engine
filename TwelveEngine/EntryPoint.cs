@@ -1,7 +1,5 @@
 ﻿using TwelveEngine.Shell;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using TwelveEngine.Input;
 
@@ -39,49 +37,7 @@ namespace TwelveEngine {
             Logger.CleanUp();
         }
 
-        private static void LogFlags(HashSet<string> flags) {
-            var sb = new StringBuilder();
-            sb.Append($"[Flags] {{ ");
-            if(flags.Count <= 0) {
-                sb.Append(Constants.Logging.None);
-                sb.Append(" }");
-                Logger.WriteLine(sb);
-                return;
-            }
-            foreach(var flag in flags) {
-                sb.Append(string.IsNullOrWhiteSpace(flag) ? Constants.Logging.Empty : flag);
-                sb.Append(", ");
-            }
-            sb.Remove(sb.Length-2,2);
-            sb.Append(" }");
-            Logger.WriteLine(sb);
-        }
-
-        protected static void LoadFlags(string[] args) {
-            IEnumerable<string> flagList;
-            var configFlags = Config.GetStringArray(Config.Keys.Flags);
-            if(configFlags is null) {
-                flagList = args;
-            } else {
-                flagList = configFlags;
-            }
-            var flagSet = new HashSet<string>();
-            if(flagList is null) {
-                Flags.SetFlags(flagSet);
-                LogFlags(flagSet);
-                return;
-            }
-            foreach(var flag in flagList) {
-                if(string.IsNullOrWhiteSpace(flag)) {
-                    continue;
-                }
-                flagSet.Add(flag);
-            }
-            Flags.SetFlags(flagSet);
-            LogFlags(flagSet);
-        }
-
-        protected void InitializeGameManager() {
+        private void InitializeGameManager() {
             using var game = new GameManager(
                 fullscreen: Flags.Get(Constants.Flags.Fullscreen),
                 hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
@@ -93,7 +49,7 @@ namespace TwelveEngine {
             game.Run();
         }
 
-        protected static bool ValidateSaveDirectory(string directory) {
+        private static bool ValidateSaveDirectory(string directory) {
             if(Directory.Exists(directory)) {
                 return true;
             }
@@ -111,23 +67,7 @@ namespace TwelveEngine {
         }
 
         private readonly SaveData _saveData = new();
-        public SaveData SaveData => _saveData;
-
-
-        protected string SaveDataFile { get; private set; } = null;
-        protected string KeyBindsFile { get; private set; } = null;
-
-        public bool TryLoadKeyBinds() {
-            return KeyBinds.TryLoad(KeyBindsFile);
-        }
-
-        public bool TryLoadSaveData() {
-            return SaveData.TryLoad(SaveDataFile);
-        }
-
-        public bool TrySaveSaveData() {
-            return SaveData.TrySave(SaveDataFile);
-        }
+        protected SaveData SaveData => _saveData;
 
         protected void EngineMain(EntryPointData data) {
             _ = "Hello, world!";
@@ -135,8 +75,8 @@ namespace TwelveEngine {
             string logFile = data.GetDirectoryPath(Constants.LogFile);
             string configFile = data.GetDirectoryPath(Constants.ConfigFile);
 
-            SaveDataFile = data.GetDirectoryPath(data.SaveFile);
-            KeyBindsFile = data.GetDirectoryPath(Constants.KeyBindsFile);
+            SaveData.Path = data.GetDirectoryPath(data.SaveFile);
+            KeyBinds.Path = data.GetDirectoryPath(Constants.KeyBindsFile);
 
             Logger.Initialize(logFile);
             ValidateSaveDirectory(data.SaveDirectory);
@@ -144,11 +84,11 @@ namespace TwelveEngine {
             Config.TryLoad(configFile);
             Config.WriteToLog();
 
-            LoadFlags(data.Args);
-            TryLoadKeyBinds();
+            Flags.Load(data.Args);
+            KeyBinds.TryLoad();
 
-            TryLoadSaveData();
-            TrySaveSaveData();
+            SaveData.TryLoad();
+            SaveData.TrySave();
 
             GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
             InitializeGameManager();

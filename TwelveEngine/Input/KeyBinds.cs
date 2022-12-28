@@ -21,6 +21,8 @@ namespace TwelveEngine.Input {
             { Impulse.Toggle, keyBindSet.Toggle }
         };
 
+        public static string Path { get; set; }
+
         private static readonly Dictionary<Impulse,Keys> impulses = GetBinds(new KeyBindSet());
 
         public static Keys Get(Impulse type) {
@@ -46,10 +48,10 @@ namespace TwelveEngine.Input {
             impulses[type] = key;
         }
 
-        public static bool TrySave(string path) {
+        public static bool TrySave() {
             bool success = false;
             try {
-                using var stream = File.OpenWrite(path);
+                using var stream = File.OpenWrite(Path);
                 using var writer = new BinaryWriter(stream);
                 Export(writer);
                 writer.Close();
@@ -58,28 +60,28 @@ namespace TwelveEngine.Input {
                 Logger.WriteLine($"Failure saving key binds: {exception}");
             }
             if(success) {
-                Logger.WriteLine($"Saved key binds to \"{path}\"");
+                Logger.WriteLine($"Saved key binds to \"{Path}\"");
             }
             return success;
         }
 
-        public static bool TryLoad(string path) {
+        public static bool TryLoad() {
             bool success = false;
-            if(!File.Exists(path)) {
+            if(!File.Exists(Path)) {
                 Logger.WriteLine("Key binds file does not exist, loading defaults.");
                 return false;
             }
             try {
-                using var stream = File.OpenRead(path);
+                using var stream = File.OpenRead(Path);
                 using var reader = new BinaryReader(stream);
                 Import(reader);
                 reader.Close();
                 success = true;
             } catch(Exception exception) {
-                Logger.WriteLine($"[Key Binds] Failed to load key binds from path \"{path}\": {exception}");
+                Logger.WriteLine($"[Key Binds] Failed to load key binds from Path \"{Path}\": {exception}");
             }
             if(success) {
-                Logger.WriteLine($"[Key Binds] Loaded key binds from path \"{path}\".");
+                Logger.WriteLine($"[Key Binds] Loaded key binds from Path \"{Path}\".");
             }
             return success;
         }
