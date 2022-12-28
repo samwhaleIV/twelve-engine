@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using System;
 
-namespace TwelveEngine.Shell.Input {
+namespace TwelveEngine.Input {
     public sealed class HotkeySet {
         private readonly Hotkey[] set;
         public HotkeySet(params (Keys Key,Action Action)[] set) {

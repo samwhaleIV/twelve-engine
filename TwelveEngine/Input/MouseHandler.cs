@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Shell.Input {
+namespace TwelveEngine.Input {
     public sealed class MouseHandler {
 
         public event Action<Point> OnPress, OnRelease, OnMove;

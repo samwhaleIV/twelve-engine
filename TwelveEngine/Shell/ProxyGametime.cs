@@ -18,7 +18,8 @@ namespace TwelveEngine.Shell {
 
             if(freezeCount == 0) {
                 var elapsedTime = gameTime.ElapsedGameTime;
-                if(elapsedTime > MAX_ELAPSED_TIME) {
+                if(Config.GetBool(Config.Keys.LimitFrameDelta) && elapsedTime > MAX_ELAPSED_TIME) {
+                    Console.WriteLine($"[WARNING] Exceeded frame delta limit: {elapsedTime} > {MAX_ELAPSED_TIME}");
                     elapsedTime = MAX_ELAPSED_TIME;
                 }
                 ElapsedGameTime = elapsedTime;

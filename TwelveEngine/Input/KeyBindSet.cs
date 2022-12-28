@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Shell.Input {
+namespace TwelveEngine.Input {
     public sealed class KeyBindSet {
         public Keys Up = Keys.W;
         public Keys Down = Keys.S;

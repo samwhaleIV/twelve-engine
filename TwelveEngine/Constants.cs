@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine {
-    public static partial class Constants {
+    public static class Constants {
         public const double MaxFrameDelta = 1000 / 15d;
         public const double SimFrameTime = 1000 / 60d;
 
@@ -34,6 +34,13 @@ namespace TwelveEngine {
         public const Keys AdvanceFrameKey = Keys.F6;
 
         public const Keys FullscreenKey = Keys.F11;
+
+        public static class Logging {
+            public const string Empty = "<Empty>";
+            public const string None = "<None>";
+            public const string Unknown = "<Unknown>";
+            public const string NoName = "<No Name>";
+        }
 
         public static class Flags {
             public const string HardwareFullscreen = "hw-fullscreen";

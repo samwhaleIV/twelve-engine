@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Shell.Input {
+namespace TwelveEngine.Input {
 
     public sealed class InputHandler {
 

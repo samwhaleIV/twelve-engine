@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwelveEngine.Shell {
+namespace TwelveEngine.Shell.UI {
     public sealed class FPSCounter {
 
         public static TimeSpan DefaultFrequency => TimeSpan.FromMilliseconds(250);

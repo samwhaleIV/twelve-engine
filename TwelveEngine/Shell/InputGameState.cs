@@ -1,5 +1,5 @@
 ﻿using System;
-using TwelveEngine.Shell.Input;
+using TwelveEngine.Input;
 
 namespace TwelveEngine.Shell {
     public class InputGameState:GameState {

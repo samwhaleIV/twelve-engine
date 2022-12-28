@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Shell.Input {
+namespace TwelveEngine.Input {
     public readonly struct HotkeyData {
         public HotkeyData(KeyboardState keyboardState,GameTime gameTime) {
             KeyboardState = keyboardState;

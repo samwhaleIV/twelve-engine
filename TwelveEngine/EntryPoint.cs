@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using TwelveEngine.Shell.Input;
+using TwelveEngine.Input;
 
 namespace TwelveEngine {
 
@@ -43,12 +43,13 @@ namespace TwelveEngine {
             var sb = new StringBuilder();
             sb.Append($"[Flags] {{ ");
             if(flags.Count <= 0) {
-                sb.Append("<None> }");
+                sb.Append(Constants.Logging.None);
+                sb.Append(" }");
                 Logger.WriteLine(sb);
                 return;
             }
             foreach(var flag in flags) {
-                sb.Append(flag);
+                sb.Append(string.IsNullOrWhiteSpace(flag) ? Constants.Logging.Empty : flag);
                 sb.Append(", ");
             }
             sb.Remove(sb.Length-2,2);

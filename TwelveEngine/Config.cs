@@ -10,21 +10,23 @@ namespace TwelveEngine {
     public static class Config {
 
         public enum Keys {
+            Flags,
             HWFullScreenWidth,
             HWFullScreenHeight,
             BenchmarkStateSwap,
             StateCleanUpGC,
             GamePadIndex,
-            Flags
+            LimitFrameDelta
         }
 
         private static readonly Dictionary<string,(ConfigValueType Type, object Value)> configValues = new() {
+            { nameof(Keys.Flags), (ConfigValueType.StringArray, null) },
             { nameof(Keys.HWFullScreenWidth), (ConfigValueType.IntNullable, null) },
             { nameof(Keys.HWFullScreenHeight), (ConfigValueType.IntNullable, null) },
             { nameof(Keys.BenchmarkStateSwap), (ConfigValueType.Bool, false) },
             { nameof(Keys.StateCleanUpGC), (ConfigValueType.Bool, false) },
             { nameof(Keys.GamePadIndex), (ConfigValueType.Int, 0) },
-            { nameof(Keys.Flags), (ConfigValueType.StringArray, null) }
+            { nameof(Keys.LimitFrameDelta), (ConfigValueType.Bool, false) }
         };
 
         public static void RegisterConfigValue(string key,ConfigValueType Type,object Value) {
@@ -61,7 +63,7 @@ namespace TwelveEngine {
             configValues[key] = (ConfigValueType.Bool, value);
         }
 
-        public static void SetStringArray(string key,string[] value) {
+        public static void SetStringArray(string key,params string[] value) {
             ValidateKey(key,ConfigValueType.StringArray);
             configValues[key] = (ConfigValueType.StringArray, value);
         }
@@ -89,7 +91,7 @@ namespace TwelveEngine {
         public static void SetInt(Keys key,int value) => SetInt(key.ToString(),value);
         public static void SetIntNullable(Keys key,int? value) => SetIntNullable(key.ToString(),value);
         public static void SetBool(Keys key,bool value) => SetBool(key.ToString(),value);
-        public static void SetStringArray(Keys key,string[] value) => SetStringArray(key.ToString(),value);
+        public static void SetStringArray(Keys key,params string[] value) => SetStringArray(key.ToString(),value);
 
         public static int GetInt(Keys key) => GetInt(key.ToString());
         public static int? GetIntNullable(Keys key) => GetIntNullable(key.ToString());
@@ -125,13 +127,45 @@ namespace TwelveEngine {
 
         private static readonly StringBuilder stringBuilder = new();
 
+        private static readonly Keys[] KeysList = (Keys[])Enum.GetValues(typeof(Keys));
+
         public static void WriteToLog() {
             stringBuilder.AppendLine("[Config] {");
-            stringBuilder.AppendLine($"    HWFullScreenWidth = {GetIntNullable(Keys.HWFullScreenWidth)}");
-            stringBuilder.AppendLine($"    HWFullScreenHeight = {GetIntNullable(Keys.HWFullScreenHeight)}");
-            stringBuilder.AppendLine($"    GamePadIndex = {GetInt(Keys.GamePadIndex)}");
-            stringBuilder.AppendLine($"    BenchmarkStateSwap = {GetBool(Keys.BenchmarkStateSwap)}");
-            stringBuilder.AppendLine($"    StateCleanUpGC = {GetBool(Keys.StateCleanUpGC)}");
+            foreach(var key in KeysList) {
+                if(!configValues.TryGetValue(key.ToString(),out var value)) {
+                    continue;
+                }
+                var keyValue = key.ToString();
+                stringBuilder.Append($"    {keyValue} = ");
+                switch(value.Type) {
+                    case ConfigValueType.Int:
+                        stringBuilder.Append(GetInt(keyValue));
+                        break;
+                    case ConfigValueType.IntNullable:
+                        stringBuilder.Append(GetIntNullable(keyValue));
+                        break;
+                    case ConfigValueType.Bool:
+                        stringBuilder.Append(GetBool(keyValue));
+                        break;
+                    case ConfigValueType.StringArray:
+                        var stringArray = GetStringArray(keyValue);
+                        if(stringArray == null || stringArray.Length <= 0) {
+                            stringBuilder.Append(Constants.Logging.None);
+                        } else {
+                            stringBuilder.Append("{ ");
+                            foreach(var item in stringArray) {
+                                stringBuilder.Append($"{(string.IsNullOrWhiteSpace(item) ? Constants.Logging.Empty : item)}, ");
+                            }
+                            stringBuilder.Remove(stringBuilder.Length-2,2);
+                            stringBuilder.Append(" }");
+                        }
+                        break;
+                    default:
+                        stringBuilder.Append(Constants.Logging.Unknown);
+                        break;
+                }
+                stringBuilder.AppendLine();
+            }
             stringBuilder.AppendLine("}");
             Logger.Write(stringBuilder);
             stringBuilder.Clear();

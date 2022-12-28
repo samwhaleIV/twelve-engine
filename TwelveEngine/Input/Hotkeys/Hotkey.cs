@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Shell.Input {
+namespace TwelveEngine.Input {
     public sealed class Hotkey {
 
         private readonly Keys key;

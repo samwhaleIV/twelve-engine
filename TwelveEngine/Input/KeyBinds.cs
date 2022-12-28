@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using System.IO;
 using System;
 
-namespace TwelveEngine.Shell.Input {
+namespace TwelveEngine.Input {
     public static class KeyBinds {
 
         private static Dictionary<Impulse,Keys> GetBinds(KeyBindSet keyBindSet) => new() {

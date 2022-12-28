@@ -3,15 +3,14 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Shell.Input;
+using TwelveEngine.Input;
 using TwelveEngine.Shell.Automation;
 using System.Collections.Generic;
 using TwelveEngine.Shell.UI;
 using System.Text;
-using System.Linq;
 
 namespace TwelveEngine.Shell {
-    public sealed partial class GameManager:Game {
+    public sealed class GameManager:Game {
 
         public bool DrawDebug { get; set; } = false;
 
@@ -181,7 +180,7 @@ namespace TwelveEngine.Shell {
             stringBuilder.Append($"[{proxyGameTime.TotalGameTime}] Set state: ");
             string stateName = state.Name;
             stringBuilder.Append('"');
-            stringBuilder.Append(string.IsNullOrEmpty(stateName) ? "<No Name>" : stateName);
+            stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Constants.Logging.NoName : stateName);
             stringBuilder.Append("\" { Args = ");
             StateData data = state.Data;
             if(data.Args != null && data.Args.Length >= 1) {
