@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Elves.UI.Font {
+namespace TwelveEngine.Font {
     public sealed class UVSpriteFont {
 
         private const int CHARACTER_QUEUE_SIZE = 16;

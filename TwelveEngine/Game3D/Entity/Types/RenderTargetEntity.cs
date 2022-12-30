@@ -25,9 +25,9 @@ namespace TwelveEngine.Game3D.Entity.Types {
             if(RenderOnTarget == null) {
                 return;
             }
-            Game.SetRenderTarget(renderTarget);
+            Game.PushRenderTarget(renderTarget);
             RenderOnTarget.Invoke();
-            Game.RestoreRenderTarget();
+            Game.PopRenderTarget();
         }
 
         private void RenderTargetEntity_OnLoad() {

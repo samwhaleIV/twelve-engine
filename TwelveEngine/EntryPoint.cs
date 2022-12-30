@@ -2,6 +2,10 @@
 using System;
 using System.IO;
 using TwelveEngine.Input;
+using Microsoft.Xna.Framework.Input;
+using System.Text;
+using TwelveEngine.Font;
+using Microsoft.Xna.Framework.Media;
 
 namespace TwelveEngine {
 
@@ -26,6 +30,7 @@ namespace TwelveEngine {
 
             Logger.AutoFlush = true;
 
+            Fonts.Load(game);
             OnGameLoad(game);
         }
 
@@ -46,7 +51,16 @@ namespace TwelveEngine {
                 DrawDebug = Flags.Get(Constants.Flags.DrawDebug)
             };
             game.OnLoad += Game_OnLoad;
-            game.Run();
+            if(Flags.Get(Constants.Flags.NoFailSafe)) {
+                game.Run();
+            } else {
+                try {
+                    game.Run();
+                } catch(Exception exception) {
+                    SaveData.TrySave();
+                    Logger.WriteLine($"An unexpected error has occurred: {exception}");
+                }
+            }
         }
 
         private static bool ValidateSaveDirectory(string directory) {
@@ -79,12 +93,13 @@ namespace TwelveEngine {
             KeyBinds.Path = data.GetDirectoryPath(Constants.KeyBindsFile);
 
             Logger.Initialize(logFile);
+
             ValidateSaveDirectory(data.SaveDirectory);
 
             Config.TryLoad(configFile);
-            Config.WriteToLog();
-
             Flags.Load(data.Args);
+
+            Config.WriteToLog();
             KeyBinds.TryLoad();
 
             SaveData.TryLoad();

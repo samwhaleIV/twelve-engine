@@ -41,10 +41,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\SpeechBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\Tagline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Battle\TargetButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Fonts.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\Glyph.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\RetroFontData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\TwelvenFontData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="..\Elves\Battle\BattleRendererState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SplashMenu\SplashMenuState.cs" />
@@ -53,7 +49,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIColors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UITextures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Font\UVSpriteFont.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)TestStates\" />

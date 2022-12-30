@@ -130,8 +130,8 @@ namespace TwelveEngine.Shell {
         public MouseState MouseState { get; private set; }
         public GamePadState GamePadState { get; private set; }
 
-        public void SetRenderTarget(RenderTarget2D renderTarget) => RenderTargets.Push(renderTarget);
-        public void RestoreRenderTarget() => RenderTargets.Pop();
+        public void PushRenderTarget(RenderTarget2D renderTarget) => RenderTargets.Push(renderTarget);
+        public void PopRenderTarget() => RenderTargets.Pop();
         public Viewport Viewport => RenderTargets.GetViewport();
 
         public bool IsPaused {
@@ -174,8 +174,13 @@ namespace TwelveEngine.Shell {
 
         private static readonly StringBuilder stringBuilder = new();
 
-        private void LoadState(GameState state) {
+        private void ResetLeakyStateProperties() {
             GraphicsDevice.Reset();
+            CursorState = CursorState.Default;
+        }
+
+        private void LoadState(GameState state) {
+            ResetLeakyStateProperties();
             state.Load(this);
             stringBuilder.Append($"[{proxyGameTime.TotalGameTime}] Set state: ");
             string stateName = state.Name;

@@ -1,8 +1,6 @@
 ﻿using TwelveEngine.Shell;
 using Elves.Battle;
-using Elves.UI.Font;
 using Elves.UI;
-using System.Collections.Generic;
 using Elves.Battle.Battles;
 using Microsoft.Xna.Framework;
 using System;
@@ -45,8 +43,9 @@ namespace Elves {
             Game = game;
             SaveData = saveData;
 
+            Game.Window.Title = "Elves!";
+
             UITextures.Load(game);
-            Fonts.Load();
 
             if(!Flags.Get(Constants.Flags.OSCursor)) {
                 SetCustomCursor();

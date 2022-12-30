@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Elves.UI.Font {
+namespace TwelveEngine.Font {
     public static partial class Fonts {
         private static Dictionary<char,Glyph> GetRetroFontData() {
             var glyphDictionary = new Dictionary<char,Glyph>();

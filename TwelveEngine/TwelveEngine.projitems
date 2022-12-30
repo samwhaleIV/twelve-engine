@@ -13,6 +13,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\LowMemorySortedSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Flags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Font\Fonts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Font\Glyph.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Font\RetroFontData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Font\TwelvenFontData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Font\UVSpriteFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\ParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\Screenspace3DSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />

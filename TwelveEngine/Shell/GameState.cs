@@ -40,7 +40,6 @@ namespace TwelveEngine.Shell {
         public string Name { get; set; } = string.Empty;
 
         internal void Load(GameManager game) {
-            game.CursorState = CursorState.Default;
             IsLoading = true;
             Game = game;
             OnLoad?.Invoke();

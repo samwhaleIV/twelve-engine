@@ -5,8 +5,6 @@ using System.Text;
 
 namespace TwelveEngine {
 
-    public enum ConfigValueType { Int, IntNullable, Bool, StringArray }
-
     public static class Config {
 
         public enum Keys {
@@ -19,15 +17,39 @@ namespace TwelveEngine {
             LimitFrameDelta
         }
 
-        private static readonly Dictionary<string,(ConfigValueType Type, object Value)> configValues = new() {
-            { nameof(Keys.Flags), (ConfigValueType.StringArray, null) },
-            { nameof(Keys.HWFullScreenWidth), (ConfigValueType.IntNullable, null) },
-            { nameof(Keys.HWFullScreenHeight), (ConfigValueType.IntNullable, null) },
-            { nameof(Keys.BenchmarkStateSwap), (ConfigValueType.Bool, false) },
-            { nameof(Keys.StateCleanUpGC), (ConfigValueType.Bool, false) },
-            { nameof(Keys.GamePadIndex), (ConfigValueType.Int, 0) },
-            { nameof(Keys.LimitFrameDelta), (ConfigValueType.Bool, false) }
+        public enum ConfigValueType { Int, IntNullable, Bool, StringArray }
+
+        private static Dictionary<string,(ConfigValueType Type, object Value)> GetConfigValues() => new() {
+            { GetKey(Keys.Flags), (ConfigValueType.StringArray, null) },
+            { GetKey(Keys.HWFullScreenWidth), (ConfigValueType.IntNullable, null) },
+            { GetKey(Keys.HWFullScreenHeight), (ConfigValueType.IntNullable, null) },
+            { GetKey(Keys.BenchmarkStateSwap), (ConfigValueType.Bool, false) },
+            { GetKey(Keys.StateCleanUpGC), (ConfigValueType.Bool, false) },
+            { GetKey(Keys.GamePadIndex), (ConfigValueType.Int, 0) },
+            { GetKey(Keys.LimitFrameDelta), (ConfigValueType.Bool, false) }
         };
+
+        private static readonly Dictionary<string,(ConfigValueType Type, object Value)> configValues;
+
+        private static readonly string[] keys;
+
+        private static string GetKey(Keys key) {
+            return keys[(int)key];
+        }
+
+        static Config() {
+
+            var enumValues = KeysList;
+            var keys = new string[enumValues.Length];
+
+            for(int i = 0;i<keys.Length;i++) {
+                keys[i] = enumValues[i].ToString();
+            }
+
+            Config.keys = keys;
+
+            configValues = GetConfigValues();
+        }
 
         public static void RegisterConfigValue(string key,ConfigValueType Type,object Value) {
             configValues.Add(key,(Type,Value));
@@ -88,25 +110,41 @@ namespace TwelveEngine {
             return (string[])configValues[key].Value;
         }
 
-        public static void SetInt(Keys key,int value) => SetInt(key.ToString(),value);
-        public static void SetIntNullable(Keys key,int? value) => SetIntNullable(key.ToString(),value);
-        public static void SetBool(Keys key,bool value) => SetBool(key.ToString(),value);
-        public static void SetStringArray(Keys key,params string[] value) => SetStringArray(key.ToString(),value);
-
-        public static int GetInt(Keys key) => GetInt(key.ToString());
-        public static int? GetIntNullable(Keys key) => GetIntNullable(key.ToString());
-        public static bool GetBool(Keys key) => GetBool(key.ToString());
-        public static string[] GetStringArray(Keys key) => GetStringArray(key.ToString());
+        public static void SetInt(Keys key,int value) {
+            SetInt(GetKey(key),value);
+        }
 
 
-        private static void LoadConfigLines(string[] lines) {
-            //todo
-            //ignore key that don't exist in the table instead of throwing an error (config values can exist in file that are not being supported by the engine or game)
+        public static void SetIntNullable(Keys key,int? value) {
+            SetIntNullable(GetKey(key),value);
+        }
+
+        public static void SetBool(Keys key,bool value) {
+            SetBool(GetKey(key),value);
+        }
+
+        public static void SetStringArray(Keys key,params string[] value) {
+            SetStringArray(GetKey(key),value);
+        }
+
+        public static int GetInt(Keys key) {
+            return GetInt(GetKey(key));
+        }
+
+        public static int? GetIntNullable(Keys key) {
+            return GetIntNullable(GetKey(key));
+        }
+        public static bool GetBool(Keys key) {
+            return GetBool(GetKey(key));
+        }
+
+        public static string[] GetStringArray(Keys key) {
+            return GetStringArray(GetKey(key));
         }
 
         public static bool TryLoad(string path) {
             if(!File.Exists(path)) {
-                Logger.WriteLine($"No config file found at path \"{path}\".");
+                Logger.WriteLine($"[Config] No config file found at path \"{path}\".");
                 if(path == Constants.ConfigFile) {
                     return false;
                 }
@@ -114,28 +152,28 @@ namespace TwelveEngine {
             }
             string[] lines = null;
             try {
-                lines = File.ReadAllLines(path);
+                LoadConfigLines(path);
             } catch(Exception exception) {
-                Logger.WriteLine($"Failure reading config file from \"{path}\": {exception}");
+                Logger.WriteLine($"[Config] Failure reading config file from \"{path}\": {exception}");
             }
             if(lines == null || lines.Length <= 0) {
                 return false;
             }
-            LoadConfigLines(lines);
+
             return true;
         }
 
         private static readonly StringBuilder stringBuilder = new();
 
-        private static readonly Keys[] KeysList = (Keys[])Enum.GetValues(typeof(Keys));
+        private static readonly Keys[] KeysList = Enum.GetValues<Keys>();
 
         public static void WriteToLog() {
-            stringBuilder.AppendLine("[Config] {");
+            stringBuilder.AppendLine("[Config] Config data: {");
             foreach(var key in KeysList) {
-                if(!configValues.TryGetValue(key.ToString(),out var value)) {
+                if(!configValues.TryGetValue(GetKey(key),out var value)) {
                     continue;
                 }
-                var keyValue = key.ToString();
+                var keyValue = GetKey(key);
                 stringBuilder.Append($"    {keyValue} = ");
                 switch(value.Type) {
                     case ConfigValueType.Int:
@@ -169,6 +207,14 @@ namespace TwelveEngine {
             stringBuilder.AppendLine("}");
             Logger.Write(stringBuilder);
             stringBuilder.Clear();
+        }
+
+        private static void LoadConfigLines(string path) {
+            return;
+            using var reader = new StreamReader(path);
+
+            //todo
+            //ignore key that don't exist in the table instead of throwing an error (config values can exist in file that are not being supported by the engine or game)
         }
     }
 }

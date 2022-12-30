@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Elves.UI.Font {
+namespace TwelveEngine.Font {
     public readonly struct Glyph {
         public readonly Rectangle Source;
 
