@@ -144,7 +144,7 @@ namespace TwelveEngine {
 
         public static bool TryLoad(string path) {
             if(!File.Exists(path)) {
-                Logger.WriteLine($"[Config] No config file found at path \"{path}\".");
+                Logger.WriteLine($"No config file found at path \"{path}\".",LoggerLabel.Config);
                 if(path == Constants.ConfigFile) {
                     return false;
                 }
@@ -154,7 +154,7 @@ namespace TwelveEngine {
             try {
                 LoadConfigLines(path);
             } catch(Exception exception) {
-                Logger.WriteLine($"[Config] Failure reading config file from \"{path}\": {exception}");
+                Logger.WriteLine($"Failure reading config file from \"{path}\": {exception}",LoggerLabel.Config);
             }
             if(lines == null || lines.Length <= 0) {
                 return false;
@@ -168,7 +168,7 @@ namespace TwelveEngine {
         private static readonly Keys[] KeysList = Enum.GetValues<Keys>();
 
         public static void WriteToLog() {
-            stringBuilder.AppendLine("[Config] Config data: {");
+            stringBuilder.AppendLine("Config data: {");
             foreach(var key in KeysList) {
                 if(!configValues.TryGetValue(GetKey(key),out var value)) {
                     continue;
@@ -205,7 +205,7 @@ namespace TwelveEngine {
                 stringBuilder.AppendLine();
             }
             stringBuilder.AppendLine("}");
-            Logger.Write(stringBuilder);
+            Logger.Write(stringBuilder,LoggerLabel.Config);
             stringBuilder.Clear();
         }
 

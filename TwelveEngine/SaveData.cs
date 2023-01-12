@@ -46,7 +46,7 @@ namespace TwelveEngine {
                 using var fs = File.Open(Path,FileMode.Create,FileAccess.Write);
                 using var bw = new BinaryWriter(fs,Encoding.UTF8);
                 Export(bw);
-                Logger.WriteLine($"[Save] Wrote save data to \"{Path}\".");
+                Logger.WriteLine($"Wrote save data to \"{Path}\".",LoggerLabel.Save);
                 success = true;
             } catch(Exception exception) {
                 Logger.WriteLine(exception.ToString());
@@ -59,24 +59,24 @@ namespace TwelveEngine {
         public bool TryLoad() {
             bool success = false;
             if(!File.Exists(Path)) {
-                Logger.WriteLine($"[Save] Save file \"{Path}\" does not exist.");
+                Logger.WriteLine($"Save file \"{Path}\" does not exist.",LoggerLabel.Save);
                 return false;
             }
             try {
                 using var fs = File.Open(Path,FileMode.Open,FileAccess.Read);
                 if(fs.Length <= 0) {
-                    Logger.WriteLine($"[Save] Cannot read save data. File \"{Path}\" is empty!");
+                    Logger.WriteLine($"Cannot read save data. File \"{Path}\" is empty!",LoggerLabel.Save);
                     success = false;
                 } else {
                     dataTable.Clear();
                     using var br = new BinaryReader(fs,Encoding.UTF8);
                     Import(br);
-                    Logger.WriteLine($"[Save] Loaded save data from file \"{Path}\".");
+                    Logger.WriteLine($"Loaded save data from file \"{Path}\".",LoggerLabel.Save);
                     success = true;
                 }
             } catch(Exception exception) {
                 dataTable.Clear();
-                Logger.WriteLine($"[Save] Failure reading save data. Save data was corrupted and has been reset: {exception}");
+                Logger.WriteLine($"Failure reading save data. Save data was corrupted and has been reset: {exception}",LoggerLabel.Save);
             }
             return success;
         }

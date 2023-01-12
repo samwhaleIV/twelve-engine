@@ -57,10 +57,10 @@ namespace TwelveEngine.Input {
                 writer.Close();
                 success = true;
             } catch(Exception exception) {
-                Logger.WriteLine($"Failure saving key binds: {exception}");
+                Logger.WriteLine($"Failure saving key binds: {exception}",LoggerLabel.KeyBinds);
             }
             if(success) {
-                Logger.WriteLine($"Saved key binds to \"{Path}\"");
+                Logger.WriteLine($"Saved key binds to \"{Path}\"",LoggerLabel.KeyBinds);
             }
             return success;
         }
@@ -68,7 +68,7 @@ namespace TwelveEngine.Input {
         public static bool TryLoad() {
             bool success = false;
             if(!File.Exists(Path)) {
-                Logger.WriteLine("Key binds file does not exist, loading defaults.");
+                Logger.WriteLine("Key binds file does not exist, loading defaults.",LoggerLabel.KeyBinds);
                 return false;
             }
             try {
@@ -78,10 +78,10 @@ namespace TwelveEngine.Input {
                 reader.Close();
                 success = true;
             } catch(Exception exception) {
-                Logger.WriteLine($"[Key Binds] Failed to load key binds from Path \"{Path}\": {exception}");
+                Logger.WriteLine($"Failed to load key binds from Path \"{Path}\": {exception}",LoggerLabel.KeyBinds);
             }
             if(success) {
-                Logger.WriteLine($"[Key Binds] Loaded key binds from Path \"{Path}\".");
+                Logger.WriteLine($"Loaded key binds from Path \"{Path}\".",LoggerLabel.KeyBinds);
             }
             return success;
         }

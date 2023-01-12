@@ -72,10 +72,10 @@ namespace TwelveEngine {
                 Directory.CreateDirectory(directory);
                 success = true;
             } catch(Exception exception) {
-                Logger.WriteLine($"Failure creating save directory \"{directory}\": {exception}");
+                Logger.WriteLine($"Failure creating save directory \"{directory}\": {exception}",LoggerLabel.Save);
             }
             if(success) {
-                Logger.WriteLine($"Created save directory \"{directory}\".");
+                Logger.WriteLine($"Created save directory \"{directory}\".",LoggerLabel.Save);
             }
             return success;
         }

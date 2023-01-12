@@ -19,11 +19,11 @@ namespace TwelveEngine.Shell {
         ) {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
 
-            Logger.WriteBooleanSet("[Game Manager] Context settings",new string[] {
+            Logger.WriteBooleanSet("Context settings",new string[] {
                 "Fullscreen","HardwareModeSwitch","VerticalSync"
             },new bool[] {
                 fullscreen, hardwareModeSwitch, verticalSync
-            });
+            },LoggerLabel.GameManager);
 
             Content.RootDirectory = Constants.ContentDirectory;
 
@@ -435,10 +435,10 @@ namespace TwelveEngine.Shell {
             if(data.Flags.HasFlag(StateFlags.ForceGC) || Config.GetBool(Config.Keys.StateCleanUpGC)) {
                 GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
                 if(benchmark) {
-                    Logger.WriteLine($"[Benchmark] Forced GC and state swap, elapsed time: {ReadWatchAndReset()}");
+                    Logger.WriteLine($"Forced GC and state swap, elapsed time: {ReadWatchAndReset()}",LoggerLabel.Benchmark);
                 }
             } else if(benchmark) {
-                Logger.WriteLine($"[Benchmark] State swap, elapsed time: {ReadWatchAndReset()}");
+                Logger.WriteLine($"State swap, elapsed time: {ReadWatchAndReset()}",LoggerLabel.Benchmark);
             }
         }
 

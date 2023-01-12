@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntryPoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LoggerLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\CursorState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FrameTimeSmoother.cs" />
