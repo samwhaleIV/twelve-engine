@@ -39,13 +39,6 @@ namespace TwelveEngine {
 
         public const Keys FullscreenKey = Keys.F11;
 
-        public static class Logging {
-            public const string Empty = "<Empty>";
-            public const string None = "<None>";
-            public const string Unknown = "<Unknown>";
-            public const string NoName = "<No Name>";
-        }
-
         public static class Flags {
             public const string NoFailSafe = "nofailsafe";
             public const string HardwareFullscreen = "hwfullscreen";

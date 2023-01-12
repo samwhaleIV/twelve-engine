@@ -7,6 +7,8 @@ namespace TwelveEngine {
 
     public static class Config {
 
+        private const int CONFIG_SEGMENT_BUFFER_SIZE = 64;
+
         public enum Keys {
             Flags,
             HWFullScreenWidth,
@@ -33,14 +35,18 @@ namespace TwelveEngine {
 
         private static readonly string[] keys;
 
+        private static readonly StringBuilder stringBuilder = new();
+
+        private static readonly Keys[] KeysList = Enum.GetValues<Keys>();
+
         private static string GetKey(Keys key) {
             return keys[(int)key];
         }
 
         static Config() {
 
-            var enumValues = KeysList;
-            var keys = new string[enumValues.Length];
+            Keys[] enumValues = KeysList;
+            string[] keys = new string[enumValues.Length];
 
             for(int i = 0;i<keys.Length;i++) {
                 keys[i] = enumValues[i].ToString();
@@ -114,7 +120,6 @@ namespace TwelveEngine {
             SetInt(GetKey(key),value);
         }
 
-
         public static void SetIntNullable(Keys key,int? value) {
             SetIntNullable(GetKey(key),value);
         }
@@ -150,22 +155,23 @@ namespace TwelveEngine {
                 }
                 return TryLoad(Constants.ConfigFile);
             }
-            string[] lines = null;
+            List<string> lines = null;
             try {
-                LoadConfigLines(path);
+                using StreamReader reader = new(path);
+                lines = new List<string>();
+                while(!reader.EndOfStream) {
+                    lines.Add(reader.ReadLine());
+                }           
             } catch(Exception exception) {
                 Logger.WriteLine($"Failure reading config file from \"{path}\": {exception}",LoggerLabel.Config);
-            }
-            if(lines == null || lines.Length <= 0) {
                 return false;
             }
-
+            if(lines == null || lines.Count <= 0) {
+                return true;
+            }
+            AddConfigLines(lines);
             return true;
         }
-
-        private static readonly StringBuilder stringBuilder = new();
-
-        private static readonly Keys[] KeysList = Enum.GetValues<Keys>();
 
         public static void WriteToLog() {
             stringBuilder.AppendLine("Config data: {");
@@ -188,18 +194,18 @@ namespace TwelveEngine {
                     case ConfigValueType.StringArray:
                         var stringArray = GetStringArray(keyValue);
                         if(stringArray == null || stringArray.Length <= 0) {
-                            stringBuilder.Append(Constants.Logging.None);
+                            stringBuilder.Append(Logger.NONE_TEXT);
                         } else {
                             stringBuilder.Append("{ ");
                             foreach(var item in stringArray) {
-                                stringBuilder.Append($"{(string.IsNullOrWhiteSpace(item) ? Constants.Logging.Empty : item)}, ");
+                                stringBuilder.Append($"{(string.IsNullOrWhiteSpace(item) ? Logger.EMPTY_TEXT : item)}, ");
                             }
                             stringBuilder.Remove(stringBuilder.Length-2,2);
                             stringBuilder.Append(" }");
                         }
                         break;
                     default:
-                        stringBuilder.Append(Constants.Logging.Unknown);
+                        stringBuilder.Append(Logger.UNKNOWN_TEXT);
                         break;
                 }
                 stringBuilder.AppendLine();
@@ -209,12 +215,134 @@ namespace TwelveEngine {
             stringBuilder.Clear();
         }
 
-        private static void LoadConfigLines(string path) {
-            return;
-            using var reader = new StreamReader(path);
+        private static bool IsOpenCloseSet(string value) => (value[0], value[^1]) switch {
+            ('(', ')') => true,
+            ('{', '}') => true,
+            ('[', ']') => true,
+            _ => false
+        };
 
-            //todo
-            //ignore key that don't exist in the table instead of throwing an error (config values can exist in file that are not being supported by the engine or game)
+        private static string[] ParseStringArray(string value) {
+            List<string> values = new();
+            /* Shouldn't have to clear the shared 'stringBuilder' of this static class. Users should clear it when they are done using it */
+            int i = 0;
+            int end = value.Length;
+            if(end - i >= 2 && IsOpenCloseSet(value)) {
+                i += 1;
+                end -= 1;
+            }
+            void FlushValue() {
+                if(stringBuilder.Length != 0) {
+                    values.Add(stringBuilder.ToString());
+                }
+                stringBuilder.Clear();
+            }
+            while(i < end) {
+                char ch = value[i];
+                if(ch == ',') {
+                    FlushValue();
+                } else {
+                    stringBuilder.Append(ch);
+                }
+                i += 1;
+            }
+            FlushValue();
+            return values.ToArray();
+        }
+
+        private static bool IsExplicitNullValue(string value) {
+            /*
+                Very optimal, but very stupid. This is a harder to read version of:
+                (value == string.Empty || value.ToLowerInvariant() == "null" || value.ToLowerInvariant() == "none")
+            */
+
+            if(value == string.Empty || value.Length != 4 || char.ToLowerInvariant(value[0]) != 'n') {
+                return false;
+            }
+
+            char b = char.ToLowerInvariant(value[1]), c = char.ToLowerInvariant(value[2]), d = char.ToLowerInvariant(value[3]);
+
+            return (b == 'u' && c == 'l' && d == 'l') || (b == 'o' && c == 'n' && d == 'e');
+        }
+
+        private static void SetConfigValue(string key,string value,ConfigValueType type) {
+            switch(type) {
+                case ConfigValueType.Bool:
+                    SetBool(key,bool.Parse(value));
+                    return;
+                case ConfigValueType.Int:
+                    SetInt(key,int.Parse(value));
+                    return;
+                case ConfigValueType.IntNullable:
+                    if(IsExplicitNullValue(value)) {
+                        SetIntNullable(key,null);
+                    } else {
+                        SetIntNullable(key,int.Parse(value));
+                    }
+                    return;
+                case ConfigValueType.StringArray:
+                    if(IsExplicitNullValue(value)) {
+                        SetStringArray(key,Array.Empty<string>());
+                    } else {
+                        SetStringArray(key,ParseStringArray(value));
+                    }
+                    return;
+                default:
+                    Logger.WriteLine($"No value type found for key '{key}'",LoggerLabel.Config);
+                    return;
+            }
+        }
+
+        private static void AddConfigLines(IEnumerable<string> lines) {
+            StringBuilder keyBuffer = new(CONFIG_SEGMENT_BUFFER_SIZE), valueBuffer = new(CONFIG_SEGMENT_BUFFER_SIZE);
+
+            foreach(string line in lines) {
+
+                keyBuffer.Clear();
+                valueBuffer.Clear();
+
+                bool writeKey = true;
+
+                foreach(char ch in line) {
+                    switch(ch) {
+                        case ' ':
+                            /* Ignore white space */
+                            break;
+                        case Constants.ConfigValueOperand:
+                            if(!writeKey) {
+                                /* Ignore the value operand if it shows up as part of the value itself */
+                                break;
+                            }
+                            writeKey = false;
+                            break;
+                        default:
+                            if(writeKey) {
+                                keyBuffer.Append(ch);
+                            } else {
+                                valueBuffer.Append(ch);
+                            }
+                            break;
+                    }
+                }
+                if(writeKey) {
+                    /* Never got a a value operand for this line ... */
+                    continue;
+                }
+
+                string key = keyBuffer.ToString(), value = valueBuffer.ToString();
+
+                if(!configValues.TryGetValue(key,out var configValue)) {
+                    Logger.WriteLine($"Key '{key}' is not registered in this application.",LoggerLabel.Config);
+                    continue;
+                }
+
+                ConfigValueType valueType = configValue.Type;
+                try {
+                    SetConfigValue(key,value,valueType);
+                } catch(Exception exception) {
+                    Logger.WriteLine($"Illegal value for key '{key}': {exception.Message}",LoggerLabel.Config);
+                }
+            }
         }
     }
 }

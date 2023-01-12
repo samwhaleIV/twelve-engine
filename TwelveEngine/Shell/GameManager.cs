@@ -185,7 +185,7 @@ namespace TwelveEngine.Shell {
             stringBuilder.Append($"[{proxyGameTime.TotalGameTime}] Set state: ");
             string stateName = state.Name;
             stringBuilder.Append('"');
-            stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Constants.Logging.NoName : stateName);
+            stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);
             stringBuilder.Append("\" { Args = ");
             StateData data = state.Data;
             if(data.Args != null && data.Args.Length >= 1) {

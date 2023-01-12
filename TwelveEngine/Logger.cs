@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Text;
-using TwelveEngine.Shell;
 
 namespace TwelveEngine {
 
@@ -15,6 +13,11 @@ namespace TwelveEngine {
 
         public static string Path { get; private set; } = null;
 
+        public const string EMPTY_TEXT = "<Empty>";
+        public const string NONE_TEXT = "<None>";
+        public const string UNKNOWN_TEXT = "<Unknown>";
+        public const string NO_NAME_TEXT = "<No Name>";
+
         private static readonly Dictionary<LoggerLabel,string> labelNames = new() {
             { LoggerLabel.None, "None" },
             { LoggerLabel.KeyBinds, "Key Binds" },
@@ -22,7 +25,8 @@ namespace TwelveEngine {
             { LoggerLabel.Save, "Save" },
             { LoggerLabel.Benchmark, "Benchmark" },
             { LoggerLabel.Logger, "Logger" },
-            { LoggerLabel.GameManager, "Game Manager" }
+            { LoggerLabel.GameManager, "Game Manager" },
+            { LoggerLabel.Flags, "Flags" }
         };
 
         private static string GetLoggerLabel(LoggerLabel label) {

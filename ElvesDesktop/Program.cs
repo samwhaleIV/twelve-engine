@@ -20,10 +20,6 @@ namespace ElvesDesktop {
                 SaveFile = Elves.Constants.SaveFile
             };
 
-            Config.SetIntNullable(Config.Keys.HWFullScreenWidth,1920);
-            Config.SetIntNullable(Config.Keys.HWFullScreenHeight,1080);
-            Config.SetBool(Config.Keys.LimitFrameDelta,false);
-
             EngineMain(data);
         }
 

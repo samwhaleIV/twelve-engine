@@ -32,8 +32,6 @@ namespace Elves.TestStates {
         }
 
         private void Input_OnAcceptDown() {
-            throw new Exception("Get rotated, idiot.");
-            return;
             TransitionOut(new TransitionData() {
                 Generator = () => new StateTransitionTest(fadeIn: true),
                 Duration = TimeSpan.FromSeconds(0.125f),
