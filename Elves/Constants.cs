@@ -9,16 +9,10 @@ namespace Elves {
         public const float Debug3DMovementSpeed = 0.75f;
         public const float Debug3DLookSpeed = 10f;
 
-        public const float DefaultLineSpacing = 1.25f;
-
         public static class Flags {
-            public const string Debug3D = "debug-3d";
-            public const string Fullscreen = "fullscreen";
-            public const string HardwareFullscreen = "hw-fullscreen";
-            public const string NoVsync = "no-vsync";
-            public const string OSCursor = "os-cursor";
-            public const string FixedBattleRandom = "no-random-battle";
-            public const string DrawDebug = "draw-debug";
+            public const string Debug3D = "debug3d";
+            public const string OSCursor = "oscursor";
+            public const string FixedBattleRandom = "norandombattle";
         }
 
         public static class Battle {

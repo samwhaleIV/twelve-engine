@@ -1,13 +1,14 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TwelveEngine;
 using TwelveEngine.Game3D;
 using TwelveEngine.Game3D.Entity.Types;
 
 namespace Elves {
     public class OrthoBackgroundState:World {
 
-        private readonly bool debug3D = Program.HasFlag(Constants.Flags.Debug3D);
+        private readonly bool debug3D = Flags.Get(Constants.Flags.Debug3D);
 
         public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true) {
             WriteDebugEnabled = debug3D;

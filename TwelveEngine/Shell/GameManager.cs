@@ -3,29 +3,27 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Shell.Input;
+using TwelveEngine.Input;
 using TwelveEngine.Shell.Automation;
-using TwelveEngine.Shell.Config;
 using System.Collections.Generic;
 using TwelveEngine.Shell.UI;
+using System.Text;
 
 namespace TwelveEngine.Shell {
-    public sealed partial class GameManager:Game {
+    public sealed class GameManager:Game {
 
-        private bool drawDebug = false;
+        public bool DrawDebug { get; set; } = false;
 
         public GameManager(
-            bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool drawDebug = false
+            bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true
         ) {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
-
-            this.drawDebug = drawDebug;
 
             Logger.WriteBooleanSet("Context settings",new string[] {
                 "Fullscreen","HardwareModeSwitch","VerticalSync"
             },new bool[] {
                 fullscreen, hardwareModeSwitch, verticalSync
-            });
+            },LoggerLabel.GameManager);
 
             Content.RootDirectory = Constants.ContentDirectory;
 
@@ -33,6 +31,16 @@ namespace TwelveEngine.Shell {
 
             graphicsDeviceManager.IsFullScreen = fullscreen;
             graphicsDeviceManager.HardwareModeSwitch = hardwareModeSwitch;
+
+            if(hardwareModeSwitch) {
+                DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+
+                int? width = Config.GetIntNullable(Config.Keys.HWFullScreenWidth);
+                int? height = Config.GetIntNullable(Config.Keys.HWFullScreenHeight);
+
+                graphicsDeviceManager.PreferredBackBufferWidth = width ?? displayMode.Width;
+                graphicsDeviceManager.PreferredBackBufferHeight = height ?? displayMode.Height;
+            }
 
             IsFixedTimeStep = false;
 
@@ -44,13 +52,9 @@ namespace TwelveEngine.Shell {
             automationAgent.PlaybackStarted += AutomationAgent_PlaybackStarted;
             automationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
 
-            keyBinds = KeyBinds.Load(out KeyBindSet keyBindSet);
+            keyWatcherSet = new HotkeySet(GetDebugControls());
 
-            keyWatcherSet = new HotkeySet(GetDebugControls(keyBindSet));
-
-            if(drawDebug) {
-                debugWriter = new DebugWriter(this);
-            }
+            debugWriter = new DebugWriter(this);
         }
 
         private readonly Stopwatch watch = new();
@@ -62,7 +66,6 @@ namespace TwelveEngine.Shell {
         private readonly FrameTimeSmoother renderDurationSmoother = new();
 
         private void DrawGameTimeDebug(GameTime trueGameTime,DebugWriter writer) {
-
             TimeSpan trueNow = trueGameTime.TotalGameTime;
 
             writer.ToBottomRight();
@@ -81,12 +84,13 @@ namespace TwelveEngine.Shell {
             writer.Write(proxyGameTime.TotalGameTime,"PT");
         }
 
-        private (Keys key, Action action)[] GetDebugControls(KeyBindSet keyBindSet) => new (Keys, Action)[]{
-            (keyBindSet.Playback, automationAgent.TogglePlayback),
-            (keyBindSet.Recording, automationAgent.ToggleRecording),
+        private (Keys Key, Action Action)[] GetDebugControls() => new (Keys,Action)[]{
+            (Constants.PlaybackKey, automationAgent.TogglePlayback),
+            (Constants.RecordingKey, automationAgent.ToggleRecording),
 
-            (keyBindSet.PauseGame, () => SetPaused(!gamePaused)),
-            (keyBindSet.AdvanceFrame, () => advanceFrameQueued = true)
+            (Constants.PauseGameKey, () => SetPaused(!gamePaused)),
+            (Constants.AdvanceFrameKey, () => advanceFrameQueued = true),
+            (Constants.FullscreenKey, () => graphicsDeviceManager.ToggleFullScreen())
         };
 
         private void AutomationAgent_PlaybackStopped() {
@@ -108,7 +112,6 @@ namespace TwelveEngine.Shell {
         private readonly GraphicsDeviceManager graphicsDeviceManager;
         private readonly VCRDisplay vcrDisplay;
         private readonly HotkeySet keyWatcherSet;
-        private readonly KeyBinds keyBinds;
 
         private readonly AutomationAgent automationAgent = new();
         private readonly ProxyGameTime proxyGameTime = new();
@@ -117,7 +120,6 @@ namespace TwelveEngine.Shell {
         /* Public access */
         public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
         public AutomationAgent AutomationAgent => automationAgent;
-        public KeyBinds KeyBinds => keyBinds;
         public GameTime Time => proxyGameTime;
 
         public SpriteBatch SpriteBatch { get; private set; }
@@ -128,8 +130,8 @@ namespace TwelveEngine.Shell {
         public MouseState MouseState { get; private set; }
         public GamePadState GamePadState { get; private set; }
 
-        public void SetRenderTarget(RenderTarget2D renderTarget) => RenderTargets.Push(renderTarget);
-        public void RestoreRenderTarget() => RenderTargets.Pop();
+        public void PushRenderTarget(RenderTarget2D renderTarget) => RenderTargets.Push(renderTarget);
+        public void PopRenderTarget() => RenderTargets.Pop();
         public Viewport Viewport => RenderTargets.GetViewport();
 
         public bool IsPaused {
@@ -149,9 +151,8 @@ namespace TwelveEngine.Shell {
             gamePaused = paused;
         }
 
-
         private static GamePadState GetGamepadState() {
-            var state = GamePad.GetState(Constants.Config.GamePadIndex,GamePadDeadZone.Circular);
+            var state = GamePad.GetState(Config.GetInt(Config.Keys.GamePadIndex),GamePadDeadZone.Circular);
             return state;
         }
 
@@ -165,24 +166,55 @@ namespace TwelveEngine.Shell {
             return automationAgent.FilterMouseState(state);
         }
 
-
         /* State fields */
-        private GameState _pendingGameState = null;
-        private GameState _gameState = null;
-        private Func<GameState> pendingStateGenerator = null;
+        private GameState pendingState = null;
+        private (Func<GameState> Value, StateData Data) pendingGenerator = (null, StateData.Empty);
 
-        private void LoadState(GameState state) {
+        private GameState _gameState = null;
+
+        private static readonly StringBuilder stringBuilder = new();
+
+        private void ResetLeakyStateProperties() {
             GraphicsDevice.Reset();
-            state.Load(this);
+            CursorState = CursorState.Default;
         }
 
-        public void SetState(Func<GameState> stateGenerator) {
-            if(_pendingGameState != null || pendingStateGenerator != null) {
+        private void LoadState(GameState state) {
+            ResetLeakyStateProperties();
+            state.Load(this);
+            stringBuilder.Append($"[{proxyGameTime.TotalGameTime}] Set state: ");
+            string stateName = state.Name;
+            stringBuilder.Append('"');
+            stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);
+            stringBuilder.Append("\" { Args = ");
+            StateData data = state.Data;
+            if(data.Args != null && data.Args.Length >= 1) {
+                foreach(var arg in data.Args) {
+                    if(string.IsNullOrWhiteSpace(arg)) {
+                        continue;
+                    }
+                    stringBuilder.Append($"{arg}, ");
+                }
+                stringBuilder.Remove(stringBuilder.Length-2,2);
+            } else {
+                stringBuilder.Append("None");
+            }
+            stringBuilder.AppendLine($", Flags = {data.Flags.ToString()} }}");
+
+            Logger.Write(stringBuilder);
+            stringBuilder.Clear();
+        }
+
+        public void SetState(Func<GameState> stateGenerator,StateData? data = null) {
+            if(pendingState != null || pendingGenerator.Value != null) {
                 /* Recursive loading! Preload all your assets to your heart's content! */
-                pendingStateGenerator = null;
-                _pendingGameState?.Unload();
-                _pendingGameState = stateGenerator.Invoke();
-                LoadState(_pendingGameState);
+                pendingGenerator = (null, StateData.Empty);
+                if(pendingState?.IsLoaded ?? false) {
+                    pendingState.Unload();
+                }
+                pendingState = stateGenerator.Invoke();
+                pendingState.Data = data ?? StateData.Empty;
+                LoadState(pendingState);
                 return;
             }
             if(!initialized) {
@@ -192,23 +224,24 @@ namespace TwelveEngine.Shell {
                 throw new InvalidOperationException("Cannot change a GameState during a Draw operation.");
             }
             if(updating) {
-                pendingStateGenerator = stateGenerator;
+                pendingGenerator = (stateGenerator, data ?? StateData.Empty);
                 return;
             }
-
             GameState oldState = _gameState;
             _gameState = null;
-
             oldState?.Unload();
-            _pendingGameState = stateGenerator.Invoke();
-            LoadState(_pendingGameState);
-            string stateName = _pendingGameState.Name;
-            Logger.WriteLine($"[{proxyGameTime.TotalGameTime}] Loaded game state - {(string.IsNullOrEmpty(stateName) ? "<No Name>" : stateName)}");
+            pendingState = stateGenerator.Invoke();
+            pendingState.Data = data ?? StateData.Empty;
+            LoadState(pendingState);
         }
-        
-        public void SetState(GameState state) => SetState(() => state);
 
-        public void SetState<TState>() where TState : GameState, new() => SetState(new TState());
+        public void SetState(GameState state,StateData? data = null) {
+            SetState(() => state,data ?? StateData.Empty);
+        }
+
+        public void SetState<TState>(StateData? data = null) where TState : GameState, new() {
+            SetState(() => new TState(),data ?? StateData.Empty);
+        }
 
         protected override void Initialize() {
             Window.AllowUserResizing = true;
@@ -223,7 +256,7 @@ namespace TwelveEngine.Shell {
         private void SetEmptyTexture() {
             int size = Constants.EmptyTextureSize;
             int pixelCount = size * size;
-            Texture2D emptyTexture = new Texture2D(GraphicsDevice,size,size);
+            Texture2D emptyTexture = new(GraphicsDevice,size,size);
             Color[] pixels = new Color[pixelCount];
             for(int i = 0;i<pixelCount;i++) {
                 pixels[i] = Color.White;
@@ -233,10 +266,6 @@ namespace TwelveEngine.Shell {
         }
 
         protected override void LoadContent() {
-            string[] cpuTextures = Constants.Config.CPUTextures;
-            if(cpuTextures.Length > 0) {
-                CPUTexture.LoadDictionary(Content,cpuTextures);
-            }
             SetEmptyTexture();
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             RenderTargets = new RenderTargetStack(GraphicsDevice);
@@ -253,8 +282,10 @@ namespace TwelveEngine.Shell {
             EmptyTexture?.Dispose();
             EmptyTexture = null;
 
-            _pendingGameState?.Unload();
-            _pendingGameState = null;
+            if(pendingState?.IsLoaded ?? false) {
+                pendingState.Unload();
+                pendingState = null;
+            }
 
             SpriteBatch?.Dispose();
             SpriteBatch = null;
@@ -342,8 +373,8 @@ namespace TwelveEngine.Shell {
         private bool HasGameState => _gameState != null;
 
         private void HotSwapPendingState() {
-            _gameState = _pendingGameState;
-            _pendingGameState = null;
+            _gameState = pendingState;
+            pendingState = null;
             if(!gamePaused) {
                 return;
             }
@@ -361,7 +392,7 @@ namespace TwelveEngine.Shell {
             updating = true;
             watch.Start();
             if(!HasGameState) {
-                if(_pendingGameState != null) {
+                if(pendingState != null) {
                     HotSwapPendingState();
                 } else {
                     updateDuration = ReadWatchAndReset();
@@ -390,15 +421,25 @@ namespace TwelveEngine.Shell {
         }
 
         private void TryApplyPendingStateGenerator() {
-            if(pendingStateGenerator == null) {
+            if(pendingGenerator.Value == null) {
                 return;
             }
-            watch.Start();
-            Func<GameState> generator = pendingStateGenerator;
-            pendingStateGenerator = null;
-            SetState(generator);
-            GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
-            Logger.WriteLine($"GC and state swap, elapsed time: {ReadWatchAndReset()}");
+            bool benchmark = Config.GetBool(Config.Keys.BenchmarkStateSwap);
+            if(benchmark) {
+                watch.Start();
+            }
+            Func<GameState> generator = pendingGenerator.Value;
+            StateData data = pendingGenerator.Data;
+            pendingGenerator = (null, StateData.Empty);
+            SetState(generator,data);
+            if(data.Flags.HasFlag(StateFlags.ForceGC) || Config.GetBool(Config.Keys.StateCleanUpGC)) {
+                GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
+                if(benchmark) {
+                    Logger.WriteLine($"Forced GC and state swap, elapsed time: {ReadWatchAndReset()}",LoggerLabel.Benchmark);
+                }
+            } else if(benchmark) {
+                Logger.WriteLine($"State swap, elapsed time: {ReadWatchAndReset()}",LoggerLabel.Benchmark);
+            }
         }
 
         private void DrawCustomCursor() {
@@ -415,6 +456,7 @@ namespace TwelveEngine.Shell {
             var gameState = _gameState;
 
             if(gameState != null && !gameState.IsLoaded) {
+                /* Calm yourself, this isn't buffer into a log file - but hopefully you never see this in production */
                 Console.WriteLine($"[{proxyGameTime.TotalGameTime}] WARNING: Attempt to render game state after it has been unloaded");
                 return;
             }
@@ -433,7 +475,7 @@ namespace TwelveEngine.Shell {
             vcrDisplay.Render(trueGameTime);
             SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp);
 
-            if(drawDebug) {
+            if(DrawDebug) {
                 DrawGameTimeDebug(trueGameTime,debugWriter);
                 gameState?.WriteDebug(debugWriter);
             }

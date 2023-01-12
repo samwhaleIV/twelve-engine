@@ -87,19 +87,19 @@ namespace TwelveEngine.Shell.Automation {
         }
 
         internal static string GetPlaybackFile() {
-            var defaultFile = Constants.Config.DefaultPlaybackFile;
+            var defaultFile = Constants.DefaultPlaybackFile;
             if(File.Exists(defaultFile)) {
                 return defaultFile;
             }
 
             var file = Directory.EnumerateFiles(
-                Directory.GetCurrentDirectory(),$"{Constants.Config.PlaybackFolder}\\*.{Constants.PlaybackFileExt}"
+                Directory.GetCurrentDirectory(),$"{Constants.PlaybackFolder}\\*.{Constants.PlaybackFileExt}"
             ).OrderByDescending(name => name).FirstOrDefault();
 
             return file;
         }
         internal static string PrepareOutputPath() {
-            var folder = Constants.Config.PlaybackFolder;
+            var folder = Constants.PlaybackFolder;
             var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExt}";
             if(!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);

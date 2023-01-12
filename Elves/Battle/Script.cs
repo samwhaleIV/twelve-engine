@@ -13,7 +13,7 @@ namespace Elves.Battle {
 
         private BattleSequencer _sequencer;
 
-        private readonly Random _random = Program.HasFlag(Constants.Flags.FixedBattleRandom) ? new Random(Constants.Battle.FixedSeed) : new Random();
+        private readonly Random _random = Flags.Get(Constants.Flags.FixedBattleRandom) ? new Random(Constants.Battle.FixedSeed) : new Random();
         private BattleSprite _actorSprite;
 
         private UserData _playerData, _actorData;

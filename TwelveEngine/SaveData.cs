@@ -40,41 +40,43 @@ namespace TwelveEngine {
             dataTable.Clear();
         }
 
-        public bool TrySave(string filePath,StringBuilder stringBuilder) {
+        public bool TrySave() {
             bool success = false;
             try {
-                using var fs = File.Open(filePath,FileMode.Create,FileAccess.Write);
+                using var fs = File.Open(Path,FileMode.Create,FileAccess.Write);
                 using var bw = new BinaryWriter(fs,Encoding.UTF8);
                 Export(bw);
-                stringBuilder.Append($"Wrote save data to \"{filePath}\".");
+                Logger.WriteLine($"Wrote save data to \"{Path}\".",LoggerLabel.Save);
                 success = true;
             } catch(Exception exception) {
-                stringBuilder.Append(exception.ToString());
+                Logger.WriteLine(exception.ToString());
             }
             return success;
         }
 
-        public bool TryLoad(string filePath,StringBuilder stringBuilder) {
+        public string Path { get; set; }
+
+        public bool TryLoad() {
             bool success = false;
-            if(!File.Exists(filePath)) {
-                stringBuilder.Append($"File \"{filePath}\" does not exist.");
+            if(!File.Exists(Path)) {
+                Logger.WriteLine($"Save file \"{Path}\" does not exist.",LoggerLabel.Save);
                 return false;
             }
             try {
-                using var fs = File.Open(filePath,FileMode.Open,FileAccess.Read);
+                using var fs = File.Open(Path,FileMode.Open,FileAccess.Read);
                 if(fs.Length <= 0) {
-                    stringBuilder.Append($"Cannot read save data. File \"{filePath}\" is empty!");
+                    Logger.WriteLine($"Cannot read save data. File \"{Path}\" is empty!",LoggerLabel.Save);
                     success = false;
                 } else {
                     dataTable.Clear();
                     using var br = new BinaryReader(fs,Encoding.UTF8);
                     Import(br);
-                    stringBuilder.Append($"Loaded save data from file \"{filePath}\".");
+                    Logger.WriteLine($"Loaded save data from file \"{Path}\".",LoggerLabel.Save);
                     success = true;
                 }
             } catch(Exception exception) {
                 dataTable.Clear();
-                stringBuilder.Append(exception.ToString());
+                Logger.WriteLine($"Failure reading save data. Save data was corrupted and has been reset: {exception}",LoggerLabel.Save);
             }
             return success;
         }

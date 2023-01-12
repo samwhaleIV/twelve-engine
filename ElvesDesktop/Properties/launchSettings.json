@@ -2,7 +2,7 @@
   "profiles": {
     "ElvesDesktop": {
       "commandName": "Project",
-      "commandLineArgs": "no-battle-random debug-3d draw-debug"
+      "commandLineArgs": "nobattlerandom drawdebug debug3d"
     }
   }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TwelveEngine.Shell {
 
-    public class TimeoutManager {
+    public sealed class TimeoutManager {
 
         private readonly struct TimeoutSet {
 

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Shell {
     public class TransitionRenderer {
 
-        public static readonly TransitionRenderer Default = new TransitionRenderer();
+        public static readonly TransitionRenderer Default = new();
 
         private static void DrawDefault(Texture2D texture,Rectangle bounds,SpriteBatch spriteBatch,float t) {
             /* Linear fade in/out to black */
