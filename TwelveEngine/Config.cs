@@ -186,7 +186,12 @@ namespace TwelveEngine {
                         stringBuilder.Append(GetInt(keyValue));
                         break;
                     case ConfigValueType.IntNullable:
-                        stringBuilder.Append(GetIntNullable(keyValue));
+                        int? intValue = GetIntNullable(keyValue);
+                        if(intValue.HasValue) {
+                            stringBuilder.Append(intValue.Value);
+                        } else {
+                            stringBuilder.Append(Logger.NONE_TEXT);
+                        }
                         break;
                     case ConfigValueType.Bool:
                         stringBuilder.Append(GetBool(keyValue));

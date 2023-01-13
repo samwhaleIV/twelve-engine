@@ -34,6 +34,9 @@ namespace Elves {
             public static readonly TimeSpan TaglineTextMovement = TimeSpan.FromMilliseconds(150);
 
             public static readonly TimeSpan HealthDropDuration = TimeSpan.FromMilliseconds(100);
+
+            public static readonly TimeSpan CarouselRotationDuration = TimeSpan.FromMilliseconds(300);
+            public static readonly TimeSpan CarouselBackgroundScroll = TimeSpan.FromSeconds(120);
         }
     }
 }

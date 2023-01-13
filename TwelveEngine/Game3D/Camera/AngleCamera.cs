@@ -119,9 +119,15 @@ namespace TwelveEngine.Game3D {
                 AddAngle(mouseDelta.ToVector2() * lookSpeed);
             }
             var delta = gameState.Input.GetDelta3D();
-            if(delta.X != 0) MoveLeftRight(delta.X * moveSpeed);
-            if(delta.Y != 0) MoveUpDown(delta.Y * moveSpeed);
-            if(delta.Z != 0) MoveFrontBack(delta.Z * moveSpeed);
+            if(delta.X != 0) {
+                MoveLeftRight(delta.X * moveSpeed);
+            }
+            if(delta.Y != 0) {
+                MoveUpDown(delta.Y * moveSpeed);
+            }
+            if(delta.Z != 0) {
+                MoveFrontBack(delta.Z * moveSpeed);
+            }
         }
     }
 }

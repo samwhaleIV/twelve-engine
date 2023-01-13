@@ -14,7 +14,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Battles\DebugBattle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Script.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\BattleScript.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Carousel\CarouselItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Carousel\CarouselMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DepthConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WorldBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SplashMenu\FloatingItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationMode.cs" />
@@ -47,7 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\UserData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIColors.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\UITextures.cs" />
+    <Compile Include="..\Elves\Textures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
   </ItemGroup>
   <ItemGroup>

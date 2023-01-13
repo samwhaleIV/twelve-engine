@@ -5,7 +5,7 @@ using TwelveEngine;
 namespace Elves.UI {
     public class UIElement {
 
-        protected Texture2D Texture { get; set; } = UITextures.Nothing;
+        protected Texture2D Texture { get; set; } = Textures.Nothing;
 
         public VectorRectangle Area {
             get => GetArea();

@@ -1,12 +1,12 @@
 ﻿using TwelveEngine.Shell;
 using Elves.Battle;
-using Elves.UI;
 using Elves.Battle.Battles;
 using Microsoft.Xna.Framework;
 using System;
 using Elves.SplashMenu;
 using Elves.TestStates;
 using TwelveEngine;
+using Elves.Carousel;
 
 #pragma warning disable CS0162
 #pragma warning disable CS0028
@@ -15,7 +15,7 @@ namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
-            return new StateTransitionTest();
+            return new CarouselMenu();
             return new SongTest();
             return new SplashMenuState();   
 
@@ -29,7 +29,7 @@ namespace Elves {
 
         private static void SetCustomCursor() {
             var game = Game;
-            game.CustomCursorTexture = UITextures.Panel;
+            game.CustomCursorTexture = Textures.Panel;
             game.CursorSources.Add(CursorState.Default,new Rectangle(64,0,8,8));
             game.CursorSources.Add(CursorState.Interact,new Rectangle(64,8,8,8));
             game.CursorSources.Add(CursorState.Pressed,new Rectangle(72,8,8,8));
@@ -45,7 +45,7 @@ namespace Elves {
 
             Game.Window.Title = "Elves!";
 
-            UITextures.Load(game);
+            Textures.Load(game);
 
             if(!Flags.Get(Constants.Flags.OSCursor)) {
                 SetCustomCursor();

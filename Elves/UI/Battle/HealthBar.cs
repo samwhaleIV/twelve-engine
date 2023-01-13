@@ -7,7 +7,7 @@ namespace Elves.UI.Battle {
 
     public sealed class HealthBar:UIElement {
 
-        public HealthBar() => Texture = UITextures.Panel;
+        public HealthBar() => Texture = Textures.Panel;
 
         public HealthBarAlignment Alignment { get; set; } = HealthBarAlignment.Left;
 

@@ -5,8 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 namespace TwelveEngine.Game3D.Entity.Types {
     public sealed class RenderTargetEntity:TextureRectangle {
 
-        /* Does not work with serializer! */
-
         public const int DEFAULT_SIZE = 256;
 
         public Point Size { get; set; } = new Point(DEFAULT_SIZE);
