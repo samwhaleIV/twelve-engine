@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\BattleScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Carousel\CarouselItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Carousel\CarouselMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DepthConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WorldBase.cs" />

@@ -3,10 +3,29 @@ using System;
 using System.Collections.Generic;
 using TwelveEngine;
 using TwelveEngine.Font;
+using TwelveEngine.Input;
 
 namespace Elves.Carousel {
 
     public sealed class CarouselMenu:OrthoBackgroundState {
+
+        private const float BACKGROUND_SCALE = 4f;
+        private const float FIELD_OF_VIEW = 40f;
+        private const float CAMERA_Z = 2.05f;
+
+        private const float CENTER_OFFSET = 0.55f;
+        private const float FAR_DEPTH = DepthConstants.MiddleFarthest;
+        private const float MIDDLE_DEPTH = DepthConstants.Middle;
+        private const float CLOSE_DEPTH = DepthConstants.MiddleClose;
+
+        private static readonly Dictionary<RotationPosition,Vector3> positions = new() {
+            {RotationPosition.Back, new Vector3(0,0f,FAR_DEPTH) },
+            {RotationPosition.Left, new Vector3(-CENTER_OFFSET,0f,MIDDLE_DEPTH) },
+            {RotationPosition.Center, new Vector3(0f,0f,CLOSE_DEPTH) },
+            {RotationPosition.Right, new Vector3(CENTER_OFFSET,0f,MIDDLE_DEPTH) }
+        };
+
+        //TODO: accept a timeline list, UI buttons (duh), launch battles and settings
 
         public CarouselMenu():base("Backgrounds/glass",false) {
             ScrollingBackground = true;
@@ -14,21 +33,27 @@ namespace Elves.Carousel {
             Camera.Orthographic = false;
             Name = "Carousel Menu";
             OnLoad += CarouselMenu_OnLoad;
-            ClearColor = Color.LightGray;
-            Camera.FieldOfView = 40f;
+            Camera.FieldOfView = FIELD_OF_VIEW;
             var position = Camera.Position;
-            position.Z = 2.05f;
+            position.Z = CAMERA_Z;
             Camera.Position = position;
             OnUpdate += CarouselMenu_OnUpdate;
-            Input.OnDirectionDown += direction => {
-                if(direction == TwelveEngine.Input.Direction.Left) {
-                    Move(MoveDirection.Left);
-                } else if(direction == TwelveEngine.Input.Direction.Right) {
-                    Move(MoveDirection.Right);
-                }
-            };
+            Input.OnDirectionDown += Input_OnDirectionDown;
             OnRender += CarouselMenu_OnRender;
         }
+
+        private void CarouselMenu_OnLoad() {
+            CreateItems();
+            UpdateIndex(GetStartIndex(),MoveDirection.None);
+            ApplyDefaultRotations();
+            Background.Scale *= BACKGROUND_SCALE;
+        }
+
+        private void Input_OnDirectionDown(Direction direction) => Move(direction switch {
+            Direction.Left or Direction.Up => MoveDirection.Left,
+            Direction.Right or Direction.Down => MoveDirection.Right,
+            _ => MoveDirection.None
+        });   
 
         private void CarouselMenu_OnRender() {
             var font = Fonts.RetroFontOutlined;
@@ -40,7 +65,7 @@ namespace Elves.Carousel {
             font.End();
         }
 
-        private CarouselItem centerItem, leftItem, rightItem, backItem;
+        private CarouselItem centerItem, leftItem, rightItem;
 
         private Color currentColor, oldColor;
 
@@ -49,10 +74,26 @@ namespace Elves.Carousel {
         private void CarouselMenu_OnUpdate() {
             carouselRotation.Update(Now);
             for(int i = 0;i<items.Count;i++) {
-                var item = items[i];
-                var start = item.OldRotationPosition;
-                var end = item.RotationPosition;
+
+                CarouselItem item = items[i];
+                if(!item.IsVisible) {
+                    continue;
+                }
+
+                RotationPosition start = item.OldRotationPosition, end = item.RotationPosition;
                 item.Position = carouselRotation.SmoothStep(positions[start],positions[end]);
+
+                float t = carouselRotation.GetValue();
+                if(item.RotationPosition == RotationPosition.Back) {
+                    item.Alpha = 1f - t;
+                    if(item.Alpha <= 0f) {
+                        item.IsVisible = false;
+                    }
+                } else if(item.OldRotationPosition == RotationPosition.Back) {
+                    item.Alpha = t;
+                } else {
+                    item.Alpha = 1f;
+                }
             }
         }
 
@@ -60,55 +101,31 @@ namespace Elves.Carousel {
 
         private readonly List<CarouselItem> items = new();
 
-        private enum MoveDirection { Left = -1, Right = 1 }
-
-        private static RotationPosition GetLeft(RotationPosition position) => position switch {
-            RotationPosition.Center => RotationPosition.Left,
-            RotationPosition.Left => RotationPosition.Back,
-            RotationPosition.Right => RotationPosition.Center,
-            RotationPosition.Back => RotationPosition.Right,
-            _ => throw new NotImplementedException()
-        };
-
-        private static RotationPosition GetRight(RotationPosition position) => position switch {
-            RotationPosition.Center => RotationPosition.Right,
-            RotationPosition.Left => RotationPosition.Center,
-            RotationPosition.Right => RotationPosition.Back,
-            RotationPosition.Back => RotationPosition.Left,
-            _ => throw new NotImplementedException()
-        };
+        private enum MoveDirection { None = 0, Left = -1, Right = 1 }
 
         private void Move(MoveDirection direction) {
             if(!carouselRotation.IsFinished) {
                 return;
             }
-            carouselRotation.Reset(Now);
-            bool isLeft = direction == MoveDirection.Left;
-            for(int i = 0;i < items.Count;i++) {
-                var item = items[i];
-
-                var oldPosition = item.RotationPosition;
-                item.OldRotationPosition = oldPosition;
-
-                var newPosition = isLeft ? GetLeft(oldPosition) : GetRight(oldPosition);
-                item.RotationPosition = newPosition;
-
-                switch(newPosition) {
-                    case RotationPosition.Center:
-                        centerItem = item;
-                        break;
-                    case RotationPosition.Left:
-                        leftItem = item;
-                        break;
-                    case RotationPosition.Right:
-                        rightItem = item;
-                        break;
-                    case RotationPosition.Back:
-                        backItem = item;
-                        break;
-                }
+            int index = centerItem.Index;
+            switch(direction) {
+                default:
+                case MoveDirection.None:
+                    return;
+                case MoveDirection.Left:
+                    if(index == 0) {
+                        return;
+                    }
+                    break;
+                case MoveDirection.Right:
+                    int? nextIndex = GetRightIndex(index);
+                    if(!nextIndex.HasValue || items[nextIndex.Value].IsLocked) {
+                        return;
+                    }
+                    break;
             }
-
+            carouselRotation.Reset(Now);
+            UpdateIndex(index+(int)direction,direction);
             oldColor = currentColor;
             currentColor = centerItem.TintColor;
         }
@@ -120,38 +137,140 @@ namespace Elves.Carousel {
             return item;
         }
 
-        private static readonly Dictionary<RotationPosition,Vector3> positions = new() {
-            {RotationPosition.Back, new Vector3(0,0f,DepthConstants.MiddleFarthest) },
-            {RotationPosition.Left, new Vector3(-0.55f,0f,DepthConstants.Middle) },
-            {RotationPosition.Center, new Vector3(0f,0f,DepthConstants.MiddleClose) },
-            {RotationPosition.Right, new Vector3(0.55f,0f,DepthConstants.Middle) }
-        };
+        private int i = 0; /* placeholder */
+        private CarouselItem CreatePlaceHolderItem() {
+            CarouselItem item = (i % 5) switch {
+                0 => CreateCarouselItem(16,0,17,47),
+                1 => CreateCarouselItem(33,0,17,44),
+                2 => CreateCarouselItem(50,0,22,48),
+                3 => CreateCarouselItem(72,0,24,52),
+                4 => CreateCarouselItem(72,0,24,52),
+                _ => CreateCarouselItem(0,0,0,0)
+            };
+            item.TintColor = Color.White;
+            item.DisplayName = $"Index {i++}";
+            item.IsLocked = i % 5 == 4;
+            return item;
+        }
 
-        private void CarouselMenu_OnLoad() {
-            centerItem = CreateCarouselItem(48,0,17,47);
+        private void CreateItems() {
+            for(int i = 0;i<14;i++) {
+                CreatePlaceHolderItem().Index = i;
+            }
+        }
+
+        private int GetStartIndex() {
+            return 0; //todo, probably get this value from the save file
+        }
+
+        private int? GetRightIndex(int index) {
+            index += 1;
+            if(index >= items.Count) {
+                return null;
+            }
+            return index;
+        }
+
+        private int? GetLeftIndex(int index) {
+            index -= 1;
+            if(index < 0) {
+                return null;
+            }
+            return index;
+        }
+
+        private void UpdateIndex(int index,MoveDirection direction) {
+            int minIndex = 0, maxIndex = items.Count - 1;
+
+            if(index < minIndex) {
+                index = minIndex;
+            } else if(index > maxIndex) {
+                index = maxIndex;
+            }
+
+            foreach(CarouselItem item in items) {
+                item.IsVisible = false;
+            }
+
+            centerItem = items[index];
+
+            int? leftIndex = GetLeftIndex(index), rightIndex = GetRightIndex(index);
+
+            CarouselItem oldLeft = leftItem, oldRight = rightItem;
+
+            leftItem = leftIndex.HasValue ? items[leftIndex.Value] : null;
+            rightItem = rightIndex.HasValue ? items[rightIndex.Value] : null;
+
+            if(leftItem is not null) {
+                leftItem.IsVisible = true;
+            }
+
+            if(rightItem is not null) {
+                rightItem.IsVisible = true;
+            }
+
+            centerItem.IsVisible = true;
+
+            switch(direction) {
+                case MoveDirection.None:
+                    ApplyDefaultRotations();
+                    break;
+                case MoveDirection.Left:
+                    ApplyRightRotations();
+                    if(oldRight is not null) {
+                        oldRight.IsVisible = true;
+                        oldRight.RotationPosition = RotationPosition.Back;
+                        oldRight.OldRotationPosition = RotationPosition.Right;
+                    }
+                    break;
+                case MoveDirection.Right:
+                    ApplyLeftRotations();
+                    if(oldLeft is not null) {
+                        oldLeft.IsVisible = true;
+                        oldLeft.RotationPosition = RotationPosition.Back;
+                        oldLeft.OldRotationPosition = RotationPosition.Left;
+                    }
+                    break;
+            }
+        }
+
+        private void ApplyDefaultRotations() {
+            if(leftItem is not null) {
+                leftItem.OldRotationPosition = RotationPosition.Left;
+                leftItem.RotationPosition = RotationPosition.Left;
+            }
+            if(rightItem is not null) {
+                rightItem.OldRotationPosition = RotationPosition.Right;
+                rightItem.RotationPosition = RotationPosition.Right;
+            }
+            centerItem.OldRotationPosition = RotationPosition.Center;
             centerItem.RotationPosition = RotationPosition.Center;
-            centerItem.TintColor = Color.Red;
-            centerItem.DisplayName = "Red Elf";
+        }
 
-            oldColor = Color.White;
-            currentColor = centerItem.TintColor;
+        private void ApplyRightRotations() {
+            if(leftItem is not null) {
+                leftItem.OldRotationPosition = RotationPosition.Back;
+                leftItem.RotationPosition = RotationPosition.Left;
+            }
+            if(rightItem is not null) {
+                rightItem.OldRotationPosition = RotationPosition.Center;
+                rightItem.RotationPosition = RotationPosition.Right;
+            }
+            centerItem.OldRotationPosition = RotationPosition.Left;
+            centerItem.RotationPosition = RotationPosition.Center;
+        }
 
-            leftItem = CreateCarouselItem(65,0,18,50);
-            leftItem.RotationPosition = RotationPosition.Left;
-            leftItem.TintColor = Color.Yellow;
-            leftItem.DisplayName = "Yellow Elf";
-
-            rightItem = CreateCarouselItem(83,0,24,52);
-            rightItem.RotationPosition = RotationPosition.Right;
-            rightItem.TintColor = Color.Purple;
-            rightItem.DisplayName = "Purple Elf";
-
-            backItem = CreateCarouselItem(30,32,18,48);
-            backItem.RotationPosition = RotationPosition.Back;
-            backItem.TintColor = Color.FromNonPremultiplied(new Vector4(0.15f,0.15f,0.15f,1f));
-            backItem.DisplayName = "Ninja Elf";
-
-            Background.Scale *= 4f;
+        private void ApplyLeftRotations() {
+            if(leftItem is not null) {
+                leftItem.OldRotationPosition = RotationPosition.Center;
+                leftItem.RotationPosition = RotationPosition.Left;
+            }
+            if(rightItem is not null) {
+                rightItem.OldRotationPosition = RotationPosition.Back;
+                rightItem.RotationPosition = RotationPosition.Right;
+            }
+            centerItem.OldRotationPosition = RotationPosition.Right;
+            centerItem.RotationPosition = RotationPosition.Center;
         }
     }
 }
