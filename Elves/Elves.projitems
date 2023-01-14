@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DepthConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestStates\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WorldBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SplashMenu\FloatingItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Sprite\Animation\AnimationFactory.cs" />
@@ -56,7 +57,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\UIElement.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)TestStates\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\Battle\ActionButton\" />
   </ItemGroup>
 </Project>

@@ -73,6 +73,7 @@ namespace Elves.Carousel {
         protected override void UpdateGame() {
             UpdateInputs();
             UpdateCamera();
+            Background.Scale = new Vector3(Camera.OrthographicArea.Size,1) * BACKGROUND_SCALE;
             UpdateItemPositions();
             Entities.Update();
             UpdateCamera();
@@ -156,7 +157,6 @@ namespace Elves.Carousel {
             };
             item.TintColor = Color.White;
             item.DisplayName = $"Index {i++}";
-            item.IsLocked = i % 5 == 4;
             return item;
         }
 
@@ -164,6 +164,7 @@ namespace Elves.Carousel {
             for(int i = 0;i<14;i++) {
                 CreatePlaceHolderItem().Index = i;
             }
+            items[^2].IsLocked = true;
         }
 
         private int GetStartIndex() {
