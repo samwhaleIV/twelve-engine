@@ -7,6 +7,10 @@ namespace Elves {
         public static Texture2D Panel { get; private set; }
         public static Texture2D Nothing { get; private set; }
 
+        public static Texture2D CursorDefault { get; private set; }
+        public static Texture2D CursorAlt1 { get; private set; }
+        public static Texture2D CursorAlt2 { get; private set; }
+
         public static Texture2D Menu { get; private set; }
 
         public static Texture2D CarouselMenu { get; private set; }
@@ -29,6 +33,10 @@ namespace Elves {
             MissingTexture = content.Load<Texture2D>("MissingTexture");
 
             CarouselMenu = content.Load<Texture2D>("Menu/carousel");
+
+            CursorDefault = content.Load<Texture2D>("UI/Cursor/default");
+            CursorAlt1 = content.Load<Texture2D>("UI/Cursor/alt-1");
+            CursorAlt2 = content.Load<Texture2D>("UI/Cursor/alt-2");
 
             IsLoaded = true;
         }

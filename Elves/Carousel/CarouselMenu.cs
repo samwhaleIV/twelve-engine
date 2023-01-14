@@ -37,7 +37,6 @@ namespace Elves.Carousel {
             var position = Camera.Position;
             position.Z = CAMERA_Z;
             Camera.Position = position;
-            OnUpdate += CarouselMenu_OnUpdate;
             Input.OnDirectionDown += Input_OnDirectionDown;
             OnRender += CarouselMenu_OnRender;
         }
@@ -71,7 +70,15 @@ namespace Elves.Carousel {
 
         private Color GetTintColor() => carouselRotation.Interpolate(oldColor,currentColor);
 
-        private void CarouselMenu_OnUpdate() {
+        protected override void UpdateGame() {
+            UpdateInputs();
+            UpdateCamera();
+            UpdateItemPositions();
+            Entities.Update();
+            UpdateCamera();
+        }
+
+        private void UpdateItemPositions() {
             carouselRotation.Update(Now);
             for(int i = 0;i<items.Count;i++) {
 
