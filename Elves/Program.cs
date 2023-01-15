@@ -18,6 +18,7 @@ namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
+            //return new BulgeEffectTest();
             return new ScrollingBackgroundTest();
             return new CarouselMenu();
             //return new SongTest();

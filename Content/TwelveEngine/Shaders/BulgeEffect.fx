@@ -18,11 +18,17 @@ struct VertexShaderOutput {
     float2 UV: TEXCOORD0;
 };
 
-float Time, AspectRatio, Scale;
-float2 Direction;
+float Amount;
+float2 Origin;
 
-float4 SpritePixelShader(VertexShaderOutput input): COLOR { 
-    float2 uv = float2((Time * Direction.x) + input.UV.x * AspectRatio / Scale,(Time * Direction.y) + (input.UV.y + (Scale - 1) * 0.5) / Scale);
+/* https://github.com/rivy/OpenPDN/blob/master/src/Resources/Files/License.txt */
+
+/* Reworked from https://github.com/rivy/OpenPDN/blob/master/src/Effects/BulgeEffect.cs */
+
+float4 SpritePixelShader(VertexShaderOutput input): COLOR {
+    float2 uv = input.UV - Origin;
+    uv *= (1 - Amount * pow(max(1 - sqrt(pow(uv.x, 2) + pow(uv.y, 2)) * 2, 0), 2));
+    uv += Origin;
     return tex2D(SpriteTextureSampler,uv) * input.Color;
 }
 
