@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TwelveEngine;
 using Elves.UI.Battle;
 using Elves.Battle.Sprite;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererState {
@@ -14,7 +15,19 @@ namespace Elves.Battle {
 
         public Action<BattleResult> OnBattleFinished;
 
-        public BattleSequencer(Script script,string backgroundImage) : base(backgroundImage) {
+        public BattleSequencer(Script script,string background) : base(background) {
+            _script = script;
+            _script.SetSequencer(this);
+            OnLoad += BattleSequencer_OnLoad;
+        }
+
+        public BattleSequencer(Script script,Texture2D background) : base(background) {
+            _script = script;
+            _script.SetSequencer(this);
+            OnLoad += BattleSequencer_OnLoad;
+        }
+
+        public BattleSequencer(Script script) : base() {
             _script = script;
             _script.SetSequencer(this);
             OnLoad += BattleSequencer_OnLoad;

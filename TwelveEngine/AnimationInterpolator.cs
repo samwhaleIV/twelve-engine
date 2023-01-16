@@ -68,6 +68,10 @@ namespace TwelveEngine {
             return Vector3.Lerp(start,end,GetValue());
         }
 
+        public Vector3 SmoothStep(Vector3 start,Vector3 end) {
+            return Vector3.SmoothStep(start,end,GetValue());
+        }
+
         public Color Interpolate(Color start,Color end) {
             return Color.Lerp(start,end,GetValue());
         }

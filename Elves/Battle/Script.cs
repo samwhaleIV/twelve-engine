@@ -83,14 +83,14 @@ namespace Elves.Battle {
         }
 
         private void SetActor(BattleSprite sprite) {
-            _sequencer.SetBackgroundColor(sprite.UserData.Color);
+            _sequencer.Background.Color = sprite.UserData.Color;
             _actorData = sprite.UserData;
             _actorSprite = sprite;
         }
 
         private static BattleSprite GetFallbackSprite() {
             BattleSprite battleSprite = new(
-                UITextures.MissingTexture,160,
+                Textures.MissingTexture,160,
                 AnimationFactory.CreateStatic(0,0,96,160)
             );
             return battleSprite;

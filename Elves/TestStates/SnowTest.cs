@@ -33,7 +33,7 @@ namespace Elves.TestStates {
 
             ParticleSize = PARTICLE_SIZE;
 
-            Texture = UITextures.Menu;
+            Texture = Textures.Menu;
             SamplerState = SamplerState.PointClamp;
             UVArea = new VectorRectangle(38,78,4,4,Texture);
 
@@ -89,7 +89,7 @@ namespace Elves.TestStates {
 
     public sealed class SnowTest:OrthoBackgroundState {
 
-        public SnowTest(bool fadeIn = false):base(UITextures.Nothing,false) {
+        public SnowTest(bool fadeIn = false):base(Textures.Nothing,false) {
             OnLoad += SnowTest_OnLoad;
             SetBackgroundColor(Color.Black);
             if(fadeIn) {

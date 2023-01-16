@@ -31,6 +31,12 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
             OnRender += ParticleSystem_OnRender;
             OnLoad += ParticleSystem_OnLoad;
+            OnUnload += ParticleSystem_OnUnload;
+        }
+
+        private void ParticleSystem_OnUnload() {
+            effect?.Dispose();
+            effect = null;
         }
 
         private const int SHAPE_VERTEX_COUNT = 6;

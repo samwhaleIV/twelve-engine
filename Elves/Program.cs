@@ -1,13 +1,16 @@
 ﻿using TwelveEngine.Shell;
 using Elves.Battle;
-using Elves.UI;
 using Elves.Battle.Battles;
 using Microsoft.Xna.Framework;
 using System;
 using Elves.SplashMenu;
 using Elves.TestStates;
 using TwelveEngine;
+using Elves.Carousel;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
+#pragma warning disable IDE0079
 #pragma warning disable CS0162
 #pragma warning disable CS0028
 
@@ -15,11 +18,12 @@ namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
-            return new StateTransitionTest();
-            return new SongTest();
-            return new SplashMenuState();   
+            //return new ScrollingBackgroundTest();
+            return new CarouselMenu();
+            //return new SongTest();
+            //return new SplashMenuState();   
 
-            var battle = new BattleSequencer(new DebugBattle(),"Backgrounds/checkerboard");
+            var battle = new BattleSequencer(new DebugBattle());
 
             battle.OnBattleFinished += battleResult => {
                 Console.WriteLine($"Battle result: {Enum.GetName(typeof(BattleResult),battleResult)}");
@@ -27,13 +31,16 @@ namespace Elves {
             return battle;
         }
 
-        private static void SetCustomCursor() {
-            var game = Game;
-            game.CustomCursorTexture = UITextures.Panel;
-            game.CursorSources.Add(CursorState.Default,new Rectangle(64,0,8,8));
-            game.CursorSources.Add(CursorState.Interact,new Rectangle(64,8,8,8));
-            game.CursorSources.Add(CursorState.Pressed,new Rectangle(72,8,8,8));
-            game.CursorScale = 8;
+        private static void AddCursorState(
+            CursorState cursorState,Texture2D texture,int? originX = null,int? originY = null
+        ) {
+            Game.CursorSources.Add(cursorState,MouseCursor.FromTexture2D(texture,originX ?? 0,originY ?? 0));
+        }
+
+        private static void AddCustomCursors() {
+            AddCursorState(CursorState.Default,Textures.CursorDefault,32,32);
+            AddCursorState(CursorState.Interact,Textures.CursorAlt1,32,32);
+            AddCursorState(CursorState.Pressed,Textures.CursorAlt2,32,32);
         }
 
         public static GameManager Game { get; private set; }
@@ -45,10 +52,11 @@ namespace Elves {
 
             Game.Window.Title = "Elves!";
 
-            UITextures.Load(game);
+            Textures.Load(game);
 
             if(!Flags.Get(Constants.Flags.OSCursor)) {
-                SetCustomCursor();
+                AddCustomCursors();
+                game.UseCustomCursor = true;
             }
 
             game.SetState(GetStartState);
@@ -58,3 +66,4 @@ namespace Elves {
 
 #pragma warning restore CS0162
 #pragma warning restore CS0028
+#pragma warning restore IDE0079

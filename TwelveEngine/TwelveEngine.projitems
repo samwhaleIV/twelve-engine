@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Font\Fonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\Glyph.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\RetroFontData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Font\RetroFontOutlinedData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\TwelvenFontData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\UVSpriteFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\ParticleSystem.cs" />
@@ -25,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EntryPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoggerLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScrollingBackground.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\CursorState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FrameTimeSmoother.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FPSCounter.cs" />

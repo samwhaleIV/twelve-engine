@@ -25,6 +25,8 @@ namespace TwelveEngine.Shell {
                 fullscreen, hardwareModeSwitch, verticalSync
             },LoggerLabel.GameManager);
 
+            IsMouseVisible = true;
+
             Content.RootDirectory = Constants.ContentDirectory;
 
             graphicsDeviceManager.SynchronizeWithVerticalRetrace = verticalSync;
@@ -442,14 +444,6 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        private void DrawCustomCursor() {
-            SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
-            Vector2 mousePosition = MouseState.Position.ToVector2();
-            Rectangle cursorArea = GetCursorArea();
-            SpriteBatch.Draw(_customCursorTexture,mousePosition,cursorArea,Color.White,0f,cursorArea.Size.ToVector2()*0.5f,new Vector2(CursorScale),SpriteEffects.None,1f);
-            SpriteBatch.End();
-        }
-
         protected override void Draw(GameTime trueGameTime) {
             rendering = true;
 
@@ -481,9 +475,6 @@ namespace TwelveEngine.Shell {
             }
 
             SpriteBatch.End();
-            if(_customCursorTexture != null) {
-                DrawCustomCursor();
-            }
 
             renderDuration = ReadWatchAndReset();
 
@@ -491,46 +482,43 @@ namespace TwelveEngine.Shell {
             TryApplyPendingStateGenerator();
         }
 
-        private void UpdateCursorDisplay() {
-            if(IsActive && _customCursorTexture != null) {
-                IsMouseVisible = false;
-                return;
+        private bool TrySetCustomCursor() {
+            if(_useCustomCursor && CursorSources.TryGetValue(_cursorState,out MouseCursor cursor)) {
+                Mouse.SetCursor(cursor);
+                return true;
+            } else {
+                Mouse.SetCursor(MouseCursor.Arrow);
+                return false;
             }
-            IsMouseVisible = true;
         }
 
-        private Texture2D _customCursorTexture = null;
-
-        public Texture2D CustomCursorTexture {
-            get {
-                return _customCursorTexture;
-            }
+        private bool _useCustomCursor = false;
+        public bool UseCustomCursor {
+            get => _useCustomCursor;
             set {
-                _customCursorTexture = value;
-                UpdateCursorDisplay();
+                if(_useCustomCursor == value) {
+                    return;
+                }
+                _useCustomCursor = value;
+                TrySetCustomCursor();
             }
         }
 
-        public CursorState CursorState { get; set; } = CursorState.Default;
-
-        public float CursorScale { get; set; } = 1f;
-
-        private Rectangle GetCursorArea() {
-            if(!CursorSources.TryGetValue(CursorState,out var value)) {
-                return Rectangle.Empty;
+        private CursorState _cursorState = CursorState.Default;
+        public CursorState CursorState {
+            get => _cursorState;
+            set {
+                if(_cursorState == value) {
+                    return;
+                }
+                _cursorState = value;
+                if(!_useCustomCursor) {
+                    return;
+                }
+                TrySetCustomCursor();
             }
-            return value;
         }
 
-        public readonly Dictionary<CursorState,Rectangle> CursorSources = new();
-
-        protected override void OnActivated(object sender,EventArgs args) {
-            base.OnActivated(sender,args);
-            UpdateCursorDisplay();
-        }
-        protected override void OnDeactivated(object sender,EventArgs args) {
-            base.OnDeactivated(sender,args);
-            UpdateCursorDisplay();
-        }
+        public readonly Dictionary<CursorState,MouseCursor> CursorSources = new();
     }
 }
