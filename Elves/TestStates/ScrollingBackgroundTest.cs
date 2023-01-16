@@ -23,26 +23,47 @@ namespace Elves.TestStates {
             debugWriter.ToTopLeft();
             debugWriter.Write(Scale,nameof(Scale));
             debugWriter.Write(Direction,nameof(Direction));
-            debugWriter.Write(_t,"T");
+            debugWriter.Write(T,nameof(T));
         }
 
         private Effect effect;
 
-        private EffectParameter timeParameter, aspectRatioParameter, scaleParameter, directionParameter;
+        private EffectParameter tParameter;
+        private float T {
+            get {
+                /* T has to be a factor of (max(x,y) / min(x,y)) or 1 */
+                return (float)(Now / TimeSpan.FromSeconds(ScrollTime) % MaxOverMin(Direction.X,Direction.Y));
+            }
+        }
 
-        private float _t;
+        private EffectParameter aspectRatioParameter;
+        private float AspectRatio {
+            get {
+                return Game.Viewport.AspectRatio;
+            }
+        }
 
         public float ScrollTime { get; set; } = 10f;
         public Color Color { get; set; } = Color.White;
+
+        private EffectParameter scaleParamter;
         public float Scale { get; set; } = 1f;
+
+        private EffectParameter bulgeParameter;
+        public float Bulge { get; set; } = -1f;
+
+        private EffectParameter directionParameter;
         public Vector2 Direction { get; set; } = new Vector2(1f,0f);
+
+        private EffectParameter bulgeOriginParameter;
+        public Vector2 BulgeOrigin { get; set; } = new Vector2(0.5f,0.5f);
 
         public static float MaxOverMin(float x,float y) {
 
             x = MathF.Abs(x);
             y = MathF.Abs(y);
 
-            if(x <= 0 || y <= 0) {
+            if(x == 0 || y == 0) {
                 return 1f;
             } else if(x > y) {
                 return x / y;
@@ -52,34 +73,31 @@ namespace Elves.TestStates {
 
         }
 
-        private void UpdateEffect() {
-            timeParameter?.SetValue(_t);
-            aspectRatioParameter?.SetValue(Game.Viewport.AspectRatio);
-            scaleParameter?.SetValue(Scale);
-            directionParameter?.SetValue(Direction);
-        }
-
         private void ScrollingBackgroundTest_OnLoad() {
             effect = Game.Content.Load<Effect>("Shaders/ScrollingBackgroundEffect");
-            aspectRatioParameter = effect.Parameters["AspectRatio"];
-            timeParameter = effect.Parameters[nameof(Time)];
-            scaleParameter = effect.Parameters[nameof(Scale)];
+            aspectRatioParameter = effect.Parameters[nameof(AspectRatio)];
+            scaleParamter = effect.Parameters[nameof(Scale)];
+            bulgeParameter = effect.Parameters[nameof(Bulge)];
             directionParameter = effect.Parameters[nameof(Direction)];
+            bulgeOriginParameter = effect.Parameters[nameof(BulgeOrigin)];
+            tParameter = effect.Parameters[nameof(T)];
         }
 
-        private void UpdateTimeMask() {
-            /* T has to be a factor of (max(x,y) / min(x,y)) or 1 */
-            _t = (float)(Now / TimeSpan.FromSeconds(ScrollTime) % MaxOverMin(Direction.X,Direction.Y));
+
+        private void UpdateEffectParameters() {
+            aspectRatioParameter.SetValue(AspectRatio);
+            scaleParamter.SetValue(Scale);
+            bulgeParameter.SetValue(Bulge);
+            directionParameter.SetValue(Direction);
+            bulgeOriginParameter.SetValue(BulgeOrigin);
+            tParameter.SetValue(T);
         }
 
         private void ScrollingBackgroundTest_OnRender() {
-            Direction = new Vector2(1,0.5f);
-            Scale = 1 + MathF.Sin(MathHelper.TwoPi * (float)(Now / TimeSpan.FromSeconds(40))) * 0.5f;
-            UpdateTimeMask();
             SpriteBatch sb = Game.SpriteBatch;
-            Texture2D texture = Textures.CheckerboardBackground;
-            UpdateEffect();
-            sb.Begin(SpriteSortMode.Immediate,null,SamplerState.LinearWrap,null,null,effect);
+            Texture2D texture = Textures.CheckerboardSmall;
+            UpdateEffectParameters();
+            sb.Begin(SpriteSortMode.Immediate,null,SamplerState.PointWrap,null,null,effect);
             sb.Draw(texture,Game.Viewport.Bounds,texture.Bounds,Color);
             sb.End();
         }
