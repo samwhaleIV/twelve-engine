@@ -23,7 +23,6 @@ float2 Direction, BulgeOrigin;
 float4 ColorA, ColorB;
 
 float4 SpritePixelShader(VertexShaderOutput input): COLOR { 
-
     float2 uv = input.UV;
     float2 dir = T * Direction;
 

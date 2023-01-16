@@ -83,7 +83,7 @@ namespace Elves.Battle {
         }
 
         private void SetActor(BattleSprite sprite) {
-            _sequencer.SetBackgroundColor(sprite.UserData.Color);
+            _sequencer.Background.Color = sprite.UserData.Color;
             _actorData = sprite.UserData;
             _actorSprite = sprite;
         }

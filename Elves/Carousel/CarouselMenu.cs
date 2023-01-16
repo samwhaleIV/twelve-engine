@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using TwelveEngine;
@@ -7,9 +8,9 @@ using TwelveEngine.Input;
 
 namespace Elves.Carousel {
 
-    public sealed class CarouselMenu:OrthoBackgroundState {
+    public sealed class CarouselMenu:WorldBase {
 
-        private const float BACKGROUND_SCALE = 4f;
+        private const float BACKGROUND_SCALE = 3f;
         private const float FIELD_OF_VIEW = 40f;
         private const float CAMERA_Z = 2.05f;
 
@@ -27,10 +28,7 @@ namespace Elves.Carousel {
 
         //TODO: accept a timeline list, UI buttons (duh), launch battles and settings
 
-        public CarouselMenu():base("Backgrounds/glass",false) {
-            ScrollingBackground = true;
-            ScrollingBackgroundPeriod = Constants.AnimationTiming.CarouselBackgroundScroll;
-            Camera.Orthographic = false;
+        public CarouselMenu() {
             Name = "Carousel Menu";
             OnLoad += CarouselMenu_OnLoad;
             Camera.FieldOfView = FIELD_OF_VIEW;
@@ -39,13 +37,33 @@ namespace Elves.Carousel {
             Camera.Position = position;
             Input.OnDirectionDown += Input_OnDirectionDown;
             OnRender += CarouselMenu_OnRender;
+            OnUnload += CarouselMenu_OnUnload;
+        }
+
+        private readonly ScrollingBackground background = new() {
+            ScrollTime = Constants.AnimationTiming.CarouselBackgroundScroll,
+            Scale = BACKGROUND_SCALE
+        };
+
+        private void CreateBackground() {
+            background.Texture = Game.Content.Load<Texture2D>("Backgrounds/mountains");
+            background.Load(Game.Content);
+            OnPreRender += CarouselMenu_OnPreRender;
+        }
+
+        private void CarouselMenu_OnPreRender() {
+            background.Render(Game.SpriteBatch,Now,Game.Viewport);
+        }
+
+        private void CarouselMenu_OnUnload() {
+            background?.Unload();
         }
 
         private void CarouselMenu_OnLoad() {
             CreateItems();
             UpdateIndex(GetStartIndex(),MoveDirection.None);
             ApplyDefaultRotations();
-            Background.Scale *= BACKGROUND_SCALE;
+            CreateBackground();
         }
 
         private void Input_OnDirectionDown(Direction direction) => Move(direction switch {
@@ -73,7 +91,6 @@ namespace Elves.Carousel {
         protected override void UpdateGame() {
             UpdateInputs();
             UpdateCamera();
-            Background.Scale = new Vector3(Camera.OrthographicArea.Size,1) * BACKGROUND_SCALE;
             UpdateItemPositions();
             Entities.Update();
             UpdateCamera();

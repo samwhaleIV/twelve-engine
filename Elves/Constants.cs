@@ -26,7 +26,6 @@ namespace Elves {
 
         public static class AnimationTiming {
             public static readonly TimeSpan ScrollingBackgroundDefault = TimeSpan.FromSeconds(60);
-
             public static readonly TimeSpan ActionButtonMovement = TimeSpan.FromMilliseconds(150);
             public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(150);
             public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(150);

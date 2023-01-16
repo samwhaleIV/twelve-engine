@@ -26,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EntryPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoggerLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScrollingBackground.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\CursorState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FrameTimeSmoother.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FPSCounter.cs" />

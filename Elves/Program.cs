@@ -18,13 +18,12 @@ namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
-            //return new BulgeEffectTest();
-            return new ScrollingBackgroundTest();
+            //return new ScrollingBackgroundTest();
             return new CarouselMenu();
             //return new SongTest();
             //return new SplashMenuState();   
 
-            var battle = new BattleSequencer(new DebugBattle(),"Backgrounds/checkerboard");
+            var battle = new BattleSequencer(new DebugBattle());
 
             battle.OnBattleFinished += battleResult => {
                 Console.WriteLine($"Battle result: {Enum.GetName(typeof(BattleResult),battleResult)}");

@@ -17,10 +17,6 @@ namespace Elves {
 
         public static Texture2D MissingTexture { get; private set; }
 
-        public static Texture2D CheckerboardBackground { get; private set; }
-
-        public static Texture2D CheckerboardSmall { get; private set; }
-
         public static bool IsLoaded { get; private set; } = false;
 
         public static void Load(GameManager game) {
@@ -41,10 +37,6 @@ namespace Elves {
             CursorDefault = content.Load<Texture2D>("UI/Cursor/default");
             CursorAlt1 = content.Load<Texture2D>("UI/Cursor/alt-1");
             CursorAlt2 = content.Load<Texture2D>("UI/Cursor/alt-2");
-
-            CheckerboardBackground = content.Load<Texture2D>("Backgrounds/checkerboard");
-
-            CheckerboardSmall = content.Load<Texture2D>("Backgrounds/checkerboard-small");
 
             IsLoaded = true;
         }

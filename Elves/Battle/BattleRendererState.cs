@@ -1,16 +1,60 @@
-﻿using Elves.UI;
-using Elves.UI.Battle;
+﻿using Elves.UI.Battle;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using TwelveEngine;
 
 namespace Elves.Battle {
-    public abstract class BattleRendererState:OrthoBackgroundState {
+    public abstract class BattleRendererState:WorldBase {
+
+        private string backgroundTexture;
+
+        private void LoadBackgroundTexture() {
+            background.Texture = Game.Content.Load<Texture2D>(backgroundTexture);
+        }
+
+        public BattleRendererState(string background) {
+            backgroundTexture = background;
+            OnLoad += LoadBackgroundTexture;
+            Initialize();
+        }
+
+        public BattleRendererState(Texture2D background) {
+            this.background.Texture = background;
+            Initialize();
+        }
+
+        public BattleRendererState() {
+            background.Texture = Textures.Nothing;
+            Initialize();
+        }
 
         private BattleUI battleUI;
         public BattleUI UI => battleUI;
 
-        public BattleRendererState(string backgroundImage) : base(backgroundImage) {
+        private readonly ScrollingBackground background = ScrollingBackground.GetCheckered();
+
+        public ScrollingBackground Background => background;
+
+        private void BattleRendererState_OnPreRender() {
+            background.Render(Game.SpriteBatch,Now,Game.Viewport);
+        }
+
+        private void Initialize() {
             OnLoad += BattleScene_OnLoad;
-            ScrollingBackground = true;
             OnRender += BattleScene_OnRender;
+            OnUnload += BattleRendererState_OnUnload;
+            OnPreRender += BattleRendererState_OnPreRender;
+            Camera.Orthographic = !Debug3D;
+        }
+
+        private void BattleScene_OnLoad() {
+            InitializeBattleUI();
+            background.Load(Game.Content);
+        }
+
+        private void BattleRendererState_OnUnload() {
+            background.Unload();
         }
 
         protected void UpdateUI() {
@@ -31,10 +75,6 @@ namespace Elves.Battle {
             Mouse.OnMove += battleUI.MouseMoved;
 
             battleUI.OnActionButtonClick += ActionButtonClicked;
-        }
-
-        private void BattleScene_OnLoad() {
-            InitializeBattleUI();
         }
 
         private void BattleScene_OnRender() {
