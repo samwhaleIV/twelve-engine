@@ -29,7 +29,8 @@ namespace Elves.TestStates {
         private Effect effect;
 
         private EffectParameter tParameter;
-        private float T {
+
+        public float T {
             get {
                 /* T has to be a factor of (max(x,y) / min(x,y)) or 1 */
                 return (float)(Now / TimeSpan.FromSeconds(ScrollTime) % MaxOverMin(Direction.X,Direction.Y));
@@ -37,7 +38,7 @@ namespace Elves.TestStates {
         }
 
         private EffectParameter aspectRatioParameter;
-        private float AspectRatio {
+        public float AspectRatio {
             get {
                 return Game.Viewport.AspectRatio;
             }
@@ -57,6 +58,15 @@ namespace Elves.TestStates {
 
         private EffectParameter bulgeOriginParameter;
         public Vector2 BulgeOrigin { get; set; } = new Vector2(0.5f,0.5f);
+
+        private EffectParameter colorAParameter;
+        public Color ColorA { get; set; } = Color.FromNonPremultiplied(new Vector4(new Vector3(0.41f),1));
+
+        private EffectParameter colorBParameter;
+        public Color ColorB { get; set; } = Color.FromNonPremultiplied(new Vector4(new Vector3(0.66f),1));
+
+        private EffectParameter tileScaleParameter;
+        public float TileScale { get; set; } = 4f;
 
         public static float MaxOverMin(float x,float y) {
 
@@ -81,24 +91,47 @@ namespace Elves.TestStates {
             directionParameter = effect.Parameters[nameof(Direction)];
             bulgeOriginParameter = effect.Parameters[nameof(BulgeOrigin)];
             tParameter = effect.Parameters[nameof(T)];
+            colorAParameter = effect.Parameters[nameof(ColorA)];
+            colorBParameter = effect.Parameters[nameof(ColorB)];
+            tileScaleParameter = effect.Parameters[nameof(TileScale)];
+
+            UpdateEffectParameters();
         }
 
 
         private void UpdateEffectParameters() {
-            aspectRatioParameter.SetValue(AspectRatio);
-            scaleParamter.SetValue(Scale);
-            bulgeParameter.SetValue(Bulge);
-            directionParameter.SetValue(Direction);
-            bulgeOriginParameter.SetValue(BulgeOrigin);
-            tParameter.SetValue(T);
+            aspectRatioParameter?.SetValue(AspectRatio);
+            scaleParamter?.SetValue(Scale);
+            tParameter?.SetValue(T);
+            directionParameter?.SetValue(Direction);
+
+            bulgeParameter?.SetValue(Bulge);
+            bulgeOriginParameter?.SetValue(BulgeOrigin);
+
+            colorAParameter?.SetValue(ColorA.ToVector4());
+            colorBParameter?.SetValue(ColorB.ToVector4());
+            tileScaleParameter?.SetValue(TileScale);
+        }
+
+        private float GetLoopTime(float seconds) {
+            return (float)(Now / TimeSpan.FromSeconds(seconds) % 1);
+        }
+
+        private float GetSinTime(float seconds,float strength) {
+            return MathF.Sin(GetLoopTime(seconds) * MathHelper.TwoPi) * strength;
         }
 
         private void ScrollingBackgroundTest_OnRender() {
             SpriteBatch sb = Game.SpriteBatch;
-            Texture2D texture = Textures.CheckerboardSmall;
+            Texture2D texture = Textures.Nothing;
             UpdateEffectParameters();
+
+            Scale = 1 + GetSinTime(5,0.25f) * 0.5f;
+            Bulge = GetSinTime(40,1);
+            Direction = Vector2.One;
+
             sb.Begin(SpriteSortMode.Immediate,null,SamplerState.PointWrap,null,null,effect);
-            sb.Draw(texture,Game.Viewport.Bounds,texture.Bounds,Color);
+            sb.Draw(texture,Game.Viewport.Bounds,texture.Bounds,Color.Red);
             sb.End();
         }
     }
