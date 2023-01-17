@@ -11,7 +11,7 @@ namespace Elves.Scenes.Battle.UI {
         private readonly AnimationInterpolator interpolator = new(Constants.AnimationTiming.SpeechBoxMovement);
 
         public SpeechBox() {
-            Texture = Textures.Panel;
+            Texture = Program.Textures.Panel;
         }
 
         public bool AnimationIsFinished => interpolator.IsFinished;

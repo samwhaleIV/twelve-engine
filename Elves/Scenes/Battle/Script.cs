@@ -89,7 +89,7 @@ namespace Elves.Scenes.Battle {
 
         private static BattleSprite GetFallbackSprite() {
             BattleSprite battleSprite = new(
-                Textures.MissingTexture,160,
+                Program.Textures.Missing,160,
                 AnimationFactory.CreateStatic(0,0,96,160)
             );
             return battleSprite;

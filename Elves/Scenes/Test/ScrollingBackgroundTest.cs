@@ -123,7 +123,7 @@ namespace Elves.Scenes.Test {
 
         private void ScrollingBackgroundTest_OnRender() {
             SpriteBatch sb = Game.SpriteBatch;
-            Texture2D texture = Textures.Nothing;
+            Texture2D texture = Program.Textures.Nothing;
             UpdateEffectParameters();
 
             Scale = 1 + GetSinTime(5,0.25f) * 0.5f;

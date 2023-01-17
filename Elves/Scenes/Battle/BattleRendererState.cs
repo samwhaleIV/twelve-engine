@@ -23,7 +23,7 @@ namespace Elves.Scenes.Battle {
         }
 
         public BattleRendererState() {
-            background.Texture = Textures.Nothing;
+            background.Texture = Program.Textures.Nothing;
             Initialize();
         }
 

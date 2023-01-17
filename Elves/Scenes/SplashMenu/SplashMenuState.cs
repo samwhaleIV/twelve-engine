@@ -15,7 +15,7 @@ namespace Elves.Scenes.SplashMenu {
         private const float FOREGROUND_WATER_OPACITY = 0.592f;
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
-        public SplashMenuState():base(Textures.Nothing,true) {
+        public SplashMenuState():base(Program.Textures.Nothing,true) {
             Name = "Elves Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
@@ -31,13 +31,13 @@ namespace Elves.Scenes.SplashMenu {
         private readonly Random random = new();
 
         private void SplashMenuState_OnLoad() {
-            var menuTexture = Textures.Menu;
+            var menuTexture = Program.Textures.Drowning;
             fallingElf = new Screenspace3DSprite(menuTexture) {
                 TextureSource = new Rectangle(0,0,41,29),
                 PixelSmoothing = false,
                 Depth = Constants.Depth.Middle
             };
-            waterOverlay = new TextureEntity(Textures.Nothing) {
+            waterOverlay = new TextureEntity(Program.Textures.Nothing) {
                 Color = FOREGROUND_WATER_COLOR,
                 Alpha = FOREGROUND_WATER_OPACITY,
                 Scale = new Vector3(1f)

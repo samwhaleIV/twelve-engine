@@ -16,7 +16,7 @@ namespace Elves.Scenes.Battle.UI {
         private static readonly Rectangle SelectedTextureSource = new(0,32,32,16);
 
         public ActionButton() {
-            Texture = Textures.Panel;
+            Texture = Program.Textures.Panel;
             TextureSource = new Rectangle(0,16,32,16);
         }
 

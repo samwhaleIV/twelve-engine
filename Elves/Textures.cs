@@ -1,44 +1,20 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Shell;
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Elves {
-    public static class Textures {
+    public sealed class Textures {
 
-        public static Texture2D Panel { get; private set; }
-        public static Texture2D Nothing { get; private set; }
+        internal static ContentManager ContentManager { get; set; }
+        private static Texture2D Load(string file) => ContentManager.Load<Texture2D>(file);
 
-        public static Texture2D CursorDefault { get; private set; }
-        public static Texture2D CursorAlt1 { get; private set; }
-        public static Texture2D CursorAlt2 { get; private set; }
-
-        public static Texture2D Menu { get; private set; }
-
-        public static Texture2D CarouselMenu { get; private set; }
-
-        public static Texture2D MissingTexture { get; private set; }
-
-        public static bool IsLoaded { get; private set; } = false;
-
-        public static void Load(GameManager game) {
-            if(IsLoaded) {
-                return;
-            }
-            var content = game.Content;
-
-            Panel = content.Load<Texture2D>("UI/panel");
-            Nothing  = content.Load<Texture2D>("UI/nothing");
-
-            Menu = content.Load<Texture2D>("Menu/falling-elf");
-
-            MissingTexture = content.Load<Texture2D>("MissingTexture");
-
-            CarouselMenu = content.Load<Texture2D>("Menu/carousel");
-
-            CursorDefault = content.Load<Texture2D>("UI/Cursor/default");
-            CursorAlt1 = content.Load<Texture2D>("UI/Cursor/alt-1");
-            CursorAlt2 = content.Load<Texture2D>("UI/Cursor/alt-2");
-
-            IsLoaded = true;
-        }
+        public readonly Texture2D Panel = Load("panel");
+        public readonly Texture2D Nothing = Load("nothing-white");
+        public readonly Texture2D CursorDefault = Load("Cursor/default");
+        public readonly Texture2D CursorAlt1 = Load("Cursor/alt-1");
+        public readonly Texture2D CursorAlt2 = Load("Cursor/alt-2");
+        public readonly Texture2D Drowning = Load("drowning");
+        public readonly Texture2D Carousel = Load("carousel");
+        public readonly Texture2D Missing = Load("missing");
+        public readonly Texture2D Mountains = Load("mountains");
     }
 }

@@ -46,7 +46,7 @@ namespace Elves.Scenes.Carousel {
         };
 
         private void CreateBackground() {
-            background.Texture = Game.Content.Load<Texture2D>("Backgrounds/mountains");
+            background.Texture = Program.Textures.Mountains;
             background.Load(Game.Content);
             OnPreRender += CarouselMenu_OnPreRender;
         }
@@ -156,7 +156,7 @@ namespace Elves.Scenes.Carousel {
         }
 
         private CarouselItem CreateCarouselItem(int x,int y,int width,int height) {
-            CarouselItem item = new(Textures.CarouselMenu,new Rectangle(x,y,width,height));
+            CarouselItem item = new(Program.Textures.Carousel,new Rectangle(x,y,width,height));
             items.Add(item);
             Entities.Add(item);
             return item;

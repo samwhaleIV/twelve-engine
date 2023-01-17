@@ -43,6 +43,7 @@ namespace Elves {
 
         public static GameManager Game { get; private set; }
         public static SaveData SaveData { get; private set; }
+        public static Textures Textures { get; private set; }
 
         public static void Main(GameManager game,SaveData saveData) {
             Game = game;
@@ -50,7 +51,8 @@ namespace Elves {
 
             Game.Window.Title = "Elves!";
 
-            Textures.Load(game);
+            Textures.ContentManager = Game.Content;
+            Textures = new Textures();
 
             if(!Flags.Get(Constants.Flags.OSCursor)) {
                 AddCustomCursors();

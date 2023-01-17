@@ -32,7 +32,7 @@ namespace Elves.Scenes.Test {
 
             ParticleSize = PARTICLE_SIZE;
 
-            Texture = Textures.Menu;
+            Texture = Program.Textures.Drowning;
             SamplerState = SamplerState.PointClamp;
             UVArea = new VectorRectangle(38,78,4,4,Texture);
 
