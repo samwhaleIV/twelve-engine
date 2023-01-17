@@ -1,12 +1,9 @@
 ﻿using TwelveEngine.Shell;
-using Elves.Battle;
-using Elves.Battle.Battles;
-using Microsoft.Xna.Framework;
+using Elves.Scenes.Battle;
+using Elves.Scenes.Battle.Battles;
 using System;
-using Elves.SplashMenu;
-using Elves.TestStates;
 using TwelveEngine;
-using Elves.Carousel;
+using Elves.Scenes.Carousel;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -18,6 +15,7 @@ namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
+            //return new SnowTest();
             //return new ScrollingBackgroundTest();
             return new CarouselMenu();
             //return new SongTest();

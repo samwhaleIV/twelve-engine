@@ -3,22 +3,22 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D.Entity.Types;
 
-namespace Elves {
-    public class OrthoBackgroundState:Scene {
+namespace Elves.Scenes {
+    public class OrthoBackgroundScene:Scene {
 
-        public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true) {
+        public OrthoBackgroundScene(string backgroundImage,bool smoothBackground = true) {
             this.backgroundImage = backgroundImage;
             this.smoothBackground = smoothBackground;
-            OnLoad += OrthoBackgroundState_OnLoad;
-            OnUpdate += OrthoBackgroundState_OnUpdate;
+            OnLoad += OrthoBackgroundScene_OnLoad;
+            OnUpdate += OrthoBackgroundScene_OnUpdate;
             Camera.Orthographic = !Debug3D;
         }
 
-        public OrthoBackgroundState(Texture2D backgroundImage,bool smoothBackground = true) {
+        public OrthoBackgroundScene(Texture2D backgroundImage,bool smoothBackground = true) {
             backgroundImageTexture = backgroundImage;
             this.smoothBackground = smoothBackground;
-            OnLoad += OrthoBackgroundState_OnLoad;
-            OnUpdate += OrthoBackgroundState_OnUpdate;
+            OnLoad += OrthoBackgroundScene_OnLoad;
+            OnUpdate += OrthoBackgroundScene_OnUpdate;
             Camera.Orthographic = !Debug3D;
         }
 
@@ -56,7 +56,7 @@ namespace Elves {
         private readonly bool smoothBackground;
         private readonly Texture2D backgroundImageTexture;
 
-        private void OrthoBackgroundState_OnLoad() {
+        private void OrthoBackgroundScene_OnLoad() {
             if(backgroundImageTexture != null) {
                 background = new TextureEntity(backgroundImageTexture);
             } else {
@@ -65,11 +65,11 @@ namespace Elves {
             background.Name = BACKGROUND_ENTITY_NAME;
             background.PixelSmoothing = smoothBackground;
             background.Scale = new Vector3(1f);
-            background.Depth = DepthConstants.Background;
+            background.Depth = Constants.Depth.Background;
             Entities.Add(background);
         }
 
-        private void OrthoBackgroundState_OnUpdate() {
+        private void OrthoBackgroundScene_OnUpdate() {
             background.SetColors(backgroundColors);
             if(ScrollingBackground) {
                 double scrollT = Now / ScrollingBackgroundPeriod % 1d;

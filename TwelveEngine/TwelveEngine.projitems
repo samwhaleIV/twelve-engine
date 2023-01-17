@@ -53,7 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\WorldMatrixEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\GridLinesEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Camera\TargetCamera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game3D\World.cs" />
+    <Compile Include="..\TwelveEngine\Game3D\GameState3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\InputGameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RenderTargetStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\DebugWriter.cs" />

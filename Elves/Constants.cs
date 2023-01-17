@@ -24,6 +24,24 @@ namespace Elves {
             public static readonly Color DefaultUserColor = Color.White;
         }
 
+        public static class UI {
+            public static readonly Color PressedColor = Color.Lerp(Color.White,Color.Black,0.1f);
+            public static readonly Color SelectColor = Color.Lerp(Color.White,Color.Black,0.05f);
+        }
+
+        public static class Depth {
+            public const float DeepBackground = 0 / 8f;
+            public const float Background = 1 / 8f;
+            public const float MiddleFarthest = 2 / 8f;
+            public const float MiddleFar = 3 / 8f;
+            public const float Middle = 4 / 8f;
+            public const float MiddleClose = 5 / 8f;
+            public const float MiddleCloser = 6 / 8f;
+            public const float Foreground = 7 / 8f;
+            public const float SuperForeground = 8 / 8f;
+            public const float Cam = 9 / 8f;
+        }
+
         public static class AnimationTiming {
             public static readonly TimeSpan ScrollingBackgroundDefault = TimeSpan.FromSeconds(60);
             public static readonly TimeSpan ActionButtonMovement = TimeSpan.FromMilliseconds(150);

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.Shell {
+﻿namespace TwelveEngine.Shell {
     public struct StateData {
         public StateFlags Flags { get; set; }
         public string[] Args { get; set; }

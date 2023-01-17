@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game3D.Entity {
     public abstract class WorldMatrixEntity:Entity3D {
