@@ -14,6 +14,26 @@ namespace TwelveEngine.Game3D {
             OnLoad += GameState3D_OnLoad;
             OnUpdate += UpdateGame;
             OnWriteDebug += GameState3D_OnWriteDebug;
+            OnPreRender += GameState3D_OnPreRender;
+            OnRender += GameState3D_OnRender;
+        }
+
+        public Matrix ViewMatrix, ProjectionMatrix;
+
+        public bool ProjectionMatrixUpdated { get; private set; } = true;
+        public bool ViewMatrixUpdated { get; private set; } = true;
+
+        private void GameState3D_OnPreRender() {
+            if(ProjectionMatrixUpdated) {
+                ProjectionMatrix = camera?.ProjectionMatrix ?? Matrix.Identity;
+            }
+            if(ViewMatrixUpdated) {
+                ViewMatrix = camera?.ViewMatrix ?? Matrix.Identity;
+            }
+        }
+        private void GameState3D_OnRender() {
+            ProjectionMatrixUpdated = false;
+            ViewMatrixUpdated = false;
         }
 
         private void GameState3D_OnWriteDebug(DebugWriter writer) {
@@ -31,13 +51,17 @@ namespace TwelveEngine.Game3D {
             Entities = new EntityManager<Entity3D,GameState3D>(this);
         }
 
+        protected void UpdateCameraScreenSize() {
+            camera?.UpdateScreenSize(AspectRatio);
+        }
+
         protected void UpdateCamera() {
-            Camera?.Update(AspectRatio);
+            camera?.Update();
         }
 
         protected virtual void UpdateGame() {
             UpdateInputs();
-            UpdateCamera(); /* An entity might need to use orthographic projection information */
+            UpdateCameraScreenSize(); /* An entity might need to use orthographic projection information */
             Entities.Update();
             UpdateCamera();
         }
@@ -50,12 +74,39 @@ namespace TwelveEngine.Game3D {
             Entities.PreRender();
         }
 
-        public Camera3D Camera { get; set; } = null;
-
-        public Matrix ViewMatrix => Camera?.ViewMatrix ?? Matrix.Identity;
-        public Matrix ProjectionMatrix => Camera?.ProjectionMatrix ?? Matrix.Identity;
-
         public float AspectRatio => Game.Viewport.AspectRatio;
+
+        private Camera3D camera;
+        public Camera3D Camera { get => camera; set => SetNewCamera(value); }
+
+        private void OnProjectionMatrixChanged() {
+            ProjectionMatrixUpdated = true;
+        }
+
+        private void OnViewMatrixChanged() {
+            ViewMatrixUpdated = true;
+        }
+
+        private void SetNewCamera(Camera3D newCamera) {
+            var oldCamera = camera;
+            if(newCamera == oldCamera) {
+                return;
+            }
+            camera = newCamera;
+            if(oldCamera is not null) {
+                oldCamera.OnViewMatrixChanged -= OnViewMatrixChanged;
+                oldCamera.OnProjectionMatrixChanged -= OnProjectionMatrixChanged;
+            }
+            if(newCamera is null) {
+                ViewMatrixUpdated = true;
+                ProjectionMatrixUpdated = true;
+                return;
+            }
+            newCamera.OnViewMatrixChanged += OnViewMatrixChanged;
+            newCamera.OnProjectionMatrixChanged += OnProjectionMatrixChanged;
+            ViewMatrixUpdated = true;
+            ProjectionMatrixUpdated = true;
+        }
 
         public BufferSet CreateBufferSet<TVertices>(TVertices[] vertices) where TVertices:struct {
             return BufferSet.Create(GraphicsDevice,vertices);

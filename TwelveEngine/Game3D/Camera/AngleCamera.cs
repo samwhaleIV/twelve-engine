@@ -10,7 +10,9 @@ namespace TwelveEngine.Game3D {
         public const float MaxPitch = PitchOffset + 90f;
         public const float MinPitch = PitchOffset - 90f;
 
-        public AngleCamera() => SetAngle(0f,PitchOffset);
+        public AngleCamera() {
+            SetAngle(0f,PitchOffset);
+        }
 
         public Vector3 Up { get; private set; }
         public Vector3 Forward { get; private set; }
@@ -65,6 +67,8 @@ namespace TwelveEngine.Game3D {
             var angleMatrix = Matrix.CreateFromAxisAngle(left,pitch);
             Forward = Vector3.Transform(Forward,angleMatrix);
             Up = Vector3.Transform(Vector3.Up,angleMatrix);
+
+            InvalidateViewMatrix();
         }
 
         public void AddAngle(float yaw,float pitch) {

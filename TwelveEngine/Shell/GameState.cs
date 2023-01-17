@@ -11,6 +11,7 @@ namespace TwelveEngine.Shell {
         public StateData Data {
             get {
                 if(!(IsLoaded || IsLoading)) {
+                    /* If you need to access data before a 'Load' call, don't use 'Data.Args'; Use regular parameters in the state constructor */
                     throw new InvalidOperationException("Cannot access 'Data' before the state has started loading!");
                 }
                 return data;

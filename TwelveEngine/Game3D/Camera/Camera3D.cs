@@ -1,24 +1,117 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game3D {
     public abstract class Camera3D {
 
-        public Vector3 Position { get; set; }
-        public float FieldOfView { get; set; } = 75f;
-        public float NearPlane { get; set; } = 1f;
-        public float FarPlane { get; set; } = 100f;
-        public bool Orthographic { get; set; } = false;
+        private Vector3 position = Vector3.Zero;
+        private float fieldOfView = 75f, nearPlane = 1f, farPlane = 100f;
+
+        private bool orthographic = false;
+
+        public Vector3 Position {
+            get => position;
+            set {
+                if(position == value) {
+                    return;
+                }
+                position = value;
+                InvalidateViewMatrix();
+            }
+        }
+
+        public float FieldOfView {
+            get => fieldOfView;
+            set {
+                if(fieldOfView == value) {
+                    return;
+                }
+                fieldOfView = value;
+                if(Orthographic) {
+                    return;
+                }
+                InvalidateProjectionMatrix();
+            }
+        }
+
+        public float NearPlane {
+            get => nearPlane;
+            set {
+                if(nearPlane == value) {
+                    return;
+                }
+                nearPlane = value;
+                InvalidateProjectionMatrix();
+            }
+        }
+
+        public float FarPlane {
+            get => farPlane;
+            set {
+                if(farPlane == value) {
+                    return;
+                }
+                farPlane = value;
+                InvalidateProjectionMatrix();
+            }
+        }
+
+        public bool Orthographic {
+            get => orthographic;
+            set {
+                if(value == orthographic) {
+                    return;
+                }
+                orthographic = value;
+                InvalidateProjectionMatrix();
+            }
+        }
+
+        public bool IsProjectionMatrixValid { get; private set; } = false;
+        public bool IsViewMatrixValid { get; private set; } = false;
+
+        private void InvalidateProjectionMatrix() {
+            IsProjectionMatrixValid = false;
+        }
+        protected void InvalidateViewMatrix() {
+            IsViewMatrixValid = false;
+        }
+        private void ValidateProjectionMatrix() {
+            IsProjectionMatrixValid = true;
+        }
+        private void ValidateViewMatrix() {
+            IsViewMatrixValid = true;
+        }
 
         protected abstract Matrix GetViewMatrix();
 
         public Matrix ViewMatrix { get; private set; }
         public Matrix ProjectionMatrix { get; private set; }
 
-        private float GetFieldOfView() => MathHelper.ToRadians(FieldOfView);
+        internal event Action OnViewMatrixChanged, OnProjectionMatrixChanged;
+
+        private float GetFieldOfView() {
+            return MathHelper.ToRadians(FieldOfView);
+        }
 
         public VectorRectangle OrthographicArea { get; private set; } = VectorRectangle.Zero;
 
-        private Matrix GetProjectionMatrix(float aspectRatio) {
+        private Matrix GetProjectionMatrix() {
+            if(orthographic) {
+                return Matrix.CreateOrthographic(OrthographicArea.Width,OrthographicArea.Height,nearPlane,farPlane);
+            } else {
+                return Matrix.CreatePerspectiveFieldOfView(GetFieldOfView(),aspectRatio,NearPlane,FarPlane);
+            }
+        }
+
+        private float aspectRatio = 0f;
+
+        public void UpdateScreenSize(float aspectRatio) {
+            if(aspectRatio == this.aspectRatio) {
+                return;
+            }
+            this.aspectRatio = aspectRatio;
+            IsProjectionMatrixValid = false;
             float width, height;
             if(aspectRatio > 1) {
                 width = 1f;
@@ -29,16 +122,26 @@ namespace TwelveEngine.Game3D {
             }
             float x = width * -0.5f, y = height * -0.5f;
             OrthographicArea = new VectorRectangle(x,y,width,height);
-            if(Orthographic) {
-                return Matrix.CreateOrthographic(width,height,NearPlane,FarPlane);
-            } else {
-                return Matrix.CreatePerspectiveFieldOfView(GetFieldOfView(),aspectRatio,NearPlane,FarPlane);
-            }
         }
 
-        public void Update(float aspectRatio) {
-            ProjectionMatrix = GetProjectionMatrix(aspectRatio);
-            ViewMatrix = GetViewMatrix();
+        public void Update() {
+            bool viewMatrixChanged = false, projectionMatrixChanged = false;
+            if(!IsProjectionMatrixValid) {
+                ProjectionMatrix = GetProjectionMatrix();
+                ValidateProjectionMatrix();
+                projectionMatrixChanged = true;
+            }
+            if(!IsViewMatrixValid) {
+                ViewMatrix = GetViewMatrix();
+                ValidateViewMatrix();
+                viewMatrixChanged = true;
+            }
+            if(projectionMatrixChanged) {
+                OnProjectionMatrixChanged?.Invoke();
+            }
+            if(viewMatrixChanged) {
+                OnViewMatrixChanged?.Invoke();
+            }
         }
     }
 }
