@@ -43,7 +43,7 @@ namespace Elves.Scenes.Battle {
             OnRender += BattleScene_OnRender;
             OnUnload += BattleRendererState_OnUnload;
             OnPreRender += BattleRendererState_OnPreRender;
-            Camera.Orthographic = !Debug3D;
+            Camera.Orthographic = !Debug;
         }
 
         private void BattleScene_OnLoad() {

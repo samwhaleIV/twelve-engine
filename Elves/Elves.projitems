@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Scene.cs" />

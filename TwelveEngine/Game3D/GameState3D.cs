@@ -16,12 +16,7 @@ namespace TwelveEngine.Game3D {
             OnWriteDebug += GameState3D_OnWriteDebug;
         }
 
-        public bool WriteDebugEnabled { get; set; } = false;
-
         private void GameState3D_OnWriteDebug(DebugWriter writer) {
-            if(!WriteDebugEnabled) {
-                return;
-            }
             writer.ToTopLeft();
             writer.Write(Camera.Position);
             if(Camera is not AngleCamera angleCamera) {

@@ -18,24 +18,32 @@ namespace Elves.Scenes.Test {
             return color;
         }
 
-        public StateTransitionTest(bool fadeIn = false,bool sleep = false) {
+        private readonly bool testLoadSleep;
+
+        public StateTransitionTest(bool testLoadSleep = false) {
+            this.testLoadSleep = testLoadSleep;
+
             Name = "State Transition Test";
             ClearColor = GetSceneColor();
             OnUpdate += UpdateInputs;
             Input.OnAcceptDown += Input_OnAcceptDown;
-            if(sleep) {
+            OnLoad += StateTransitionTest_OnLoad;
+        }
+
+        private void StateTransitionTest_OnLoad() {
+            if(testLoadSleep) {
                 OnLoad += () => Thread.Sleep(1000);
             }
-            if(fadeIn) {
+            if(FadeInIsFlagged) {
                 TransitionIn(TimeSpan.FromSeconds(0.125f));
             }
         }
 
         private void Input_OnAcceptDown() {
             TransitionOut(new TransitionData() {
-                Generator = () => new StateTransitionTest(fadeIn: true),
+                Generator = () => new StateTransitionTest(),
                 Duration = TimeSpan.FromSeconds(0.125f),
-                Data = StateData.CarryInput
+                Data = new StateData() { Flags = StateFlags.CarryInput & StateFlags.FadeIn }
             });
         }
     }

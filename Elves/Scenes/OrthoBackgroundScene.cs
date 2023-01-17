@@ -11,7 +11,7 @@ namespace Elves.Scenes {
             this.smoothBackground = smoothBackground;
             OnLoad += OrthoBackgroundScene_OnLoad;
             OnUpdate += OrthoBackgroundScene_OnUpdate;
-            Camera.Orthographic = !Debug3D;
+            Camera.Orthographic = !Debug;
         }
 
         public OrthoBackgroundScene(Texture2D backgroundImage,bool smoothBackground = true) {
@@ -19,7 +19,7 @@ namespace Elves.Scenes {
             this.smoothBackground = smoothBackground;
             OnLoad += OrthoBackgroundScene_OnLoad;
             OnUpdate += OrthoBackgroundScene_OnUpdate;
-            Camera.Orthographic = !Debug3D;
+            Camera.Orthographic = !Debug;
         }
 
         private const string BACKGROUND_ENTITY_NAME = "Background";

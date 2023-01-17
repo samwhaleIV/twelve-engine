@@ -10,7 +10,7 @@ namespace Elves {
         public const float Debug3DLookSpeed = 10f;
 
         public static class Flags {
-            public const string Debug3D = "debug3d";
+            public const string Debug = "debug";
             public const string OSCursor = "oscursor";
             public const string FixedBattleRandom = "norandombattle";
         }
@@ -54,6 +54,13 @@ namespace Elves {
 
             public static readonly TimeSpan CarouselRotationDuration = TimeSpan.FromMilliseconds(300);
             public static readonly TimeSpan CarouselBackgroundScroll = TimeSpan.FromSeconds(120);
+
+            public static readonly TimeSpan IntroDuration = TimeSpan.FromSeconds(4);
+            public static readonly TimeSpan IntroStartDelay = TimeSpan.FromSeconds(0.5f);
+
+            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(2f);
+
+            public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
         }
     }
 }
