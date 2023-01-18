@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionState.cs" />
+    <Compile Include="..\TwelveEngine\Timeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\EntityContainer.cs" />

@@ -33,7 +33,6 @@ namespace Elves.Scenes.Intro {
             if(Flags.Get(Constants.Flags.Debug)) {
                 Input.OnAcceptDown += Debug_Reset;
             }
-            OnWriteDebug += IntroScene_OnWriteDebug;
             OnLoad += IntroScene_OnLoad;
             OnUnload += IntroScene_OnUnload;
         }
@@ -49,62 +48,42 @@ namespace Elves.Scenes.Intro {
             song = null;
         }
 
-        private TimeSpan sceneDuration;
+        private const int STAGE_START_DELAY = 1;
+        private const int STAGE_TEXT = 2;
+        private const int STAGE_FADE_DELAY = 3;
+        private const int STAGE_FADE_DURATION = 4;
 
-        private enum TimelineStage {
-            None, StartDelay, Text, FadeDelay, FadeDuration
-        }
+        private Timeline timeline;
 
-        private List<(TimelineStage Stage, double KeyFrame)> timeline = new() { (TimelineStage.None, 0) };
+        private void CreateTimeline() {
 
-        private (TimelineStage Stage,float LocalT,float GlobalT) timelineStage = (TimelineStage.None, 0, 0);
+            var duration = song.Duration + Constants.AnimationTiming.IntroSongDurationOffset;
+            var total = duration;
 
-        private (TimelineStage Stage, float LocalT, float GlobalT) GetTimelineStage() {
-            double t = (Now - startTimeOffset) / sceneDuration;
-            if(t >= 1) {
-                return (timeline[^1].Stage,1,1);
-            } else if(t < 0) {
-                return (timeline[0].Stage,0,0);
-            }
-            for(int i = 1;i<timeline.Count;i++) {
-                (TimelineStage Stage, double KeyFrame) item = timeline[i];
-                double start = timeline[i-1].KeyFrame;
-                double localT = (t - start) / (item.KeyFrame - start);
-                if(localT <= 1) {
-                    return (item.Stage,(float)localT, (float)t);
-                }
-            }
-            return (TimelineStage.None, 0,(float)t);
-        }
-
-        private void AddTimelineValue(TimelineStage stage,double length) {
-            timeline.Add((stage,length+timeline[^1].KeyFrame));
-        }
-
-        private void SetAnimationTimeline() {
-            sceneDuration = song.Duration + Constants.AnimationTiming.IntroSongDurationOffset;
-
-            double total = 1;
-
-            double startDelayLength = Constants.AnimationTiming.IntroStartDelay / sceneDuration;
+            var startDelayLength = Constants.AnimationTiming.IntroStartDelay;
             total -= startDelayLength;
 
-            double exitDuration = Constants.AnimationTiming.IntroFadeOutDuration / sceneDuration;
+            var exitDuration = Constants.AnimationTiming.IntroFadeOutDuration;
             total -= exitDuration;
 
-            double endDelayLength = Constants.AnimationTiming.IntroFadeOutDelay / sceneDuration;
+            var endDelayLength = Constants.AnimationTiming.IntroFadeOutDelay;
             total -= endDelayLength;
 
-            if(total <= 0) {
-                Logger.WriteLine($"Warning: The intro timeline is longer than '{song.Name}' ({sceneDuration})'. Is the song too short?");
-                total = 0;
+            if(total <= TimeSpan.Zero) {
+                Logger.WriteLine($"Warning: The intro timeline (length: {duration}) is longer than '{song.Name}' (length: {song.Duration})'. Is the song too short?");
+                total = TimeSpan.Zero;
             }
-            double textLength = total;
+            var textLength = total;
 
-            AddTimelineValue(TimelineStage.StartDelay,startDelayLength);
-            AddTimelineValue(TimelineStage.Text,textLength);
-            AddTimelineValue(TimelineStage.FadeDelay,endDelayLength);
-            AddTimelineValue(TimelineStage.FadeDuration,exitDuration);
+            timeline = new Timeline();
+            OnWriteDebug += timeline.WriteDebug;
+
+            timeline.CreateFixedDuration(duration,
+                (STAGE_START_DELAY, startDelayLength),
+                (STAGE_TEXT, textLength),
+                (STAGE_FADE_DELAY, endDelayLength),
+                (STAGE_FADE_DURATION, exitDuration)
+            );
         }
 
         private void IntroScene_OnLoad() {
@@ -113,23 +92,13 @@ namespace Elves.Scenes.Intro {
             MediaPlayer.IsRepeating = false;
             MediaPlayer.Volume = 1f;
 
-            SetAnimationTimeline();
+            CreateTimeline();
         }
-
-        private TimeSpan startTimeOffset = TimeSpan.Zero;
 
         private void Debug_Reset() {
-            startTimeOffset = Now;
+            timeline.StartTimeOffset = -Now;
             exiting = false;
         }
-
-        private void IntroScene_OnWriteDebug(DebugWriter writer) {
-            writer.ToTopLeft();
-            writer.Write(timelineStage.GlobalT,"Global Time");
-            writer.Write(timelineStage.LocalT,"Stage Time");
-            writer.Write(timelineStage.Stage.ToString(),"Stage Name");
-        }
-
         private bool exiting = false;
 
         private void ExitScene(bool quickExit = false) {
@@ -149,13 +118,12 @@ namespace Elves.Scenes.Intro {
 
         private void IntroScene_OnUpdate() {
             UpdateInputs();
-            timelineStage = GetTimelineStage();
+            timeline.Update(Now);
             if(exiting) {
                 return;
             }
-            if(timelineStage.Stage >= TimelineStage.FadeDuration) {
+            if(timeline.Stage >= STAGE_FADE_DURATION) {
                 ExitScene(quickExit: false);
-                timelineStage = GetTimelineStage();
             }
         }
 
@@ -169,7 +137,6 @@ namespace Elves.Scenes.Intro {
         }
 
         private Color GetTextColor(float t,float index) {
-
             float value = t * Text.Length - index;
             value *= Constants.AnimationTiming.IntroTextFadeSpeed;
 
@@ -184,11 +151,10 @@ namespace Elves.Scenes.Intro {
         }
 
         private void IntroScene_OnRender() {
-            timelineStage = GetTimelineStage();
-            if(timelineStage.Stage < TimelineStage.Text) {
+            if(timeline.Stage < STAGE_TEXT) {
                 return;
             }
-            float t = timelineStage.Stage == TimelineStage.Text ? timelineStage.LocalT : 1;
+            float t = timeline.Stage == STAGE_TEXT ? timeline.LocalT : 1;
             int end = Math.Min((int)(t * Text.Length) + 1,Text.Length);
 
             Vector2 size = Game.Viewport.Bounds.Size.ToVector2();

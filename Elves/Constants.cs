@@ -57,8 +57,8 @@ namespace Elves {
 
             public static readonly TimeSpan IntroStartDelay = TimeSpan.FromSeconds(1);
             public static readonly TimeSpan IntroFadeOutDelay = TimeSpan.FromSeconds(1);
-            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(10);
-            public static readonly TimeSpan IntroSongDurationOffset = -TimeSpan.FromSeconds(40f);
+            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(8);
+            public static readonly TimeSpan IntroSongDurationOffset = -TimeSpan.FromSeconds(3.5f);
             public const float IntroTextFadeSpeed = 2f;
 
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
@@ -66,7 +66,7 @@ namespace Elves {
         }
 
         public static class Songs {
-            public static string Intro = "Music/A_hero";
+            public const string Intro = "Music/A_hero";
         }
     }
 }
