@@ -151,13 +151,13 @@ namespace TwelveEngine.Shell.UI {
 
         public void Write(float value,string label = null) {
             WriteLabel(label);
-            writer.Append(value);
+            writer.AppendFormat(NUMBER_FORMAT,value);
             DrawString();
         }
 
         public void Write(double value,string label = null) {
             WriteLabel(label);
-            writer.Append(value);
+            writer.AppendFormat(NUMBER_FORMAT,value);
             DrawString();
         }
 

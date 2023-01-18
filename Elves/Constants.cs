@@ -55,12 +55,18 @@ namespace Elves {
             public static readonly TimeSpan CarouselRotationDuration = TimeSpan.FromMilliseconds(300);
             public static readonly TimeSpan CarouselBackgroundScroll = TimeSpan.FromSeconds(120);
 
-            public static readonly TimeSpan IntroDuration = TimeSpan.FromSeconds(4);
-            public static readonly TimeSpan IntroStartDelay = TimeSpan.FromSeconds(0.5f);
-
-            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(2f);
+            public static readonly TimeSpan IntroStartDelay = TimeSpan.FromSeconds(1);
+            public static readonly TimeSpan IntroFadeOutDelay = TimeSpan.FromSeconds(1);
+            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(10);
+            public static readonly TimeSpan IntroSongDurationOffset = -TimeSpan.FromSeconds(40f);
+            public const float IntroTextFadeSpeed = 2f;
 
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
+            public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.1f);
+        }
+
+        public static class Songs {
+            public static string Intro = "Music/A_hero";
         }
     }
 }

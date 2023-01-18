@@ -25,10 +25,10 @@ namespace TwelveEngine.Game3D {
 
         private void GameState3D_OnPreRender() {
             if(ProjectionMatrixUpdated) {
-                ProjectionMatrix = camera?.ProjectionMatrix ?? Matrix.Identity;
+                ProjectionMatrix = _camera?.ProjectionMatrix ?? Matrix.Identity;
             }
             if(ViewMatrixUpdated) {
-                ViewMatrix = camera?.ViewMatrix ?? Matrix.Identity;
+                ViewMatrix = _camera?.ViewMatrix ?? Matrix.Identity;
             }
         }
         private void GameState3D_OnRender() {
@@ -52,11 +52,11 @@ namespace TwelveEngine.Game3D {
         }
 
         protected void UpdateCameraScreenSize() {
-            camera?.UpdateScreenSize(AspectRatio);
+            _camera?.UpdateScreenSize(AspectRatio);
         }
 
         protected void UpdateCamera() {
-            camera?.Update();
+            _camera?.Update();
         }
 
         protected virtual void UpdateGame() {
@@ -76,8 +76,8 @@ namespace TwelveEngine.Game3D {
 
         public float AspectRatio => Game.Viewport.AspectRatio;
 
-        private Camera3D camera;
-        public Camera3D Camera { get => camera; set => SetNewCamera(value); }
+        private Camera3D _camera;
+        public Camera3D Camera { get => _camera; set => SetNewCamera(value); }
 
         private void OnProjectionMatrixChanged() {
             ProjectionMatrixUpdated = true;
@@ -88,24 +88,22 @@ namespace TwelveEngine.Game3D {
         }
 
         private void SetNewCamera(Camera3D newCamera) {
-            var oldCamera = camera;
+            Camera3D oldCamera = _camera;
             if(newCamera == oldCamera) {
                 return;
             }
-            camera = newCamera;
+            _camera = newCamera;
             if(oldCamera is not null) {
                 oldCamera.OnViewMatrixChanged -= OnViewMatrixChanged;
                 oldCamera.OnProjectionMatrixChanged -= OnProjectionMatrixChanged;
             }
+            ViewMatrixUpdated = true;
+            ProjectionMatrixUpdated = true;
             if(newCamera is null) {
-                ViewMatrixUpdated = true;
-                ProjectionMatrixUpdated = true;
                 return;
             }
             newCamera.OnViewMatrixChanged += OnViewMatrixChanged;
             newCamera.OnProjectionMatrixChanged += OnProjectionMatrixChanged;
-            ViewMatrixUpdated = true;
-            ProjectionMatrixUpdated = true;
         }
 
         public BufferSet CreateBufferSet<TVertices>(TVertices[] vertices) where TVertices:struct {
