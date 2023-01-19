@@ -4,6 +4,7 @@ using TwelveEngine.Game3D;
 using TwelveEngine;
 using System;
 using TwelveEngine.Shell;
+using TwelveEngine.Input;
 
 namespace Elves.Scenes {
     public abstract class Scene:GameState3D {
@@ -53,5 +54,13 @@ namespace Elves.Scenes {
                 TransitionIn(Constants.AnimationTiming.TransitionDuration);
             }
         }
+
+        public static int GetUIDirection(Direction direction) => direction switch {
+            Direction.Left => -1,
+            Direction.Right => 1,
+            Direction.Up => -1,
+            Direction.Down => 1,
+            _ => 0
+        };
     }
 }

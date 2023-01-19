@@ -72,6 +72,10 @@ namespace TwelveEngine {
             return Vector3.SmoothStep(start,end,GetValue());
         }
 
+        public float SmoothStep(float start,float end) {
+            return MathHelper.SmoothStep(start,end,GetValue());
+        }
+
         public Color Interpolate(Color start,Color end) {
             return Color.Lerp(start,end,GetValue());
         }

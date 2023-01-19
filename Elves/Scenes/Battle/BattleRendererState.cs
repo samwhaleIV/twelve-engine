@@ -30,12 +30,13 @@ namespace Elves.Scenes.Battle {
         private BattleUI battleUI;
         public BattleUI UI => battleUI;
 
-        private readonly ScrollingBackground background = ScrollingBackground.GetCheckered();
+        private ScrollingBackground background = ScrollingBackground.GetCheckered();
 
         public ScrollingBackground Background => background;
 
         private void BattleRendererState_OnPreRender() {
-            background.Render(Game.SpriteBatch,Now,Game.Viewport);
+            background.Update(Now);
+            background.Render(Game.SpriteBatch,Game.Viewport);
         }
 
         private void Initialize() {
@@ -52,7 +53,8 @@ namespace Elves.Scenes.Battle {
         }
 
         private void BattleRendererState_OnUnload() {
-            background.Unload();
+            background?.Unload();
+            background = null;
         }
 
         protected void UpdateUI() {

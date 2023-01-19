@@ -16,5 +16,8 @@ namespace Elves {
         public readonly Texture2D Carousel = Load("carousel");
         public readonly Texture2D Missing = Load("missing");
         public readonly Texture2D Mountains = Load("mountains");
+        public readonly Texture2D SaveSelect = Load("save-select");
+        public readonly Texture2D  GiftPattern = Load("gift-pattern");
+        public readonly Texture2D QuadColor = Load("quad-color");
     }
 }

@@ -52,7 +52,8 @@ namespace Elves.Scenes.Carousel {
         }
 
         private void CarouselMenu_OnPreRender() {
-            background.Render(Game.SpriteBatch,Now,Game.Viewport);
+            background.Update(Now);
+            background.Render(Game.SpriteBatch,Game.Viewport);
         }
 
         private void CarouselMenu_OnUnload() {

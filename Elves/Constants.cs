@@ -63,6 +63,8 @@ namespace Elves {
 
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
             public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.1f);
+
+            public static readonly TimeSpan SaveFingerMovementDuration = TimeSpan.FromSeconds(0.25f);
         }
 
         public static class Songs {

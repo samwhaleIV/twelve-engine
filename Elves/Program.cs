@@ -7,6 +7,7 @@ using Elves.Scenes.Carousel;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Elves.Scenes.Intro;
+using Elves.Scenes.SaveSelect;
 
 #pragma warning disable IDE0079
 #pragma warning disable CS0162
@@ -16,7 +17,8 @@ namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
-            return new IntroScene();
+            return new SaveSelectScene();
+            //return new IntroScene();
             //return new SnowTest();
             //return new ScrollingBackgroundTest();
             //return new CarouselMenu();
