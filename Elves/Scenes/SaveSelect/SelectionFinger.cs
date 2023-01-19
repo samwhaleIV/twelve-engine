@@ -6,10 +6,10 @@ using TwelveEngine.Game3D.Entity.Types;
 namespace Elves.Scenes.SaveSelect {
     public sealed class SelectionFinger:Screenspace3DSprite {
 
-        public static readonly Vector2 BaseScale = new Vector2(174,40);
+        public static readonly Vector2 BaseScale = new(174,40);
         public static readonly float AspectRatio = BaseScale.X / BaseScale.Y;
 
-        private AnimationInterpolator positionAnimator = new(Constants.AnimationTiming.SaveFingerMovementDuration);
+        private readonly AnimationInterpolator positionAnimator = new(Constants.AnimationTiming.SaveFingerMovementDuration);
 
         public SelectionFinger(Texture2D texture) : base(texture) {
             TextureSource = new(0,0,(int)BaseScale.X,(int)BaseScale.Y);

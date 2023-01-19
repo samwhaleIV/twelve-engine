@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DrawingFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\LowMemorySortedSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Flags.cs" />

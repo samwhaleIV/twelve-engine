@@ -113,9 +113,11 @@ namespace Elves.Scenes.Battle {
         }
 
         protected override void UpdateGame() {
-            UpdateUI();        // sync
-            UpdateInputs();    // sync
-            base.UpdateGame(); // sync
+            UpdateUI();
+            UpdateInputs();
+            UpdateCameraScreenSize();
+            Entities.Update();
+            UpdateCamera();
             //do more advanced/long-running async validations here...
         }
 

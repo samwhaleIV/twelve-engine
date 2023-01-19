@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveTag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SelectionFinger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DrawingFrameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Scene.cs" />

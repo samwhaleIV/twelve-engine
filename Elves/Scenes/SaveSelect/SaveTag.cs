@@ -6,10 +6,10 @@ using TwelveEngine.Game3D.Entity.Types;
 namespace Elves.Scenes.SaveSelect {
     public class SaveTag:Screenspace3DSprite {
 
-        public static readonly Vector2 BaseSize = new Vector2(128,32);
+        public static readonly Vector2 BaseSize = new(128,32);
 
-        private static readonly Rectangle DefaultArea = new Rectangle(1,90,(int) BaseSize.X,(int) BaseSize.Y);
-        private static readonly Rectangle NoSaveArea = new Rectangle(1,50,(int)BaseSize.X,(int)BaseSize.Y);
+        private static readonly Rectangle DefaultArea = new(1,90,(int) BaseSize.X,(int) BaseSize.Y);
+        private static readonly Rectangle NoSaveArea = new(1,50,(int)BaseSize.X,(int)BaseSize.Y);
 
         private void SetDefaultTextureSource() => TextureSource = DefaultArea;
         private void SetNoSaveTextureSource() => TextureSource = NoSaveArea;
@@ -35,7 +35,7 @@ namespace Elves.Scenes.SaveSelect {
         public Vector2 Origin { get; set; } = Vector2.Zero;
         public float TagScale { get; set; } = 1f;
 
-        private AnimationInterpolator animator = new(Constants.AnimationTiming.SaveFingerMovementDuration);
+        private readonly AnimationInterpolator animator = new(Constants.AnimationTiming.SaveFingerMovementDuration);
 
         public bool shiftingLeft = false;
 
@@ -66,7 +66,7 @@ namespace Elves.Scenes.SaveSelect {
         private void SaveTag_OnUpdate() {
             animator.Update(Now);
             var scaledSize = TagScale * BaseSize;
-            var xOffset = GetShiftT() * scaledSize.X * 0.01f;
+            var xOffset = GetShiftT() * scaledSize.X * 0.05f;
             var position = Origin - scaledSize * 0.5f;
             position.X -= xOffset;
             Area = new VectorRectangle(position,scaledSize);

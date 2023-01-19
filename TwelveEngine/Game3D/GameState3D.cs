@@ -61,7 +61,7 @@ namespace TwelveEngine.Game3D {
 
         protected virtual void UpdateGame() {
             UpdateInputs();
-            UpdateCameraScreenSize(); /* An entity might need to use orthographic projection information */
+            UpdateCameraScreenSize();
             Entities.Update();
             UpdateCamera();
         }

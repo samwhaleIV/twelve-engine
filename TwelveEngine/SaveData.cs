@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
 namespace TwelveEngine {
 
-    public enum SaveValueType:int { String, Int, Flag, Bool }
+    public enum SaveValueType:int { String, Int, Flag, Bool, ByteArray }
 
     public readonly struct SaveValue {
         public SaveValue(SaveValueType type,object value) {
@@ -83,20 +84,27 @@ namespace TwelveEngine {
 
         private void Export(BinaryWriter binaryWriter) {
             binaryWriter.Write(dataTable.Count);
-            foreach(var item in dataTable) {
+            foreach(KeyValuePair<int,SaveValue> item in dataTable) {
                 binaryWriter.Write(item.Key);
-                var valueType = item.Value.Type;
+                SaveValueType valueType = item.Value.Type;
                 binaryWriter.Write((int)valueType);
+                object value = item.Value.Value;
                 switch(valueType) {
                     case SaveValueType.String:
-                        binaryWriter.Write((string)item.Value.Value);
+                        binaryWriter.Write((string)value);
                         break;
                     case SaveValueType.Int:
-                        binaryWriter.Write((int)item.Value.Value);
+                        binaryWriter.Write((int)value);
                         break;
                     case SaveValueType.Bool:
-                        binaryWriter.Write((bool)item.Value.Value);
+                        binaryWriter.Write((bool)value);
                         break;
+                    case SaveValueType.ByteArray: {
+                        byte[] bytes = (byte[])value;
+                        binaryWriter.Write(bytes.Length);
+                        binaryWriter.Write(bytes);
+                        break;
+                    }
                     default:
                     case SaveValueType.Flag:
                         break;
@@ -113,17 +121,14 @@ namespace TwelveEngine {
                     SaveValueType.String => new SaveValue(valueType,reader.ReadString()),
                     SaveValueType.Int => new SaveValue(valueType,reader.ReadInt32()),
                     SaveValueType.Bool => new SaveValue(valueType,reader.ReadBoolean()),
+                    SaveValueType.ByteArray => new SaveValue(valueType,reader.ReadBytes(reader.ReadInt32())),
                     _ => new SaveValue(SaveValueType.Flag,null),
-                };
+                }; ;
             }
         }
 
         public bool TryGetString(int key,out string value,string defaultValue = null) {
-            if(!dataTable.TryGetValue(key,out var saveValue)) {
-                value = defaultValue;
-                return false;
-            }
-            if(saveValue.Type != SaveValueType.String) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.String) {
                 value = defaultValue;
                 return false;
             }
@@ -132,11 +137,7 @@ namespace TwelveEngine {
         }
 
         public bool TryGetInt(int key,out int value,int defaultValue = 0) {
-            if(!dataTable.TryGetValue(key,out var saveValue)) {
-                value = defaultValue;
-                return false;
-            }
-            if(saveValue.Type != SaveValueType.Int) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Int) {
                 value = defaultValue;
                 return false;
             }
@@ -145,15 +146,20 @@ namespace TwelveEngine {
         }
 
         public bool TryGetBool(int key,out bool value,bool defaultValue = false) {
-            if(!dataTable.TryGetValue(key,out var saveValue)) {
-                value = defaultValue;
-                return false;
-            }
-            if(saveValue.Type != SaveValueType.Bool) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Bool) {
                 value = defaultValue;
                 return false;
             }
             value = (bool)saveValue.Value;
+            return true;
+        }
+
+        public bool TryGetBytes(int key,out byte[] value) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Bool) {
+                value = null;
+                return false;
+            }
+            value = (byte[])saveValue.Value;
             return true;
         }
 
@@ -179,6 +185,10 @@ namespace TwelveEngine {
 
         public void SetValue(int key,bool value) {
             dataTable[key] = new SaveValue(SaveValueType.Bool,value);
+        }
+
+        public void SetBytes(int key,byte[] value) {
+            dataTable[key] = new SaveValue(SaveValueType.ByteArray,value);
         }
     }
 }
