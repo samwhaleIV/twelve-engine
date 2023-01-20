@@ -17,13 +17,22 @@ namespace Elves.Scenes.SaveSelect {
             OnUpdate += SelectionFinger_OnUpdate;
         }
 
+        public float OffscreenDelta { get; set; } = 0f;
+
         private void SelectionFinger_OnUpdate() {
+            IsVisible = OffscreenDelta < 1;
+            if(!IsVisible) {
+                return;
+            }
+
             positionAnimator.Update(Now);
             var bounds = Game.Viewport.Bounds.Size.ToVector2();
             var height = 0.375f * bounds.Y;
             var size = new Vector2(AspectRatio * height,height);
             var y = GetRelativeY() * bounds.Y - size.Y * 0.2f;
             var x = bounds.X * (2f / 3f) - size.X * 1.24f;
+
+            x = MathHelper.SmoothStep(x,-size.X,OffscreenDelta);
             Area = new VectorRectangle(x,y,size);
         }
 

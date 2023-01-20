@@ -109,7 +109,7 @@ namespace Elves.Scenes.Carousel {
                 RotationPosition start = item.OldRotationPosition, end = item.RotationPosition;
                 item.Position = carouselRotation.SmoothStep(positions[start],positions[end]);
 
-                float t = carouselRotation.GetValue();
+                float t = carouselRotation.Value;
                 if(item.RotationPosition == RotationPosition.Back) {
                     item.Alpha = 1f - t;
                     if(item.Alpha <= 0f) {

@@ -1,18 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using TwelveEngine;
 using TwelveEngine.Game3D.Entity.Types;
 
 namespace Elves.Scenes.SaveSelect {
+
     public class SaveTag:Screenspace3DSprite {
+
+        private static readonly Vector3 DefaultRotation = new(0,0,-2.25f);
 
         public static readonly Vector2 BaseSize = new(128,32);
 
-        private static readonly Rectangle DefaultArea = new(1,90,(int) BaseSize.X,(int) BaseSize.Y);
-        private static readonly Rectangle NoSaveArea = new(1,50,(int)BaseSize.X,(int)BaseSize.Y);
-
-        private void SetDefaultTextureSource() => TextureSource = DefaultArea;
-        private void SetNoSaveTextureSource() => TextureSource = NoSaveArea;
+        private static readonly Dictionary<TagState,Rectangle> textureSources = new() {
+            { TagState.NoSave, new(1,50,128,32) },
+            { TagState.CreateNew, new(52,126,128,32) },
+            { TagState.Delete, new(52,160,128,32) },
+            { TagState.Customized, new(1,90,128,32) },
+        };
 
         private readonly int _saveID;
         public int SaveID => _saveID;
@@ -21,7 +26,6 @@ namespace Elves.Scenes.SaveSelect {
             PixelSmoothing = false;
             _saveID = ID;
             OnUpdate += SaveTag_OnUpdate;
-            SetNoSaveTextureSource();
             animator.Finish();
             OnLoad += SaveTag_OnLoad;
         }
@@ -33,9 +37,9 @@ namespace Elves.Scenes.SaveSelect {
         }
 
         public Vector2 Origin { get; set; } = Vector2.Zero;
-        public float TagScale { get; set; } = 1f;
+        public float RenderScale { get; set; } = 1f;
 
-        private readonly AnimationInterpolator animator = new(Constants.AnimationTiming.SaveFingerMovementDuration);
+        private readonly AnimationInterpolator animator = new(Constants.AnimationTiming.SaveTagHighlight);
 
         public bool shiftingLeft = false;
 
@@ -57,35 +61,30 @@ namespace Elves.Scenes.SaveSelect {
 
         private float GetShiftT() {
             if(shiftingLeft) {
-                return animator.GetValue();
+                return animator.Value;
             } else {
-                return 1 - animator.GetValue();
+                return 1 - animator.Value;
             }
         }
+
+        public float LocalAnimationStrength { get; set; } = 1f;
+
+        public TagState State { get; set; } = TagState.NoSave;
 
         private void SaveTag_OnUpdate() {
             animator.Update(Now);
-            var scaledSize = TagScale * BaseSize;
-            var xOffset = GetShiftT() * scaledSize.X * 0.05f;
+            var scaledSize = RenderScale * BaseSize;
+            var xOffset = GetShiftT() * scaledSize.X * 0.05f * LocalAnimationStrength;
             var position = Origin - scaledSize * 0.5f;
             position.X -= xOffset;
+            Rotation = DefaultRotation * LocalAnimationStrength;
             Area = new VectorRectangle(position,scaledSize);
+
+            TextureSource = textureSources.GetValueOrDefault(State);
         }
 
-        private bool _empty = true;
-
-        public bool Empty {
-            get => _empty;
-            set {
-                if(value == _empty) {
-                    return;
-                }
-                if(value) {
-                    SetNoSaveTextureSource();
-                } else {
-                    SetDefaultTextureSource();
-                }
-            }
+       public bool Contains(Point location) {
+            return Area.Contains(location);
         }
     }
 }

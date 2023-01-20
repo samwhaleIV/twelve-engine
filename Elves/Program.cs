@@ -18,7 +18,7 @@ namespace Elves {
     public static class Program {
 
         public static GameState GetStartState() {
-            return new DrawingFrameTest();
+            //return new DrawingFrameTest();
             return new SaveSelectScene();
             //return new IntroScene();
             //return new SnowTest();

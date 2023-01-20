@@ -2,26 +2,24 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Media;
 using System;
-using System.Collections.Generic;
 using TwelveEngine;
 using TwelveEngine.Font;
 using TwelveEngine.Shell;
-using TwelveEngine.Shell.UI;
 
 namespace Elves.Scenes.Intro {
     public sealed class IntroScene:InputGameState {
 
         public static readonly string[] Text = new string[] {
-            "The inevitable is here.",
-            "The christmas elves have turned.",
-            "They've taken the reigns.",
-            "But these are no ordinary elves.",
-            "These elves murder - kill - maim.",
-            "These elves create weapons.",
-            "These elves are monsters.",
-            "The world needs a hero.",
-            "I wish there was any other way...",
-            "You know what to do."
+            "It's been four years since the revolt.",
+            "... How easily that history repeats itself.",
+            "A new generation is doomed to forget.",
+            "A painful past falls on deaf ears.",
+            "Tinsels and stockings, shackles and shockings.",
+            "Oh, it's the happiest time of the year!",
+            "But per a peace to protect comes a price to collect.",
+            "The world needs a hero, but not today.",
+            "Face it, you're kissing under the wrong mistletoe.",
+            "Oh, but how right that wrong can feel."
         };
 
         public IntroScene() {

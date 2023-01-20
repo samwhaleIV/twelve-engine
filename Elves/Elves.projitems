@@ -19,9 +19,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveActionButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveActionButtonSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveButtonType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveTag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SelectionFinger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TagState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DrawingFrameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />
