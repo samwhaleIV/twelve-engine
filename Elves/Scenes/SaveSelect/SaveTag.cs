@@ -28,12 +28,38 @@ namespace Elves.Scenes.SaveSelect {
             OnUpdate += SaveTag_OnUpdate;
             animator.Finish();
             OnLoad += SaveTag_OnLoad;
+            OnUnload += SaveTag_OnUnload;
+            OnRender +=SaveTag_OnRender;
+        }
+
+        private void SaveTag_OnRender() {
+            if(State != TagState.Customized) {
+                return;
+            }
+            Texture2D startTexture = Texture;
+            Texture = drawingFrame.RenderTarget;
+            RenderVertices();
+            Texture = startTexture;
+        }
+
+        private DrawingFrame drawingFrame = new(256,64) {
+            DrawColor = Color.White,
+            EmptyColor = Color.Transparent,
+            BrushTexture = Program.Textures.CircleBrush,
+            BrushSize = 4
+        };
+
+        private void SaveTag_OnUnload() {
+            drawingFrame?.Unload();
+            drawingFrame = null;
         }
 
         private void SaveTag_OnLoad() {
             if(SaveID == 1) {
                 shiftingLeft = true;
             }
+            drawingFrame.Load(Game.GraphicsDevice);
+            //todo frame.import
         }
 
         public Vector2 Origin { get; set; } = Vector2.Zero;

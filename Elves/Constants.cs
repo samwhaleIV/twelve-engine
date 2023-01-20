@@ -68,6 +68,9 @@ namespace Elves {
             public static readonly TimeSpan SaveFingerMovementDuration = TimeSpan.FromSeconds(0.25f);
             public static readonly TimeSpan SaveTagFocus = TimeSpan.FromSeconds(0.25f);
             public static readonly TimeSpan SaveTagHighlight = TimeSpan.FromSeconds(0.125f);
+
+            public static readonly TimeSpan SaveActionButtonHover = TimeSpan.FromSeconds(0.1f);
+            public static readonly TimeSpan SaveActionButtonPress = TimeSpan.FromSeconds(0.1f);
         }
 
         public static class Songs {

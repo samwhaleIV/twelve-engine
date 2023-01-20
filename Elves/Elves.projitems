@@ -20,7 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveActionButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveActionButtonSet.cs" />
+    <Compile Include="..\Elves\Scenes\SaveSelect\TagContextPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveButtonType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveTag.cs" />

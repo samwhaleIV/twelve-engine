@@ -151,11 +151,6 @@ namespace TwelveEngine {
             UpdateEffectParameters();
         }
 
-        public void Unload() {
-            effect?.Dispose();
-            effect = null;
-        }
-
         private void UpdateEffectParameters() {
             aspectRatioParameter?.SetValue(AspectRatio);
             scaleParamter?.SetValue(Scale);

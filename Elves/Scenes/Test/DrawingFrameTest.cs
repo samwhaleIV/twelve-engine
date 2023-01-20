@@ -51,7 +51,7 @@ namespace Elves.Scenes.Test {
             drawingFrame = null;
         }
 
-        private DrawingFrame drawingFrame = new(256,128) { BrushTexture = Program.Textures.Circle, BrushSize = 5 };
+        private DrawingFrame drawingFrame = new(256,128) { BrushTexture = Program.Textures.CircleBrush, BrushSize = 5 };
 
         private void DrawingFrameTest_OnLoad() {
             drawingFrame.Load(Game.GraphicsDevice);

@@ -19,6 +19,6 @@ namespace Elves {
         public readonly Texture2D SaveSelect = Load("save-select");
         public readonly Texture2D  GiftPattern = Load("gift-pattern");
         public readonly Texture2D QuadColor = Load("quad-color");
-        public readonly Texture2D Circle = Load("circle");
+        public readonly Texture2D CircleBrush = Load("circle");
     }
 }

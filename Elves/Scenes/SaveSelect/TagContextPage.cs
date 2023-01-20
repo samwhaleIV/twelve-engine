@@ -7,12 +7,12 @@ using TwelveEngine.Shell;
 
 namespace Elves.Scenes.SaveSelect {
 
-    public sealed class SaveActionButtonSet {
+    public sealed class TagContextPage {
         private readonly Texture2D texture;
 
         public readonly List<SaveActionButton> Buttons = new();
 
-        public SaveActionButtonSet(Texture2D texture) {
+        public TagContextPage(Texture2D texture) {
             this.texture = texture;
         }
 
@@ -22,6 +22,8 @@ namespace Elves.Scenes.SaveSelect {
             Buttons.Clear();
             SelectedButton = null;
             CanExit = true;
+            keyboardCapturedButton = null;
+            CapturedButton = null;
         }
 
         public int AddButton(SaveButtonType type) {
@@ -29,6 +31,7 @@ namespace Elves.Scenes.SaveSelect {
             SaveActionButton button = new() {
                 Texture = texture,
                 Type = type,
+                Index = index,
                 IsEvenNumbered = index % 2 == 0
             };
             Buttons.Add(button);
@@ -75,12 +78,8 @@ namespace Elves.Scenes.SaveSelect {
                 if(_selectedButton == value) {
                     return;
                 }
-                if(_selectedButton is not null) {
-                    _selectedButton.SetUnHover(Now);
-                }
-                if(value is not null) {
-                    value.SetHover(Now);
-                }
+                _selectedButton?.SetUnHover(Now);
+                value?.SetHover(Now);
                 _selectedButton = value;
             }
         }
@@ -92,17 +91,13 @@ namespace Elves.Scenes.SaveSelect {
                 if(_capturedButton == value) {
                     return;
                 }
-                if(_capturedButton is not null) {
-                    _capturedButton.SetUnPress(Now);
-                }
-                if(value is not null) {
-                    value.SetPress(Now);
-                }
+                _capturedButton?.SetUnPress(Now);
+                value?.SetPress(Now);
                 _capturedButton = value;
             }
         }
 
-        //public event Action ButtonPressed;
+        public event Action<int> OnButtonPressed;
 
         public CursorState CursorState { get; set; }
 
@@ -122,17 +117,29 @@ namespace Elves.Scenes.SaveSelect {
 
         public void MouseDown(Point location) {
             UpdateMouse(location,setSelection: true);
+            if(keyboardCapturedButton is not null) {
+                return;
+            }
             CapturedButton = SelectedButton;
         }
 
         public void MouseUp(Point location) {
             UpdateMouse(location,setSelection: true);
+            if(keyboardCapturedButton is not null) {
+                return;
+            }
+            if(CapturedButton is not null) {
+                OnButtonPressed?.Invoke(CapturedButton.Index);
+            }
             CapturedButton = null;
         }
 
         public bool CanExit { get; set; } = false;
 
         public void UpdateMouse(Point location,bool setSelection) {
+            if(keyboardCapturedButton is not null) {
+                return;
+            }
             var button = GetButtonAtMouse(location);
             if(button == null) {
                 if(CapturedButton is null && setSelection) {
@@ -154,12 +161,40 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        public void Accept() {
+        private SaveActionButton keyboardCapturedButton = null;
 
+        public void AcceptDown() {
+            if(SelectedButton is null || CapturedButton is not null) {
+                return;
+            }
+            keyboardCapturedButton = SelectedButton;
+            CapturedButton = SelectedButton;
+        }
+
+        public void AcceptUp() {
+            if(keyboardCapturedButton is null) {
+                return;
+            }
+            OnButtonPressed?.Invoke(keyboardCapturedButton.Index);
+            keyboardCapturedButton = null;
+            CapturedButton = null;
         }
 
         public void DirectionImpulse(int direction) {
-
+            if(CapturedButton is not null) {
+                return;
+            }
+            if(SelectedButton is not null) {
+                int newIndex = SelectedButton.Index + direction;
+                if(newIndex < 0) {
+                    newIndex = 0;
+                } else if(newIndex >= Buttons.Count) {
+                    newIndex = Buttons.Count - 1;
+                }
+                SelectedButton = Buttons[newIndex];
+            } else if(Buttons.Count >= 1) {
+                SelectedButton = Buttons[0];
+            }
         }
     }
 }

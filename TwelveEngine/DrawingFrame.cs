@@ -82,8 +82,8 @@ namespace TwelveEngine {
             lastDrawLocation = location;
         }
 
-        public Color EmptyColor { get; private set; } = Color.Black;
-        public Color DrawColor { get; private set; } = Color.White;
+        public Color EmptyColor { get; set; } = Color.Black;
+        public Color DrawColor { get; set; } = Color.White;
 
         public float BrushSize { get; set; } = 4;
 

@@ -37,7 +37,6 @@ namespace Elves.Scenes.Carousel {
             Camera.Position = position;
             Input.OnDirectionDown += Input_OnDirectionDown;
             OnRender += CarouselMenu_OnRender;
-            OnUnload += CarouselMenu_OnUnload;
         }
 
         private readonly ScrollingBackground background = new() {
@@ -54,10 +53,6 @@ namespace Elves.Scenes.Carousel {
         private void CarouselMenu_OnPreRender() {
             background.Update(Now);
             background.Render(Game.SpriteBatch,Game.Viewport);
-        }
-
-        private void CarouselMenu_OnUnload() {
-            background?.Unload();
         }
 
         private void CarouselMenu_OnLoad() {
@@ -91,7 +86,7 @@ namespace Elves.Scenes.Carousel {
 
         protected override void UpdateGame() {
             UpdateInputs();
-            UpdateCamera();
+            UpdateCameraScreenSize();
             UpdateItemPositions();
             Entities.Update();
             UpdateCamera();
