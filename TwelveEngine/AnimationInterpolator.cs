@@ -4,14 +4,16 @@ using System;
 namespace TwelveEngine {
     public sealed class AnimationInterpolator {
 
-        private readonly TimeSpan _duration;
-
         public AnimationInterpolator(TimeSpan duration) {
-            _duration =  duration;
+            Duration = duration;
             Start = -duration;
         }
 
-        public TimeSpan Duration => _duration;
+        public AnimationInterpolator() {
+            Start = TimeSpan.MinValue;
+        }
+
+        public TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(0.1f);
 
         public TimeSpan Start { get; private set; } = TimeSpan.Zero;
         public TimeSpan Now { get; private set; } = TimeSpan.Zero;
@@ -34,9 +36,12 @@ namespace TwelveEngine {
 
         public void Update(TimeSpan now) {
             Now = now;
+            Value = GetValue();
         }
 
-       public float GetValue() {
+        public float Value { get; private set; }
+
+       private float GetValue() {
             float value = (float)((Now - Start) / Duration);
             if(value > 1) {
                 value = 1;
@@ -53,27 +58,31 @@ namespace TwelveEngine {
         }
 
         public Point Interpolate(Point start,Point end) {
-            return Vector2.Lerp(start.ToVector2(),end.ToVector2(),GetValue()).ToPoint();
+            return Vector2.Lerp(start.ToVector2(),end.ToVector2(),Value).ToPoint();
         }
 
         public float Interpolate(float x,float y) {
-            return MathHelper.Lerp(x,y,GetValue());
+            return MathHelper.Lerp(x,y,Value);
         }
 
         public Vector2 Interpolate(Vector2 start,Vector2 end) {
-            return Vector2.Lerp(start,end,GetValue());
+            return Vector2.Lerp(start,end,Value);
         }
 
         public Vector3 Interpolate(Vector3 start,Vector3 end) {
-            return Vector3.Lerp(start,end,GetValue());
+            return Vector3.Lerp(start,end,Value);
         }
 
         public Vector3 SmoothStep(Vector3 start,Vector3 end) {
-            return Vector3.SmoothStep(start,end,GetValue());
+            return Vector3.SmoothStep(start,end,Value);
+        }
+
+        public float SmoothStep(float start,float end) {
+            return MathHelper.SmoothStep(start,end,Value);
         }
 
         public Color Interpolate(Color start,Color end) {
-            return Color.Lerp(start,end,GetValue());
+            return Color.Lerp(start,end,Value);
         }
 
         public Rectangle Interpolate(Rectangle start,Rectangle end) {
@@ -83,7 +92,7 @@ namespace TwelveEngine {
         }
 
         public VectorRectangle Interpolate(VectorRectangle start,VectorRectangle end) {
-            Vector2 position = Interpolate(start.Location,end.Location);
+            Vector2 position = Interpolate(start.Position,end.Position);
             Vector2 size = Interpolate(start.Size,end.Size);
             return new VectorRectangle(position,size);
         }

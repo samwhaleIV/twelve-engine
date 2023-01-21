@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -153,13 +151,13 @@ namespace TwelveEngine.Shell.UI {
 
         public void Write(float value,string label = null) {
             WriteLabel(label);
-            writer.Append(value);
+            writer.AppendFormat(NUMBER_FORMAT,value);
             DrawString();
         }
 
         public void Write(double value,string label = null) {
             WriteLabel(label);
-            writer.Append(value);
+            writer.AppendFormat(NUMBER_FORMAT,value);
             DrawString();
         }
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace TwelveEngine.Shell.Automation {

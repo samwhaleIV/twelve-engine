@@ -24,6 +24,14 @@ namespace TwelveEngine.Game3D.Entity.Types {
             SetUVArea(new Rectangle(x,y,width,height));
         }
 
+        public void SetUVArea(int x,int y,Point size) {
+            SetUVArea(new Rectangle(x,y,size.X,size.Y));
+        }
+
+        public void SetUVArea(int x,int y,Vector2 size) {
+            SetUVArea(new Rectangle(x,y,(int)size.X,(int)size.Y));
+        }
+
         public void SetUVArea(Rectangle textureArea) {
             var texture = Texture ?? pendingTexture;
             if(texture == null) {

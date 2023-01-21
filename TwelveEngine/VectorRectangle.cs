@@ -91,7 +91,7 @@ namespace TwelveEngine {
             }
         }
 
-        public Vector2 Location {
+        public Vector2 Position {
             get => new(x,y);
             set {
                 x = value.X;

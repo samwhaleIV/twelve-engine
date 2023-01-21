@@ -2,10 +2,7 @@
 using System;
 using System.IO;
 using TwelveEngine.Input;
-using Microsoft.Xna.Framework.Input;
-using System.Text;
 using TwelveEngine.Font;
-using Microsoft.Xna.Framework.Media;
 
 namespace TwelveEngine {
 

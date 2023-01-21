@@ -1,20 +1,37 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.Game3D.Entity {
     public abstract class WorldMatrixEntity:Entity3D {
 
         public WorldMatrixEntity() {
-            OnRender += WorldMatrixEntity_OnRender;
+            OnPreRender += FirstPreRender;
         }
 
-        private void WorldMatrixEntity_OnRender() {
+        private void FirstPreRender() {
             UpdateWorldMatrix();
+            ApplyViewMatrix(ref Owner.ViewMatrix);
+            ApplyProjectionMatrix(ref Owner.ProjectionMatrix);
+            OnPreRender -= FirstPreRender;
+            OnPreRender += WorldMatrixEntity_OnPreRender;
         }
+
+        private void WorldMatrixEntity_OnPreRender() {
+            UpdateWorldMatrix();
+            if(Owner.ViewMatrixUpdated) {
+                ApplyViewMatrix(ref Owner.ViewMatrix);
+            }
+            if(Owner.ProjectionMatrixUpdated) {
+                ApplyProjectionMatrix(ref Owner.ProjectionMatrix);
+            }
+        }
+
+        protected abstract void ApplyViewMatrix(ref Matrix viewMatrix);
+        protected abstract void ApplyProjectionMatrix(ref Matrix projectionMatrix);
+        protected abstract void ApplyWorldMatrix(ref Matrix matrix);
 
         private Vector3? lastCameraPosition = null;
 
-        private Matrix originMatrix, rotationMatrix, scaleMatrix, worldMatrix;
+        private Matrix originMatrix, rotationMatrix, scaleMatrix;
 
         private void ValidateBillboard() {
             var camera = Owner.Camera;
@@ -30,8 +47,6 @@ namespace TwelveEngine.Game3D.Entity {
             lastCameraPosition = cameraPosition;
         }
 
-        protected abstract void ApplyWorldMatrix(Matrix matrix);
-
         private void UpdateWorldMatrix() {
             ValidateBillboard();
 
@@ -41,10 +56,10 @@ namespace TwelveEngine.Game3D.Entity {
 
             UpdateVectorMatrices();
 
-            worldMatrix = GetWorldMatrix();
+            Matrix worldMatrix = GetWorldMatrix();
             WorldMatrixValid = true;
 
-            ApplyWorldMatrix(worldMatrix);
+            ApplyWorldMatrix(ref worldMatrix);
         }
 
         private Matrix GetWorldMatrix() {

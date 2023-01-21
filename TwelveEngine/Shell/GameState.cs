@@ -7,10 +7,28 @@ using TwelveEngine.Shell.UI;
 namespace TwelveEngine.Shell {
     public class GameState {
 
-        public StateData Data { get; internal set; }
+        private StateData data;
+        public StateData Data {
+            get {
+                if(!(IsLoaded || IsLoading)) {
+                    /* If you need to access data before a 'Load' call, don't use 'Data.Args'; Use regular parameters in the state constructor */
+                    throw new InvalidOperationException("Cannot access 'Data' before the state has started loading!");
+                }
+                return data;
+            }
+            internal set {
+                data = value;
+            }
+        }
 
         public bool HasFlag(StateFlags flag) {
             return Data.Flags.HasFlag(flag);
+        }
+
+        public bool FadeInIsFlagged {
+            get {
+                return Data.Flags.HasFlag(StateFlags.FadeIn);
+            }
         }
 
         public GameManager Game { get; private set; } = null;
@@ -35,7 +53,19 @@ namespace TwelveEngine.Shell {
         public bool IsRendering { get; private set; } = false;
         public bool IsPreRendering { get; private set; } = false;
 
-        public TimeSpan StartTime { get; private set; }
+        private TimeSpan startTime;
+
+        public TimeSpan StartTime {
+            get {
+                if(!hasStartTime) {
+                    throw new InvalidOperationException("Property 'StartTime' cannot be evaluated before the first 'Update' frame.");
+                }
+                return startTime;
+            }
+            private set {
+                startTime = value;
+            }
+        }
 
         public string Name { get; set; } = string.Empty;
 
@@ -60,7 +90,7 @@ namespace TwelveEngine.Shell {
         private bool hasStartTime = false;
 
         private void UpdateStartTime() {
-            var now = Now;
+            TimeSpan now = Now;
             transitionStartTime = now;
             StartTime = now;
             hasStartTime = true;

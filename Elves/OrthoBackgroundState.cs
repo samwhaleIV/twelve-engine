@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D.Entity.Types;
 
 namespace Elves {
-    public class OrthoBackgroundState:WorldBase {
+    public class OrthoBackgroundState:Scene {
 
         public OrthoBackgroundState(string backgroundImage,bool smoothBackground = true) {
             this.backgroundImage = backgroundImage;

@@ -22,7 +22,7 @@ namespace TwelveEngine.Game3D.Entity {
         public Vector3 BottomRight { get; set; } = new Vector3(0.5f,-0.5f,0f);
 
         public TextureRectangle() {
-            OnRender += TextureRectangle_OnRender;
+            OnRender += RenderVertices;
             OnLoad += TextureRectangle_OnLoad;
             OnUnload += TextureRectangle_OnUnload;
         }
@@ -122,20 +122,24 @@ namespace TwelveEngine.Game3D.Entity {
             effect = null;
         }
 
-        public bool PixelSmoothing { get; set; } = true;
-
-        protected override void ApplyWorldMatrix(Matrix matrix) {
+        protected override void ApplyProjectionMatrix(ref Matrix projectionMatrix) {
+            effect.Projection = projectionMatrix;
+        }
+        protected override void ApplyViewMatrix(ref Matrix viewMatrix) {
+            effect.View = viewMatrix;
+        }
+        protected override void ApplyWorldMatrix(ref Matrix matrix) {
             effect.World = matrix;
         }
 
+        public bool PixelSmoothing { get; set; } = true;
+
         public float Alpha { get; set; } = 1f;
 
-        private void TextureRectangle_OnRender() {
+        protected void RenderVertices() {
             UpdateVertices(TopLeft,BottomRight);
             bufferSet.VertexBuffer.SetData(vertices);
             bufferSet.Apply();
-            effect.View = Owner.ViewMatrix;
-            effect.Projection = Owner.ProjectionMatrix;
             var startingSamplerState = Owner.GraphicsDevice.SamplerStates[0];
             Owner.GraphicsDevice.SamplerStates[0] = PixelSmoothing ? SamplerState.LinearWrap : SamplerState.PointWrap;
             effect.Alpha = Alpha;

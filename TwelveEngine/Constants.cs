@@ -21,7 +21,7 @@ namespace TwelveEngine {
 
         public const long LogResetLimit = 2 * 1048576; // megabytes * bytesPerMegabyte
 
-        public const string DebugFont = "debug-font";
+        public const string DebugFont = "Font/debug-font";
 
         public const string DefaultPlaybackFile = "default.teinp";
         public const string PlaybackFolder = "playback";

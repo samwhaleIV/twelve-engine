@@ -450,7 +450,7 @@ namespace TwelveEngine.Shell {
             var gameState = _gameState;
 
             if(gameState != null && !gameState.IsLoaded) {
-                /* Calm yourself, this isn't buffer into a log file - but hopefully you never see this in production */
+                /* Calm yourself, this isn't buffered into a log file - but hopefully you never see this in production */
                 Console.WriteLine($"[{proxyGameTime.TotalGameTime}] WARNING: Attempt to render game state after it has been unloaded");
                 return;
             }
