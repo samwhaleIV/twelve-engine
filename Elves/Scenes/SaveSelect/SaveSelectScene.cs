@@ -19,6 +19,8 @@ namespace Elves.Scenes.SaveSelect {
         private readonly AnimationInterpolator saveTagFocusAnimator = new(Constants.AnimationTiming.SaveTagFocus);
         private readonly TagContextPage tagContextPage = new(Program.Textures.SaveSelect);
 
+        private readonly AnimationInterpolator tagFocusAnimator = new(Constants.AnimationTiming.SaveTagFocus);
+
         private ScrollingBackground background;
         private SaveTag capturedTag = null;
 
@@ -26,9 +28,51 @@ namespace Elves.Scenes.SaveSelect {
 
         private CursorState cursorState = CursorState.Default;
         private SaveTag focusedTag = null;
-        private bool focusingIn = false;
 
         private bool focusedFromMouse = false;
+
+        private enum PageState { TagSelect, TagContext, TagDelete, TagDraw }
+
+        private PageState _state;
+        private PageState State => _state;
+
+        private void SetState(PageState value,bool fromMouse) {
+            if(_state == value) {
+                return;
+            }
+            switch(value) {
+                case PageState.TagSelect:
+                    if(focusedTag is not null && focusedTag.State == TagState.CreateNew) {
+                        focusedTag.State = TagState.NoSave;
+                    }
+                    saveTagFocusAnimator.ResetCarryOver(Now);
+                    focusedFromMouse = false;
+                    if(fromMouse) {
+                        UpdateMouseUnfocused(Mouse.Position,true);
+                    }
+                    tagContextPage.ResetButtonFocus();
+                    break;
+                case PageState.TagContext:
+                    capturedTag = null;
+                    focusedTag = tags[selectedRow];
+                    if(focusedTag.State == TagState.NoSave) {
+                        focusedTag.State = TagState.CreateNew;
+                    }
+                    saveTagFocusAnimator.ResetCarryOver(Now);
+                    if(!fromMouse) {
+                        tagContextPage.DirectionImpulse(0);
+                    } else {
+                        tagContextPage.UpdateMouse(Mouse.Position,true);
+                    }
+                    break;
+                case PageState.TagDelete:
+                    break;
+                case PageState.TagDraw:
+                    break;
+            }
+            _state = value;
+            return;
+        }
 
         public SaveSelectScene() {
             OnLoad += SaveSelectScene_OnLoad;
@@ -45,53 +89,27 @@ namespace Elves.Scenes.SaveSelect {
             Input.OnCancelDown += Input_OnCancelDown;
 
             Camera.Orthographic = true;
-            tagContextPage.OnButtonPressed +=TagContextPage_OnButtonPressed;
+            tagContextPage.OnButtonPressed += TagContextPage_OnButtonPressed;
         }
 
         private float GetFocusInDelta() {
-            if(focusingIn) {
-                return saveTagFocusAnimator.Value;
-            } else {
+            if(State != PageState.TagContext) { //might need to invert
                 return 1 - saveTagFocusAnimator.Value;
+            } else {
+                return saveTagFocusAnimator.Value;
             }
         }
 
-        private void UpdateTagButtons() {
-            tagContextPage.ClearButtons();
-            switch(focusedTag.State) {
-                case TagState.NoSave:
-                    throw new InvalidOperationException();
-                case TagState.Delete:
-                    tagContextPage.AddButton(SaveButtonType.Back);
-                    tagContextPage.AddButton(SaveButtonType.Yes);
-                    break;
-                case TagState.CreateNew:
-                    tagContextPage.AddButton(SaveButtonType.Back);
-                    tagContextPage.AddButton(SaveButtonType.Yes);
-                    break;
-                case TagState.Customized:
-                    tagContextPage.AddButton(SaveButtonType.Back);
-                    tagContextPage.AddButton(SaveButtonType.Play);
-                    tagContextPage.AddButton(SaveButtonType.Delete);
-                    break;
+        private float DrawFocusDelta() {
+            if(State != PageState.TagContext) { //might need to invert
+                return 1 - saveTagFocusAnimator.Value;
+            } else {
+                return saveTagFocusAnimator.Value;
             }
         }
 
-        private void FocusSelectionTag() {
-            if(focusingIn) {
-                return;
-            }
-            capturedTag = null;
-            focusedTag = tags[selectedRow];
-            if(focusedTag.State == TagState.NoSave) {
-                focusedTag.State = TagState.CreateNew;
-            }
-            focusingIn = true;
-            UpdateTagButtons();
-            saveTagFocusAnimator.ResetCarryOver(Now);
-        }
-
-        private void TagContextPage_OnButtonPressed(int index) {
+        private void TagContextPage_OnButtonPressed(bool fromMouse,int index) {
+            Console.WriteLine($"Tag button pressed: {index}, save index {selectedRow}");
             switch(focusedTag.State) {
                 case TagState.NoSave:
                     throw new InvalidOperationException();
@@ -102,22 +120,23 @@ namespace Elves.Scenes.SaveSelect {
                     } else {
                         focusedTag.State = TagState.NoSave;
                         //todo: delete actual save data
-                        ExitSelectionTag();
+                        SetState(PageState.TagSelect,fromMouse);
                     }
                     break;
                 case TagState.CreateNew:
                     if(index == 0) { //back
-                        ExitSelectionTag();
+                        SetState(PageState.TagSelect,fromMouse);
                     } else if(index == 1) { //create
                         focusedTag.State = TagState.Customized;
-                        UpdateTagButtons();
+                        SetState(PageState.TagDraw,fromMouse);
                     }
                     break;
                 case TagState.Customized:
                     if(index == 0) { //back
-                        ExitSelectionTag();
+                        SetState(PageState.TagSelect,fromMouse);
                     } else if(index == 1) { //play
                         //todo: transition properly
+                        return;
                         TransitionOut(new TransitionData() {
                             Generator = () => new CarouselMenu(),
                             Duration = Constants.AnimationTiming.TransitionDuration,
@@ -126,23 +145,10 @@ namespace Elves.Scenes.SaveSelect {
                     } else if(index == 2) { //delete
                         tagContextPage.CanExit = false;
                         focusedTag.State = TagState.Delete;
-                        UpdateTagButtons();
+                        SetState(PageState.TagDelete,fromMouse);
                     }
                     break;
             }
-            Console.WriteLine($"Tag button pressed: {index}, save index {selectedRow}");
-        }
-
-        private void ExitSelectionTag() {
-            if(!focusingIn) {
-                return;
-            }
-            if(focusedTag is not null && focusedTag.State == TagState.CreateNew) {
-                focusedTag.State = TagState.NoSave;
-            }
-            focusingIn = false;
-            saveTagFocusAnimator.ResetCarryOver(Now);
-            focusedFromMouse = false;
         }
 
         private int selectedRow = 0;
@@ -181,6 +187,7 @@ namespace Elves.Scenes.SaveSelect {
             tags[1].Origin = new(twoThirdsX,bounds.Y * ROW_2);
             tags[2].Origin = new(twoThirdsX-horizontalStep,bounds.Y * ROW_3);
 
+            tagFocusAnimator.Update(Now);
             saveTagFocusAnimator.Update(Now);
 
             var focusT = GetFocusInDelta();
@@ -210,11 +217,11 @@ namespace Elves.Scenes.SaveSelect {
 
         #region UPDATE LOOP
         protected override void UpdateGame() {
-            cursorState = focusingIn ? tagContextPage.CursorState : CursorState.Default;
+            cursorState = State == PageState.TagContext ? tagContextPage.CursorState : CursorState.Default; //todo: improve
             UpdateUIPositions();
             tagContextPage.Now = Now;
             UpdateSaveActionButtons();
-            if(focusingIn && GetFocusInDelta() >= 1 && focusedFromMouse) {
+            if(State == PageState.TagContext && GetFocusInDelta() >= 1 && focusedFromMouse) { //todo improve
                 tagContextPage.UpdateMouse(Mouse.Position,setSelection: true);
                 focusedFromMouse = false;
             }
@@ -262,39 +269,50 @@ namespace Elves.Scenes.SaveSelect {
                 return;
             }
             if(tagContextPage.CanExit) {
-                ExitSelectionTag();
+                SetState(PageState.TagSelect,false);
+            } else if(focusedTag.State == TagState.Delete) {
+                focusedTag.State = TagState.Customized;
+                tagContextPage.CanExit = true;
             }
         }
 
         private void Input_OnAcceptDown() {
-            if(!focusingIn) {
-                if(capturedTag is not null) {
-                    return;
-                }
-                FocusSelectionTag();
-                tagContextPage.DirectionImpulse(0);
-            } else {
-                tagContextPage.AcceptDown();
+            switch(State) {
+                case PageState.TagContext:
+                    tagContextPage.AcceptDown();
+                    break;
+                case PageState.TagSelect:
+                    if(capturedTag is not null || !saveTagFocusAnimator.IsFinished) {
+                        return;
+                    }
+                    if(capturedTag is not null) {
+                        return;
+                    }
+                    SetState(PageState.TagContext,false);
+                    break;
             }
         }
 
         private void Input_OnAcceptUp() {
-            if(focusingIn) {
+            if(State == PageState.TagContext) {
                 tagContextPage.AcceptUp();
             }
         }
 
         private void Input_OnDirectionDown(Direction direction) {
-            if(!focusingIn) {
-                if(capturedTag is not null || !saveTagFocusAnimator.IsFinished) {
-                    return;
-                }
-                SelectionRow += GetUIDirection(direction);
-            } else {
-                if(!saveTagFocusAnimator.IsFinished) {
-                    return;
-                }
-                tagContextPage.DirectionImpulse(GetUIDirection(direction));
+            switch(State) {
+                case PageState.TagContext:
+                    if(!saveTagFocusAnimator.IsFinished) {
+                        return;
+                    }
+                    tagContextPage.DirectionImpulse(GetUIDirection(direction));
+                    break;
+                case PageState.TagSelect:
+                    if(capturedTag is not null || !saveTagFocusAnimator.IsFinished) {
+                        return;
+                    }
+                    SelectionRow += GetUIDirection(direction);
+                    break;
             }
         }
         #endregion
@@ -327,43 +345,55 @@ namespace Elves.Scenes.SaveSelect {
         }
 
         private void UpdateMouse(Point location) {
-            if(focusingIn) {
-                tagContextPage.UpdateMouse(location,setSelection: false);
-            } else {
-                UpdateMouseUnfocused(location,setSelection: false);
+            switch(State) {
+                case PageState.TagContext:
+                    tagContextPage.UpdateMouse(location,setSelection: false);
+                    break;
+                case PageState.TagSelect:
+                    UpdateMouseUnfocused(location,setSelection: false);
+                    break;
             }
         }
 
         private void Mouse_OnMove(Point location) {
-            if(focusingIn) {
-                tagContextPage.MouseMove(location);
-            } else {
-                UpdateMouseUnfocused(location,setSelection: true);
+            switch(State) {
+                case PageState.TagContext:
+                    tagContextPage.MouseMove(location);
+                    break;
+                case PageState.TagSelect:
+                    UpdateMouseUnfocused(location,setSelection: true);
+                    break;
             }
         }
 
         private void Mouse_OnPress(Point location) {
-            if(focusingIn) {
-                tagContextPage.MouseDown(location);
-            } else {
-                UpdateMouseUnfocused(location,setSelection: true);
-                if(cursorState == CursorState.Interact) {
-                    capturedTag = tags[selectedRow];
-                }
+            switch(State) {
+                case PageState.TagContext:
+                    tagContextPage.MouseDown(location);
+                    break;
+                case PageState.TagSelect:
+                    UpdateMouseUnfocused(location,setSelection: true);
+                    if(cursorState == CursorState.Interact) {
+                        capturedTag = tags[selectedRow];
+                    }
+                    break;
             }
         }
 
         private void Mouse_OnRelease(Point location) {
-            if(focusingIn) {
-                tagContextPage.UpdateMouse(location,setSelection: true);
-                tagContextPage.MouseUp(location);
-            } else {
-                if(capturedTag is not null && GetTagAtMouse(location) == capturedTag) {
-                    FocusSelectionTag();
-                    focusedFromMouse = true;
-                }
-                capturedTag = null;
-                UpdateMouseUnfocused(location,setSelection: true);
+            switch(State) {
+                case PageState.TagContext:
+                    tagContextPage.UpdateMouse(location,setSelection: true);
+                    tagContextPage.MouseUp(location);
+                    break;
+                case PageState.TagSelect:
+                    if(capturedTag is not null && GetTagAtMouse(location) == capturedTag) {
+                        SetState(PageState.TagContext,true);
+                        focusedFromMouse = true;
+                    }
+                    capturedTag = null;
+                    UpdateMouseUnfocused(location,setSelection: true);
+                    break;
             }
         }
         #endregion

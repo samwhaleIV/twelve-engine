@@ -29,7 +29,7 @@ namespace Elves.Scenes.SaveSelect {
             animator.Finish();
             OnLoad += SaveTag_OnLoad;
             OnUnload += SaveTag_OnUnload;
-            OnRender +=SaveTag_OnRender;
+            OnRender += SaveTag_OnRender;
         }
 
         private void SaveTag_OnRender() {
@@ -55,7 +55,7 @@ namespace Elves.Scenes.SaveSelect {
         }
 
         private void SaveTag_OnLoad() {
-            if(SaveID == 1) {
+            if(SaveID == 0) {
                 shiftingLeft = true;
             }
             drawingFrame.Load(Game.GraphicsDevice);

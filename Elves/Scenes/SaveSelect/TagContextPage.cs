@@ -14,14 +14,14 @@ namespace Elves.Scenes.SaveSelect {
 
         public TagContextPage(Texture2D texture) {
             this.texture = texture;
+            AddButton(SaveButtonType.Back);
+            AddButton(SaveButtonType.Play);
         }
 
         public TimeSpan Now { get; set; } = TimeSpan.Zero;
 
-        public void ClearButtons() {
-            Buttons.Clear();
+        public void ResetButtonFocus() {
             SelectedButton = null;
-            CanExit = true;
             keyboardCapturedButton = null;
             CapturedButton = null;
         }
@@ -97,7 +97,7 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        public event Action<int> OnButtonPressed;
+        public event Action<bool,int> OnButtonPressed;
 
         public CursorState CursorState { get; set; }
 
@@ -129,12 +129,22 @@ namespace Elves.Scenes.SaveSelect {
                 return;
             }
             if(CapturedButton is not null) {
-                OnButtonPressed?.Invoke(CapturedButton.Index);
+                OnButtonPressed?.Invoke(true,CapturedButton.Index);
             }
             CapturedButton = null;
         }
 
-        public bool CanExit { get; set; } = false;
+        private bool _canExit = true;
+        public bool CanExit {
+            get => _canExit;
+            set {
+                if(_canExit == value) {
+                    return;
+                }
+                _canExit = value;
+                Console.WriteLine($"Can exit: {_canExit}");
+            }
+        }
 
         public void UpdateMouse(Point location,bool setSelection) {
             if(keyboardCapturedButton is not null) {
@@ -175,7 +185,7 @@ namespace Elves.Scenes.SaveSelect {
             if(keyboardCapturedButton is null) {
                 return;
             }
-            OnButtonPressed?.Invoke(keyboardCapturedButton.Index);
+            OnButtonPressed?.Invoke(false,keyboardCapturedButton.Index);
             keyboardCapturedButton = null;
             CapturedButton = null;
         }
