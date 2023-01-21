@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUIPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Tag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TagSelectPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TestPage1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DrawingFrameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />

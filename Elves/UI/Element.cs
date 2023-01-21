@@ -77,6 +77,8 @@ namespace Elves.UI {
         /// </summary>
         public float Rotation { get => layout.Rotation; set => layout.Rotation = value; }
 
+        public bool SmoothStep { get; set; } = false;
+
         private static float GetCoordinate(float value,float dimension,CoordinateMode mode) => mode switch {
             CoordinateMode.Absolute => value,
             CoordinateMode.Relative => value * dimension,
@@ -106,7 +108,8 @@ namespace Elves.UI {
         /// <param name="now">Current, total elapsed time.</param>
         public void KeyAnimation(TimeSpan now,TimeSpan? overrideAnimationDuration = null) {
             if(oldLayout is not null) {
-                oldLayout = ElementLayoutData.Lerp(oldLayout.Value,layout,animator.Value);
+                oldLayout = SmoothStep ? ElementLayoutData.SmoothStep(oldLayout.Value,layout,animator.Value) :
+                                         ElementLayoutData.Lerp(oldLayout.Value,layout,animator.Value);
             } else {
                 oldLayout = layout;
             }

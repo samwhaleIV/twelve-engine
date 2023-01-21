@@ -19,14 +19,14 @@ namespace Elves.UI {
             if(page == newPage) {
                 throw new InvalidOperationException("Cannot set page to the page that is already active!");
             }
+            HideAllElements(now,animationDuration);
             page?.Close();
             page = newPage;
-            HideAllElements(now,animationDuration);
             page.Open(now);
             if(page.DefaultFocusElement is null) {
                 Logger.WriteLine("UI page has no default keyboard focus element!");
             } else if(lastEventWasKeyboard) {
-                SelectedElement = page.DefaultFocusElement;
+                SelectedElement = GetLastSelectedOrDefault();
             }
         }
 
@@ -36,7 +36,7 @@ namespace Elves.UI {
         }
 
         public void Update(TimeSpan now,VectorRectangle viewport) {
-            page?.Update(viewport);
+            page?.Update(now,viewport);
             foreach(var element in Elements) {
                 element.Update(now,viewport);
             }
@@ -64,12 +64,17 @@ namespace Elves.UI {
             SelectedElement = null;
             PressedElement = null;
             _hiddenMouseHoverElement = null;
+            _lastSelectedElement = null;
         }
 
         protected abstract void RenderElement(TElement element);
 
         private bool keyboardPressingElement = false, lastEventWasKeyboard = false;
-        private Element _selectedElement = null, _pressedElement = null, _hiddenMouseHoverElement = null;
+        private Element _selectedElement = null, _pressedElement = null, _hiddenMouseHoverElement = null, _lastSelectedElement = null;
+
+        private Element GetLastSelectedOrDefault() {
+            return _lastSelectedElement is not null ? _lastSelectedElement : page?.DefaultFocusElement ?? null;
+        }
 
         public Element SelectedElement {
             get => _selectedElement;
@@ -79,6 +84,9 @@ namespace Elves.UI {
                 }
                 _selectedElement?.SelectEnd();
                 _selectedElement = value;
+                if(value is not null) {
+                    _lastSelectedElement = value;
+                }
                 value?.Select();
             }
         }
@@ -128,6 +136,13 @@ namespace Elves.UI {
         public void MouseDown() {
             lastEventWasKeyboard = false;
             if(PressedElement is null && SelectedElement is not null) {
+                if(_hiddenMouseHoverElement == null) {
+                    SelectedElement = null;
+                    return;
+                }
+                if(SelectedElement != _hiddenMouseHoverElement) {
+                    SelectedElement = _hiddenMouseHoverElement;
+                }
                 PressedElement = SelectedElement;
             }
         }
@@ -136,6 +151,9 @@ namespace Elves.UI {
             lastEventWasKeyboard = true;
             if(PressedElement is not null) {
                 return;
+            }
+            if(SelectedElement is null) {
+                SelectedElement = GetLastSelectedOrDefault();
             }
             if(SelectedElement is not null) {
                 PressedElement = SelectedElement;
@@ -149,7 +167,7 @@ namespace Elves.UI {
                 return;
             }
             if(SelectedElement is null) {
-                SelectedElement = page?.DefaultFocusElement ?? null;
+                SelectedElement = GetLastSelectedOrDefault();
             } else {
                 int uiDirection = GetUIDirection(direction);
                 Element newElement = null;
@@ -159,7 +177,7 @@ namespace Elves.UI {
                     newElement = SelectedElement.NextElement;
                 } else if(SelectedElement is null) {
                     /* This should be impossible, but might as well cover our ass if a "None" direction is ever added */
-                    newElement = page?.DefaultFocusElement ?? null;
+                    newElement = GetLastSelectedOrDefault();
                 }
                 if(newElement is null) {
                     return;

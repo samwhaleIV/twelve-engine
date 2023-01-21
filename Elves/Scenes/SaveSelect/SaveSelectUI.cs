@@ -5,31 +5,6 @@ using Elves.UI;
 
 namespace Elves.Scenes.SaveSelect {
 
-    public sealed class TestPage1:SaveSelectUIPage {
-        public TestPage1(SaveSelectUI ui):base(ui) {}
-
-        public override void Open(TimeSpan now) {
-            DefaultFocusElement = UI.Tag1;
-            UI.Tag1.Flags = ElementFlags.UpdateAndInteract;
-            UI.Tag1.OnActivated += Tag1_OnActivated;
-        }
-
-        public override void Close() {
-            UI.Tag1.OnActivated -= Tag1_OnActivated;
-        }
-
-        private void Tag1_OnActivated(TimeSpan now) {
-            UI.SetPage(UI.TagSelectPage,now);
-        }
-
-        public override void Update(VectorRectangle viewport) {
-            UI.Tag1.Position = viewport.Center;
-            UI.Tag1.Rotation = 0f;
-            float height = viewport.Height * 0.25f;
-            UI.Tag1.Size = new(height*(SaveSelectUI.TagWidth/SaveSelectUI.TagHeight),height);
-        }
-    }
-
     public sealed class SaveSelectUI:SpriteBook {
 
         public SaveSelectUI(SaveSelectScene scene) {
@@ -46,7 +21,12 @@ namespace Elves.Scenes.SaveSelect {
 
             Finger = AddElement(new SpriteElement() {
                 TextureSource = new(0,0,174,40),
-                Offset = (new(-1,-0.5f))
+                Offset = (new(-1,-0.1f)),
+                PositionModeY = CoordinateMode.Relative,
+                PositionModeX = CoordinateMode.Relative,
+                Depth = 0.75f,
+                SmoothStep = true,
+                DefaultAnimationDuration = TimeSpan.FromSeconds(0.2f)
             });
 
             TagSelectPage = new TagSelectPage(this);

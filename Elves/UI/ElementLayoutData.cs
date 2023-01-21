@@ -28,5 +28,15 @@ namespace Elves.UI {
                 Offset = Vector2.Lerp(a.Offset,b.Offset,amount)
             };
         }
+
+        public static ElementLayoutData SmoothStep(ElementLayoutData a,ElementLayoutData b,float amount) {
+            return new ElementLayoutData() {
+                Position = Vector2.SmoothStep(a.Position,b.Position,amount),
+                Size = Vector2.SmoothStep(a.Size,b.Size,amount),
+                Scale = MathHelper.SmoothStep(a.Scale,b.Scale,amount),
+                Rotation = MathHelper.SmoothStep(a.Rotation,b.Rotation,amount),
+                Offset = Vector2.SmoothStep(a.Offset,b.Offset,amount)
+            };
+        }
     }
 }

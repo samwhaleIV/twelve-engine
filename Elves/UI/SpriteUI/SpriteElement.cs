@@ -9,9 +9,7 @@ namespace Elves.UI.SpriteUI {
         public Rectangle? TextureSource { get; set; } = null;
         public Color Color { get; set; } = Color.White;
 
-        public float Depth {
-            get => Flags.HasFlag(ElementFlags.Interactable) ? 0.75f : 0.25f;
-        }
+        public float Depth { get; set; } = 0.5f;
 
         public void Render(SpriteBatch spriteBatch) {
             if(!TextureSource.HasValue || ComputedArea.Destination.Size == Vector2.Zero) {

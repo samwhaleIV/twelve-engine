@@ -14,7 +14,7 @@ namespace Elves.UI {
         /// </summary>
         public abstract void Close();
 
-        public abstract void Update(VectorRectangle viewport);
+        public abstract void Update(TimeSpan now,VectorRectangle viewport);
 
         public virtual void Back() { }
 

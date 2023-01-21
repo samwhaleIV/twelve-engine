@@ -7,11 +7,16 @@ namespace Elves.Scenes.SaveSelect {
         public Tag() {
             TextureSource = new(52,126,128,32);
             Offset = new(-0.5f,-0.5f);
+
             OnUpdate += Tag_OnUpdate;
             OnSelect += Tag_OnHover;
             OnSelectEnd += Tag_OnHoverEnd;
+
             OnPress += Tag_OnPress;
             OnDepress += Tag_OnDepress;
+
+            PositionModeX = UI.CoordinateMode.Relative;
+            PositionModeY = UI.CoordinateMode.Relative;
         }
 
         private void Tag_OnDepress() {
