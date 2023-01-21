@@ -5,8 +5,8 @@ using Microsoft.Xna.Framework.Input;
 namespace TwelveEngine.Input {
     public sealed class MouseHandler {
 
-        public event Action<Point> OnPress, OnRelease, OnMove;
-        public event Action<Point,ScrollDirection> OnScroll;
+        public event Action OnPress, OnRelease, OnMove;
+        public event Action<ScrollDirection> OnScroll;
 
         private MouseState? lastState = null;
 
@@ -46,21 +46,21 @@ namespace TwelveEngine.Input {
             if(mouseState.LeftButton != lastState.LeftButton) {
                 if(mouseState.LeftButton == ButtonState.Pressed) {
                     Capturing = true;
-                    OnPress?.Invoke(Position);
+                    OnPress?.Invoke();
                 } else {
                     Capturing = false;
-                    OnRelease?.Invoke(Position);
+                    OnRelease?.Invoke();
                 }
             }
 
             int scrollDelta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
 
             if(scrollDelta != 0) {
-                OnScroll?.Invoke(Position,scrollDelta > 0 ? ScrollDirection.Up : ScrollDirection.Down);
+                OnScroll?.Invoke(scrollDelta > 0 ? ScrollDirection.Up : ScrollDirection.Down);
             }
 
             if(Position != lastState.Position) {
-                OnMove?.Invoke(Position);
+                OnMove?.Invoke();
             }
         }
     }

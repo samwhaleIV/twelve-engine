@@ -64,11 +64,23 @@ namespace Elves.Scenes.Battle {
         private void InitializeBattleUI() {
             battleUI = new BattleUI(Game);
 
-            Mouse.OnPress += battleUI.MousePress;
-            Mouse.OnRelease += battleUI.MouseRelease;
-            Mouse.OnMove += battleUI.MouseMoved;
+            Mouse.OnPress +=Mouse_OnPress;
+            Mouse.OnRelease +=Mouse_OnRelease;
+            Mouse.OnMove +=Mouse_OnMove;
 
             battleUI.OnActionButtonClick += ActionButtonClicked;
+        }
+
+        private void Mouse_OnMove() {
+            battleUI.MouseMoved(Mouse.Position);
+        }
+
+        private void Mouse_OnRelease() {
+            battleUI.MouseRelease(Mouse.Position);
+        }
+
+        private void Mouse_OnPress() {
+            battleUI.MousePress(Mouse.Position);
         }
 
         private void BattleScene_OnRender() {

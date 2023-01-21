@@ -4,14 +4,16 @@ using System;
 namespace TwelveEngine {
     public sealed class AnimationInterpolator {
 
-        private readonly TimeSpan _duration;
-
         public AnimationInterpolator(TimeSpan duration) {
-            _duration =  duration;
+            Duration = duration;
             Start = -duration;
         }
 
-        public TimeSpan Duration => _duration;
+        public AnimationInterpolator() {
+            Start = TimeSpan.MinValue;
+        }
+
+        public TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(0.1f);
 
         public TimeSpan Start { get; private set; } = TimeSpan.Zero;
         public TimeSpan Now { get; private set; } = TimeSpan.Zero;
@@ -90,7 +92,7 @@ namespace TwelveEngine {
         }
 
         public VectorRectangle Interpolate(VectorRectangle start,VectorRectangle end) {
-            Vector2 position = Interpolate(start.Location,end.Location);
+            Vector2 position = Interpolate(start.Position,end.Position);
             Vector2 size = Interpolate(start.Size,end.Size);
             return new VectorRectangle(position,size);
         }

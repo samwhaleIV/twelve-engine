@@ -54,13 +54,5 @@ namespace Elves.Scenes {
                 TransitionIn(Constants.AnimationTiming.TransitionDuration);
             }
         }
-
-        public static int GetUIDirection(Direction direction) => direction switch {
-            Direction.Left => -1,
-            Direction.Right => 1,
-            Direction.Up => -1,
-            Direction.Down => 1,
-            _ => 0
-        };
     }
 }

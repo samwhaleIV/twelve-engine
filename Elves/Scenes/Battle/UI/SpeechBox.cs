@@ -78,7 +78,7 @@ namespace Elves.Scenes.Battle.UI {
             int textScale = (int)(Area.Width / font.LineHeight / 16);
 
             float margin = Area.Width * 0.075F;
-            Vector2 location = Area.Location + new Vector2(margin);
+            Vector2 location = Area.Position + new Vector2(margin);
             location.X += Area.Width * (1/8F);
             font.Draw(Text,location.ToPoint(),textScale,Color.Black,(int)(Area.Right - location.X - margin));
         }

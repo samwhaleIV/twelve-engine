@@ -19,13 +19,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveActionButton.cs" />
-    <Compile Include="..\Elves\Scenes\SaveSelect\TagContextPage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveButtonType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveTag.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SelectionFinger.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TagState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUIPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Tag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TagSelectPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DrawingFrameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />
@@ -61,6 +59,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UserData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ComputedArea.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\CoordinateMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ElementFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ElementLayoutData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Page.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\SpriteUI\SpriteBook.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\SpriteUI\SpriteElement.cs" />
     <Compile Include="..\Elves\Textures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\UIElement.cs" />
   </ItemGroup>
