@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace Elves.UI.SpriteUI {
+namespace TwelveEngine.UI {
     public class SpriteBook:Book<SpriteElement> {
 
         private SpriteBatch spriteBatch = null;

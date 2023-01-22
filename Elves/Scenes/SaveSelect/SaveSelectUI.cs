@@ -1,13 +1,11 @@
-﻿using Elves.UI.SpriteUI;
+﻿using TwelveEngine.UI;
 using System;
-using Elves.UI;
 
 namespace Elves.Scenes.SaveSelect {
 
     public sealed class SaveSelectUI:SpriteBook {
 
         public SaveSelectUI(SaveSelectScene scene) {
-            Scene = scene;
 
             BackButton = AddButton(0,123);
             PlayButton = AddButton(17,123);
@@ -33,8 +31,8 @@ namespace Elves.Scenes.SaveSelect {
                 DefaultAnimationDuration = TimeSpan.FromMilliseconds(300)
             });
 
-            TagSelectPage = new TagSelectPage(this);
-            TestPage = new TagContextPage(this);
+            TagSelectPage = new TagSelectPage() { Scene = scene, UI = this };
+            TestPage = new TagContextPage() { Scene = scene, UI = this };
 
             SetPage(TagSelectPage,TimeSpan.Zero);
             foreach(var element in Elements) {
@@ -46,8 +44,6 @@ namespace Elves.Scenes.SaveSelect {
         public const float TagRotation = -5f;
 
         public readonly SaveSelectUIPage TagSelectPage, TestPage;
-
-        public SaveSelectScene Scene { get; private set; }
 
         public Tag SelectedTag { get; set; } = null;
 

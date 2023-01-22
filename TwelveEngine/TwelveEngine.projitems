@@ -41,6 +41,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ComputedArea.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\CoordinateMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ElementFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ElementLayoutData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Page.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\SpriteBook.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\SpriteElement.cs" />
     <Compile Include="..\TwelveEngine\Timeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />

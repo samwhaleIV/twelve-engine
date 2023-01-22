@@ -1,4 +1,4 @@
-﻿using Elves.UI;
+﻿using TwelveEngine.UI;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -6,11 +6,9 @@ using TwelveEngine;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagContextPage:SaveSelectUIPage {
-        public TagContextPage(SaveSelectUI ui) : base(ui) {}
 
         private Tag tag;
-
-        private readonly List<Button> buttonsList = new();
+        private readonly List<Button> buttonsList = new(capacity: 4);
 
         private void SetButtons(TimeSpan now,params Button[] buttons) {
             foreach(var button in buttonsList) {
@@ -49,7 +47,7 @@ namespace Elves.Scenes.SaveSelect {
 
             tag.Depth = SaveSelectDepth.FocusedTag;
 
-            UI.Scene.BackgroundZoomIn(Now,TransitionDuration);
+            Scene.BackgroundZoomIn();
 
             switch(tag.Display) {
                 case TagDisplay.Custom:
@@ -92,7 +90,7 @@ namespace Elves.Scenes.SaveSelect {
             if(tag.Display == TagDisplay.Create) {
                 tag.Display = TagDisplay.Empty;
             }
-            UI.Scene.BackgroundZoomOut(Now,TransitionDuration);
+            Scene.BackgroundZoomOut();
         }
 
         private void UpdateButtons(VectorRectangle viewport) {

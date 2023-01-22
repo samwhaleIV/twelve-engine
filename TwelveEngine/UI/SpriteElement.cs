@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using TwelveEngine;
 
-namespace Elves.UI.SpriteUI {
+namespace TwelveEngine.UI {
     public class SpriteElement:Element {
 
         public Texture2D Texture { get; set; }

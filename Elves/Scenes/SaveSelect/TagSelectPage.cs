@@ -1,14 +1,11 @@
-﻿using Elves.UI;
+﻿using TwelveEngine.UI;
 using System;
 using TwelveEngine;
 using Microsoft.Xna.Framework;
+using TwelveEngine.Shell.UI;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagSelectPage:SaveSelectUIPage {
-
-        public TagSelectPage(SaveSelectUI owner) : base(owner) {
-            DefaultFocusElement = owner.Tag1;
-        }
 
         public override void Close() {
             UI.Tag1.OnActivated -= Tag1_OnActivated;
@@ -22,6 +19,7 @@ namespace Elves.Scenes.SaveSelect {
 
         public override void Open() {
             Element tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
+            DefaultFocusElement = tag1;
 
             tag1.Flags = ElementFlags.UpdateAndInteract;
             tag2.Flags = ElementFlags.UpdateAndInteract;

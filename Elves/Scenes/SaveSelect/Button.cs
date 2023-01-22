@@ -1,5 +1,5 @@
 ﻿using System;
-using Elves.UI.SpriteUI;
+using TwelveEngine.UI;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class Button:SpriteElement {
@@ -13,8 +13,8 @@ namespace Elves.Scenes.SaveSelect {
 
             Position = new(0.5f);
 
-            PositionModeX = UI.CoordinateMode.Relative;
-            PositionModeY = UI.CoordinateMode.Relative;
+            PositionModeX = CoordinateMode.Relative;
+            PositionModeY = CoordinateMode.Relative;
         }
 
         public bool IsEven { get; set; } = false;

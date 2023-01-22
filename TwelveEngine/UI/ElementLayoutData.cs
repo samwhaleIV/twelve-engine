@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Elves.UI {
+namespace TwelveEngine.UI {
     public struct ElementLayoutData {
 
         public Vector2 Position, Size, Offset;

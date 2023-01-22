@@ -1,4 +1,4 @@
-﻿using Elves.UI.SpriteUI;
+﻿using TwelveEngine.UI;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
@@ -35,8 +35,8 @@ namespace Elves.Scenes.SaveSelect {
 
             OnUpdate += UpdateScaleForInteraction;
 
-            PositionModeX = UI.CoordinateMode.Relative;
-            PositionModeY = UI.CoordinateMode.Relative;
+            PositionModeX = CoordinateMode.Relative;
+            PositionModeY = CoordinateMode.Relative;
         }
 
         public int ID { get; set; } = -1;

@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using TwelveEngine;
 
-namespace Elves.UI {
+namespace TwelveEngine.UI {
 
     public class Element {
 

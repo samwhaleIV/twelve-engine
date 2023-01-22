@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using TwelveEngine;
 using TwelveEngine.Input;
 using TwelveEngine.Shell;
 
-namespace Elves.UI {
+namespace TwelveEngine.UI {
     public abstract class Book<TElement> where TElement:Element {
 
         public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
@@ -81,12 +80,6 @@ namespace Elves.UI {
         protected void RenderElements() {
             foreach(var element in Elements) {
                 RenderElement(element);
-            }
-        }
-
-        public void SkipAnimations() {
-            foreach(var element in Elements) {
-                element.SkipAnimation();
             }
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
-using TwelveEngine;
 
-namespace Elves.UI {
+namespace TwelveEngine.UI {
     public abstract class Page<TElement> where TElement:Element {
 
         public string Name { get; set; } = "No Name";
@@ -26,6 +25,6 @@ namespace Elves.UI {
 
         public virtual void Back() { }
 
-        public TElement DefaultFocusElement { get; protected set; }
+        public Element DefaultFocusElement { get; protected set; }
     }
 }

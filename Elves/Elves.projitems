@@ -63,15 +63,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UserData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ComputedArea.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\CoordinateMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ElementFlags.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ElementLayoutData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Page.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Book.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\SpriteUI\SpriteBook.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\SpriteUI\SpriteElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\UIScene.cs" />
     <Compile Include="..\Elves\Textures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\UIElement.cs" />
   </ItemGroup>
