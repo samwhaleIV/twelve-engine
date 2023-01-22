@@ -10,53 +10,75 @@ namespace TwelveEngine.UI {
         public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
         public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(400);
 
+        /// <summary>
+        /// Must be iterated by a parent class in order to, for example, create a rendering method. See <c>SpriteBook</c> for an example.
+        /// </summary>
         protected readonly List<TElement> Elements = new();
 
-        private Page<TElement> page = null;
+        /// <summary>
+        /// The current, active page.
+        /// </summary>
+        public Page<TElement> Page { get; private set; } = null;
+
+        /// <summary>
+        /// The transition duration when changing the active page. By default, <c>DefaultTransitionDuration</c>.
+        /// </summary>
         public TimeSpan TransitionDuration { get; set; } = DefaultTransitionDuration;
         private readonly AnimationInterpolator pageTransitionAnimator = new(DefaultAnimationDuration);
 
+        /// <summary>
+        /// Flag controlled by <c>UnlockPageControls</c> and <c>LockElementsForTransition</c>. Checked in <c>Update</c>.
+        /// </summary>
         private bool unlockedElements = false;
 
         public void SetPage(Page<TElement> newPage,TimeSpan now) {
             if(newPage is null) {
                 throw new ArgumentNullException(nameof(newPage));
             }
-            if(page == newPage) {
+            if(Page == newPage) {
                 throw new InvalidOperationException("Cannot set page to the page that is already active!");
             }
 
             pageTransitionAnimator.Duration = TransitionDuration;
 
-            if(page is not null) {
+            if(Page is not null) {
                 LockElementsForTransition(now);
                 pageTransitionAnimator.Reset(now);
 
-                page.SetTime(now);
-                page.SetTransitionDuration(TransitionDuration);
-                page.Close();
+                Page.SetTime(now);
+                Page.SetTransitionDuration(TransitionDuration);
+                Page.Close();
             } else {
+                /* This means this is the very first page, we do no want to animate a transition to it. */
                 pageTransitionAnimator.Finish();
             }
 
-            page = newPage;
-            page.SetTime(now);
-            page.SetTransitionDuration(TransitionDuration);
-            page.Open();
+            Page = newPage;
+            Page.SetTime(now);
+            Page.SetTransitionDuration(TransitionDuration);
+            Page.Open();
 
         }
 
+        /// <summary>
+        /// Adds an element to the element pool. Elements should not be added dynamically. Allocate your elements before setting pages. Dynamic elements will result in undefined behavior.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         public virtual TElement AddElement(TElement element) {
             Elements.Add(element);
             return element;
         }
 
+        /// <summary>
+        /// Ends the page transition period and allows interactable elements to be pressed and selected.
+        /// </summary>
         private void UnlockPageControls() {
             foreach(var element in Elements) {
                 element.UnlockKeyAnimation();
             }
-            if(page.DefaultFocusElement is null) {
-                Logger.WriteLine($"UI page \"{page.Name}\" has opened without a default keyboard focus element!");
+            if(Page.DefaultFocusElement is null) {
+                Logger.WriteLine($"UI page \"{Page.Name}\" has opened without a default keyboard focus element!");
             } else if(lastEventWasKeyboard) {
                 SelectedElement = GetLastSelectedOrDefault();
             }
@@ -70,26 +92,28 @@ namespace TwelveEngine.UI {
             if(!unlockedElements && TransitionComplete) {
                 UnlockPageControls();
             }
-            page?.SetTime(now);
-            page?.Update(viewport);
+            Page?.SetTime(now);
+            Page?.Update(viewport);
             foreach(var element in Elements) {
                 element.Update(now,viewport);
             }
         }
 
-        protected void RenderElements() {
-            foreach(var element in Elements) {
-                RenderElement(element);
-            }
+        private void LockAndResetElement(TimeSpan now,Element element) {
+            element.KeyAnimation(now,TransitionDuration);
+            element.LockKeyAnimation();
+            element.Scale = 0;
+            element.Flags = ElementFlags.None;
+            element.ClearKeyFocus();
         }
 
+        /// <summary>
+        /// Hides and resets all elements to a default/non-interactable state. Prevents new animation keying or modifying current selected or pressed element. Clears interaction state.
+        /// </summary>
+        /// <param name="now">Current total time.</param>
         private void LockElementsForTransition(TimeSpan now) {
             foreach(var element in Elements) {
-                element.KeyAnimation(now,TransitionDuration);
-                element.LockKeyAnimation();
-                element.Scale = 0;
-                element.Flags = ElementFlags.None;
-                element.ClearKeyFocus();
+                LockAndResetElement(now,element);
             }
             SelectedElement = null;
             PressedElement = null;
@@ -98,15 +122,21 @@ namespace TwelveEngine.UI {
             unlockedElements = false;
         }
 
-        protected abstract void RenderElement(TElement element);
-
         private bool keyboardPressingElement = false, lastEventWasKeyboard = false;
-        private Element _selectedElement = null, _pressedElement = null, _hiddenMouseHoverElement = null, _lastSelectedElement = null;
+        private Element _selectedElement = null, _pressedElement = null, _hiddenMouseHoverElement = null;
+
+        /// <summary>
+        /// Used to override <c>Page.DefaultFocusElement</c> (if it exists).
+        /// </summary>
+        private Element _lastSelectedElement = null;
 
         private Element GetLastSelectedOrDefault() {
-            return _lastSelectedElement is not null ? _lastSelectedElement : page?.DefaultFocusElement ?? null;
+            return _lastSelectedElement is not null ? _lastSelectedElement : Page?.DefaultFocusElement ?? null;
         }
 
+        /// <summary>
+        /// Current selected element. Selection status is guaranteed to be exclusive to one element from the element pool.
+        /// </summary>
         public Element SelectedElement {
             get => _selectedElement;
             private set {
@@ -124,6 +154,10 @@ namespace TwelveEngine.UI {
                 value?.SetSelected();
             }
         }
+
+        /// <summary>
+        /// Current pressed element. I.e. key press or mouse down with valid selected element. Pressed status is guaranteed to be exclusive to one element from the element pool.
+        /// </summary>
         public Element PressedElement {
             get => _pressedElement;
             private set {
@@ -139,6 +173,10 @@ namespace TwelveEngine.UI {
             }
         }
 
+        /// <summary>
+        /// Compute the hidden mouse hover element and set the selected element if the input mode allows for it.
+        /// </summary>
+        /// <param name="location">Mouse location in screen coordinates.</param>
         private void UpdateHoveredElement(Point location) {
             Element hoverElement = null;
             /* O(n)! Wildcard, bitches! */
@@ -162,10 +200,17 @@ namespace TwelveEngine.UI {
             }
         }
 
+        /// <summary>
+        /// Call this every frame, regardless of whether or not the mouse position has changed. This allows for elements to change position and keep a valid mouse hover status.
+        /// </summary>
+        /// <param name="location"></param>
         public void UpdateMouseLocation(Point location) {
             UpdateHoveredElement(location);
         }
 
+        /// <summary>
+        /// Call this when the mouse position differs from the previous position.
+        /// </summary>
         public void MouseMove() {
             lastEventWasKeyboard = false;
         }
@@ -244,12 +289,15 @@ namespace TwelveEngine.UI {
             }
         }
 
+        /// <summary>
+        /// A way to implement a keyboard/gamepad back button. Not all pages need to a back method.
+        /// </summary>
         public void CancelDown() {
             lastEventWasKeyboard = true;
             if(PressedElement is not null) {
                 return;
             }
-            page?.Back();
+            Page?.Back();
         }
 
         private CursorState GetCursorState() {

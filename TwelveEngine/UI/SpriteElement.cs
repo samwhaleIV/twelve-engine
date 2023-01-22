@@ -27,9 +27,6 @@ namespace TwelveEngine.UI {
         }
 
         public void Render(SpriteBatch spriteBatch) {
-            if(!TextureSource.HasValue || ComputedArea.Destination.Size == Vector2.Zero) {
-                return;
-            }
             VectorRectangle destination = ComputedArea.Destination;
             destination.Position += destination.Size * 0.5f;
 

@@ -1,18 +1,20 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace TwelveEngine.UI {
     public class SpriteBook:Book<SpriteElement> {
 
         private SpriteBatch spriteBatch = null;
 
-        protected override void RenderElement(SpriteElement element) {
-            element.Render(spriteBatch);
-        }
-
         public void Render(SpriteBatch spriteBatch) {
             this.spriteBatch = spriteBatch;
             spriteBatch.Begin(SpriteSortMode.FrontToBack,null,SamplerState.PointClamp);
-            RenderElements();
+            foreach(var element in Elements) {
+                if(!element.TextureSource.HasValue || element.ComputedArea.Destination.Size == Vector2.Zero) {
+                    return;
+                }
+                element.Render(spriteBatch);
+            }
             spriteBatch.End();
             this.spriteBatch = null;
         }
