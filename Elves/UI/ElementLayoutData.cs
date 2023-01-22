@@ -3,13 +3,9 @@
 namespace Elves.UI {
     public struct ElementLayoutData {
 
-        public Vector2 Position;
-        public Vector2 Size;
+        public Vector2 Position, Size, Offset;
 
-        public Vector2 Offset;
-
-        public float Scale;
-        public float Rotation;
+        public float Scale, Rotation;
 
         public ElementLayoutData() {
             Offset = Vector2.Zero;
@@ -37,6 +33,10 @@ namespace Elves.UI {
                 Rotation = MathHelper.SmoothStep(a.Rotation,b.Rotation,amount),
                 Offset = Vector2.SmoothStep(a.Offset,b.Offset,amount)
             };
+        }
+
+        public static ElementLayoutData Interpolate(ElementLayoutData a,ElementLayoutData b,float amount,bool smoothStep) {
+            return smoothStep ? SmoothStep(a,b,amount) : Lerp(a,b,amount);
         }
     }
 }

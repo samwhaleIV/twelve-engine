@@ -6,7 +6,7 @@ namespace Elves.UI {
 
     public class Element {
 
-        private readonly AnimationInterpolator animator = new(TimeSpan.FromSeconds(0.1f));
+        private readonly AnimationInterpolator animator = new(Book<Element>.DefaultAnimationDuration);
 
         /// <summary>
         /// The computed area to be supplied to a renderer or mouse input system. Coordinates in floating point pixels.
@@ -102,14 +102,17 @@ namespace Elves.UI {
 
         public TimeSpan DefaultAnimationDuration { get; set; } = TimeSpan.FromSeconds(0.1f);
 
+
         /// <summary>
         /// Call before changing element layout data to animate the changes.
         /// </summary>
         /// <param name="now">Current, total elapsed time.</param>
         public void KeyAnimation(TimeSpan now,TimeSpan? overrideAnimationDuration = null) {
+            if(keyAnimationLocked) {
+                return;
+            }
             if(oldLayout is not null) {
-                oldLayout = SmoothStep ? ElementLayoutData.SmoothStep(oldLayout.Value,layout,animator.Value) :
-                                         ElementLayoutData.Lerp(oldLayout.Value,layout,animator.Value);
+                oldLayout = ElementLayoutData.Interpolate(oldLayout.Value,layout,animator.Value,SmoothStep);
             } else {
                 oldLayout = layout;
             }
@@ -121,6 +124,15 @@ namespace Elves.UI {
             }
             animator.Duration = duration;
             animator.Reset(now);
+        }
+
+        private bool keyAnimationLocked = false;
+
+        internal void LockKeyAnimation() {
+            keyAnimationLocked = true;
+        }
+        internal void UnlockKeyAnimation() {
+            keyAnimationLocked = false;
         }
 
         /// <summary>
@@ -139,7 +151,7 @@ namespace Elves.UI {
             animator.Update(now);
             ElementLayoutData layout;
             if(oldLayout is not null) {
-                layout = ElementLayoutData.Lerp(oldLayout.Value,this.layout,animator.Value);
+                layout = ElementLayoutData.Interpolate(oldLayout.Value,this.layout,animator.Value,SmoothStep);
             } else {
                 layout = this.layout;
             }
@@ -149,15 +161,23 @@ namespace Elves.UI {
             UpdateComputedArea(layout,viewport);
         }
 
-        protected internal event Action OnSelect, OnSelectEnd, OnPress, OnDepress;
         protected internal event Action<TimeSpan> OnUpdate, OnActivated;
 
-        public void SelectEnd() => OnSelectEnd?.Invoke();
-        public void Select() => OnSelect?.Invoke();
+        public bool Pressed { get; private set; }
+        public bool Selected { get; private set; }
 
-        public void Press() => OnPress?.Invoke();
-        public void Depress() => OnDepress?.Invoke();
-        public void Activate(TimeSpan now) => OnActivated?.Invoke(now);
+        internal void ClearSelected() => Selected = false;
+        internal void SetSelected() => Selected = true;
+
+        internal void SetPressed() => Pressed = true;
+        internal void ClearPressed() => Pressed = false;
+
+        public void Activate(TimeSpan now) {
+            if(!Flags.HasFlag(ElementFlags.Interactable)) {
+                return;
+            }
+            OnActivated?.Invoke(now);
+        }
 
         public Element PreviousElement { get; set; } = null;
         public Element NextElement { get; set; } = null;

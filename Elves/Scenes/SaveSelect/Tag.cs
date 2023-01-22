@@ -1,55 +1,44 @@
 ﻿using Elves.UI.SpriteUI;
-using System;
+using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace Elves.Scenes.SaveSelect {
+
+    public enum TagDisplay { None, Empty, Create, Custom, Delete }
+
     public sealed class Tag:SpriteElement {
 
+        private static readonly Dictionary<TagDisplay,Rectangle> textureSources = new() {
+            { TagDisplay.None, Rectangle.Empty },
+            { TagDisplay.Empty, new(1,50,128,32) },
+            { TagDisplay.Create, new(52,126,128,32) },
+            { TagDisplay.Custom, new(1,90,128,32) },
+            { TagDisplay.Delete, new(52,160,128,32) }
+        };
+
+        private TagDisplay _display = TagDisplay.None;
+
+        public TagDisplay Display {
+            get => _display;
+            set {
+                if(_display == value) {
+                    return;
+                }
+                _display = value;
+                TextureSource = textureSources[value];
+            }
+        }
+
         public Tag() {
-            TextureSource = new(52,126,128,32);
+            Display = TagDisplay.Empty;
             Offset = new(-0.5f,-0.5f);
 
-            OnUpdate += Tag_OnUpdate;
-            OnSelect += Tag_OnHover;
-            OnSelectEnd += Tag_OnHoverEnd;
-
-            OnPress += Tag_OnPress;
-            OnDepress += Tag_OnDepress;
+            OnUpdate += UpdateScaleForInteraction;
 
             PositionModeX = UI.CoordinateMode.Relative;
             PositionModeY = UI.CoordinateMode.Relative;
         }
 
-        private void Tag_OnDepress() {
-            pressed = false;
-        }
-
-        private void Tag_OnPress() {
-            pressed = true;
-        }
-
-        private void Tag_OnHoverEnd() {
-            hovered = false;
-        }
-
-        private void Tag_OnHover() {
-            hovered = true;
-        }
-
-        public bool hovered = false, pressed = false;
-
-        private void Tag_OnUpdate(TimeSpan now) {
-            var newScale = 1f;
-            if(hovered) {
-                newScale = 1.05f;
-            }
-            if(pressed) {
-                newScale *= 0.95f;
-            }
-            if(Scale == newScale) {
-                return;
-            }
-            KeyAnimation(now);
-            Scale = newScale;
-        }
+        public int ID { get; set; } = -1;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using TwelveEngine;
 
 namespace Elves.UI.SpriteUI {
@@ -10,6 +11,21 @@ namespace Elves.UI.SpriteUI {
         public Color Color { get; set; } = Color.White;
 
         public float Depth { get; set; } = 0.5f;
+
+        protected void UpdateScaleForInteraction(TimeSpan now) {
+            float newScale = 1f;
+            if(Selected) {
+                newScale = 1.05f;
+            }
+            if(Pressed) {
+                newScale *= 0.95f;
+            }
+            if(Scale == newScale) {
+                return;
+            }
+            KeyAnimation(now);
+            Scale = newScale;
+        }
 
         public void Render(SpriteBatch spriteBatch) {
             if(!TextureSource.HasValue || ComputedArea.Destination.Size == Vector2.Zero) {

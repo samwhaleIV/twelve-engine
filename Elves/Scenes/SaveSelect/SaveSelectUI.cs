@@ -1,6 +1,5 @@
 ﻿using Elves.UI.SpriteUI;
 using System;
-using TwelveEngine;
 using Elves.UI;
 
 namespace Elves.Scenes.SaveSelect {
@@ -15,22 +14,27 @@ namespace Elves.Scenes.SaveSelect {
             AcceptButton = AddButton(0,140);
             DeleteButton = AddButton(17,140);
 
-            Tag1 = AddTag();
-            Tag2 = AddTag();
-            Tag3 = AddTag();
+            BackButton.OnActivated += BackButton_OnActivated;
+            PlayButton.OnActivated +=PlayButton_OnActivated;
+            AcceptButton.OnActivated += AcceptButton_OnActivated;
+            DeleteButton.OnActivated += DeleteButton_OnActivated;
+
+            Tag1 = AddTag(0);
+            Tag2 = AddTag(1);
+            Tag3 = AddTag(2);
 
             Finger = AddElement(new SpriteElement() {
                 TextureSource = new(0,0,174,40),
                 Offset = (new(-1,-0.1f)),
                 PositionModeY = CoordinateMode.Relative,
                 PositionModeX = CoordinateMode.Relative,
-                Depth = 0.75f,
+                Depth = SaveSelectDepth.Finger,
                 SmoothStep = true,
-                DefaultAnimationDuration = TimeSpan.FromSeconds(0.2f)
+                DefaultAnimationDuration = TimeSpan.FromMilliseconds(300)
             });
 
             TagSelectPage = new TagSelectPage(this);
-            TestPage = new TestPage1(this);
+            TestPage = new TagContextPage(this);
 
             SetPage(TagSelectPage,TimeSpan.Zero);
             foreach(var element in Elements) {
@@ -45,17 +49,37 @@ namespace Elves.Scenes.SaveSelect {
 
         public SaveSelectScene Scene { get; private set; }
 
-        public SpriteElement BackButton, PlayButton, AcceptButton, DeleteButton, Tag1, Tag2, Tag3, Finger;
-        private SpriteElement AddTag() => AddElement(new Tag());
-        private SpriteElement AddButton(int x,int y) => AddElement(new SpriteElement() {
-            TextureSource = new(x,y,16,16),
-            Offset = new(-0.5f,-0.5f)
-        });
+        public Tag SelectedTag { get; set; } = null;
+
+        public Button BackButton, PlayButton, AcceptButton, DeleteButton;
+        public SpriteElement Finger;
+        public Tag Tag1, Tag2, Tag3;
+
+        private Tag AddTag(int ID) {
+            var tag = new Tag() { ID = ID };
+            AddElement(tag);
+            return tag;
+        }
+
+        private Button AddButton(int x,int y) {
+            var button = new Button(x,y);
+            AddElement(button);
+            return button;
+        }
 
         public override SpriteElement AddElement(SpriteElement element) {
             base.AddElement(element);
             element.Texture = Program.Textures.SaveSelect;
             return element;
         }
+
+        public event Action<TimeSpan,ButtonImpulse> OnButtonPresed;
+
+        private void ButtonPressed(TimeSpan now,ButtonImpulse impulse) => OnButtonPresed?.Invoke(now,impulse);
+
+        private void DeleteButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Delete);
+        private void AcceptButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Accept);
+        private void PlayButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Play);
+        private void BackButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Back);
     }
 }

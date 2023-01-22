@@ -10,7 +10,7 @@ namespace TwelveEngine {
         }
 
         public AnimationInterpolator() {
-            Start = TimeSpan.MinValue;
+            Start = -TimeSpan.FromHours(1);
         }
 
         public TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(0.1f);

@@ -19,12 +19,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\ButtonImpulse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectDepth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUIPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Tag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TagSelectPage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TestPage1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TagContextPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DrawingFrameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />

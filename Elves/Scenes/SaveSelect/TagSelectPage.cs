@@ -2,8 +2,6 @@
 using System;
 using TwelveEngine;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Shell.UI;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagSelectPage:SaveSelectUIPage {
@@ -22,7 +20,7 @@ namespace Elves.Scenes.SaveSelect {
             UI.Finger.Position = newPos;
         }
 
-        public override void Open(TimeSpan now) {
+        public override void Open() {
             Element tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
 
             tag1.Flags = ElementFlags.UpdateAndInteract;
@@ -45,23 +43,26 @@ namespace Elves.Scenes.SaveSelect {
         }
 
         private void Tag3_OnActivated(TimeSpan now) {
+            UI.SelectedTag = UI.Tag3;
             UI.SetPage(UI.TestPage,now);
             DefaultFocusElement = UI.Tag3;
         }
 
         private void Tag2_OnActivated(TimeSpan now) {
+            UI.SelectedTag = UI.Tag2;
             UI.SetPage(UI.TestPage,now);
             DefaultFocusElement = UI.Tag2;
         }
 
         private void Tag1_OnActivated(TimeSpan now) {
+            UI.SelectedTag = UI.Tag1;
             UI.SetPage(UI.TestPage,now);
             DefaultFocusElement = UI.Tag1;
         }
 
         private const float TagRotation = 2f;
 
-        private void UpdateFinger(TimeSpan now,VectorRectangle viewport) {
+        private void UpdateFinger(VectorRectangle viewport) {
             var fingerHeight = 0.375f * viewport.Height;
             var fingerSize = new Vector2(174f / 40 * fingerHeight,fingerHeight);
             UI.Finger.Size = fingerSize;
@@ -71,13 +72,13 @@ namespace Elves.Scenes.SaveSelect {
             fingerPosition.Y = UI.SelectedElement?.Position.Y ?? fingerPosition.Y;
 
             if(UI.Finger.Position != fingerPosition) {
-                UI.Finger.KeyAnimation(now);
+                UI.Finger.KeyAnimation(Now);
             }
 
             UI.Finger.Position = fingerPosition;
         }
 
-        public override void Update(TimeSpan now,VectorRectangle viewport) {
+        public override void Update(VectorRectangle viewport) {
             Element tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
             float twoThirdsX = viewport.Width * (2 / 3f);
             float scale = viewport.Height / SaveSelectUI.TagHeight * 0.26f;
@@ -96,7 +97,7 @@ namespace Elves.Scenes.SaveSelect {
             tag2.Rotation = SaveSelectUI.TagRotation;
             tag3.Rotation = SaveSelectUI.TagRotation;
 
-            UpdateFinger(now,viewport);
+            UpdateFinger(viewport);
         }
     }
 }

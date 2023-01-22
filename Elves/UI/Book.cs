@@ -8,26 +8,43 @@ using TwelveEngine.Shell;
 namespace Elves.UI {
     public abstract class Book<TElement> where TElement:Element {
 
+        public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
+        public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(400);
+
         protected readonly List<TElement> Elements = new();
 
         private Page<TElement> page = null;
+        public TimeSpan TransitionDuration { get; set; } = DefaultTransitionDuration;
+        private readonly AnimationInterpolator pageTransitionAnimator = new(DefaultAnimationDuration);
 
-        public void SetPage(Page<TElement> newPage,TimeSpan now,TimeSpan? animationDuration = null) {
+        private bool unlockedElements = false;
+
+        public void SetPage(Page<TElement> newPage,TimeSpan now) {
             if(newPage is null) {
                 throw new ArgumentNullException(nameof(newPage));
             }
             if(page == newPage) {
                 throw new InvalidOperationException("Cannot set page to the page that is already active!");
             }
-            HideAllElements(now,animationDuration);
-            page?.Close();
-            page = newPage;
-            page.Open(now);
-            if(page.DefaultFocusElement is null) {
-                Logger.WriteLine("UI page has no default keyboard focus element!");
-            } else if(lastEventWasKeyboard) {
-                SelectedElement = GetLastSelectedOrDefault();
+
+            pageTransitionAnimator.Duration = TransitionDuration;
+
+            if(page is not null) {
+                LockElementsForTransition(now);
+                pageTransitionAnimator.Reset(now);
+
+                page.SetTime(now);
+                page.SetTransitionDuration(TransitionDuration);
+                page.Close();
+            } else {
+                pageTransitionAnimator.Finish();
             }
+
+            page = newPage;
+            page.SetTime(now);
+            page.SetTransitionDuration(TransitionDuration);
+            page.Open();
+
         }
 
         public virtual TElement AddElement(TElement element) {
@@ -35,8 +52,27 @@ namespace Elves.UI {
             return element;
         }
 
+        private void UnlockPageControls() {
+            foreach(var element in Elements) {
+                element.UnlockKeyAnimation();
+            }
+            if(page.DefaultFocusElement is null) {
+                Logger.WriteLine($"UI page \"{page.Name}\" has opened without a default keyboard focus element!");
+            } else if(lastEventWasKeyboard) {
+                SelectedElement = GetLastSelectedOrDefault();
+            }
+            unlockedElements = true;
+        }
+
+        public bool TransitionComplete => pageTransitionAnimator.IsFinished;
+
         public void Update(TimeSpan now,VectorRectangle viewport) {
-            page?.Update(now,viewport);
+            pageTransitionAnimator.Update(now);
+            if(!unlockedElements && TransitionComplete) {
+                UnlockPageControls();
+            }
+            page?.SetTime(now);
+            page?.Update(viewport);
             foreach(var element in Elements) {
                 element.Update(now,viewport);
             }
@@ -54,9 +90,10 @@ namespace Elves.UI {
             }
         }
 
-        private void HideAllElements(TimeSpan now,TimeSpan? duration = null) {
+        private void LockElementsForTransition(TimeSpan now) {
             foreach(var element in Elements) {
-                element.KeyAnimation(now,duration);
+                element.KeyAnimation(now,TransitionDuration);
+                element.LockKeyAnimation();
                 element.Scale = 0;
                 element.Flags = ElementFlags.None;
                 element.ClearKeyFocus();
@@ -65,6 +102,7 @@ namespace Elves.UI {
             PressedElement = null;
             _hiddenMouseHoverElement = null;
             _lastSelectedElement = null;
+            unlockedElements = false;
         }
 
         protected abstract void RenderElement(TElement element);
@@ -79,26 +117,32 @@ namespace Elves.UI {
         public Element SelectedElement {
             get => _selectedElement;
             private set {
+                if(!TransitionComplete) {
+                    return;
+                }
                 if(_selectedElement == value) {
                     return;
                 }
-                _selectedElement?.SelectEnd();
+                _selectedElement?.ClearSelected();
                 _selectedElement = value;
                 if(value is not null) {
                     _lastSelectedElement = value;
                 }
-                value?.Select();
+                value?.SetSelected();
             }
         }
         public Element PressedElement {
             get => _pressedElement;
             private set {
+                if(!TransitionComplete) {
+                    return;
+                }
                 if(_pressedElement == value) {
                     return;
                 }
-                _pressedElement?.Depress();
+                _pressedElement?.ClearPressed();
                 _pressedElement = value;
-                value?.Press();
+                value?.SetPressed();
             }
         }
 
@@ -152,9 +196,7 @@ namespace Elves.UI {
             if(PressedElement is not null) {
                 return;
             }
-            if(SelectedElement is null) {
-                SelectedElement = GetLastSelectedOrDefault();
-            }
+            SelectedElement ??= GetLastSelectedOrDefault();
             if(SelectedElement is not null) {
                 PressedElement = SelectedElement;
                 keyboardPressingElement = true;
