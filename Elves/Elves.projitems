@@ -19,15 +19,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Button.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\ButtonImpulse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectDepth.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Depth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUIPage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Tag.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TagSelectPage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\TagContextPage.cs" />
+    <Compile Include="..\Elves\Scenes\SaveSelect\SaveSelectPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\Tag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\TagDrawPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\TagSelectPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\TagContextPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DrawingFrameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />
@@ -69,5 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\" />
   </ItemGroup>
 </Project>

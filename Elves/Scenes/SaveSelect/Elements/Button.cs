@@ -2,6 +2,8 @@
 using TwelveEngine.UI;
 
 namespace Elves.Scenes.SaveSelect {
+    public enum ButtonImpulse { None, Back, Play, Accept, Delete };
+
     public sealed class Button:SpriteElement {
 
         private const float ROTATION_AMOUNT = 1f;
@@ -10,11 +12,8 @@ namespace Elves.Scenes.SaveSelect {
             TextureSource = new(textureX,textureY,16,16);
             Offset = new(-0.5f,-0.5f);
             OnUpdate += Button_OnUpdate;
-
             Position = new(0.5f);
-
-            PositionModeX = CoordinateMode.Relative;
-            PositionModeY = CoordinateMode.Relative;
+            PositionMode = CoordinateMode.Relative;
         }
 
         public bool IsEven { get; set; } = false;
@@ -22,6 +21,7 @@ namespace Elves.Scenes.SaveSelect {
         private void Button_OnUpdate(TimeSpan now) {
             float newScale = 1f;
             float newRotation = 0f;
+            
             if(Selected) {
                 newScale = 1.05f;
                 newRotation = IsEven ? -ROTATION_AMOUNT : ROTATION_AMOUNT;

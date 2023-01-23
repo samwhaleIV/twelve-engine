@@ -8,7 +8,7 @@ namespace TwelveEngine.UI {
     public abstract class Book<TElement> where TElement:Element {
 
         public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
-        public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(400);
+        public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(300);
 
         /// <summary>
         /// Must be iterated by a parent class in order to, for example, create a rendering method. See <c>SpriteBook</c> for an example.
@@ -31,7 +31,7 @@ namespace TwelveEngine.UI {
         /// </summary>
         private bool unlockedElements = false;
 
-        public void SetPage(Page<TElement> newPage,TimeSpan now) {
+        public void SetPage(TimeSpan now,Page<TElement> newPage) {
             if(newPage is null) {
                 throw new ArgumentNullException(nameof(newPage));
             }

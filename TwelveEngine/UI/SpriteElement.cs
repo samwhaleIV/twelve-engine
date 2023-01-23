@@ -11,6 +11,38 @@ namespace TwelveEngine.UI {
 
         public float Depth { get; set; } = 0.5f;
 
+        public Action<SpriteBatch> OnRender;
+
+        public float HeightToWidth {
+            get {
+                if(!TextureSource.HasValue) {
+                    return 0;
+                } else {
+                    Point size = TextureSource.Value.Size;
+                    return (float)size.X / size.Y;
+                }
+            }
+        }
+
+        public float WidthToHeight {
+            get {
+                if(!TextureSource.HasValue) {
+                    return 0;
+                } else {
+                    Point size = TextureSource.Value.Size;
+                    return (float)size.Y / size.X;
+                }
+            }
+        }
+
+        public float GetWidth(float height) => height * HeightToWidth;
+        public float GetHeight(float width) => width * WidthToHeight;
+
+        public float SourceWidth => TextureSource.HasValue ? TextureSource.Value.Size.X : 0;
+        public float SourceHeight => TextureSource.HasValue ? TextureSource.Value.Size.Y : 0;
+
+        public Vector2 SourceSize => TextureSource.HasValue ? TextureSource.Value.Size.ToVector2() : Vector2.Zero;
+
         protected void UpdateScaleForInteraction(TimeSpan now) {
             float newScale = 1f;
             if(Selected) {
@@ -26,12 +58,17 @@ namespace TwelveEngine.UI {
             Scale = newScale;
         }
 
-        public void Render(SpriteBatch spriteBatch) {
+        protected void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
             VectorRectangle destination = ComputedArea.Destination;
             destination.Position += destination.Size * 0.5f;
 
-            Vector2 origin = TextureSource.Value.Size.ToVector2() * 0.5f;
-            spriteBatch.Draw(Texture,(Rectangle)destination,TextureSource,Color.White,MathHelper.ToRadians(ComputedArea.Rotation),origin,SpriteEffects.None,Depth);
+            Vector2 origin = sourceArea.Size.ToVector2() * 0.5f;
+            spriteBatch.Draw(texture,(Rectangle)destination,sourceArea,Color.White,MathHelper.ToRadians(ComputedArea.Rotation),origin,SpriteEffects.None,Depth);
+        }
+
+        public void Render(SpriteBatch spriteBatch) {
+            Draw(spriteBatch,Texture,TextureSource.Value);
+            OnRender?.Invoke(spriteBatch);
         }
     }
 }

@@ -38,17 +38,21 @@ namespace TwelveEngine.UI {
         /// <summary>
         /// Coordinate mode for sizing element, X and Y axis;
         /// </summary>
-        public (CoordinateMode X, CoordinateMode Y) SizeMode {
-            get => (SizeModeX, SizeModeY);
-            set { SizeModeX = value.X; SizeModeY = value.Y; }
+        public CoordinateMode SizeMode {
+            set {
+                SizeModeX = value;
+                SizeModeY = value;
+            }
         }
 
         /// <summary>
         /// Coordinate mode for positioning element, X and Y axis;
         /// </summary>
-        public (CoordinateMode X, CoordinateMode Y) PositionMode {
-            get => (PositionModeX, PositionModeY);
-            set { PositionModeX = value.X; PositionModeY = value.Y; }
+        public CoordinateMode PositionMode {
+            set {
+                PositionModeX = value;
+                PositionModeY = value;
+            }
         }
 
         /// <summary>
@@ -85,13 +89,13 @@ namespace TwelveEngine.UI {
         };
 
         private void UpdateComputedArea(ElementLayoutData layout,VectorRectangle viewport) {
-            Vector2 size = new(GetCoordinate(layout.Size.X,viewport.Width,SizeMode.X),
-                               GetCoordinate(layout.Size.Y,viewport.Height,SizeMode.Y));
+            Vector2 size = new(GetCoordinate(layout.Size.X,viewport.Width,SizeModeX),
+                               GetCoordinate(layout.Size.Y,viewport.Height,SizeModeY));
 
             size *= layout.Scale;
 
-            Vector2 position = new(GetCoordinate(layout.Position.X,viewport.Width,PositionMode.X),
-                                   GetCoordinate(layout.Position.Y,viewport.Height,PositionMode.Y));
+            Vector2 position = new(GetCoordinate(layout.Position.X,viewport.Width,PositionModeX),
+                                   GetCoordinate(layout.Position.Y,viewport.Height,PositionModeY));
 
             /* If viewport is fullscreen, viewport.Position should be (0,0) */
             position += size * layout.Offset + viewport.Position;
@@ -125,6 +129,8 @@ namespace TwelveEngine.UI {
             animator.Reset(now);
         }
 
+        public bool IsAnimating => !animator.IsFinished;
+
         private bool keyAnimationLocked = false;
 
         internal void LockKeyAnimation() {
@@ -148,31 +154,54 @@ namespace TwelveEngine.UI {
         /// <param name="viewport">The viewport of of the target area.</param>
         public void Update(TimeSpan now,VectorRectangle viewport) {
             animator.Update(now);
+            if(waitingForAnimation && animator.IsFinished) {
+                waitingForAnimation = false;
+                KeyAnimation(now);
+            }
             ElementLayoutData layout;
             if(oldLayout is not null) {
                 layout = ElementLayoutData.Interpolate(oldLayout.Value,this.layout,animator.Value,SmoothStep);
             } else {
                 layout = this.layout;
             }
-            if(Flags.HasFlag(ElementFlags.CanUpdate)) {
+            if(Flags.HasFlag(ElementFlags.CanUpdate) && !waitingForAnimation) {
                 OnUpdate?.Invoke(now);
             }
             UpdateComputedArea(layout,viewport);
         }
 
+        private bool waitingForAnimation = false;
+
+        public void PauseInputForAnimation() {
+            waitingForAnimation = true;
+        }
+
         protected internal event Action<TimeSpan> OnUpdate, OnActivated;
 
-        public bool Pressed { get; private set; }
-        public bool Selected { get; private set; }
+        private bool _pressed, _selected;
 
-        internal void ClearSelected() => Selected = false;
-        internal void SetSelected() => Selected = true;
+        /// <summary>
+        /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
+        /// </summary>
+        public bool Pressed {
+            get => _pressed && !waitingForAnimation;
+        }
 
-        internal void SetPressed() => Pressed = true;
-        internal void ClearPressed() => Pressed = false;
+        /// <summary>
+        /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
+        /// </summary>
+        public bool Selected {
+            get => _selected && !waitingForAnimation;
+        }
+
+        internal void SetSelected() => _selected = true;
+        internal void SetPressed() => _pressed = true;
+
+        internal void ClearSelected() => _selected = false;
+        internal void ClearPressed() => _pressed = false;
 
         public void Activate(TimeSpan now) {
-            if(!Flags.HasFlag(ElementFlags.Interactable)) {
+            if(!Flags.HasFlag(ElementFlags.Interactable) || waitingForAnimation) {
                 return;
             }
             OnActivated?.Invoke(now);

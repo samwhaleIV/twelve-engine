@@ -1,10 +1,17 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using TwelveEngine;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class SaveSelectScene:UIScene {
 
         private ScrollingBackground background;
+
+        public const int DRAWING_FRAME_WIDTH = 256;
+        public const int DRAWING_FRAME_HEIGHT = 64;
+
+        private readonly DrawingFrame[] drawingFrames = new DrawingFrame[3];
+        public DrawingFrame[] DrawingFrames => drawingFrames;
 
         public SaveSelectScene() {
             Name = "Save Selection";
@@ -28,7 +35,31 @@ namespace Elves.Scenes.SaveSelect {
             UI.Render(Game.SpriteBatch);
         }
 
+        private void LoadDrawingFrames() {
+            for(int i = 0;i<drawingFrames.Length;i++) {
+                DrawingFrame drawingFrame = new(DRAWING_FRAME_WIDTH,DRAWING_FRAME_HEIGHT) {
+                    DrawColor = Color.White,
+                    EmptyColor = Color.Transparent,
+                    BrushTexture = Program.Textures.CircleBrush,
+                    BrushSize = 5
+                };
+                drawingFrame.Load(Game.GraphicsDevice);
+                //TODO: Drawing frame import
+                drawingFrames[i] = drawingFrame;
+            }
+        }
+
+        private void SaveDrawingFrames() {
+            //TODO: call me before we go into a save select screen
+            //drawingFrames[0].Export();
+        }
+
+        public void DeleteSave(int ID) {
+            drawingFrames[ID].Reset(Game);
+        }
+
         private void SaveSelectScene_OnLoad() {
+            LoadDrawingFrames();
             UI = new SaveSelectUI(this);
             background = new ScrollingBackground() {
                 ScrollTime = TimeSpan.FromSeconds(160f),

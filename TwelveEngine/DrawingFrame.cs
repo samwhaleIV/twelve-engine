@@ -39,6 +39,12 @@ namespace TwelveEngine {
             lastDrawLocation = null;
         }
 
+        public void Reset(GameManager game) {
+            game.PushRenderTarget(RenderTarget);
+            game.GraphicsDevice.Clear(ClearOptions.Target,EmptyColor,1,0);
+            game.PopRenderTarget();
+        }
+
         public Texture2D BrushTexture { get; set; } = null;
 
         public void Draw(GameManager game,Vector2 location) {
@@ -102,6 +108,10 @@ namespace TwelveEngine {
                 colorData[i] = bits[bitIndex++] ? DrawColor : EmptyColor;
             }
             RenderTarget.SetData(colorData,0,PixelCount);
+        }
+
+        public byte[] Export() {
+            throw new NotImplementedException();
         }
     }
 }

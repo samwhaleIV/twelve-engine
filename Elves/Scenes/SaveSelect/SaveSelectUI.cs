@@ -1,5 +1,7 @@
 ﻿using TwelveEngine.UI;
 using System;
+using System.Collections.Generic;
+using static Elves.Constants;
 
 namespace Elves.Scenes.SaveSelect {
 
@@ -13,53 +15,69 @@ namespace Elves.Scenes.SaveSelect {
             DeleteButton = AddButton(17,140);
 
             BackButton.OnActivated += BackButton_OnActivated;
-            PlayButton.OnActivated +=PlayButton_OnActivated;
+            PlayButton.OnActivated += PlayButton_OnActivated;
             AcceptButton.OnActivated += AcceptButton_OnActivated;
             DeleteButton.OnActivated += DeleteButton_OnActivated;
 
-            Tag1 = AddTag(0);
-            Tag2 = AddTag(1);
-            Tag3 = AddTag(2);
+            Tag1 = AddTag(scene,0);
+            Tag2 = AddTag(scene,1);
+            Tag3 = AddTag(scene,2);
 
             Finger = AddElement(new SpriteElement() {
                 TextureSource = new(0,0,174,40),
                 Offset = (new(-1,-0.1f)),
-                PositionModeY = CoordinateMode.Relative,
-                PositionModeX = CoordinateMode.Relative,
-                Depth = SaveSelectDepth.Finger,
+                PositionMode = CoordinateMode.Relative,
+                Depth = Depth.Finger,
                 SmoothStep = true,
                 DefaultAnimationDuration = TimeSpan.FromMilliseconds(300)
             });
 
-            TagSelectPage = new TagSelectPage() { Scene = scene, UI = this };
-            TestPage = new TagContextPage() { Scene = scene, UI = this };
+            SignHereLabel = AddElement(new SpriteElement() {
+                TextureSource = new(142,50,82,20),
+                Offset = (new(-0.5f,-0.5f)),
+                PositionMode = CoordinateMode.Relative,
+                Position = new(0.5f),
+                Depth = Depth.DrawLabel
+            });
 
-            SetPage(TagSelectPage,TimeSpan.Zero);
+            TagSelectPage = new TagSelectPage() { Scene = scene, UI = this };
+            TagContextPage = new TagContextPage() { Scene = scene, UI = this };
+            TagDrawPage = new TagDrawPage() { Scene = scene, UI = this };
+
+            SetPage(TimeSpan.Zero,TagSelectPage);
             foreach(var element in Elements) {
                 element.SkipAnimation();
             }
         }
 
-        public const int TagWidth = 128, TagHeight = 32;
-        public const float TagRotation = -5f;
-
-        public readonly SaveSelectUIPage TagSelectPage, TestPage;
+        public readonly SaveSelectPage TagSelectPage, TagContextPage, TagDrawPage;
 
         public Tag SelectedTag { get; set; } = null;
 
         public Button BackButton, PlayButton, AcceptButton, DeleteButton;
-        public SpriteElement Finger;
+        public SpriteElement Finger, SignHereLabel;
         public Tag Tag1, Tag2, Tag3;
 
-        private Tag AddTag(int ID) {
-            var tag = new Tag() { ID = ID };
+        public readonly List<Button> Buttons = new();
+        public readonly List<Tag> Tags = new();
+
+        /// <summary>
+        /// Adds a <c>Tag</c> element to the elements pool.
+        /// </summary>
+        /// <param name="scene">Required reference for getting a reference to the drawing frame.</param>
+        /// <param name="ID">Save tag ID. Index starts at 0.</param>
+        /// <returns></returns>
+        private Tag AddTag(SaveSelectScene scene,int ID) {
+            var tag = new Tag() { ID = ID, DrawingFrame = scene.DrawingFrames[ID] };
             AddElement(tag);
+            Tags.Add(tag);
             return tag;
         }
 
         private Button AddButton(int x,int y) {
-            var button = new Button(x,y);
+            var button = new Button(x,y) { Position = new(0.5f,5/7f) };
             AddElement(button);
+            Buttons.Add(button);
             return button;
         }
 
