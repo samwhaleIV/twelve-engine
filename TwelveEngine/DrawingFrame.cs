@@ -39,6 +39,12 @@ namespace TwelveEngine {
             lastDrawLocation = null;
         }
 
+        public void Reset(GameManager game) {
+            game.PushRenderTarget(RenderTarget);
+            game.GraphicsDevice.Clear(ClearOptions.Target,EmptyColor,1,0);
+            game.PopRenderTarget();
+        }
+
         public Texture2D BrushTexture { get; set; } = null;
 
         public void Draw(GameManager game,Vector2 location) {
@@ -72,7 +78,8 @@ namespace TwelveEngine {
             Vector2 brushScale = brushSize / BrushTexture.Bounds.Size.ToVector2();
 
             for(int i = 0;i<steps;i++) {
-                Vector2 interpolatedPosition = newLocation + difference * i / steps;
+                Vector2 interpolatedPosition = newLocation + difference * ((float)i / steps);
+                interpolatedPosition = Vector2.Floor(interpolatedPosition);
                 game.SpriteBatch.Draw(BrushTexture,interpolatedPosition,null,drawingColor,0f,Vector2.Zero,brushScale,SpriteEffects.None,1f);
             }
 
@@ -102,6 +109,10 @@ namespace TwelveEngine {
                 colorData[i] = bits[bitIndex++] ? DrawColor : EmptyColor;
             }
             RenderTarget.SetData(colorData,0,PixelCount);
+        }
+
+        public byte[] Export() {
+            throw new NotImplementedException();
         }
     }
 }

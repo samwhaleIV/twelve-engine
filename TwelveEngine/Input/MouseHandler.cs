@@ -28,7 +28,9 @@ namespace TwelveEngine.Input {
             lastState = oldHandler.lastState;
         }
 
-        public void Update(MouseState mouseState,bool fireEvents = true) {
+        private bool lastUpdateHadInactiveWindow = false;
+
+        public void Update(MouseState mouseState,bool eventsAreAllowed,bool gameIsActive) {
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }
@@ -37,21 +39,29 @@ namespace TwelveEngine.Input {
             this.lastState = mouseState;
             Delta = lastState.Position - Position;
 
-            if(!fireEvents) {
+            if(!eventsAreAllowed) {
                 Delta = Point.Zero;
                 Capturing = false;
+                /* Hint for the mouse button change processor to fire an extra OnPress event so we don't get a release event without a press event */
+                lastUpdateHadInactiveWindow = !gameIsActive;
                 return;
             }
 
-            if(mouseState.LeftButton != lastState.LeftButton) {
-                if(mouseState.LeftButton == ButtonState.Pressed) {
-                    Capturing = true;
-                    OnPress?.Invoke();
-                } else {
-                    Capturing = false;
-                    OnRelease?.Invoke();
+            if(gameIsActive && lastUpdateHadInactiveWindow && mouseState.LeftButton == ButtonState.Pressed) {
+                Capturing = true;
+                OnPress?.Invoke();
+            } else {
+                if(mouseState.LeftButton != lastState.LeftButton) {
+                    if(mouseState.LeftButton == ButtonState.Pressed) {
+                        Capturing = true;
+                        OnPress?.Invoke();
+                    } else {
+                        Capturing = false;
+                        OnRelease?.Invoke();
+                    }
                 }
             }
+            lastUpdateHadInactiveWindow = !gameIsActive;
 
             int scrollDelta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
 

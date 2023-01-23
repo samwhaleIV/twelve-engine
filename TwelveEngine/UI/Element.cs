@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using TwelveEngine;
 
-namespace Elves.UI {
+namespace TwelveEngine.UI {
 
     public class Element {
 
-        private readonly AnimationInterpolator animator = new(TimeSpan.FromSeconds(0.1f));
+        private readonly AnimationInterpolator animator = new(Book<Element>.DefaultAnimationDuration);
 
         /// <summary>
         /// The computed area to be supplied to a renderer or mouse input system. Coordinates in floating point pixels.
@@ -39,17 +38,21 @@ namespace Elves.UI {
         /// <summary>
         /// Coordinate mode for sizing element, X and Y axis;
         /// </summary>
-        public (CoordinateMode X, CoordinateMode Y) SizeMode {
-            get => (SizeModeX, SizeModeY);
-            set { SizeModeX = value.X; SizeModeY = value.Y; }
+        public CoordinateMode SizeMode {
+            set {
+                SizeModeX = value;
+                SizeModeY = value;
+            }
         }
 
         /// <summary>
         /// Coordinate mode for positioning element, X and Y axis;
         /// </summary>
-        public (CoordinateMode X, CoordinateMode Y) PositionMode {
-            get => (PositionModeX, PositionModeY);
-            set { PositionModeX = value.X; PositionModeY = value.Y; }
+        public CoordinateMode PositionMode {
+            set {
+                PositionModeX = value;
+                PositionModeY = value;
+            }
         }
 
         /// <summary>
@@ -77,6 +80,8 @@ namespace Elves.UI {
         /// </summary>
         public float Rotation { get => layout.Rotation; set => layout.Rotation = value; }
 
+        public bool SmoothStep { get; set; } = false;
+
         private static float GetCoordinate(float value,float dimension,CoordinateMode mode) => mode switch {
             CoordinateMode.Absolute => value,
             CoordinateMode.Relative => value * dimension,
@@ -84,13 +89,13 @@ namespace Elves.UI {
         };
 
         private void UpdateComputedArea(ElementLayoutData layout,VectorRectangle viewport) {
-            Vector2 size = new(GetCoordinate(layout.Size.X,viewport.Width,SizeMode.X),
-                               GetCoordinate(layout.Size.Y,viewport.Height,SizeMode.Y));
+            Vector2 size = new(GetCoordinate(layout.Size.X,viewport.Width,SizeModeX),
+                               GetCoordinate(layout.Size.Y,viewport.Height,SizeModeY));
 
             size *= layout.Scale;
 
-            Vector2 position = new(GetCoordinate(layout.Position.X,viewport.Width,PositionMode.X),
-                                   GetCoordinate(layout.Position.Y,viewport.Height,PositionMode.Y));
+            Vector2 position = new(GetCoordinate(layout.Position.X,viewport.Width,PositionModeX),
+                                   GetCoordinate(layout.Position.Y,viewport.Height,PositionModeY));
 
             /* If viewport is fullscreen, viewport.Position should be (0,0) */
             position += size * layout.Offset + viewport.Position;
@@ -100,13 +105,17 @@ namespace Elves.UI {
 
         public TimeSpan DefaultAnimationDuration { get; set; } = TimeSpan.FromSeconds(0.1f);
 
+
         /// <summary>
         /// Call before changing element layout data to animate the changes.
         /// </summary>
         /// <param name="now">Current, total elapsed time.</param>
         public void KeyAnimation(TimeSpan now,TimeSpan? overrideAnimationDuration = null) {
+            if(keyAnimationLocked) {
+                return;
+            }
             if(oldLayout is not null) {
-                oldLayout = ElementLayoutData.Lerp(oldLayout.Value,layout,animator.Value);
+                oldLayout = ElementLayoutData.Interpolate(oldLayout.Value,layout,animator.Value,SmoothStep);
             } else {
                 oldLayout = layout;
             }
@@ -118,6 +127,17 @@ namespace Elves.UI {
             }
             animator.Duration = duration;
             animator.Reset(now);
+        }
+
+        public bool IsAnimating => !animator.IsFinished;
+
+        private bool keyAnimationLocked = false;
+
+        internal void LockKeyAnimation() {
+            keyAnimationLocked = true;
+        }
+        internal void UnlockKeyAnimation() {
+            keyAnimationLocked = false;
         }
 
         /// <summary>
@@ -134,27 +154,64 @@ namespace Elves.UI {
         /// <param name="viewport">The viewport of of the target area.</param>
         public void Update(TimeSpan now,VectorRectangle viewport) {
             animator.Update(now);
+            if(InputIsPausedByAnimation && animator.IsFinished) {
+                InputIsPausedByAnimation = false;
+                KeyAnimation(now);
+            }
             ElementLayoutData layout;
             if(oldLayout is not null) {
-                layout = ElementLayoutData.Lerp(oldLayout.Value,this.layout,animator.Value);
+                layout = ElementLayoutData.Interpolate(oldLayout.Value,this.layout,animator.Value,SmoothStep);
             } else {
                 layout = this.layout;
             }
-            if(Flags.HasFlag(ElementFlags.CanUpdate)) {
+            if(Flags.HasFlag(ElementFlags.CanUpdate) && !InputIsPausedByAnimation) {
                 OnUpdate?.Invoke(now);
             }
             UpdateComputedArea(layout,viewport);
         }
 
-        protected internal event Action OnSelect, OnSelectEnd, OnPress, OnDepress;
-        protected internal event Action<TimeSpan> OnUpdate, OnActivated;
 
-        public void SelectEnd() => OnSelectEnd?.Invoke();
-        public void Select() => OnSelect?.Invoke();
+        public void PauseInputForAnimation() {
+            InputIsPausedByAnimation = true;
+        }
 
-        public void Press() => OnPress?.Invoke();
-        public void Depress() => OnDepress?.Invoke();
-        public void Activate(TimeSpan now) => OnActivated?.Invoke(now);
+        internal bool InputIsPausedByAnimation { get; private set; }
+
+        /// <summary>
+        /// Update layout properties based on <c>Pressed</c> and <c>Selected</c> properties.
+        /// </summary>
+        protected internal event Action<TimeSpan> OnUpdate;
+
+        protected internal event Action<TimeSpan> OnActivated;
+
+        private bool _pressed, _selected;
+
+        /// <summary>
+        /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
+        /// </summary>
+        public bool Pressed {
+            get => _pressed && !InputIsPausedByAnimation;
+        }
+
+        /// <summary>
+        /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
+        /// </summary>
+        public bool Selected {
+            get => _selected && !InputIsPausedByAnimation;
+        }
+
+        internal void SetSelected() => _selected = true;
+        internal void SetPressed() => _pressed = true;
+
+        internal void ClearSelected() => _selected = false;
+        internal void ClearPressed() => _pressed = false;
+
+        public void Activate(TimeSpan now) {
+            if(!Flags.HasFlag(ElementFlags.Interactable) || InputIsPausedByAnimation) {
+                return;
+            }
+            OnActivated?.Invoke(now);
+        }
 
         public Element PreviousElement { get; set; } = null;
         public Element NextElement { get; set; } = null;

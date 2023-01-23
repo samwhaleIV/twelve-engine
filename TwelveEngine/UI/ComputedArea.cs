@@ -1,6 +1,6 @@
 ﻿using TwelveEngine;
 
-namespace Elves.UI {
+namespace TwelveEngine.UI {
     public readonly struct ComputedArea {
         /// <summary>
         /// Floating point rectangle in screen space.

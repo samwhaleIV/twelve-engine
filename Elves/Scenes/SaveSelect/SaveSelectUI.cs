@@ -1,81 +1,99 @@
-﻿using Elves.UI.SpriteUI;
+﻿using TwelveEngine.UI;
 using System;
-using TwelveEngine;
-using Elves.UI;
+using System.Collections.Generic;
+using static Elves.Constants;
 
 namespace Elves.Scenes.SaveSelect {
-
-    public sealed class TestPage1:SaveSelectUIPage {
-        public TestPage1(SaveSelectUI ui):base(ui) {}
-
-        public override void Open(TimeSpan now) {
-            DefaultFocusElement = UI.Tag1;
-            UI.Tag1.Flags = ElementFlags.UpdateAndInteract;
-            UI.Tag1.OnActivated += Tag1_OnActivated;
-        }
-
-        public override void Close() {
-            UI.Tag1.OnActivated -= Tag1_OnActivated;
-        }
-
-        private void Tag1_OnActivated(TimeSpan now) {
-            UI.SetPage(UI.TagSelectPage,now);
-        }
-
-        public override void Update(VectorRectangle viewport) {
-            UI.Tag1.Position = viewport.Center;
-            UI.Tag1.Rotation = 0f;
-            float height = viewport.Height * 0.25f;
-            UI.Tag1.Size = new(height*(SaveSelectUI.TagWidth/SaveSelectUI.TagHeight),height);
-        }
-    }
 
     public sealed class SaveSelectUI:SpriteBook {
 
         public SaveSelectUI(SaveSelectScene scene) {
-            Scene = scene;
 
             BackButton = AddButton(0,123);
             PlayButton = AddButton(17,123);
             AcceptButton = AddButton(0,140);
             DeleteButton = AddButton(17,140);
 
-            Tag1 = AddTag();
-            Tag2 = AddTag();
-            Tag3 = AddTag();
+            BackButton.OnActivated += BackButton_OnActivated;
+            PlayButton.OnActivated += PlayButton_OnActivated;
+            AcceptButton.OnActivated += AcceptButton_OnActivated;
+            DeleteButton.OnActivated += DeleteButton_OnActivated;
+
+            Tag1 = AddTag(scene,0);
+            Tag2 = AddTag(scene,1);
+            Tag3 = AddTag(scene,2);
 
             Finger = AddElement(new SpriteElement() {
                 TextureSource = new(0,0,174,40),
-                Offset = (new(-1,-0.5f))
+                Offset = (new(-1,-0.1f)),
+                PositionMode = CoordinateMode.Relative,
+                Depth = Depth.Finger,
+                SmoothStep = true,
+                DefaultAnimationDuration = TimeSpan.FromMilliseconds(300)
             });
 
-            TagSelectPage = new TagSelectPage(this);
-            TestPage = new TestPage1(this);
+            SignHereLabel = AddElement(new SpriteElement() {
+                TextureSource = new(142,50,82,20),
+                Offset = (new(-0.5f,-0.5f)),
+                PositionMode = CoordinateMode.Relative,
+                Position = new(0.5f,1/5f),
+                Depth = Depth.DrawLabel
+            });
 
-            SetPage(TagSelectPage,TimeSpan.Zero);
+            TagSelectPage = new TagSelectPage() { Scene = scene, UI = this };
+            TagContextPage = new TagContextPage() { Scene = scene, UI = this };
+            TagDrawPage = new TagDrawPage() { Scene = scene, UI = this };
+
+            SetPage(TimeSpan.Zero,TagSelectPage);
             foreach(var element in Elements) {
                 element.SkipAnimation();
             }
         }
 
-        public const int TagWidth = 128, TagHeight = 32;
-        public const float TagRotation = -5f;
+        public readonly SaveSelectPage TagSelectPage, TagContextPage, TagDrawPage;
 
-        public readonly SaveSelectUIPage TagSelectPage, TestPage;
+        public Tag SelectedTag { get; set; } = null;
 
-        public SaveSelectScene Scene { get; private set; }
+        public Button BackButton, PlayButton, AcceptButton, DeleteButton;
+        public SpriteElement Finger, SignHereLabel;
+        public Tag Tag1, Tag2, Tag3;
 
-        public SpriteElement BackButton, PlayButton, AcceptButton, DeleteButton, Tag1, Tag2, Tag3, Finger;
-        private SpriteElement AddTag() => AddElement(new Tag());
-        private SpriteElement AddButton(int x,int y) => AddElement(new SpriteElement() {
-            TextureSource = new(x,y,16,16),
-            Offset = new(-0.5f,-0.5f)
-        });
+        public readonly List<Button> Buttons = new();
+        public readonly List<Tag> Tags = new();
+
+        /// <summary>
+        /// Adds a <c>Tag</c> element to the elements pool.
+        /// </summary>
+        /// <param name="scene">Required reference for getting a reference to the drawing frame.</param>
+        /// <param name="ID">Save tag ID. Index starts at 0.</param>
+        /// <returns></returns>
+        private Tag AddTag(SaveSelectScene scene,int ID) {
+            var tag = new Tag() { ID = ID, DrawingFrame = scene.DrawingFrames[ID] };
+            AddElement(tag);
+            Tags.Add(tag);
+            return tag;
+        }
+
+        private Button AddButton(int x,int y) {
+            var button = new Button(x,y) { Position = new(0.5f,5/7f) };
+            AddElement(button);
+            Buttons.Add(button);
+            return button;
+        }
 
         public override SpriteElement AddElement(SpriteElement element) {
             base.AddElement(element);
             element.Texture = Program.Textures.SaveSelect;
             return element;
         }
+
+        public event Action<TimeSpan,ButtonImpulse> OnButtonPresed;
+
+        private void ButtonPressed(TimeSpan now,ButtonImpulse impulse) => OnButtonPresed?.Invoke(now,impulse);
+
+        private void DeleteButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Delete);
+        private void AcceptButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Accept);
+        private void PlayButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Play);
+        private void BackButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Back);
     }
 }
