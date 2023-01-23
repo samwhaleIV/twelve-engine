@@ -154,8 +154,8 @@ namespace TwelveEngine.UI {
         /// <param name="viewport">The viewport of of the target area.</param>
         public void Update(TimeSpan now,VectorRectangle viewport) {
             animator.Update(now);
-            if(waitingForAnimation && animator.IsFinished) {
-                waitingForAnimation = false;
+            if(InputIsPausedByAnimation && animator.IsFinished) {
+                InputIsPausedByAnimation = false;
                 KeyAnimation(now);
             }
             ElementLayoutData layout;
@@ -164,17 +164,18 @@ namespace TwelveEngine.UI {
             } else {
                 layout = this.layout;
             }
-            if(Flags.HasFlag(ElementFlags.CanUpdate) && !waitingForAnimation) {
+            if(Flags.HasFlag(ElementFlags.CanUpdate) && !InputIsPausedByAnimation) {
                 OnUpdate?.Invoke(now);
             }
             UpdateComputedArea(layout,viewport);
         }
 
-        private bool waitingForAnimation = false;
 
         public void PauseInputForAnimation() {
-            waitingForAnimation = true;
+            InputIsPausedByAnimation = true;
         }
+
+        internal bool InputIsPausedByAnimation { get; private set; }
 
         /// <summary>
         /// Update layout properties based on <c>Pressed</c> and <c>Selected</c> properties.
@@ -189,14 +190,14 @@ namespace TwelveEngine.UI {
         /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
         /// </summary>
         public bool Pressed {
-            get => _pressed && !waitingForAnimation;
+            get => _pressed && !InputIsPausedByAnimation;
         }
 
         /// <summary>
         /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
         /// </summary>
         public bool Selected {
-            get => _selected && !waitingForAnimation;
+            get => _selected && !InputIsPausedByAnimation;
         }
 
         internal void SetSelected() => _selected = true;
@@ -206,7 +207,7 @@ namespace TwelveEngine.UI {
         internal void ClearPressed() => _pressed = false;
 
         public void Activate(TimeSpan now) {
-            if(!Flags.HasFlag(ElementFlags.Interactable) || waitingForAnimation) {
+            if(!Flags.HasFlag(ElementFlags.Interactable) || InputIsPausedByAnimation) {
                 return;
             }
             OnActivated?.Invoke(now);

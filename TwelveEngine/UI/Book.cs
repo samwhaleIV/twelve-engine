@@ -158,10 +158,11 @@ namespace TwelveEngine.UI {
         public Element PressedElement {
             get => _pressedElement;
             private set {
-                if(!TransitionComplete) {
+                if(_pressedElement == value || !TransitionComplete) {
                     return;
                 }
-                if(_pressedElement == value) {
+                if(value is not null && value.InputIsPausedByAnimation) {
+                    /* Do not set a new pressed element if it is waiting for an animation during a page */
                     return;
                 }
                 _pressedElement?.ClearPressed();
@@ -317,7 +318,8 @@ namespace TwelveEngine.UI {
             } else if(PressedElement is not null) {
                 return PressedElement == _hiddenMouseHoverElement ? CursorState.Pressed : CursorState.Default;
             } else if(SelectedElement is not null) {
-                return SelectedElement == _hiddenMouseHoverElement ? CursorState.Interact : CursorState.Default;
+                /* Don't show interaction cursor state if the element is waiting for its animation to finish. */
+                return SelectedElement == _hiddenMouseHoverElement && !SelectedElement.InputIsPausedByAnimation ? CursorState.Interact : CursorState.Default;
             } else {
                 return _hiddenMouseHoverElement is not null ? CursorState.Interact : CursorState.Default;
             }
