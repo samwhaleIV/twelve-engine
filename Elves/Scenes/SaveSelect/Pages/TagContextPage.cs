@@ -83,6 +83,7 @@ namespace Elves.Scenes.SaveSelect {
                             UI.SetPage(now,UI.TagSelectPage);
                             break;
                         case ButtonImpulse.Play:
+                            return;
                             throw new NotImplementedException();
                         case ButtonImpulse.Delete:
                             tag.Display = TagDisplay.Delete;
@@ -128,10 +129,9 @@ namespace Elves.Scenes.SaveSelect {
                 tag.Display = TagDisplay.Empty;
             }
             Scene.BackgroundZoomOut();
-            UI.AcceptButton.Depth = Depth.OldButton;
-            UI.BackButton.Depth = Depth.OldButton;
-            UI.DeleteButton.Depth = Depth.OldButton;
-            UI.PlayButton.Depth = Depth.OldButton;
+            foreach(var button in UI.Buttons) {
+                button.Depth = Depth.OldButton;
+            }
         }
 
         private void UpdateButtons(VectorRectangle viewport) {

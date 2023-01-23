@@ -21,7 +21,7 @@ namespace Elves.Scenes.SaveSelect {
 
         public override void Open() {
             Element tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
-            DefaultFocusElement = tag1;
+            DefaultFocusElement = UI.SelectedTag ?? tag1;
 
             foreach(var tag in UI.Tags) {
                 tag.Flags = ElementFlags.UpdateAndInteract;
