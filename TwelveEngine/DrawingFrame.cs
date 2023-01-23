@@ -78,7 +78,8 @@ namespace TwelveEngine {
             Vector2 brushScale = brushSize / BrushTexture.Bounds.Size.ToVector2();
 
             for(int i = 0;i<steps;i++) {
-                Vector2 interpolatedPosition = newLocation + difference * i / steps;
+                Vector2 interpolatedPosition = newLocation + difference * ((float)i / steps);
+                interpolatedPosition = Vector2.Floor(interpolatedPosition);
                 game.SpriteBatch.Draw(BrushTexture,interpolatedPosition,null,drawingColor,0f,Vector2.Zero,brushScale,SpriteEffects.None,1f);
             }
 
