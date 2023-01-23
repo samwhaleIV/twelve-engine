@@ -14,6 +14,7 @@ namespace Elves.Scenes.SaveSelect {
 
             var finger = UI.Finger;
             finger.Offset = (new(-1,-0.1f));
+            finger.Scale = 1;
             var newPos = finger.Position;
             newPos.X = 0;
             finger.Position = newPos;

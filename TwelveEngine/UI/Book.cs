@@ -99,12 +99,20 @@ namespace TwelveEngine.UI {
             }
         }
 
-        private void LockAndResetElement(TimeSpan now,Element element) {
-            element.KeyAnimation(now,TransitionDuration);
-            element.LockKeyAnimation();
+        /// <summary>
+        /// Called on every element when a page is closed. <c>TElement</c> is provided in a key locked state (<c>Element.LockKeyAnimation</c>) and with <c>null</c> focus directives (<c>Element.ClearKeyFocus</c>).
+        /// </summary>
+        /// <param name="element">The <c>TElement</c> that needs to be reset.</param>
+        protected virtual void ResetElement(TElement element) {
             element.Scale = 0;
             element.Flags = ElementFlags.None;
+        }
+
+        private void LockAndResetElement(TimeSpan now,TElement element) {
+            element.KeyAnimation(now,TransitionDuration);
+            element.LockKeyAnimation();
             element.ClearKeyFocus();
+            ResetElement(element);
         }
 
         /// <summary>
