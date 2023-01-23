@@ -5,6 +5,6 @@
         public const float Button = 0.8f;
         public const float OldButton = 0.7f;
         public const float Tag = 0.6f;
-        public const float DrawLabel = 0.8f;
+        public const float DrawLabel = 0.5f;
     }
 }

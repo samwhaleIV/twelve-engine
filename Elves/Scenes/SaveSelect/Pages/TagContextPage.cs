@@ -63,7 +63,7 @@ namespace Elves.Scenes.SaveSelect {
             switch(tag.Display) {
                 case TagDisplay.Custom:
                     SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
-                    DefaultFocusElement = UI.PlayButton;
+                    DefaultFocusElement = UI.BackButton;
                     break;
                 case TagDisplay.Empty:
                     tag.Display = TagDisplay.Create;
@@ -88,7 +88,7 @@ namespace Elves.Scenes.SaveSelect {
                             tag.Display = TagDisplay.Delete;
                             tag.Blip(now);
                             SetButtons(now,UI.BackButton,UI.AcceptButton);
-                            DefaultFocusElement = UI.BackButton;
+                            UI.ResetInteractionState(UI.BackButton);
                             break;
                     }
                     break;
@@ -98,7 +98,7 @@ namespace Elves.Scenes.SaveSelect {
                             tag.Display = TagDisplay.Custom;
                             tag.Blip(now);
                             SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
-                            DefaultFocusElement = UI.PlayButton;
+                            UI.ResetInteractionState(UI.BackButton);
                             break;
                         case ButtonImpulse.Accept:
                             tag.Display = TagDisplay.Empty;

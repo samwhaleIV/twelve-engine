@@ -44,7 +44,6 @@ namespace Elves.Scenes.SaveSelect {
 
             var label = UI.SignHereLabel;
             var labelHeight = tagHeight * (label.SourceHeight / tag.SourceHeight);
-            label.Position = new(0.5f,1/5f);
             label.Size = new(label.GetWidth(labelHeight),labelHeight);
 
             button.Size = new(labelHeight);

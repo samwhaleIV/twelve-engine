@@ -36,7 +36,7 @@ namespace Elves.Scenes.SaveSelect {
                 TextureSource = new(142,50,82,20),
                 Offset = (new(-0.5f,-0.5f)),
                 PositionMode = CoordinateMode.Relative,
-                Position = new(0.5f),
+                Position = new(0.5f,1/5f),
                 Depth = Depth.DrawLabel
             });
 

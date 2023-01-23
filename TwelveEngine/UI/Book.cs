@@ -115,10 +115,7 @@ namespace TwelveEngine.UI {
             foreach(var element in Elements) {
                 LockAndResetElement(now,element);
             }
-            SelectedElement = null;
-            PressedElement = null;
-            _hiddenMouseHoverElement = null;
-            _lastSelectedElement = null;
+            ResetInteractionState();
             unlockedElements = false;
         }
 
@@ -174,9 +171,23 @@ namespace TwelveEngine.UI {
         }
 
         /// <summary>
+        /// Clear the interaction state when you modify a page's UI but do not set a new page.
+        /// </summary>
+        public void ResetInteractionState(Element newSelectedElement = null) {
+            if(lastEventWasKeyboard) {
+                SelectedElement = newSelectedElement;
+            } else {
+                SelectedElement = null;
+            }
+            PressedElement = null;
+            _hiddenMouseHoverElement = null;
+            _lastSelectedElement = newSelectedElement;
+        }
+
+        /// <summary>
         /// Compute the hidden mouse hover element and set the selected element if the input mode allows for it.
         /// </summary>
-        /// <param name="location">Mouse location in screen coordinates.</param>
+        /// <param name="location">Mouse location in viewport coordinates.</param>
         private void UpdateHoveredElement(Point location) {
             Element hoverElement = null;
             /* O(n)! Wildcard, bitches! */

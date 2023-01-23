@@ -176,7 +176,12 @@ namespace TwelveEngine.UI {
             waitingForAnimation = true;
         }
 
-        protected internal event Action<TimeSpan> OnUpdate, OnActivated;
+        /// <summary>
+        /// Update layout properties based on <c>Pressed</c> and <c>Selected</c> properties.
+        /// </summary>
+        protected internal event Action<TimeSpan> OnUpdate;
+
+        protected internal event Action<TimeSpan> OnActivated;
 
         private bool _pressed, _selected;
 
