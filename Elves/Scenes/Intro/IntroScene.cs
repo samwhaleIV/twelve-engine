@@ -134,7 +134,7 @@ namespace Elves.Scenes.Intro {
             return textSize <= 0 ? 1 : textSize;
         }
 
-        private Color GetTextColor(float t,float index) {
+        private static Color GetTextColor(float t,float index) {
             float value = t * Text.Length - index;
             value *= Constants.AnimationTiming.IntroTextFadeSpeed;
 

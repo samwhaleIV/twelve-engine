@@ -77,7 +77,7 @@ namespace Elves.FX {
             Velocity = velocity;
         }
 
-        private Vector2 GetTextureSize(Texture2D texture,Rectangle? textureSource) {
+        private static Vector2 GetTextureSize(Texture2D texture,Rectangle? textureSource) {
             if(textureSource.HasValue) {
                 return textureSource.Value.Size.ToVector2();
             } else {
@@ -88,7 +88,7 @@ namespace Elves.FX {
         /* Sorry for the heavy annotation here. It is supposed to educational because graphics code is confusing. */
 
         /// <summary>
-        /// Render the object to the screen. Coordinates are automatically corrected to minimize overdraw but cannot completely eliminate them.
+        /// Render the sprite to the screen. Coordinates are automatically corrected to minimize overdraw but cannot completely eliminate them.
         /// </summary>
         /// <param name="spriteBatch">The sprite batch to render with. This method does not call begin or end methods on its own: Use appropriately.</param>
         /// <param name="texture">The texture which contains the sprite to bounce around the screen.</param>
@@ -98,7 +98,7 @@ namespace Elves.FX {
         /// <param name="rotation">The amount to rotation the sprite, around the center of its texture source.</param>
         public void Render(SpriteBatch spriteBatch,Texture2D texture,float scale,Rectangle bounds,Rectangle? textureSource = null,float rotation = 0) {
             Vector2 textureSize = GetTextureSize(texture,textureSource);
-            Vector2 boundsSize = new Vector2(bounds.Width,bounds.Height);
+            Vector2 boundsSize = new(bounds.Width,bounds.Height);
 
             /* The coordinate simulation has no knowledge of the shape of the sprite. Edges are aligned by measuring the output sprite's relative size against the destination bounds. */
             Vector2 spriteToBoundsRatio = textureSize * scale / boundsSize;
