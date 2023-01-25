@@ -136,7 +136,7 @@ namespace TwelveEngine.UI {
         private Element _lastSelectedElement = null;
 
         private Element GetLastSelectedOrDefault() {
-            return _lastSelectedElement is not null ? _lastSelectedElement : Page?.DefaultFocusElement ?? null;
+            return _lastSelectedElement ?? Page?.DefaultFocusElement ?? null;
         }
 
         /// <summary>

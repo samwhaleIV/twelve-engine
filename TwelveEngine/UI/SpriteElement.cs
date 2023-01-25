@@ -63,7 +63,7 @@ namespace TwelveEngine.UI {
             destination.Position += destination.Size * 0.5f;
 
             Vector2 origin = sourceArea.Size.ToVector2() * 0.5f;
-            spriteBatch.Draw(texture,(Rectangle)destination,sourceArea,Color.White,MathHelper.ToRadians(ComputedArea.Rotation),origin,SpriteEffects.None,Depth);
+            spriteBatch.Draw(texture,destination.Position,sourceArea,Color.White,MathHelper.ToRadians(ComputedArea.Rotation),origin,destination.Size,SpriteEffects.None,Depth);
         }
 
         public void Render(SpriteBatch spriteBatch) {
