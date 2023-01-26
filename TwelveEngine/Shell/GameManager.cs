@@ -187,7 +187,9 @@ namespace TwelveEngine.Shell {
             ResetLeakyStateProperties();
             state.Load(this);
             OnStateLoaded?.Invoke(state);
-            stringBuilder.Append($"[{proxyGameTime.TotalGameTime}] Set state: ");
+            stringBuilder.Append('[');
+            stringBuilder.AppendFormat(Constants.TimeSpanFormat,proxyGameTime.TotalGameTime);
+            stringBuilder.Append("] Set state: ");
             string stateName = state.Name;
             stringBuilder.Append('"');
             stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);

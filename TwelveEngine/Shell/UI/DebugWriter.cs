@@ -163,7 +163,7 @@ namespace TwelveEngine.Shell.UI {
 
         public void Write(TimeSpan time,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat("{0:hh\\:mm\\:ss\\.f}",time);
+            writer.AppendFormat(Constants.TimeSpanFormat,time);
             DrawString();
         }
 
