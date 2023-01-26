@@ -52,7 +52,7 @@ namespace Elves {
 
 
         private static GameState GetStartSceneForSave() {
-            if(Program.SaveFile.HasFlag(SaveKeys.IntroHasPlayed)) {
+            if(Program.Save.HasFlag(SaveKeys.PlayedIntro)) {
                 return GetCarouselMenu();
             } else {
                 return GetIntroScene();
@@ -60,17 +60,24 @@ namespace Elves {
         }
 
         private static void SaveSelect_OnSceneExit(SaveSelectScene scene,int saveID) {
-            Program.SaveFile = Program.SaveFiles[saveID];
+            Program.Save = Program.Saves[saveID];
             scene.TransitionOut(new() {
-                Generator = GetStartSceneForSave,
+                Generator = () => {
+                    Program.Save.TrySave();
+                    return GetStartSceneForSave();
+                },
                 Data = new() { Flags = StateFlags.ForceGC | StateFlags.FadeIn },
                 Duration = Constants.AnimationTiming.TransitionDuration
             });
         }
 
         private static void IntroScene_OnSceneEnd(bool quickExit) {
+            Program.Save.SetFlag(SaveKeys.PlayedIntro);
             State.TransitionOut(new() {
-                Generator = GetCarouselMenu,
+                Generator = () => {
+                    Program.Save.TrySave();
+                    return GetCarouselMenu();
+                },
                 Data = StateData.FadeIn,
                 Duration = quickExit ? Constants.AnimationTiming.QuickTransition : Constants.AnimationTiming.IntroFadeOutDuration,
             });

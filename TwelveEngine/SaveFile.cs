@@ -154,7 +154,7 @@ namespace TwelveEngine {
         }
 
         public bool TryGetBytes(int key,out byte[] value) {
-            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Bool) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.ByteArray) {
                 value = null;
                 return false;
             }
@@ -191,7 +191,7 @@ namespace TwelveEngine {
         }
 
         public bool HasFlag(int key) {
-            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Bool) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Flag) {
                 return false;
             }
             return true;
