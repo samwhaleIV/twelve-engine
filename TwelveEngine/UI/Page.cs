@@ -3,13 +3,8 @@
 namespace TwelveEngine.UI {
     public abstract class Page<TElement> where TElement:Element {
 
-        public string Name { get; set; } = "No Name";
-
-        protected Book<TElement> Book { get; private set; }
-        internal void SetBook(Book<TElement> book) => Book = book;
-
         /// <summary>
-        /// Current total time.
+        /// Current total time. 
         /// </summary>
         protected TimeSpan Now { get; private set; }
 
@@ -24,7 +19,8 @@ namespace TwelveEngine.UI {
         /// <summary>
         /// Setup the page because it has been opened. No need to key element animations. They will be dropped until the page transition period has ended.
         /// </summary>
-        public abstract void Open();
+        /// <returns>Default focus element. A hint for the UI selection system on how to approach the first element when no previous selected element has been used on this display of the page.</returns>
+        public abstract Element Open();
 
         /// <summary>
         /// A good place to remove an element's event handlers.
@@ -37,10 +33,5 @@ namespace TwelveEngine.UI {
         /// Method is executed when a keyboard/gamepad cancel impulse has been pressed.
         /// </summary>
         public virtual void Back() { }
-
-        /// <summary>
-        /// A hint for the UI selection system on how to approach the first element when no previous selected element has been used on this display of the page.
-        /// </summary>
-        public Element DefaultFocusElement { get; protected set; }
     }
 }

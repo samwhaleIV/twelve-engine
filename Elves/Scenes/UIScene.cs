@@ -24,8 +24,6 @@ namespace Elves.Scenes.SaveSelect {
         public UIScene() {
             Name = "UI Scene";
             OnRender += UIScene_OnRender;
-            Input.OnAcceptUp += Input_OnAcceptUp;
-            Mouse.OnRelease += Mouse_OnRelease;
         }
 
         protected override void UpdateGame() {
@@ -46,6 +44,8 @@ namespace Elves.Scenes.SaveSelect {
             Mouse.OnPress += ui.MouseDown;
             Input.OnDirectionDown += ui.DirectionDown;
             Mouse.OnMove += ui.MouseMove;
+            Input.OnAcceptUp += ui.AcceptUp;
+            Mouse.OnRelease += ui.MouseUp;
         }
 
         private void UnbindUIEvents(SpriteBook ui) {
@@ -54,12 +54,10 @@ namespace Elves.Scenes.SaveSelect {
             Mouse.OnPress -= ui.MouseDown;
             Input.OnDirectionDown -= ui.DirectionDown;
             Mouse.OnMove -= ui.MouseMove;
-            Input.OnAcceptUp -= Input_OnAcceptUp;
-            Mouse.OnRelease -= Mouse_OnRelease;
+            Input.OnAcceptUp -= UI.AcceptUp;
+            Mouse.OnRelease -= UI.MouseUp;
         }
 
-        private void Mouse_OnRelease() => UI?.MouseUp(Now);
-        private void Input_OnAcceptUp() => UI?.AcceptUp(Now);
         private void UIScene_OnRender() => UI?.Render(Game.SpriteBatch);
     }
 }

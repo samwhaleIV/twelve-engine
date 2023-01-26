@@ -7,5 +7,10 @@
             Args = null,
             Flags = StateFlags.None
         };
+
+        public static readonly StateData FadeIn = new() {
+            Args = null,
+            Flags = StateFlags.FadeIn
+        };
     }
 }

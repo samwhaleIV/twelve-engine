@@ -9,6 +9,10 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)FX\Static.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FX\WillTheDVDHitTheCornerSimulator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ElfGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Battles\DebugBattle.cs" />
@@ -23,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Depth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DVDCornerTest.cs" />
     <Compile Include="..\Elves\Scenes\SaveSelect\SaveSelectPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\Tag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\TagDrawPage.cs" />

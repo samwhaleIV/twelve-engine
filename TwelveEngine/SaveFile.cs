@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -17,20 +16,20 @@ namespace TwelveEngine {
         public readonly object Value;
     }
 
-    public sealed class SaveData {
+    public sealed class SaveFile {
 
         private readonly Dictionary<int,SaveValue> dataTable;
         public int KeyCount => dataTable.Count;
 
-        public SaveData() {
+        public SaveFile() {
             dataTable = new Dictionary<int,SaveValue>();
         }
 
-        public SaveData(IEnumerable<KeyValuePair<int,SaveValue>> data) {
+        public SaveFile(IEnumerable<KeyValuePair<int,SaveValue>> data) {
             dataTable = new Dictionary<int,SaveValue>(data);
         }
 
-        public SaveData((int Key,SaveValue Value)[] data) {
+        public SaveFile((int Key,SaveValue Value)[] data) {
             dataTable = new Dictionary<int,SaveValue>(data.Length);
             foreach(var (Key, Value) in data) {
                 dataTable[Key] = Value;
@@ -189,6 +188,13 @@ namespace TwelveEngine {
 
         public void SetBytes(int key,byte[] value) {
             dataTable[key] = new SaveValue(SaveValueType.ByteArray,value);
+        }
+
+        public bool HasFlag(int key) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Bool) {
+                return false;
+            }
+            return true;
         }
     }
 }

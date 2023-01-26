@@ -14,14 +14,14 @@ namespace Elves.Scenes.SaveSelect {
 
             var finger = UI.Finger;
             finger.Offset = (new(-1,-0.1f));
+            finger.Scale = 1;
             var newPos = finger.Position;
             newPos.X = 0;
             finger.Position = newPos;
         }
 
-        public override void Open() {
+        public override Element Open() {
             Element tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
-            DefaultFocusElement = UI.SelectedTag ?? tag1;
 
             foreach(var tag in UI.Tags) {
                 tag.Flags = ElementFlags.UpdateAndInteract;
@@ -41,24 +41,22 @@ namespace Elves.Scenes.SaveSelect {
             foreach(var tag in UI.Tags) {
                 tag.Rotation = tagRotation;
             }
+            return UI.SelectedTag ?? tag1;
         }
 
         private void Tag3_OnActivated(TimeSpan now) {
             UI.SelectedTag = UI.Tag3;
-            UI.SetPage(now,UI.TagContextPage);
-            DefaultFocusElement = UI.Tag3;
+            UI.SetPage(UI.TagContextPage);
         }
 
         private void Tag2_OnActivated(TimeSpan now) {
             UI.SelectedTag = UI.Tag2;
-            UI.SetPage(now,UI.TagContextPage);
-            DefaultFocusElement = UI.Tag2;
+            UI.SetPage(UI.TagContextPage);
         }
 
         private void Tag1_OnActivated(TimeSpan now) {
             UI.SelectedTag = UI.Tag1;
-            UI.SetPage(now,UI.TagContextPage);
-            DefaultFocusElement = UI.Tag1;
+            UI.SetPage(UI.TagContextPage);
         }
 
         private void UpdateFinger(VectorRectangle viewport) {
@@ -68,7 +66,7 @@ namespace Elves.Scenes.SaveSelect {
 
             Vector2 fingerPosition = new(2/3f,UI.Finger.Position.Y);
 
-            fingerPosition.Y = UI.SelectedElement?.Position.Y ?? fingerPosition.Y;
+            fingerPosition.Y = UI.SelectedElement?.Position.Y ?? UI.Tag1.Position.Y;
 
             var finger = UI.Finger;
             if(finger.Position != fingerPosition) {

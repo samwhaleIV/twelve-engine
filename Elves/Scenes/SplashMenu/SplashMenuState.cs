@@ -19,6 +19,25 @@ namespace Elves.Scenes.SplashMenu {
             Name = "Elves Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
+            Mouse.OnPress += Mouse_OnPress;
+            Input.OnAcceptDown += Input_OnAcceptDown;
+        }
+
+        public event Action OnSceneExit;
+
+        private void ExitScene() {
+            OnSceneExit?.Invoke();
+        }
+
+        private void Input_OnAcceptDown() {
+            ExitScene();
+        }
+
+        private void Mouse_OnPress() {
+            if(!playButton.Area.Contains(Mouse.Position)) {
+                return;
+            }
+            ExitScene();
         }
 
         private Screenspace3DSprite fallingElf;

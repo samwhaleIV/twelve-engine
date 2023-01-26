@@ -4,7 +4,8 @@ using System;
 namespace Elves {
     public static class Constants {
         public const string SaveFolder = "ElvesGame";
-        public const string SaveFile = "elves.save";
+        public const string SaveFileFormat = "elves{0}.save";
+        public const string GlobalSaveFile = "elves-global.save";
 
         public const float Debug3DMovementSpeed = 0.75f;
         public const float Debug3DLookSpeed = 10f;
@@ -62,8 +63,9 @@ namespace Elves {
 
             public const float IntroTextFadeSpeed = 2f;
 
-            public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
             public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.1f);
+
+            public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
         }
 
         public static class Songs {

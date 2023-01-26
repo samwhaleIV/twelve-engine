@@ -33,7 +33,7 @@ namespace Elves.Scenes.SaveSelect {
             });
 
             SignHereLabel = AddElement(new SpriteElement() {
-                TextureSource = new(142,50,82,20),
+                TextureSource = new(141,50,83,20),
                 Offset = (new(-0.5f,-0.5f)),
                 PositionMode = CoordinateMode.Relative,
                 Position = new(0.5f,1/5f),
@@ -44,7 +44,7 @@ namespace Elves.Scenes.SaveSelect {
             TagContextPage = new TagContextPage() { Scene = scene, UI = this };
             TagDrawPage = new TagDrawPage() { Scene = scene, UI = this };
 
-            SetPage(TimeSpan.Zero,TagSelectPage);
+            SetPage(TagSelectPage);
             foreach(var element in Elements) {
                 element.SkipAnimation();
             }

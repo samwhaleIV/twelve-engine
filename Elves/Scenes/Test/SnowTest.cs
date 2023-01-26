@@ -88,10 +88,10 @@ namespace Elves.Scenes.Test {
 
     public sealed class SnowTest:Scene {
 
-        public SnowTest(bool fadeIn = false) {
+        public SnowTest() {
             Camera.Orthographic = true; /* Snow pops in because of the projection angle, i.e. the bounding frustrum is square on the Y axis */
             OnLoad += SnowTest_OnLoad;
-            if(fadeIn) {
+            if(FadeInIsFlagged) {
                 TransitionIn(TimeSpan.FromSeconds(0.125f));
             }
         }

@@ -53,17 +53,26 @@ namespace TwelveEngine.Shell {
         public bool IsRendering { get; private set; } = false;
         public bool IsPreRendering { get; private set; } = false;
 
-        private TimeSpan startTime;
+        private TimeSpan _startTime;
+
+        private bool _hasStartTime = false;
+
+        private void UpdateStartTime() {
+            TimeSpan now = Now;
+            transitionStartTime = now;
+            StartTime = now;
+            _hasStartTime = true;
+        }
 
         public TimeSpan StartTime {
             get {
-                if(!hasStartTime) {
+                if(!_hasStartTime) {
                     throw new InvalidOperationException("Property 'StartTime' cannot be evaluated before the first 'Update' frame.");
                 }
-                return startTime;
+                return _startTime;
             }
             private set {
-                startTime = value;
+                _startTime = value;
             }
         }
 
@@ -87,15 +96,6 @@ namespace TwelveEngine.Shell {
             OnWriteDebug?.Invoke(writer);
         }
 
-        private bool hasStartTime = false;
-
-        private void UpdateStartTime() {
-            TimeSpan now = Now;
-            transitionStartTime = now;
-            StartTime = now;
-            hasStartTime = true;
-        }
-
         private void HandleTransitionOut(TransitionData data) {
             if(data.Generator != null) {
                 Game.SetState(data.Generator,data.Data);
@@ -105,7 +105,7 @@ namespace TwelveEngine.Shell {
         }
 
         internal void Update() {
-            if(!hasStartTime) {
+            if(!_hasStartTime) {
                 UpdateStartTime();
             }
             IsUpdating = true;

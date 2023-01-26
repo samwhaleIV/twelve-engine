@@ -23,13 +23,15 @@ float2 Position, BulgeOrigin;
 float4 ColorA, ColorB;
 
 float4 SpritePixelShader(VertexShaderOutput input): COLOR { 
-    float2 uv = input.UV;
 
-    uv = float2(Position.x + uv.x * AspectRatio / Scale,Position.y + (uv.y + (Scale - 1) * 0.5) / Scale);
+    float2 scale = float2(Scale / AspectRatio, Scale);
+    float2 uv = Position + (input.UV + (scale - 1) * 0.5) / scale;
 
     float s; float c;
     sincos(Rotation,s,c);
+    uv -= 0.5;
     uv = float2(dot(uv,float2(c,-s)),dot(uv,float2(s,c))); 
+    uv += 0.5;
 
     uv = frac(uv);
     uv -= BulgeOrigin;

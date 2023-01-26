@@ -50,9 +50,9 @@ namespace Elves.Scenes.SaveSelect {
             disposedButtons.Clear();
         }
 
-        public override void Open() {
+        public override Element Open() {
             tag = UI.SelectedTag;
-            tag.Flags = ElementFlags.CanUpdate;
+            tag.Flags = ElementFlags.Update;
 
             UI.OnButtonPresed += UI_OnButtonPresed;
 
@@ -63,13 +63,11 @@ namespace Elves.Scenes.SaveSelect {
             switch(tag.Display) {
                 case TagDisplay.Custom:
                     SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
-                    DefaultFocusElement = UI.BackButton;
-                    break;
+                    return UI.BackButton;
                 case TagDisplay.Empty:
                     tag.Display = TagDisplay.Create;
                     SetButtons(Now,UI.BackButton,UI.AcceptButton);
-                    DefaultFocusElement = UI.BackButton;
-                    break;
+                    return UI.BackButton;
                 default:
                     throw new InvalidOperationException($"Invalid tag opening state \"{tag.Display}\".");
             }
@@ -80,11 +78,11 @@ namespace Elves.Scenes.SaveSelect {
                 case TagDisplay.Custom:
                     switch(impulse) {
                         case ButtonImpulse.Back:
-                            UI.SetPage(now,UI.TagSelectPage);
+                            UI.SetPage(UI.TagSelectPage);
                             break;
                         case ButtonImpulse.Play:
-                            return;
-                            throw new NotImplementedException();
+                            Scene.OpenSaveFile(tag.ID);
+                            break;
                         case ButtonImpulse.Delete:
                             tag.Display = TagDisplay.Delete;
                             tag.Blip(now);
@@ -104,18 +102,18 @@ namespace Elves.Scenes.SaveSelect {
                         case ButtonImpulse.Accept:
                             tag.Display = TagDisplay.Empty;
                             Scene.DeleteSave(tag.ID);
-                            UI.SetPage(now,UI.TagSelectPage);
+                            UI.SetPage(UI.TagSelectPage);
                             break;
                     }
                     break;
                 case TagDisplay.Create:
                     switch(impulse) {
                         case ButtonImpulse.Back:
-                            UI.SetPage(now,UI.TagSelectPage);
+                            UI.SetPage(UI.TagSelectPage);
                             break;
                         case ButtonImpulse.Accept:
                             tag.Display = TagDisplay.Custom;
-                            UI.SetPage(now,UI.TagDrawPage);
+                            UI.SetPage(UI.TagDrawPage);
                             break;
                     }
                     break;

@@ -11,7 +11,7 @@ namespace TwelveEngine {
 
         public AnimationInterpolator() {
             /* If the start time is set the minimum value there will be an overflow error in the calculation of 'Value' */
-            Start = -TimeSpan.FromHours(1); /* Hopefully an (negative) hour is reasonable. I can think of no god forsaken reason you'd have an animation last 1 hour in a video game */
+            Start = TimeSpan.FromHours(-1); /* Hopefully an (negative) hour is reasonable. I can think of no god forsaken reason you'd have an animation last 1 hour in a video game */
         }
 
         public TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(0.1f);

@@ -13,18 +13,15 @@ namespace ElvesDesktop {
 
         private void StartEngine(string[] args) {
             string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),Elves.Constants.SaveFolder);
-
-            var data = new EntryPointData() {
-                Args = args,
-                SaveDirectory = saveDirectory,
-                SaveFile = Elves.Constants.SaveFile
-            };
-
-            EngineMain(data);
+            EngineMain(saveDirectory,args);
         }
 
-        protected override void OnGameLoad(GameManager game) {
-            Elves.Program.Main(game,SaveData);
+        protected override void OnGameLoad(GameManager game,string saveDirectory) {
+            Elves.Program.Start(game,saveDirectory);
+        }
+
+        protected override void OnGameCrashed() {
+            Elves.Program.OnGameCrashed();
         }
     }
 }
