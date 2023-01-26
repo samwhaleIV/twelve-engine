@@ -8,7 +8,7 @@ using TwelveEngine.Shell.UI;
 namespace Elves.Scenes.Test {
     public sealed class ScrollingBackgroundTest:GameState {
 
-        private InfinityBackground infinityBackground = new InfinityBackground() {
+        private readonly InfinityBackground infinityBackground = new() {
             Texture = Program.Textures.GiftPattern
         };
 

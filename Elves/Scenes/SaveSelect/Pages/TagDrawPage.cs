@@ -18,9 +18,9 @@ namespace Elves.Scenes.SaveSelect {
             Scene.OnUpdate -= Scene_OnUpdate;
         }
 
-        public override void Open() {
+        public override Element Open() {
             tag = UI.SelectedTag;
-            tag.Flags = ElementFlags.CanUpdate;
+            tag.Flags = ElementFlags.Update;
             var label = UI.SignHereLabel;
             label.Scale = 1;
 
@@ -30,10 +30,10 @@ namespace Elves.Scenes.SaveSelect {
             button.Depth = Depth.Button;
             this.button = button;
 
-            DefaultFocusElement = button;
-
             UI.OnButtonPresed += UI_OnButtonPresed;
             Scene.OnUpdate += Scene_OnUpdate;
+
+            return button;
         }
 
         public override void Update(VectorRectangle viewport) {
@@ -66,7 +66,7 @@ namespace Elves.Scenes.SaveSelect {
             if(impulse != ButtonImpulse.Accept) {
                 throw new InvalidOperationException("Unexpected button impulse for tag draw page.");
             }
-            UI.SetPage(now,UI.TagContextPage);
+            UI.SetPage(UI.TagContextPage);
         }
     }
 }

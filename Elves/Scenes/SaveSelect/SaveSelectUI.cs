@@ -44,7 +44,7 @@ namespace Elves.Scenes.SaveSelect {
             TagContextPage = new TagContextPage() { Scene = scene, UI = this };
             TagDrawPage = new TagDrawPage() { Scene = scene, UI = this };
 
-            SetPage(TimeSpan.Zero,TagSelectPage);
+            SetPage(TagSelectPage);
             foreach(var element in Elements) {
                 element.SkipAnimation();
             }

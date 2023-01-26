@@ -105,13 +105,12 @@ namespace TwelveEngine.UI {
 
         public TimeSpan DefaultAnimationDuration { get; set; } = TimeSpan.FromSeconds(0.1f);
 
-
         /// <summary>
         /// Call before changing element layout data to animate the changes.
         /// </summary>
         /// <param name="now">Current, total elapsed time.</param>
         public void KeyAnimation(TimeSpan now,TimeSpan? overrideAnimationDuration = null) {
-            if(keyAnimationLocked) {
+            if(_keyAnimationIsLocked) {
                 return;
             }
             if(oldLayout is not null) {
@@ -131,13 +130,14 @@ namespace TwelveEngine.UI {
 
         public bool IsAnimating => !animator.IsFinished;
 
-        private bool keyAnimationLocked = false;
+        private bool _keyAnimationIsLocked = false;
 
         internal void LockKeyAnimation() {
-            keyAnimationLocked = true;
+            _keyAnimationIsLocked = true;
         }
+
         internal void UnlockKeyAnimation() {
-            keyAnimationLocked = false;
+            _keyAnimationIsLocked = false;
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace TwelveEngine.UI {
             } else {
                 layout = this.layout;
             }
-            if(Flags.HasFlag(ElementFlags.CanUpdate) && !InputIsPausedByAnimation) {
+            if(IsUpdateable && !InputIsPausedByAnimation) {
                 OnUpdate?.Invoke(now);
             }
             UpdateComputedArea(layout,viewport);
@@ -200,6 +200,14 @@ namespace TwelveEngine.UI {
             get => _selected && !InputIsPausedByAnimation;
         }
 
+        public Element PreviousElement { get; set; } = null;
+        public Element NextElement { get; set; } = null;
+
+        public ElementFlags Flags { get; set; } = ElementFlags.None;
+
+        public bool IsInteractable => Flags.HasFlag(ElementFlags.Interact);
+        public bool IsUpdateable => Flags.HasFlag(ElementFlags.Update);
+
         internal void SetSelected() => _selected = true;
         internal void SetPressed() => _pressed = true;
 
@@ -207,16 +215,11 @@ namespace TwelveEngine.UI {
         internal void ClearPressed() => _pressed = false;
 
         public void Activate(TimeSpan now) {
-            if(!Flags.HasFlag(ElementFlags.Interactable) || InputIsPausedByAnimation) {
+            if(!IsInteractable || InputIsPausedByAnimation) {
                 return;
             }
             OnActivated?.Invoke(now);
         }
-
-        public Element PreviousElement { get; set; } = null;
-        public Element NextElement { get; set; } = null;
-
-        public ElementFlags Flags { get; set; } = ElementFlags.None;
 
         public void SetKeyFocus(Element previous,Element next) {
             NextElement = next;
