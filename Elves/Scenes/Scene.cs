@@ -50,9 +50,6 @@ namespace Elves.Scenes {
             if(Debug) {
                 Entities.Add(new GridLinesEntity());
             }
-            if(FadeInIsFlagged) {
-                TransitionIn(Constants.AnimationTiming.TransitionDuration);
-            }
         }
     }
 }

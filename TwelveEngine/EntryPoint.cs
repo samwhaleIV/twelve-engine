@@ -6,19 +6,10 @@ using TwelveEngine.Font;
 
 namespace TwelveEngine {
 
-    public struct EntryPointData {
-        public string SaveDirectory { get; set; }
-        public string SaveFile { get; set; }
-        public string[] Args { get; set; }
-
-        public readonly string GetDirectoryPath(string path) {
-            return Path.Combine(SaveDirectory,path);
-        }
-    }
-
     public abstract class EntryPoint {
 
-        protected abstract void OnGameLoad(GameManager game);
+        protected abstract void OnGameLoad(GameManager game,string saveDirectory);
+        protected abstract void OnGameCrashed();
 
         private void Game_OnLoad(GameManager game) {
 
@@ -28,7 +19,7 @@ namespace TwelveEngine {
             Logger.AutoFlush = true;
 
             Fonts.Load(game);
-            OnGameLoad(game);
+            OnGameLoad(game,SaveDirectory);
         }
 
         private void Game_Exiting(object sender,EventArgs e) {
@@ -54,8 +45,8 @@ namespace TwelveEngine {
                 try {
                     game.Run();
                 } catch(Exception exception) {
-                    SaveData.TrySave();
                     Logger.WriteLine($"An unexpected error has occurred: {exception}");
+                    OnGameCrashed();
                 }
             }
         }
@@ -77,30 +68,31 @@ namespace TwelveEngine {
             return success;
         }
 
-        private readonly SaveData _saveData = new();
-        protected SaveData SaveData => _saveData;
+        public string GetSaveDirectoryPath(string path) {
+            return Path.Combine(SaveDirectory,path);
+        }
 
-        protected void EngineMain(EntryPointData data) {
+        public string SaveDirectory { get; private set; }
+
+        protected void EngineMain(string saveDirectory,string[] args) {
             _ = "Hello, world!";
 
-            string logFile = data.GetDirectoryPath(Constants.LogFile);
-            string configFile = data.GetDirectoryPath(Constants.ConfigFile);
+            SaveDirectory = saveDirectory;
 
-            SaveData.Path = data.GetDirectoryPath(data.SaveFile);
-            KeyBinds.Path = data.GetDirectoryPath(Constants.KeyBindsFile);
+            string logFile = GetSaveDirectoryPath(Constants.LogFile);
+            string configFile = GetSaveDirectoryPath(Constants.ConfigFile);
+
+            KeyBinds.Path = GetSaveDirectoryPath(Constants.KeyBindsFile);
 
             Logger.Initialize(logFile);
 
-            ValidateSaveDirectory(data.SaveDirectory);
+            ValidateSaveDirectory(saveDirectory);
 
             Config.TryLoad(configFile);
-            Flags.Load(data.Args);
+            Flags.Load(args);
 
             Config.WriteToLog();
             KeyBinds.TryLoad();
-
-            SaveData.TryLoad();
-            SaveData.TrySave();
 
             GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
             InitializeGameManager();

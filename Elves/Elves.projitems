@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)FX\Static.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FX\WillTheDVDHitTheCornerSimulator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ElfGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleSequencer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Battles\DebugBattle.cs" />

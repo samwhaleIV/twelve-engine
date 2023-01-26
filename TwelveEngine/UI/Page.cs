@@ -4,7 +4,7 @@ namespace TwelveEngine.UI {
     public abstract class Page<TElement> where TElement:Element {
 
         /// <summary>
-        /// Current total time. Is 
+        /// Current total time. 
         /// </summary>
         protected TimeSpan Now { get; private set; }
 

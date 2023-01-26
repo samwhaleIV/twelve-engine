@@ -66,7 +66,7 @@ namespace Elves.Scenes.SaveSelect {
 
             Vector2 fingerPosition = new(2/3f,UI.Finger.Position.Y);
 
-            fingerPosition.Y = UI.SelectedElement?.Position.Y ?? fingerPosition.Y;
+            fingerPosition.Y = UI.SelectedElement?.Position.Y ?? UI.Tag1.Position.Y;
 
             var finger = UI.Finger;
             if(finger.Position != fingerPosition) {

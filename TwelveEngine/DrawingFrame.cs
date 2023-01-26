@@ -16,9 +16,12 @@ namespace TwelveEngine {
         public Vector2 Size => size;
 
         public DrawingFrame(int width,int height) {
+            pixelCount = width * height;
+            if(pixelCount % 8 != 0) {
+                throw new Exception("Drawing frame pixel count must be divisible by 8.");
+            }
             this.width = width;
             this.height = height;
-            pixelCount = width * height;
             size = new(width,height);
         }
 
@@ -111,8 +114,35 @@ namespace TwelveEngine {
             RenderTarget.SetData(colorData,0,PixelCount);
         }
 
+        private const int BYTE_SIZE = 8;
+
         public byte[] Export() {
-            throw new NotImplementedException();
+            byte[] data = new byte[PixelCount / BYTE_SIZE];
+
+            Color[] colorData = new Color[PixelCount];
+            RenderTarget.GetData(colorData,0,colorData.Length);
+
+            BitArray bitBuffer = new(new bool[BYTE_SIZE]);
+
+            byte drawColorA = DrawColor.A; /* Only check the alpha value... YOLO. Let's speed this up. */
+
+            /* Color data is validated to be divisible by 8 in the DrawingFrame constructor. */
+            for(int colorIndex = 0;colorIndex<colorData.Length;colorIndex += BYTE_SIZE) {
+
+                /* MORE. SPEED. */
+                bitBuffer[0] = colorData[colorIndex+0].A == drawColorA;
+                bitBuffer[1] = colorData[colorIndex+1].A == drawColorA;
+                bitBuffer[2] = colorData[colorIndex+2].A == drawColorA;
+                bitBuffer[3] = colorData[colorIndex+3].A == drawColorA;
+                bitBuffer[4] = colorData[colorIndex+4].A == drawColorA;
+                bitBuffer[5] = colorData[colorIndex+5].A == drawColorA;
+                bitBuffer[6] = colorData[colorIndex+6].A == drawColorA;
+                bitBuffer[7] = colorData[colorIndex+7].A == drawColorA;
+
+                bitBuffer.CopyTo(data,colorIndex / 8);
+            }
+
+            return data;
         }
     }
 }

@@ -1,39 +1,69 @@
 ﻿using TwelveEngine.Shell;
-using Elves.Scenes.Battle;
-using Elves.Scenes.Battle.Battles;
 using System;
 using TwelveEngine;
-using Elves.Scenes.Carousel;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Elves.Scenes.Intro;
-using Elves.Scenes.SaveSelect;
-using Elves.Scenes.Test;
-
-#pragma warning disable IDE0079
-#pragma warning disable CS0162
-#pragma warning disable CS0028
+using System.Collections.Generic;
+using System.IO;
 
 namespace Elves {
     public static class Program {
 
-        public static GameState GetStartState() {
-            //return new DVDCornerTest();
-            //return new DrawingFrameTest();
-            return new SaveSelectScene();
-            //return new IntroScene();
-            //return new SnowTest();
-            //return new ScrollingBackgroundTest();
-            //return new CarouselMenu();
-            //return new SongTest();
-            //return new SplashMenuState();   
+        public static GameManager Game { get; private set; }
+        public static Textures Textures { get; private set; }
 
-            var battle = new BattleSequencer(new DebugBattle());
+        public static SaveFile SaveFile { get; set; } = null;
+        public static SaveFile GlobalSaveFile { get; private set; } = null;
 
-            battle.OnBattleFinished += battleResult => {
-                Console.WriteLine($"Battle result: {Enum.GetName(typeof(BattleResult),battleResult)}");
+        public static readonly List<SaveFile> SaveFiles = new();
+
+        private static void LoadSaveFiles() {
+            if(SaveFiles.Count > 0) {
+                throw new InvalidOperationException("Local save files have already been loaded.");
+            }
+            for(int i = 0;i<3;i++) {
+                SaveFile saveFile = new() {
+                    Path = Path.Combine(SaveDirectory,string.Format(Constants.SaveFileFormat,i + 1))
+                };
+                SaveFiles.Add(saveFile);
+                saveFile.TryLoad();
+            }
+        }
+
+        private static void LoadGlobalSaveFile() {
+            SaveFile globalSaveFile = new() {
+                Path = Path.Combine(SaveDirectory,Constants.GlobalSaveFile)
             };
-            return battle;
+            globalSaveFile.TryLoad();
+            GlobalSaveFile = globalSaveFile;
+        }
+
+        public static string SaveDirectory { get; private set; }
+
+        public static void Start(GameManager game,string saveDirectory) {
+            Game = game;
+
+            Game.Window.Title = "Elves!";
+
+            Textures.ContentManager = Game.Content;
+            Textures = new Textures();
+
+
+            if(!Flags.Get(Constants.Flags.OSCursor)) {
+                AddCustomCursors();
+                game.UseCustomCursor = true;
+            }
+
+            SaveDirectory = saveDirectory;
+            LoadSaveFiles();
+
+            LoadGlobalSaveFile();
+
+            game.SetState(ElfGame.Start());
+        }
+
+        public static void OnGameCrashed() {
+            SaveFile?.TrySave();
         }
 
         private static void AddCursorState(
@@ -47,30 +77,5 @@ namespace Elves {
             AddCursorState(CursorState.Interact,Textures.CursorAlt1,32,32);
             AddCursorState(CursorState.Pressed,Textures.CursorAlt2,32,32);
         }
-
-        public static GameManager Game { get; private set; }
-        public static SaveData SaveData { get; private set; }
-        public static Textures Textures { get; private set; }
-
-        public static void Main(GameManager game,SaveData saveData) {
-            Game = game;
-            SaveData = saveData;
-
-            Game.Window.Title = "Elves!";
-
-            Textures.ContentManager = Game.Content;
-            Textures = new Textures();
-
-            if(!Flags.Get(Constants.Flags.OSCursor)) {
-                AddCustomCursors();
-                game.UseCustomCursor = true;
-            }
-
-            game.SetState(GetStartState);
-        }
     }
 }
-
-#pragma warning restore CS0162
-#pragma warning restore CS0028
-#pragma warning restore IDE0079

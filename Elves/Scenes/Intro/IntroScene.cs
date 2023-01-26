@@ -94,10 +94,12 @@ namespace Elves.Scenes.Intro {
         }
 
         private void Debug_Reset() {
-            timeline.StartTimeOffset = -Now;
+            timeline.StartTimeOffset = (-Now - StartTime);
             exiting = false;
         }
         private bool exiting = false;
+
+        public event Action<bool> OnSceneExit;
 
         private void ExitScene(bool quickExit = false) {
             if(exiting) {
@@ -107,16 +109,12 @@ namespace Elves.Scenes.Intro {
             if(quickExit) {
                 MediaPlayer.Stop();
             }
-            TransitionOut(new TransitionData() {
-                Generator = () => new SplashMenuState(),
-                Duration = quickExit ? Constants.AnimationTiming.QuickTransition : Constants.AnimationTiming.IntroFadeOutDuration,
-                Data = new StateData() { Flags = StateFlags.FadeIn }
-            });
+            OnSceneExit?.Invoke(quickExit);
         }
 
         private void IntroScene_OnUpdate() {
             UpdateInputs();
-            timeline.Update(Now);
+            timeline.Update(Now - StartTime);
             if(exiting) {
                 return;
             }

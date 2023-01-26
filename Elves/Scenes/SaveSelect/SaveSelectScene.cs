@@ -7,17 +7,34 @@ namespace Elves.Scenes.SaveSelect {
 
         private ScrollingBackground background;
 
-        public const int DRAWING_FRAME_WIDTH = 256;
-        public const int DRAWING_FRAME_HEIGHT = 64;
+        public const int DRAWING_FRAME_WIDTH = 256, DRAWING_FRAME_HEIGHT = 64;
 
         private readonly DrawingFrame[] drawingFrames = new DrawingFrame[3];
         public DrawingFrame[] DrawingFrames => drawingFrames;
+
+
+        public event Action<SaveSelectScene,int> OnSceneExit;
+
+        private bool _saveDrawingFramesOnUnload = false;
+
+        public void OpenSaveFile(int saveFileID) {
+            _saveDrawingFramesOnUnload = true;
+            OnSceneExit?.Invoke(this,saveFileID);
+        }
 
         public SaveSelectScene() {
             Name = "Save Selection";
             OnLoad += SaveSelectScene_OnLoad;
             OnRender += SaveSelectScene_OnRender;
             OnUpdate += SaveSelectScene_OnUpdate;
+            OnUnload += SaveSelectScene_OnUnload;
+        }
+
+        private void SaveSelectScene_OnUnload() {
+            if(!_saveDrawingFramesOnUnload) {
+                return;
+            }
+            SaveDrawingFrames();
         }
 
         private void SaveSelectScene_OnUpdate() {
@@ -44,18 +61,34 @@ namespace Elves.Scenes.SaveSelect {
                     BrushSize = 5
                 };
                 drawingFrame.Load(Game.GraphicsDevice);
-                //TODO: Drawing frame import
                 drawingFrames[i] = drawingFrame;
+            }
+
+            /* Not the most elegant solution, but the fixed 3 save states is so static in the design of the game (and this UI) that it is not expected to ever change. */
+
+
+            if(Program.GlobalSaveFile.TryGetBytes(SaveKeys.SaveImage1,out byte[] imageData)) {
+                drawingFrames[0].Import(imageData);
+            }
+
+            if(Program.GlobalSaveFile.TryGetBytes(SaveKeys.SaveImage2,out imageData)) {
+                drawingFrames[1].Import(imageData);
+            }
+
+            if(Program.GlobalSaveFile.TryGetBytes(SaveKeys.SaveImage3,out imageData)) {
+                drawingFrames[2].Import(imageData);
             }
         }
 
         private void SaveDrawingFrames() {
-            //TODO: call me before we go into a save select screen
-            //drawingFrames[0].Export();
+            Program.GlobalSaveFile.SetBytes(SaveKeys.SaveImage1,drawingFrames[0].Export());
+            Program.GlobalSaveFile.SetBytes(SaveKeys.SaveImage2,drawingFrames[1].Export());
+            Program.GlobalSaveFile.SetBytes(SaveKeys.SaveImage3,drawingFrames[2].Export());
         }
 
         public void DeleteSave(int ID) {
             drawingFrames[ID].Reset(Game);
+            Program.SaveFiles[ID].Clear();
         }
 
         private void SaveSelectScene_OnLoad() {

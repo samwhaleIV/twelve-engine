@@ -14,6 +14,8 @@ namespace TwelveEngine.Shell {
 
         public bool DrawDebug { get; set; } = false;
 
+        public GameState State { get; private set; } = null;
+
         public GameManager(
             bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true
         ) {
@@ -172,8 +174,6 @@ namespace TwelveEngine.Shell {
         private GameState pendingState = null;
         private (Func<GameState> Value, StateData Data) pendingGenerator = (null, StateData.Empty);
 
-        private GameState _gameState = null;
-
         private static readonly StringBuilder stringBuilder = new();
 
         private void ResetLeakyStateProperties() {
@@ -181,16 +181,19 @@ namespace TwelveEngine.Shell {
             CursorState = CursorState.Default;
         }
 
+        public event Action<GameState> OnStateLoaded;
+
         private void LoadState(GameState state) {
             ResetLeakyStateProperties();
             state.Load(this);
+            OnStateLoaded?.Invoke(state);
             stringBuilder.Append($"[{proxyGameTime.TotalGameTime}] Set state: ");
             string stateName = state.Name;
             stringBuilder.Append('"');
             stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);
             stringBuilder.Append("\" { Args = ");
             StateData data = state.Data;
-            if(data.Args != null && data.Args.Length >= 1) {
+            if(data.Args is not null && data.Args.Length >= 1) {
                 foreach(var arg in data.Args) {
                     if(string.IsNullOrWhiteSpace(arg)) {
                         continue;
@@ -208,7 +211,7 @@ namespace TwelveEngine.Shell {
         }
 
         public void SetState(Func<GameState> stateGenerator,StateData? data = null) {
-            if(pendingState != null || pendingGenerator.Value != null) {
+            if(pendingState is not null || pendingGenerator.Value is not null) {
                 /* Recursive loading! Preload all your assets to your heart's content! */
                 pendingGenerator = (null, StateData.Empty);
                 if(pendingState?.IsLoaded ?? false) {
@@ -229,8 +232,8 @@ namespace TwelveEngine.Shell {
                 pendingGenerator = (stateGenerator, data ?? StateData.Empty);
                 return;
             }
-            GameState oldState = _gameState;
-            _gameState = null;
+            GameState oldState = State;
+            State = null;
             oldState?.Unload();
             pendingState = stateGenerator.Invoke();
             pendingState.Data = data ?? StateData.Empty;
@@ -278,8 +281,8 @@ namespace TwelveEngine.Shell {
         }
 
         protected override void UnloadContent() {
-            _gameState?.Unload();
-            _gameState = null;
+            State?.Unload();
+            State = null;
 
             EmptyTexture?.Dispose();
             EmptyTexture = null;
@@ -338,7 +341,7 @@ namespace TwelveEngine.Shell {
             MouseState = GetMouseState();
             GamePadState = GetGamepadState();
 
-            _gameState.Update();
+            State.Update();
 
             automationAgent.EndUpdate();
         }
@@ -372,10 +375,10 @@ namespace TwelveEngine.Shell {
             framesToSkip = count;
         }
 
-        private bool HasGameState => _gameState != null;
+        private bool HasGameState => State is not null;
 
         private void HotSwapPendingState() {
-            _gameState = pendingState;
+            State = pendingState;
             pendingState = null;
             if(!gamePaused) {
                 return;
@@ -394,7 +397,7 @@ namespace TwelveEngine.Shell {
             updating = true;
             watch.Start();
             if(!HasGameState) {
-                if(pendingState != null) {
+                if(pendingState is not null) {
                     HotSwapPendingState();
                 } else {
                     updateDuration = ReadWatchAndReset();
@@ -423,7 +426,7 @@ namespace TwelveEngine.Shell {
         }
 
         private void TryApplyPendingStateGenerator() {
-            if(pendingGenerator.Value == null) {
+            if(pendingGenerator.Value is null) {
                 return;
             }
             bool benchmark = Config.GetBool(Config.Keys.BenchmarkStateSwap);
@@ -447,9 +450,9 @@ namespace TwelveEngine.Shell {
         protected override void Draw(GameTime trueGameTime) {
             rendering = true;
 
-            var gameState = _gameState;
+            var gameState = State;
 
-            if(gameState != null && !gameState.IsLoaded) {
+            if(gameState is not null && !gameState.IsLoaded) {
                 /* Calm yourself, this isn't buffered into a log file - but hopefully you never see this in production */
                 Console.WriteLine($"[{proxyGameTime.TotalGameTime}] WARNING: Attempt to render game state after it has been unloaded");
                 return;
@@ -457,7 +460,7 @@ namespace TwelveEngine.Shell {
 
             watch.Start();
 
-            if(gameState != null) {
+            if(gameState is not null) {
                 gameState.ResetGraphicsState(GraphicsDevice);
                 gameState.PreRender();
                 gameState.Render();

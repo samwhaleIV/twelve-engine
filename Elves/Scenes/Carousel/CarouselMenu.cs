@@ -28,6 +28,8 @@ namespace Elves.Scenes.Carousel {
 
         //TODO: accept a timeline list, UI buttons (duh), launch battles and settings
 
+        public event Action<int> OnStartElfBattle; //todo: use me
+
         public CarouselMenu() {
             Name = "Carousel Menu";
             OnLoad += CarouselMenu_OnLoad;

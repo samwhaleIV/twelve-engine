@@ -81,8 +81,8 @@ namespace Elves.Scenes.SaveSelect {
                             UI.SetPage(UI.TagSelectPage);
                             break;
                         case ButtonImpulse.Play:
-                            return;
-                            throw new NotImplementedException();
+                            Scene.OpenSaveFile(tag.ID);
+                            break;
                         case ButtonImpulse.Delete:
                             tag.Display = TagDisplay.Delete;
                             tag.Blip(now);

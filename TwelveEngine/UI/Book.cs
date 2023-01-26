@@ -70,6 +70,11 @@ namespace TwelveEngine.UI {
 
             _defaultFocusElement = newPage.Open();
 
+            if(oldPage is null) {
+                /* If this is the first page we are loading just assume the last event was from the keyboard so we can get a default focus element right away. */
+                _lastEventWasFromKeyboard = true;
+            }
+
             Page = newPage;
         }
 
