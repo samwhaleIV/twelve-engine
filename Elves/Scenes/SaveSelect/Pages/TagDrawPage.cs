@@ -16,6 +16,7 @@ namespace Elves.Scenes.SaveSelect {
         public override void Close() {
             UI.OnButtonPresed -= UI_OnButtonPresed;
             Scene.OnUpdate -= Scene_OnUpdate;
+            Scene.CreateSave(UI.SelectedTag.ID);
         }
 
         public override Element Open() {

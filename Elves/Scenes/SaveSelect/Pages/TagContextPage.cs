@@ -113,7 +113,6 @@ namespace Elves.Scenes.SaveSelect {
                             break;
                         case ButtonImpulse.Accept:
                             tag.Display = TagDisplay.Custom;
-                            Scene.CreateSave(tag.ID);
                             UI.SetPage(UI.TagDrawPage);
                             break;
                     }

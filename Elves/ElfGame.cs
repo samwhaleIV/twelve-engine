@@ -62,10 +62,7 @@ namespace Elves {
         private static void SaveSelect_OnSceneExit(SaveSelectScene scene,int saveID) {
             Program.Save = Program.Saves[saveID];
             scene.TransitionOut(new() {
-                Generator = () => {
-                    Program.Save.TrySave();
-                    return GetStartSceneForSave();
-                },
+                Generator = GetStartSceneForSave,
                 Data = new() { Flags = StateFlags.ForceGC | StateFlags.FadeIn },
                 Duration = Constants.AnimationTiming.TransitionDuration
             });

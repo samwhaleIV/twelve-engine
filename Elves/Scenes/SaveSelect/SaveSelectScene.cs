@@ -15,10 +15,7 @@ namespace Elves.Scenes.SaveSelect {
 
         public event Action<SaveSelectScene,int> OnSceneExit;
 
-        private bool _saveDrawingFramesOnUnload = false;
-
         public void OpenSaveFile(int saveFileID) {
-            _saveDrawingFramesOnUnload = true;
             OnSceneExit?.Invoke(this,saveFileID);
         }
 
@@ -30,10 +27,24 @@ namespace Elves.Scenes.SaveSelect {
             OnUnload += SaveSelectScene_OnUnload;
         }
 
+        private bool[] modifiedSaves = new bool[3] { false, false, false };
+
         private void SaveSelectScene_OnUnload() {
-            if(!_saveDrawingFramesOnUnload) {
+
+            bool hasModifiedSave = false;
+
+            for(int i = 0;i<modifiedSaves.Length;i++) {
+                if(!modifiedSaves[i]) {
+                    continue;
+                }
+                Program.Saves[i].TrySave();
+                hasModifiedSave = true;
+            }
+
+            if(!hasModifiedSave) {
                 return;
             }
+
             SaveDrawingFrames();
             Program.GlobalSave.TrySave();
         }
@@ -75,16 +86,21 @@ namespace Elves.Scenes.SaveSelect {
 
         private void SaveDrawingFrames() {
             for(int i = 0;i<3;i++) {
+                if(!modifiedSaves[i]) {
+                    continue;
+                }
                 Program.GlobalSave.SetBytes(SaveKeys.SaveImage1+i,drawingFrames[i].Export());
             }
         }
 
         public void DeleteSave(int ID) {
+            modifiedSaves[ID] = true;
             drawingFrames[ID].Reset(Game);
             Program.Saves[ID].Clear();
         }
 
         public void CreateSave(int ID) {
+            modifiedSaves[ID] = true;
             Program.Saves[ID].SetFlag(SaveKeys.DoIExist);
         }
 
