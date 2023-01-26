@@ -166,10 +166,7 @@ namespace TwelveEngine.UI {
         public Element PressedElement {
             get => _pressedElement;
             private set {
-                if(_pressedElement == value || !TransitionComplete) {
-                    return;
-                }
-                if(value is not null && value.InputIsPausedByAnimation) {
+                if(_pressedElement == value || !TransitionComplete || value is not null && value.InputIsPausedByAnimation) {
                     /* Do not set a new pressed element if it is waiting for an animation during a page */
                     return;
                 }

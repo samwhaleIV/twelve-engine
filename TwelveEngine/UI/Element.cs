@@ -175,7 +175,7 @@ namespace TwelveEngine.UI {
             InputIsPausedByAnimation = true;
         }
 
-        internal bool InputIsPausedByAnimation { get; private set; }
+        internal bool InputIsPausedByAnimation { get; private set; } = false;
 
         /// <summary>
         /// Update layout properties based on <c>Pressed</c> and <c>Selected</c> properties.
@@ -184,7 +184,7 @@ namespace TwelveEngine.UI {
 
         protected internal event Action<TimeSpan> OnActivated;
 
-        private bool _pressed, _selected;
+        private bool _pressed = false, _selected = false;
 
         /// <summary>
         /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
