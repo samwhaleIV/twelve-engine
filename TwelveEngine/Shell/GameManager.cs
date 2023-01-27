@@ -14,12 +14,12 @@ namespace TwelveEngine.Shell {
 
         public bool DrawDebug { get; set; } = false;
 
-        public GameState State { get; private set; } = null;
+        public GameState _gameState  = null;
 
         public GameManager(
             bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true
         ) {
-            graphicsDeviceManager = new GraphicsDeviceManager(this);
+            GraphicsDeviceManager = new GraphicsDeviceManager(this);
 
             Logger.WriteBooleanSet("Context settings",new string[] {
                 "Fullscreen","HardwareModeSwitch","VerticalSync"
@@ -31,10 +31,10 @@ namespace TwelveEngine.Shell {
 
             Content.RootDirectory = Constants.ContentDirectory;
 
-            graphicsDeviceManager.SynchronizeWithVerticalRetrace = verticalSync;
+            GraphicsDeviceManager.SynchronizeWithVerticalRetrace = verticalSync;
 
-            graphicsDeviceManager.IsFullScreen = fullscreen;
-            graphicsDeviceManager.HardwareModeSwitch = hardwareModeSwitch;
+            GraphicsDeviceManager.IsFullScreen = fullscreen;
+            GraphicsDeviceManager.HardwareModeSwitch = hardwareModeSwitch;
 
             if(hardwareModeSwitch) {
                 DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
@@ -42,9 +42,11 @@ namespace TwelveEngine.Shell {
                 int? width = Config.GetIntNullable(Config.Keys.HWFullScreenWidth);
                 int? height = Config.GetIntNullable(Config.Keys.HWFullScreenHeight);
 
-                graphicsDeviceManager.PreferredBackBufferWidth = width ?? displayMode.Width;
-                graphicsDeviceManager.PreferredBackBufferHeight = height ?? displayMode.Height;
+                GraphicsDeviceManager.PreferredBackBufferWidth = width ?? displayMode.Width;
+                GraphicsDeviceManager.PreferredBackBufferHeight = height ?? displayMode.Height;
             }
+
+            GraphicsDeviceManager.ApplyChanges();
 
             IsFixedTimeStep = false;
 
@@ -93,8 +95,8 @@ namespace TwelveEngine.Shell {
             (Constants.RecordingKey, automationAgent.ToggleRecording),
 
             (Constants.PauseGameKey, () => SetPaused(!gamePaused)),
-            (Constants.AdvanceFrameKey, () => advanceFrameQueued = true),
-            (Constants.FullscreenKey, () => graphicsDeviceManager.ToggleFullScreen())
+            (Constants.AdvanceFrameKey, () => advanceFrameIsQueued = true),
+            (Constants.FullscreenKey, () => GraphicsDeviceManager.ToggleFullScreen())
         };
 
         private void AutomationAgent_PlaybackStopped() {
@@ -112,8 +114,6 @@ namespace TwelveEngine.Shell {
         private bool fastForwarding = false, shouldAdvanceFrame = false;
         private int framesToSkip = 0;
 
-        /* God class extensions */
-        private readonly GraphicsDeviceManager graphicsDeviceManager;
         private readonly VCRDisplay vcrDisplay;
         private readonly HotkeySet keyWatcherSet;
 
@@ -121,8 +121,7 @@ namespace TwelveEngine.Shell {
         private readonly ProxyGameTime proxyGameTime = new();
         private readonly DebugWriter debugWriter;
 
-        /* Public access */
-        public GraphicsDeviceManager GraphicsDeviceManager => graphicsDeviceManager;
+        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public AutomationAgent AutomationAgent => automationAgent;
         public GameTime Time => proxyGameTime;
 
@@ -181,13 +180,15 @@ namespace TwelveEngine.Shell {
             CursorState = CursorState.Default;
         }
 
-        public event Action<GameState> OnStateLoaded;
+        //public event Action<GameState> OnStateLoaded;
 
         private void LoadState(GameState state) {
             ResetLeakyStateProperties();
             state.Load(this);
-            OnStateLoaded?.Invoke(state);
-            stringBuilder.Append($"[{proxyGameTime.TotalGameTime}] Set state: ");
+            //OnStateLoaded?.Invoke(state);
+            stringBuilder.Append('[');
+            stringBuilder.AppendFormat(Constants.TimeSpanFormat,proxyGameTime.TotalGameTime);
+            stringBuilder.Append("] Set state: ");
             string stateName = state.Name;
             stringBuilder.Append('"');
             stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);
@@ -232,8 +233,8 @@ namespace TwelveEngine.Shell {
                 pendingGenerator = (stateGenerator, data ?? StateData.Empty);
                 return;
             }
-            GameState oldState = State;
-            State = null;
+            GameState oldState = _gameState;
+            _gameState = null;
             oldState?.Unload();
             pendingState = stateGenerator.Invoke();
             pendingState.Data = data ?? StateData.Empty;
@@ -281,8 +282,8 @@ namespace TwelveEngine.Shell {
         }
 
         protected override void UnloadContent() {
-            State?.Unload();
-            State = null;
+            _gameState?.Unload();
+            _gameState = null;
 
             EmptyTexture?.Dispose();
             EmptyTexture = null;
@@ -296,10 +297,11 @@ namespace TwelveEngine.Shell {
             SpriteBatch = null;
 
             Content.Dispose();
-            graphicsDeviceManager.Dispose();
+            GraphicsDeviceManager?.Dispose();
+            GraphicsDeviceManager = null;
         }
 
-        private bool advanceFrameQueued = false;
+        private bool advanceFrameIsQueued = false;
 
         private void AdvanceFrame(KeyboardState keyboardState,GameTime gameTime) {
             int frameAdvance = 0;
@@ -326,6 +328,37 @@ namespace TwelveEngine.Shell {
             }
         }
 
+        public static KeyboardState LastKeyboardState { get; private set; }
+        public static MouseState LastMouseState { get; private set; }
+        public static GamePadState LastGamePadState { get; private set; }
+
+        /* A little bit expensive... but powerful. */
+        private void UpdateInputStateCache() {
+
+            /* States are filtered by the automation agent. State cannot be changed while the game is paused or waiting. */
+            MouseState mouseState = GetMouseState();
+            KeyboardState keyboardState = GetKeyboardState();
+            GamePadState gamePadState = GetGamepadState();
+
+            /* Priority for keyboard or gamepad events, even if the mouse data changed in the same frame. */
+            if(IsActive && mouseState != LastMouseState) {
+                LastInputEventWasFromMouse = true;
+            }
+            if(IsActive && keyboardState != LastKeyboardState || gamePadState != LastGamePadState) {
+                LastInputEventWasFromMouse = false;
+            }
+
+            LastMouseState = mouseState;
+            LastKeyboardState = keyboardState;
+            LastGamePadState = gamePadState;
+
+            KeyboardState = keyboardState;
+            MouseState = mouseState;
+            GamePadState = gamePadState;
+        }
+
+        public static bool LastInputEventWasFromMouse { get; private set; } = false;
+
         private void UpdateGame(GameTime trueGameTime) {
             proxyGameTime.Update(trueGameTime);
             automationAgent.StartUpdate();
@@ -337,11 +370,8 @@ namespace TwelveEngine.Shell {
                 automationAgent.UpdateRecordingFrame(proxyGameTime);
             }
 
-            KeyboardState = GetKeyboardState();
-            MouseState = GetMouseState();
-            GamePadState = GetGamepadState();
-
-            State.Update();
+            UpdateInputStateCache();
+            _gameState.Update();
 
             automationAgent.EndUpdate();
         }
@@ -375,10 +405,10 @@ namespace TwelveEngine.Shell {
             framesToSkip = count;
         }
 
-        private bool HasGameState => State is not null;
+        private bool HasGameState => _gameState is not null;
 
         private void HotSwapPendingState() {
-            State = pendingState;
+            _gameState = pendingState;
             pendingState = null;
             if(!gamePaused) {
                 return;
@@ -393,7 +423,17 @@ namespace TwelveEngine.Shell {
             return elapsed;
         }
 
+        /// <summary>
+        /// Why does this exist? MonoGame calls a duplicate first update call.
+        /// <see href="https://github.com/MonoGame/MonoGame/blob/2fa596123f834f322be19811d97fe6c20616d570/MonoGame.Framework/Game.cs#L489"/>
+        /// </summary>
+        private bool didUpdateFirstFrame = false;
+
         protected override void Update(GameTime gameTime) {
+            if(!didUpdateFirstFrame) {
+                didUpdateFirstFrame = true;
+                return;
+            }
             updating = true;
             watch.Start();
             if(!HasGameState) {
@@ -408,9 +448,9 @@ namespace TwelveEngine.Shell {
 
             KeyboardState vanillaKeyboardState = Keyboard.GetState();
             keyWatcherSet.Update(vanillaKeyboardState);
-            if(advanceFrameQueued) {
+            if(advanceFrameIsQueued) {
                 AdvanceFrame(vanillaKeyboardState,gameTime);
-                advanceFrameQueued = false;
+                advanceFrameIsQueued = false;
             }
 
             if(!gamePaused) {
@@ -450,7 +490,7 @@ namespace TwelveEngine.Shell {
         protected override void Draw(GameTime trueGameTime) {
             rendering = true;
 
-            var gameState = State;
+            var gameState = _gameState;
 
             if(gameState is not null && !gameState.IsLoaded) {
                 /* Calm yourself, this isn't buffered into a log file - but hopefully you never see this in production */

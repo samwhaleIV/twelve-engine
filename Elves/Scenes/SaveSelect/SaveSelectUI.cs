@@ -1,7 +1,6 @@
 ﻿using TwelveEngine.UI;
 using System;
 using System.Collections.Generic;
-using static Elves.Constants;
 
 namespace Elves.Scenes.SaveSelect {
 
@@ -27,6 +26,7 @@ namespace Elves.Scenes.SaveSelect {
                 TextureSource = new(0,0,174,40),
                 Offset = (new(-1,-0.1f)),
                 PositionMode = CoordinateMode.Relative,
+                Position = new(0,-1),
                 Depth = Depth.Finger,
                 SmoothStep = true,
                 DefaultAnimationDuration = TimeSpan.FromMilliseconds(300)
@@ -68,7 +68,7 @@ namespace Elves.Scenes.SaveSelect {
         /// <param name="ID">Save tag ID. Index starts at 0.</param>
         /// <returns></returns>
         private Tag AddTag(SaveSelectScene scene,int ID) {
-            var tag = new Tag() { ID = ID, DrawingFrame = scene.DrawingFrames[ID] };
+            var tag = new Tag(scene.HasSaveFile(ID)) { ID = ID, DrawingFrame = scene.DrawingFrames[ID] };
             AddElement(tag);
             Tags.Add(tag);
             return tag;

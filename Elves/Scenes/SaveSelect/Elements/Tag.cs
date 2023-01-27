@@ -33,8 +33,8 @@ namespace Elves.Scenes.SaveSelect {
 
         public DrawingFrame DrawingFrame { get; set; } = null;
 
-        public Tag() {
-            Display = TagDisplay.Empty;
+        public Tag(bool tagHasSaveFile) {
+            Display = tagHasSaveFile ? TagDisplay.Custom : TagDisplay.Empty;
             TextureSource = textureSources[Display];
 
             Offset = new(-0.5f,-0.5f);

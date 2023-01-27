@@ -2,13 +2,10 @@
     public static class SaveKeys {
 
         public const int SaveImage1 = 1;
-        public const int SaveFileTwoImage = 2;
-        public const int SaveFileThreeImage = 3;
+        public const int SaveImage2 = 2;
+        public const int SaveImage3 = 3;
 
-        public const int SaveFile1HasPlayed = 4;
-        public const int SaveImage2 = 5;
-        public const int SaveImage3 = 6;
-
-        public const int IntroHasPlayed = 7;
+        public const int DoIExist = 4;
+        public const int PlayedIntro = 5;
     }
 }

@@ -1,6 +1,10 @@
-﻿namespace TwelveEngine.Shell {
+﻿using System;
+
+namespace TwelveEngine.Shell {
     public struct StateData {
         public StateFlags Flags { get; set; }
+        public TimeSpan TransitionDuration { get; set; }
+
         public string[] Args { get; set; }
 
         public static readonly StateData Empty = new() { 
@@ -8,8 +12,9 @@
             Flags = StateFlags.None
         };
 
-        public static readonly StateData FadeIn = new() {
+        public static StateData FadeIn(TimeSpan duration) => new() {
             Args = null,
+            TransitionDuration = duration,
             Flags = StateFlags.FadeIn
         };
     }

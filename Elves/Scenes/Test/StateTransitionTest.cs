@@ -25,7 +25,7 @@ namespace Elves.Scenes.Test {
 
             Name = "State Transition Test";
             ClearColor = GetSceneColor();
-            OnUpdate += UpdateInputs;
+            OnUpdate += UpdateInputDevices;
             Input.OnAcceptDown += Input_OnAcceptDown;
             OnLoad += StateTransitionTest_OnLoad;
         }
@@ -34,16 +34,16 @@ namespace Elves.Scenes.Test {
             if(testLoadSleep) {
                 OnLoad += () => Thread.Sleep(1000);
             }
-            if(FadeInIsFlagged) {
-                TransitionIn(TimeSpan.FromSeconds(0.125f));
-            }
         }
 
         private void Input_OnAcceptDown() {
             TransitionOut(new TransitionData() {
                 Generator = () => new StateTransitionTest(),
                 Duration = TimeSpan.FromSeconds(0.125f),
-                Data = new StateData() { Flags = StateFlags.CarryInput & StateFlags.FadeIn }
+                Data = new StateData() {
+                    Flags = StateFlags.CarryInput & StateFlags.FadeIn,
+                    TransitionDuration = TimeSpan.FromSeconds(0.125f)
+                }
             });
         }
     }

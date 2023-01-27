@@ -1,7 +1,7 @@
 ﻿using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
-    public sealed partial class EntityManager<TEntity,TOwner> where TEntity : Entity<TOwner> where TOwner : GameState {
+    public sealed partial class EntityManager<TEntity,TOwner> where TEntity : Entity<TOwner> where TOwner : GameState, IEntitySorter<TEntity,TOwner> {
 
         public TEntity Get(int ID) {
             if(!Container.IDs.TryGetValue(ID,out var entity)) {

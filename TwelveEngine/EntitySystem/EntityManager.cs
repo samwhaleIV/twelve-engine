@@ -9,7 +9,7 @@ namespace TwelveEngine.EntitySystem {
         internal const int START_ID = 0;
         internal const int STARTING_CAPACITY = 8;
     }
-    public sealed partial class EntityManager<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState {
+    public sealed partial class EntityManager<TEntity,TOwner> where TEntity:Entity<TOwner> where TOwner:GameState, IEntitySorter<TEntity,TOwner> {
 
         private const string ILLEGAL_ITERATION = "Illegal nested iteration. Cannot iterate inside of another iteration operation.";
         private const string ILLEGAL_MODIFICATION_UNLOADED = "Cannot mutate contained entities, the entity manager is unloaded.";
@@ -31,31 +31,27 @@ namespace TwelveEngine.EntitySystem {
             }
         }
 
-        private sealed class EntityComparer:IComparer<TEntity> {
-            public int Compare(TEntity a,TEntity b) {
-                if(a.Depth == b.Depth) {
-                    return a.ID.CompareTo(b.ID); /* FIFO; oldest entity is rendered on the lowest virtual layer.
-                                                  * Perceptually, newer entities are 'closer'. */
-                } else {
-                    return a.Depth.CompareTo(b.Depth);
-                }
-            }
-        }
-
-        private readonly LowMemorySortedSet<TEntity> Entities = new(EntityManager.STARTING_CAPACITY,new EntityComparer());
-        private readonly Queue<RegisteredEntity> EntitiesBuffer = new(EntityManager.STARTING_CAPACITY);
-
-        private void Entity_OnDepthChanged(Entity<TOwner> entity) {
-            Entities.Remove(entity.ID);
-            Entities.Add(entity.ID,(TEntity)entity);
-        }
+        private readonly LowMemorySortedSet<TEntity> Entities;
 
         public EntityManager(TOwner owner) {
             if(owner == null) {
                 throw new ArgumentNullException(nameof(owner));
             }
+            Entities = new(EntityManager.STARTING_CAPACITY,owner.GetEntitySorter());
             owner.OnUnload += Owner_Unload;
             Owner = owner;
+        }
+
+        /// <summary>
+        /// Call when the depth evaluation of entites has substantially changed. E.g., a 3D camera changes positions and your entities are Z sorted.
+        /// </summary>
+        public void RefreshSorting() => Entities.Refresh();
+
+        private readonly Queue<RegisteredEntity> EntitiesBuffer = new(EntityManager.STARTING_CAPACITY);
+
+        private void Entity_OnDepthChanged(Entity<TOwner> entity) {
+            Entities.Remove(entity.ID);
+            Entities.Add(entity.ID,(TEntity)entity);
         }
 
         private int IDCounter = EntityManager.START_ID;
@@ -159,7 +155,7 @@ namespace TwelveEngine.EntitySystem {
             Container.Writer.AddEntity(entity);
             entity.Load();
             Entities.Add(entity.ID,entity);
-            entity.OnDepthChanged += Entity_OnDepthChanged;
+            entity.OnSortedOrderChange += Entity_OnDepthChanged;
             bufferNeedsUpdate = true;
             if(IsIterating) {
                 AdditionQueue.Enqueue(new RegisteredEntity(entity));
@@ -185,7 +181,7 @@ namespace TwelveEngine.EntitySystem {
             }
             Container.Writer.RemoveEntity(entity);
             entity.Unload();
-            entity.OnDepthChanged -= Entity_OnDepthChanged;
+            entity.OnSortedOrderChange -= Entity_OnDepthChanged;
             Entities.Remove(entity.ID);
             bufferNeedsUpdate = true;
         }
@@ -227,9 +223,11 @@ namespace TwelveEngine.EntitySystem {
 
             while(entitiesCopy.TryDequeue(out var entity)) {
                 Container.Writer.RemoveEntity(entity);
-                entity.OnDepthChanged -= Entity_OnDepthChanged;
+                entity.OnSortedOrderChange -= Entity_OnDepthChanged;
                 entity.Unload();
             }
+
+            Entities.Clear();
         }
     }
 }

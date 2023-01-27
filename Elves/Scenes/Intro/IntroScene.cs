@@ -7,7 +7,7 @@ using TwelveEngine.Font;
 using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Intro {
-    public sealed class IntroScene:InputGameState {
+    public sealed class IntroScene:Scene {
 
         public static readonly string[] Text = new string[] {
             "It's been four years since the revolt.",
@@ -36,7 +36,7 @@ namespace Elves.Scenes.Intro {
         }
 
         private void Input_OnCancelDown() {
-            ExitScene(quickExit: true);
+            EndIntro(quickExit: true);
         }
 
         private Song song;
@@ -99,9 +99,7 @@ namespace Elves.Scenes.Intro {
         }
         private bool exiting = false;
 
-        public event Action<bool> OnSceneExit;
-
-        private void ExitScene(bool quickExit = false) {
+        private void EndIntro(bool quickExit = false) {
             if(exiting) {
                 return;
             }
@@ -109,17 +107,17 @@ namespace Elves.Scenes.Intro {
             if(quickExit) {
                 MediaPlayer.Stop();
             }
-            OnSceneExit?.Invoke(quickExit);
+            EndScene(ExitValue.Get(quickExit));
         }
 
         private void IntroScene_OnUpdate() {
-            UpdateInputs();
+            UpdateInputDevices();
             timeline.Update(Now - StartTime);
             if(exiting) {
                 return;
             }
             if(timeline.Stage >= STAGE_FADE_DURATION) {
-                ExitScene(quickExit: false);
+                EndIntro(quickExit: false);
             }
         }
 

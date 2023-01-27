@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Input;
+using System;
 using TwelveEngine.Input;
 
 namespace TwelveEngine.Shell {
@@ -43,11 +44,11 @@ namespace TwelveEngine.Shell {
 
         protected bool InputEnabled {
             get {
-                return Game.IsActive && !IsTransitioning;
+                return Game.IsActive && (!IsTransitioning || TransitionState == TransitionState.In);
             }
         }
 
-        protected void UpdateInputs() {
+        protected void UpdateInputDevices() {
             Mouse.Update(Game.MouseState,InputEnabled,Game.IsActive);
             if(!InputEnabled) {
                 return;

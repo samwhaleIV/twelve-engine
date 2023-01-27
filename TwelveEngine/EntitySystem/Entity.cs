@@ -46,28 +46,8 @@ namespace TwelveEngine.EntitySystem {
 
         protected event Action OnLoad, OnUnload;
 
-        internal event Action<Entity<TOwner>> OnDepthChanged;
-
-        private float depth = 0f;
-
-        protected void FireDepthChanged() => OnDepthChanged?.Invoke(this);
-
-        protected virtual float GetDepth() {
-            return depth;
-        }
-
-        protected virtual void SetDepth(float value) {
-            if(depth == value) {
-                return;
-            }
-            depth = value;
-            OnDepthChanged?.Invoke(this);
-        }
-
-        public float Depth {
-            get => GetDepth();
-            set => SetDepth(value);
-        }
+        internal event Action<Entity<TOwner>> OnSortedOrderChange;
+        protected void NotifySortedOrderChange() => OnSortedOrderChange?.Invoke(this);
 
         internal void Load() {
             IsLoading = true;

@@ -21,6 +21,10 @@ namespace TwelveEngine {
         private readonly Dictionary<int,SaveValue> dataTable;
         public int KeyCount => dataTable.Count;
 
+        private bool _isDirty = false;
+
+        public string Path { get; set; }
+
         public SaveFile() {
             dataTable = new Dictionary<int,SaveValue>();
         }
@@ -38,9 +42,14 @@ namespace TwelveEngine {
 
         public void Clear() {
             dataTable.Clear();
+            _isDirty = true;
         }
 
         public bool TrySave() {
+            if(!_isDirty) {
+                Logger.WriteLine($"Save file \"{Path}\" has not been modified.",LoggerLabel.Save);
+                return true;
+            }
             bool success = false;
             try {
                 using var fs = File.Open(Path,FileMode.Create,FileAccess.Write);
@@ -51,10 +60,9 @@ namespace TwelveEngine {
             } catch(Exception exception) {
                 Logger.WriteLine(exception.ToString());
             }
+            _isDirty = !success;
             return success;
         }
-
-        public string Path { get; set; }
 
         public bool TryLoad() {
             bool success = false;
@@ -78,6 +86,7 @@ namespace TwelveEngine {
                 dataTable.Clear();
                 Logger.WriteLine($"Failure reading save data. Save data was corrupted and has been reset: {exception}",LoggerLabel.Save);
             }
+            _isDirty = false;
             return success;
         }
 
@@ -116,13 +125,14 @@ namespace TwelveEngine {
             for(int i = 0;i<itemCount;i++) {
                 var key = reader.ReadInt32();
                 var valueType = (SaveValueType)reader.ReadInt32();
+
                 dataTable[key] = valueType switch {
                     SaveValueType.String => new SaveValue(valueType,reader.ReadString()),
                     SaveValueType.Int => new SaveValue(valueType,reader.ReadInt32()),
                     SaveValueType.Bool => new SaveValue(valueType,reader.ReadBoolean()),
                     SaveValueType.ByteArray => new SaveValue(valueType,reader.ReadBytes(reader.ReadInt32())),
                     _ => new SaveValue(SaveValueType.Flag,null),
-                }; ;
+                };
             }
         }
 
@@ -154,11 +164,18 @@ namespace TwelveEngine {
         }
 
         public bool TryGetBytes(int key,out byte[] value) {
-            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Bool) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.ByteArray) {
                 value = null;
                 return false;
             }
             value = (byte[])saveValue.Value;
+            return true;
+        }
+
+        public bool HasFlag(int key) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Flag) {
+                return false;
+            }
             return true;
         }
 
@@ -168,33 +185,32 @@ namespace TwelveEngine {
 
         public void RemoveKey(int key) {
             dataTable.Remove(key);
+            _isDirty = true;
         }
 
         public void SetFlag(int key) {
             dataTable[key] = new SaveValue(SaveValueType.Flag,null);
+            _isDirty = true;
         }
 
         public void SetValue(int key,string value) {
             dataTable[key] = new SaveValue(SaveValueType.String,value);
+            _isDirty = true;
         }
 
         public void SetValue(int key,int value) {
             dataTable[key] = new SaveValue(SaveValueType.Int,value);
+            _isDirty = true;
         }
 
         public void SetValue(int key,bool value) {
             dataTable[key] = new SaveValue(SaveValueType.Bool,value);
+            _isDirty = true;
         }
 
         public void SetBytes(int key,byte[] value) {
             dataTable[key] = new SaveValue(SaveValueType.ByteArray,value);
-        }
-
-        public bool HasFlag(int key) {
-            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Bool) {
-                return false;
-            }
-            return true;
+            _isDirty = true;
         }
     }
 }

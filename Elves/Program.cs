@@ -12,20 +12,20 @@ namespace Elves {
         public static GameManager Game { get; private set; }
         public static Textures Textures { get; private set; }
 
-        public static SaveFile SaveFile { get; set; } = null;
-        public static SaveFile GlobalSaveFile { get; private set; } = null;
+        public static SaveFile Save { get; set; } = null;
+        public static SaveFile GlobalSave { get; private set; } = null;
 
-        public static readonly List<SaveFile> SaveFiles = new();
+        public static readonly List<SaveFile> Saves = new();
 
         private static void LoadSaveFiles() {
-            if(SaveFiles.Count > 0) {
+            if(Saves.Count > 0) {
                 throw new InvalidOperationException("Local save files have already been loaded.");
             }
             for(int i = 0;i<3;i++) {
                 SaveFile saveFile = new() {
                     Path = Path.Combine(SaveDirectory,string.Format(Constants.SaveFileFormat,i + 1))
                 };
-                SaveFiles.Add(saveFile);
+                Saves.Add(saveFile);
                 saveFile.TryLoad();
             }
         }
@@ -35,7 +35,7 @@ namespace Elves {
                 Path = Path.Combine(SaveDirectory,Constants.GlobalSaveFile)
             };
             globalSaveFile.TryLoad();
-            GlobalSaveFile = globalSaveFile;
+            GlobalSave = globalSaveFile;
         }
 
         public static string SaveDirectory { get; private set; }
@@ -63,7 +63,7 @@ namespace Elves {
         }
 
         public static void OnGameCrashed() {
-            SaveFile?.TrySave();
+            Save?.TrySave();
         }
 
         private static void AddCursorState(

@@ -24,18 +24,16 @@ namespace Elves.Scenes.SaveSelect {
         public UIScene() {
             Name = "UI Scene";
             OnRender += UIScene_OnRender;
+            OnUpdate += UIScene_OnUpdate;
         }
 
-        protected override void UpdateGame() {
+        private void UIScene_OnUpdate() {
             VectorRectangle viewport = new(Game.Viewport.Bounds);
             UI.Update(Now,viewport);
-            UpdateInputs();
+            UpdateInputDevices();
             UI.UpdateMouseLocation(Mouse.Position);
             UI.Update(Now,viewport); /* Interaction can be delayed by 1 frame if we don't update the UI again */
             Game.CursorState = UI.CursorState;
-            UpdateCameraScreenSize();
-            Entities.Update();
-            UpdateCamera();
         }
 
         private void BindUIEvents(SpriteBook ui) {
@@ -43,7 +41,6 @@ namespace Elves.Scenes.SaveSelect {
             Input.OnCancelDown += ui.CancelDown;
             Mouse.OnPress += ui.MouseDown;
             Input.OnDirectionDown += ui.DirectionDown;
-            Mouse.OnMove += ui.MouseMove;
             Input.OnAcceptUp += ui.AcceptUp;
             Mouse.OnRelease += ui.MouseUp;
         }
@@ -53,7 +50,6 @@ namespace Elves.Scenes.SaveSelect {
             Input.OnCancelDown -= ui.CancelDown;
             Mouse.OnPress -= ui.MouseDown;
             Input.OnDirectionDown -= ui.DirectionDown;
-            Mouse.OnMove -= ui.MouseMove;
             Input.OnAcceptUp -= UI.AcceptUp;
             Mouse.OnRelease -= UI.MouseUp;
         }

@@ -23,21 +23,15 @@ namespace Elves.Scenes.SplashMenu {
             Input.OnAcceptDown += Input_OnAcceptDown;
         }
 
-        public event Action OnSceneExit;
-
-        private void ExitScene() {
-            OnSceneExit?.Invoke();
-        }
-
         private void Input_OnAcceptDown() {
-            ExitScene();
+            EndScene(ExitValue.None);
         }
 
         private void Mouse_OnPress() {
             if(!playButton.Area.Contains(Mouse.Position)) {
                 return;
             }
-            ExitScene();
+            EndScene(ExitValue.None);
         }
 
         private Screenspace3DSprite fallingElf;

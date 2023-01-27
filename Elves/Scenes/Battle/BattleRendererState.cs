@@ -3,7 +3,7 @@ using TwelveEngine;
 using Elves.Scenes.Battle.UI;
 
 namespace Elves.Scenes.Battle {
-    public abstract class BattleRendererState:Scene {
+    public abstract class BattleRendererState:Scene3D {
 
         private readonly string backgroundTexture;
 

@@ -1,16 +1,22 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game3D.Entity;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game3D {
-    public class GameState3D:InputGameState {
+    public class GameState3D:InputGameState,IEntitySorter<Entity3D,GameState3D> {
 
         public GraphicsDevice GraphicsDevice => Game.GraphicsDevice;
 
-        public GameState3D() {
+        private readonly EntitySortMode entitySortMode;
+
+        public GameState3D(EntitySortMode entitySortMode) {
+            this.entitySortMode = entitySortMode;
+
             OnLoad += GameState3D_OnLoad;
             OnUpdate += UpdateGame;
             OnWriteDebug += GameState3D_OnWriteDebug;
@@ -59,10 +65,21 @@ namespace TwelveEngine.Game3D {
             _camera?.Update();
         }
 
-        protected virtual void UpdateGame() {
-            UpdateInputs();
-            UpdateCameraScreenSize();
+        protected void UpdateEntities() {
+            if(entitySortMode == EntitySortMode.CameraRelative) {
+                UpdateCamera();
+                if(ViewMatrixUpdated) {
+                    Entities.RefreshSorting();
+                }
+            }
             Entities.Update();
+        }
+
+        protected virtual void UpdateGame() {
+            /* Execution order is important. But sometimes it's important to do it yourself. */
+            UpdateInputDevices();
+            UpdateCameraScreenSize();
+            UpdateEntities();
             UpdateCamera();
         }
 
@@ -117,5 +134,48 @@ namespace TwelveEngine.Game3D {
             graphicsDevice.BlendFactor = Color.White;
             Game.GraphicsDevice.Clear(ClearColor);
         }
+
+        public static int CameraFixedSort(Entity3D a,Entity3D b) {
+            return a.Depth == b.Depth ? a.ID.CompareTo(b.ID) : a.Depth.CompareTo(b.Depth);
+        }
+
+        public sealed class CameraFixedSorter:IComparer<Entity3D> {
+            /* If the depth is the same fallback to ID sorting.
+             * Oldest entity is rendered on the lowest virtual layer.
+             * Perceptually, newer entities are 'closer'. */
+            public int Compare(Entity3D a,Entity3D b) => CameraFixedSort(a,b);
+        }
+
+        public sealed class CameraRelativeSorter:IComparer<Entity3D> {
+
+            private readonly GameState3D gameState;
+            public CameraRelativeSorter(GameState3D gameState) => this.gameState = gameState;
+
+            public int Compare(Entity3D entityA,Entity3D entityB) {
+
+                Camera3D camera = gameState.Camera;
+                if(camera is null) {
+                    return CameraFixedSort(entityA,entityB);
+                }
+
+                Vector3 forward = camera.ViewMatrix.Forward;
+
+                float aDot = Vector3.Dot(forward,camera.Position - entityA.Position);
+                float bDot = Vector3.Dot(forward,camera.Position - entityB.Position);
+
+                if(aDot == bDot) {
+                    return entityA.ID.CompareTo(entityB.ID);
+                }
+
+                return aDot.CompareTo(bDot);
+            }
+        }
+
+        public IComparer<Entity3D> GetEntitySorter() => entitySortMode switch {         
+            EntitySortMode.CreationOrder => new IEntitySorter<Entity3D,GameState3D>.DefaultComparison(),
+            EntitySortMode.CameraFixed => new CameraFixedSorter(),
+            EntitySortMode.CameraRelative => new CameraRelativeSorter(this),
+            _ => throw new NotImplementedException()
+        };
     }
 }
