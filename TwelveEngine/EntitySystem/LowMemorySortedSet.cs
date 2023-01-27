@@ -123,16 +123,34 @@ namespace TwelveEngine.EntitySystem {
         public void Clear() {
             lookupTable.Clear();
             for(int i = 0;i<list.Length;i++) {
-                list[i] = default(T);
+                list[i] = default;
                 idList[i] = NO_ID;
             }
         }
+
+        private readonly Queue<(int ID,T Value)> refreshBuffer = new();
 
         /// <summary>
         /// Empty the sorted set then reorder them.
         /// </summary>
         public void Refresh() {
-            throw new NotImplementedException();
+            /* Bleeeeeeeh. I think I just threw up in my mouth */
+            int itemCount = Count;
+
+            for(int i = 0;i < itemCount;i++) {
+                int ID = idList[i];
+                list[i] = default;
+                idList[i] = NO_ID;
+                if(ID == NO_ID) {
+                    continue;
+                }
+                lookupTable.Remove(ID,out var item);
+                refreshBuffer.Enqueue((ID,item.Value));
+            }
+
+            while(refreshBuffer.TryDequeue(out var item)) {
+                Add(item.ID,item.Value);
+            }
         }
     }
 }

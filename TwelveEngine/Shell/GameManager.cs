@@ -395,7 +395,17 @@ namespace TwelveEngine.Shell {
             return elapsed;
         }
 
+        /// <summary>
+        /// Why does this exist? MonoGame calls a duplicate first update call.
+        /// <see href="https://github.com/MonoGame/MonoGame/blob/2fa596123f834f322be19811d97fe6c20616d570/MonoGame.Framework/Game.cs#L489"/>
+        /// </summary>
+        private bool didUpdateFirstFrame = false;
+
         protected override void Update(GameTime gameTime) {
+            if(!didUpdateFirstFrame) {
+                didUpdateFirstFrame = true;
+                return;
+            }
             updating = true;
             watch.Start();
             if(!HasGameState) {

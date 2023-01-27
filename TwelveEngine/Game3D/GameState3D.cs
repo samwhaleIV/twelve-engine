@@ -76,6 +76,7 @@ namespace TwelveEngine.Game3D {
             /* Execution order is important. But sometimes it's important to do it yourself. */
             UpdateInputDevices();
             UpdateCameraScreenSize();
+            UpdateCamera();
             UpdateEntities();
             UpdateCamera();
         }
@@ -132,17 +133,46 @@ namespace TwelveEngine.Game3D {
             Game.GraphicsDevice.Clear(ClearColor);
         }
 
-        public sealed class FixedCameraComparison:IComparer<Entity3D> {
-            /* If the depth is the same fall to ID sorting.
+        public static int CameraFixedSort(Entity3D a,Entity3D b) {
+            return a.Depth == b.Depth ? a.ID.CompareTo(b.ID) : a.Depth.CompareTo(b.Depth);
+        }
+
+        public sealed class CameraFixedSorter:IComparer<Entity3D> {
+            /* If the depth is the same fallback to ID sorting.
              * Oldest entity is rendered on the lowest virtual layer.
              * Perceptually, newer entities are 'closer'. */
-            public int Compare(Entity3D a,Entity3D b) => a.Depth == b.Depth ? a.ID.CompareTo(b.ID) : a.Depth.CompareTo(b.Depth);
+            public int Compare(Entity3D a,Entity3D b) => CameraFixedSort(a,b);
+        }
+
+        public sealed class CameraRelativeSorter:IComparer<Entity3D> {
+
+            private readonly GameState3D gameState;
+            public CameraRelativeSorter(GameState3D gameState) => this.gameState = gameState;
+
+            public int Compare(Entity3D entityA,Entity3D entityB) {
+
+                Camera3D camera = gameState.Camera;
+                if(camera is null) {
+                    return CameraFixedSort(entityA,entityB);
+                }
+
+                Vector3 forward = camera.ViewMatrix.Forward;
+
+                float aDot = Vector3.Dot(forward,camera.Position - entityA.Position);
+                float bDot = Vector3.Dot(forward,camera.Position - entityB.Position);
+
+                if(aDot == bDot) {
+                    return entityA.ID.CompareTo(entityB.ID);
+                }
+
+                return aDot.CompareTo(bDot);
+            }
         }
 
         public IComparer<Entity3D> GetEntitySorter() => entitySortMode switch {         
             EntitySortMode.CreationOrder => new IEntitySorter<Entity3D,GameState3D>.DefaultComparison(),
-            EntitySortMode.CameraFixed => new FixedCameraComparison(),
-            EntitySortMode.CameraRelative => throw new NotImplementedException(),
+            EntitySortMode.CameraFixed => new CameraFixedSorter(),
+            EntitySortMode.CameraRelative => new CameraRelativeSorter(this),
             _ => throw new NotImplementedException()
         };
     }
