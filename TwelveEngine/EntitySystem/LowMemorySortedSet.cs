@@ -116,5 +116,19 @@ namespace TwelveEngine.EntitySystem {
             }
             lookupTable.Remove(ID);
         }
+
+        /// <summary>
+        /// Remove all entities from the sorted set.
+        /// </summary>
+        public void Clear() {
+
+        }
+
+        /// <summary>
+        /// Empty the sorted set then reorder them.
+        /// </summary>
+        public void Refresh() {
+
+        }
     }
 }

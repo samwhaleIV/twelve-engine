@@ -3,7 +3,6 @@ using TwelveEngine.Game3D.Entity.Types;
 using TwelveEngine.Game3D;
 using TwelveEngine;
 using System;
-using TwelveEngine.Shell;
 
 namespace Elves.Scenes {
     public abstract class Scene3D:GameState3D, IScene<Scene3D> {
@@ -13,7 +12,7 @@ namespace Elves.Scenes {
 
         protected bool Debug { get; private set; } = Flags.Get(Constants.Flags.Debug);
 
-        public Scene3D() {
+        public Scene3D():base(EntitySortMode.CameraFixed) {
             Name = "3D Scene";
 
             OnRender += RenderEntities;

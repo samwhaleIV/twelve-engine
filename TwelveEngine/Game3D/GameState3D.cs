@@ -1,16 +1,22 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Game3D.Entity;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game3D {
-    public class GameState3D:InputGameState {
+    public class GameState3D:InputGameState,IEntitySorter<Entity3D,GameState3D> {
 
         public GraphicsDevice GraphicsDevice => Game.GraphicsDevice;
 
-        public GameState3D() {
+        private readonly EntitySortMode entitySortMode;
+
+        public GameState3D(EntitySortMode entitySortMode) {
+            this.entitySortMode = entitySortMode;
+
             OnLoad += GameState3D_OnLoad;
             OnUpdate += UpdateGame;
             OnWriteDebug += GameState3D_OnWriteDebug;
@@ -117,5 +123,20 @@ namespace TwelveEngine.Game3D {
             graphicsDevice.BlendFactor = Color.White;
             Game.GraphicsDevice.Clear(ClearColor);
         }
+
+
+        public sealed class FixedCameraComparison:IComparer<Entity3D> {
+            /* If the depth is the same fall to ID sorting.
+             * Oldest entity is rendered on the lowest virtual layer.
+             * Perceptually, newer entities are 'closer'. */
+            public int Compare(Entity3D a,Entity3D b) => a.Depth == b.Depth ? a.ID.CompareTo(b.ID) : a.Depth.CompareTo(b.Depth);
+        }
+
+        public IComparer<Entity3D> GetEntitySorter() => entitySortMode switch {
+            EntitySortMode.CreationOrder => new IEntitySorter<Entity3D,GameState3D>.DefaultComparison(),
+            EntitySortMode.CameraFixed => new FixedCameraComparison(),
+            EntitySortMode.CameraRelative => throw new NotImplementedException(),
+            _ => throw new NotImplementedException()
+        };
     }
 }
