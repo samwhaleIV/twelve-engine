@@ -7,7 +7,7 @@ using Elves.Scenes.Battle.Sprite;
 using Elves.Scenes.Battle.Sprite.Animation;
 
 namespace Elves.Scenes.Battle {
-    public abstract class Script {
+    public abstract class BattleScript {
         public abstract Task<BattleResult> Main();
 
         private BattleSequencer _sequencer;

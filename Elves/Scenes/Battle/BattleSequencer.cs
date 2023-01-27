@@ -9,32 +9,30 @@ using Elves.Scenes.Battle.Sprite;
 namespace Elves.Scenes.Battle {
     public class BattleSequencer:BattleRendererState {
          
-        private readonly Script _script;
-        public Script Script => _script;
+        private readonly BattleScript _script;
+        public BattleScript Script => _script;
 
-        public Action<BattleResult> OnBattleFinished;
-
-        public BattleSequencer(Script script,string background) : base(background) {
+        public BattleSequencer(BattleScript script,string background) : base(background) {
             _script = script;
             _script.SetSequencer(this);
             OnLoad += BattleSequencer_OnLoad;
         }
 
-        public BattleSequencer(Script script,Texture2D background) : base(background) {
+        public BattleSequencer(BattleScript script,Texture2D background) : base(background) {
             _script = script;
             _script.SetSequencer(this);
             OnLoad += BattleSequencer_OnLoad;
         }
 
-        public BattleSequencer(Script script) : base() {
+        public BattleSequencer(BattleScript script) : base() {
             _script = script;
             _script.SetSequencer(this);
             OnLoad += BattleSequencer_OnLoad;
         }
 
         private async void BattleSequencer_OnLoad() {
-            var battleResult = await _script.Main();
-            OnBattleFinished?.Invoke(battleResult);
+            BattleResult battleResult = await _script.Main();
+            EndScene(ExitValue.Get(battleResult));
         }
 
         private TaskCompletionSource<int> buttonTask;

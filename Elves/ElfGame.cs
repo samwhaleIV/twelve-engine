@@ -5,9 +5,16 @@ using Elves.Scenes.Intro;
 using Elves.Scenes.SaveSelect;
 using Elves.Scenes.SplashMenu;
 using Elves.Scenes;
+using Elves.Scenes.Battle;
+using static Elves.Constants;
+using static Elves.Scenes.Battle.BattleDictionary;
+using Elves.Scenes.Battle.Battles;
 
 namespace Elves {
     public static class ElfGame {
+
+        private static readonly TimeSpan TransitionDuration = AnimationTiming.TransitionDuration;
+        static ElfGame() => AddBattles();
 
         /// <summary>
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
@@ -16,7 +23,7 @@ namespace Elves {
         public static GameState Start() => GetSplashMenu();
 
         /* Christ almighty... */
-        private static TBase GetScene<TBase,TSuper>(Action<TBase,ExitValue> onSceneEnd) where TBase:GameState, IScene<TBase> where TSuper:TBase, new() {
+        private static TBase GetScene<TBase, TSuper>(Action<TBase,ExitValue> onSceneEnd) where TBase : GameState, IScene<TBase> where TSuper : TBase, new() {
             TSuper state = new();
             state.OnSceneEnd += onSceneEnd;
             return state;
@@ -39,8 +46,11 @@ namespace Elves {
             Program.Save = Program.Saves[data.SaveID];
             scene.TransitionOut(new() {
                 Generator = GetStartSceneForSave,
-                Data = new() { Flags = StateFlags.ForceGC | StateFlags.FadeIn },
-                Duration = Constants.AnimationTiming.TransitionDuration
+                Data = new() {
+                    Flags = StateFlags.ForceGC | StateFlags.FadeIn,
+                    TransitionDuration = TransitionDuration
+                },
+                Duration = TransitionDuration
             });
         }
 
@@ -51,21 +61,39 @@ namespace Elves {
                     Program.Save.TrySave();
                     return GetCarouselMenu();
                 },
-                Data = StateData.FadeIn(Constants.AnimationTiming.TransitionDuration),
-                Duration = data.QuickExit ? Constants.AnimationTiming.QuickTransition : Constants.AnimationTiming.IntroFadeOutDuration,
+                Data = StateData.FadeIn(TransitionDuration),
+                Duration = data.QuickExit ? AnimationTiming.QuickTransition : AnimationTiming.IntroFadeOutDuration,
             });
         }
 
-        private static void SplashSceneExit(Scene3D scene,ExitValue data) {
-            scene.TransitionOut(new() {
-                Generator = GetSaveSelectScene,
-                Data = StateData.FadeIn(Constants.AnimationTiming.TransitionDuration),
-                Duration = Constants.AnimationTiming.TransitionDuration
-            });
+        private static void SplashSceneExit(Scene3D scene,ExitValue data) => scene.TransitionOut(new() {
+            Generator = GetSaveSelectScene,
+            Data = StateData.FadeIn(TransitionDuration),
+            Duration = TransitionDuration
+        });
+
+        private static GameState GetBattleScene(BattleID battleID) {
+            var battleSequencer = new BattleSequencer(CreateScript(battleID));
+            battleSequencer.OnSceneEnd += BattleSequencer_OnSceneEnd;
+            return battleSequencer;
+        }
+
+        private static void BattleSequencer_OnSceneEnd(Scene3D scene,ExitValue data) {
+            throw new NotImplementedException();
         }
 
         private static void CarouselMenuExit(Scene3D scene,ExitValue data) {
-            throw new NotImplementedException();
+            BattleID battleID = data.battleID;
+            scene.TransitionOut(new TransitionData() {
+                Generator = () => GetBattleScene(battleID),
+                Data = StateData.FadeIn(TransitionDuration),
+                Duration = TransitionDuration
+            });               
+        }
+
+        private static void AddBattles() {
+            AddBattle<DebugBattle>(BattleID.Debug);
+
         }
     }
 }

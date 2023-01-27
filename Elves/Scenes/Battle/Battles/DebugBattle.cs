@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Elves.Scenes.Battle.Sprite.Animation;
 
 namespace Elves.Scenes.Battle.Battles {
-    public class DebugBattle:Script {
+    public class DebugBattle:BattleScript {
         public override async Task<BattleResult> Main() {
             CreatePlayer();
             CreateActor(new HarmlessElf());

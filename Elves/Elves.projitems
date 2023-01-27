@@ -15,8 +15,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)SaveKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleSequencer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleDictionary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Battles\DebugBattle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Script.cs" />
+    <Compile Include="..\Elves\Scenes\Battle\BattleScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\BattleScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselMenu.cs" />

@@ -1,4 +1,7 @@
-﻿namespace Elves.Scenes {
+﻿using Elves.Scenes.Battle;
+using Elves.Scenes.Battle.Battles;
+
+namespace Elves.Scenes {
     /// <summary>
     /// This struct is an over-engineering of an integer. It's for context awareness and more meaingful metadata when routing events with <c>Action</c>.
     /// </summary>
@@ -14,6 +17,9 @@
         public static ExitValue Get(int integer) => new(integer);
         public static ExitValue Get(bool flag) => new(flag ? FLAGGED_VALUE : DEFAULT_VALUE);
 
+        public static ExitValue Get(BattleResult battleResult) => new((int)battleResult);
+        public static ExitValue Get(BattleID battleID) => new((int)battleID);
+
         /// <summary>
         /// An untyped, generic integer. Useful for lots of exit parameters! Indices, success codes, a quantity of nuclear bombs, etc.
         /// </summary>
@@ -21,11 +27,13 @@
 
         public readonly int Index => _value;
         public readonly int Count => _value;
-        public readonly int ElfIndex => _value;
         public readonly int Value => _value;
         public readonly int SaveID => _value;
 
         public readonly bool IsFlagged => _value != 0;
         public readonly bool QuickExit => IsFlagged;
+
+        public readonly BattleResult BattleResult => (BattleResult)_value;
+        public readonly BattleID battleID => (BattleID)_value;
     }
 }
