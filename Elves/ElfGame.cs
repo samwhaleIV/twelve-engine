@@ -4,6 +4,7 @@ using Elves.Scenes.Carousel;
 using Elves.Scenes.Intro;
 using Elves.Scenes.SaveSelect;
 using Elves.Scenes.SplashMenu;
+using Elves.Scenes;
 
 namespace Elves {
     public static class ElfGame {
@@ -12,44 +13,19 @@ namespace Elves {
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
         /// </summary>
         /// <returns>The start state for the game.</returns>
-        public static GameState Start() {
-            Program.Game.OnStateLoaded += Game_OnStateLoaded;
-            return GetSplashMenu();
+        public static GameState Start() => GetSplashMenu();
+
+        /* Christ almighty... */
+        private static TBase GetScene<TBase,TSuper>(Action<TBase,ExitValue> onSceneEnd) where TBase:GameState, IScene<TBase> where TSuper:TBase, new() {
+            TSuper state = new();
+            state.OnSceneEnd += onSceneEnd;
+            return state;
         }
 
-        private static void Game_OnStateLoaded(GameState state) {
-            if(!state.FadeInIsFlagged) {
-                return;
-            }
-            state.TransitionIn(Constants.AnimationTiming.TransitionDuration);
-        }
-
-        private static GameState State => Program.Game.State;
-
-        private static GameState GetSplashMenu() {
-            var scene = new SplashMenuState();
-            scene.OnSceneExit += SplashMenu_OnSceneExit;
-            return scene;
-        }
-
-        private static GameState GetSaveSelectScene() {
-            var scene = new SaveSelectScene();
-            scene.OnSceneExit += SaveSelect_OnSceneExit;
-            return scene;
-        }
-
-        private static GameState GetCarouselMenu() {
-            var scene = new CarouselMenu();
-            scene.OnStartElfBattle += CarouselMenu_OnStartElfBattle;
-            return scene;
-        }
-
-        private static GameState GetIntroScene() {
-            var scene = new IntroScene();
-            scene.OnSceneExit += IntroScene_OnSceneEnd;
-            return scene;
-        }
-
+        private static GameState GetSplashMenu() => GetScene<Scene3D,SplashMenuState>(SplashSceneExit);
+        private static GameState GetSaveSelectScene() => GetScene<Scene,SaveSelectScene>(SaveSelectExit);
+        private static GameState GetCarouselMenu() => GetScene<Scene3D,CarouselMenu>(CarouselMenuExit);
+        private static GameState GetIntroScene() => GetScene<Scene,IntroScene>(IntroExit);
 
         private static GameState GetStartSceneForSave() {
             if(Program.Save.HasFlag(SaveKeys.PlayedIntro)) {
@@ -59,8 +35,8 @@ namespace Elves {
             }
         }
 
-        private static void SaveSelect_OnSceneExit(SaveSelectScene scene,int saveID) {
-            Program.Save = Program.Saves[saveID];
+        private static void SaveSelectExit(Scene scene,ExitValue data) {
+            Program.Save = Program.Saves[data.SaveID];
             scene.TransitionOut(new() {
                 Generator = GetStartSceneForSave,
                 Data = new() { Flags = StateFlags.ForceGC | StateFlags.FadeIn },
@@ -68,27 +44,27 @@ namespace Elves {
             });
         }
 
-        private static void IntroScene_OnSceneEnd(bool quickExit) {
+        private static void IntroExit(Scene scene,ExitValue data) {
             Program.Save.SetFlag(SaveKeys.PlayedIntro);
-            State.TransitionOut(new() {
+            scene.TransitionOut(new() {
                 Generator = () => {
                     Program.Save.TrySave();
                     return GetCarouselMenu();
                 },
-                Data = StateData.FadeIn,
-                Duration = quickExit ? Constants.AnimationTiming.QuickTransition : Constants.AnimationTiming.IntroFadeOutDuration,
+                Data = StateData.FadeIn(Constants.AnimationTiming.TransitionDuration),
+                Duration = data.QuickExit ? Constants.AnimationTiming.QuickTransition : Constants.AnimationTiming.IntroFadeOutDuration,
             });
         }
 
-        private static void SplashMenu_OnSceneExit() {
-            State.TransitionOut(new() {
+        private static void SplashSceneExit(Scene3D scene,ExitValue data) {
+            scene.TransitionOut(new() {
                 Generator = GetSaveSelectScene,
-                Data = StateData.FadeIn,
+                Data = StateData.FadeIn(Constants.AnimationTiming.TransitionDuration),
                 Duration = Constants.AnimationTiming.TransitionDuration
             });
         }
 
-        private static void CarouselMenu_OnStartElfBattle(int elfID) {
+        private static void CarouselMenuExit(Scene3D scene,ExitValue data) {
             throw new NotImplementedException();
         }
     }

@@ -8,7 +8,7 @@ using TwelveEngine.Input;
 
 namespace Elves.Scenes.Carousel {
 
-    public sealed class CarouselMenu:Scene {
+    public sealed class CarouselMenu:Scene3D {
 
         private const float BACKGROUND_SCALE = 3f;
         private const float FIELD_OF_VIEW = 40f;
@@ -27,8 +27,6 @@ namespace Elves.Scenes.Carousel {
         };
 
         //TODO: accept a timeline list, UI buttons (duh), launch battles and settings
-
-        public event Action<int> OnStartElfBattle; //todo: use me
 
         public CarouselMenu() {
             Name = "Carousel Menu";

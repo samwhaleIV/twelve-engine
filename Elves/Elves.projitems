@@ -23,10 +23,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\IScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Depth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DVDCornerTest.cs" />
     <Compile Include="..\Elves\Scenes\SaveSelect\SaveSelectPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\Tag.cs" />
@@ -36,7 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DrawingFrameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\ScrollingBackgroundTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Scene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Scene3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\FloatingItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\Animation\AnimationFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\Animation\AnimationMode.cs" />

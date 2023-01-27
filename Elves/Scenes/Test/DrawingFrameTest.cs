@@ -9,7 +9,14 @@ namespace Elves.Scenes.Test {
             OnLoad += DrawingFrameTest_OnLoad;
             OnUnload += DrawingFrameTest_OnUnload;
             OnRender += DrawingFrameTest_OnRender;
+            OnUpdate += DrawingFrameTest_OnUpdate;
             ClearColor = Color.DarkGray;
+        }
+
+        private void DrawingFrameTest_OnUpdate() {
+            UpdateFrameDestination();
+            UpdateInputs();
+            ProcessMouseDrawing();
         }
 
         private Rectangle frameDestination;
@@ -20,15 +27,6 @@ namespace Elves.Scenes.Test {
             Vector2 drawingFrameSize = drawingFrame.Size * scale;
             Vector2 origin = bounds.Center - drawingFrameSize * 0.5f;
             frameDestination = new Rectangle((int)origin.X,(int)origin.Y,(int)drawingFrameSize.X,(int)drawingFrameSize.Y);
-        }
-
-        protected override void UpdateGame() {
-            UpdateFrameDestination();
-            UpdateInputs();
-            ProcessMouseDrawing();
-            UpdateCameraScreenSize();
-            Entities.Update();
-            UpdateCamera();
         }
 
         private void ProcessMouseDrawing() {

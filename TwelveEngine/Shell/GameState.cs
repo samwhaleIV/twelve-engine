@@ -78,12 +78,21 @@ namespace TwelveEngine.Shell {
 
         public string Name { get; set; } = string.Empty;
 
+        private void TryTransitionIn() {
+            if(!FadeInIsFlagged) {
+                return;
+            }
+            TransitionIn(Data.TransitionDuration);
+        }
+
         internal void Load(GameManager game) {
             IsLoading = true;
             Game = game;
             OnLoad?.Invoke();
             IsLoaded = true;
             IsLoading = false;
+
+            TryTransitionIn();
         }
 
         internal void Unload() {
@@ -175,7 +184,7 @@ namespace TwelveEngine.Shell {
             transitionOutData = transitionData;
         }
 
-        public void TransitionIn(TimeSpan duration) {
+        private void TransitionIn(TimeSpan duration) {
             TransitionState = TransitionState.In;
             transitionDuration = duration;
             transitionOutData = null;
@@ -190,6 +199,5 @@ namespace TwelveEngine.Shell {
             graphicsDevice.BlendFactor = Color.White;
             Game.GraphicsDevice.Clear(ClearColor);
         }
-
     }
 }
