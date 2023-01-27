@@ -7,6 +7,12 @@ using TwelveEngine.Shell;
 namespace TwelveEngine.UI {
     public abstract class Book<TElement> where TElement:Element {
 
+        /* This property is heavily reliant on the context of the engine itself. */
+        /// <summary>
+        /// A proprety that determines if the last input event was from the mouse or a keyboard/gamepad. True if from mouse, false is from keyboard/gamepad.
+        /// </summary>
+        private static bool LastEventWasFromMouse => GameManager.LastInputEventWasFromMouse;
+
         public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
         public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(300);
 
@@ -31,7 +37,7 @@ namespace TwelveEngine.UI {
         /// </summary>
         private bool _elementsAreLocked = true;
 
-        private bool _keyboardIsPressingElement = false, _lastEventWasFromKeyboard = false;
+        private bool _keyboardIsPressingElement = false;
         private Element _selectedElement = null, _pressedElement = null, _hiddenMouseHoverElement = null;
 
         /// <summary>
@@ -70,11 +76,6 @@ namespace TwelveEngine.UI {
 
             _defaultFocusElement = newPage.Open();
 
-            if(oldPage is null) {
-                /* If this is the first page we are loading just assume the last event was from the keyboard so we can get a default focus element right away. */
-                _lastEventWasFromKeyboard = true;
-            }
-
             Page = newPage;
         }
 
@@ -97,7 +98,7 @@ namespace TwelveEngine.UI {
             }
             if(_defaultFocusElement is null) {
                 Logger.WriteLine($"UI page has been opened without a default keyboard focus element!",LoggerLabel.UI);
-            } else if(_lastEventWasFromKeyboard) {
+            } else if(!LastEventWasFromMouse) {
                 SelectedElement = GetLastSelectedOrDefault();
             }
             _elementsAreLocked = false;
@@ -147,7 +148,7 @@ namespace TwelveEngine.UI {
         }
 
         private Element GetLastSelectedOrDefault() {
-            return _lastSelectedElement ?? _defaultFocusElement ?? null;
+            return _lastSelectedElement ?? _defaultFocusElement;
         }
 
         /// <summary>
@@ -188,7 +189,7 @@ namespace TwelveEngine.UI {
         /// Clear the interaction state when you modify a page's UI but do not set a new page.
         /// </summary>
         public void ResetInteractionState(Element newSelectedElement = null) {
-            if(_lastEventWasFromKeyboard) {
+            if(!LastEventWasFromMouse) {
                 SelectedElement = newSelectedElement;
             } else {
                 SelectedElement = null;
@@ -218,7 +219,7 @@ namespace TwelveEngine.UI {
             _hiddenMouseHoverElement = hoverElement;
 
             /* Yes, this one is a little dense... but realtime, multi-input UI logic is complex, okay? */
-            if(_lastEventWasFromKeyboard || (SelectedElement is not null || hoverElement is null) && PressedElement is not null) {
+            if(!LastEventWasFromMouse || (SelectedElement is not null || hoverElement is null) && PressedElement is not null) {
                 return;
             }
 
@@ -233,15 +234,7 @@ namespace TwelveEngine.UI {
             UpdateHoveredElement(location);
         }
 
-        /// <summary>
-        /// Call this when the mouse position differs from the previous position.
-        /// </summary>
-        public void MouseMove() {
-            _lastEventWasFromKeyboard = false;
-        }
-
         public void MouseDown() {
-            _lastEventWasFromKeyboard = false;
             if(PressedElement is not null || SelectedElement is null) {
                 return;
             }
@@ -259,7 +252,6 @@ namespace TwelveEngine.UI {
         /// A button, such as the enter button, has been pressed. Fire once per keystroke.
         /// </summary>
         public void AcceptDown() {
-            _lastEventWasFromKeyboard = true;
             if(PressedElement is not null) {
                 return;
             }
@@ -276,7 +268,6 @@ namespace TwelveEngine.UI {
         /// </summary>
         /// <param name="direction">The direction representing the button that was pressed.</param>
         public void DirectionDown(Direction direction) {
-            _lastEventWasFromKeyboard = true;
             if(PressedElement is not null) {
                 return;
             }
@@ -304,7 +295,6 @@ namespace TwelveEngine.UI {
         /// A button, such as enter, has been released. Fire after <c>AcceptDown</c>.
         /// </summary>
         public void AcceptUp() {
-            _lastEventWasFromKeyboard = true;
             if(PressedElement is null) {
                 return;
             }
@@ -317,7 +307,6 @@ namespace TwelveEngine.UI {
         /// Fire when the mouse button has been released.
         /// </summary>
         public void MouseUp() {
-            _lastEventWasFromKeyboard = false;
             if(_keyboardIsPressingElement || PressedElement is null) {
                 return;
             }
@@ -332,7 +321,6 @@ namespace TwelveEngine.UI {
         /// A way to implement a keyboard/gamepad back button. Not all pages need to have a back method.
         /// </summary>
         public void CancelDown() {
-            _lastEventWasFromKeyboard = true;
             if(PressedElement is not null) {
                 return;
             }
@@ -344,7 +332,7 @@ namespace TwelveEngine.UI {
         /// </summary>
         /// <returns>The cursor state. <c>CursorState.Default</c> if the last event was from a keyboard/gamepad.</returns>
         private CursorState GetCursorState() {
-            if(_lastEventWasFromKeyboard) {
+            if(!LastEventWasFromMouse || _keyboardIsPressingElement) {
                 return CursorState.Default;
             } else if(PressedElement is not null) {
                 return PressedElement == _hiddenMouseHoverElement ? CursorState.Pressed : CursorState.Default;

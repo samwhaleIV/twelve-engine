@@ -41,7 +41,6 @@ namespace Elves.Scenes.SaveSelect {
             Input.OnCancelDown += ui.CancelDown;
             Mouse.OnPress += ui.MouseDown;
             Input.OnDirectionDown += ui.DirectionDown;
-            Mouse.OnMove += ui.MouseMove;
             Input.OnAcceptUp += ui.AcceptUp;
             Mouse.OnRelease += ui.MouseUp;
         }
@@ -51,7 +50,6 @@ namespace Elves.Scenes.SaveSelect {
             Input.OnCancelDown -= ui.CancelDown;
             Mouse.OnPress -= ui.MouseDown;
             Input.OnDirectionDown -= ui.DirectionDown;
-            Mouse.OnMove -= ui.MouseMove;
             Input.OnAcceptUp -= UI.AcceptUp;
             Mouse.OnRelease -= UI.MouseUp;
         }

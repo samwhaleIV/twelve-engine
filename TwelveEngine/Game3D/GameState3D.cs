@@ -66,8 +66,11 @@ namespace TwelveEngine.Game3D {
         }
 
         protected void UpdateEntities() {
-            if(ViewMatrixUpdated && entitySortMode == EntitySortMode.CameraRelative) {
-                Entities.RefreshSorting();
+            if(entitySortMode == EntitySortMode.CameraRelative) {
+                UpdateCamera();
+                if(ViewMatrixUpdated) {
+                    Entities.RefreshSorting();
+                }
             }
             Entities.Update();
         }
@@ -76,7 +79,6 @@ namespace TwelveEngine.Game3D {
             /* Execution order is important. But sometimes it's important to do it yourself. */
             UpdateInputDevices();
             UpdateCameraScreenSize();
-            UpdateCamera();
             UpdateEntities();
             UpdateCamera();
         }

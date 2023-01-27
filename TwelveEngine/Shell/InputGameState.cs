@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Input;
+using System;
 using TwelveEngine.Input;
 
 namespace TwelveEngine.Shell {

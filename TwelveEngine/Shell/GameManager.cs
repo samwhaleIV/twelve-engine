@@ -328,6 +328,37 @@ namespace TwelveEngine.Shell {
             }
         }
 
+        public static KeyboardState LastKeyboardState { get; private set; }
+        public static MouseState LastMouseState { get; private set; }
+        public static GamePadState LastGamePadState { get; private set; }
+
+        /* A little bit expensive... but powerful. */
+        private void UpdateInputStateCache() {
+
+            /* States are filtered by the automation agent. State cannot be changed while the game is paused or waiting. */
+            MouseState mouseState = GetMouseState();
+            KeyboardState keyboardState = GetKeyboardState();
+            GamePadState gamePadState = GetGamepadState();
+
+            /* Priority for keyboard or gamepad events, even if the mouse data changed in the same frame. */
+            if(IsActive && mouseState != LastMouseState) {
+                LastInputEventWasFromMouse = true;
+            }
+            if(IsActive && keyboardState != LastKeyboardState || gamePadState != LastGamePadState) {
+                LastInputEventWasFromMouse = false;
+            }
+
+            LastMouseState = mouseState;
+            LastKeyboardState = keyboardState;
+            LastGamePadState = gamePadState;
+
+            KeyboardState = keyboardState;
+            MouseState = mouseState;
+            GamePadState = gamePadState;
+        }
+
+        public static bool LastInputEventWasFromMouse { get; private set; } = false;
+
         private void UpdateGame(GameTime trueGameTime) {
             proxyGameTime.Update(trueGameTime);
             automationAgent.StartUpdate();
@@ -339,10 +370,7 @@ namespace TwelveEngine.Shell {
                 automationAgent.UpdateRecordingFrame(proxyGameTime);
             }
 
-            KeyboardState = GetKeyboardState();
-            MouseState = GetMouseState();
-            GamePadState = GetGamepadState();
-
+            UpdateInputStateCache();
             _gameState.Update();
 
             automationAgent.EndUpdate();

@@ -26,6 +26,7 @@ namespace Elves.Scenes.SaveSelect {
                 TextureSource = new(0,0,174,40),
                 Offset = (new(-1,-0.1f)),
                 PositionMode = CoordinateMode.Relative,
+                Position = new(0,-1),
                 Depth = Depth.Finger,
                 SmoothStep = true,
                 DefaultAnimationDuration = TimeSpan.FromMilliseconds(300)
