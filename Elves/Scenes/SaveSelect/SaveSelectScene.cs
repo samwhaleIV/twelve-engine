@@ -83,7 +83,7 @@ namespace Elves.Scenes.SaveSelect {
 
         private void SaveDrawingFrames() {
             for(int i = 0;i<3;i++) {
-                if(!modifiedSaves[i]) {
+                if(!modifiedSaves[i] || !Program.Saves[i].HasFlag(SaveKeys.DoIExist)) {
                     continue;
                 }
                 Program.GlobalSave.SetBytes(SaveKeys.SaveImage1+i,drawingFrames[i].Export());
@@ -94,6 +94,7 @@ namespace Elves.Scenes.SaveSelect {
             modifiedSaves[ID] = true;
             drawingFrames[ID].Reset(Game);
             Program.Saves[ID].Clear();
+            Program.GlobalSave.RemoveKey(SaveKeys.SaveImage1+ID);
         }
 
         public void CreateSave(int ID) {

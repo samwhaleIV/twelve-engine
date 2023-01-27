@@ -41,6 +41,9 @@ namespace TwelveEngine {
         }
 
         public void Clear() {
+            if(dataTable.Count <= 0) {
+                return;
+            }
             dataTable.Clear();
             _isDirty = true;
         }
@@ -184,6 +187,9 @@ namespace TwelveEngine {
         }
 
         public void RemoveKey(int key) {
+            if(!dataTable.ContainsKey(key)) {
+                return;
+            }
             dataTable.Remove(key);
             _isDirty = true;
         }
