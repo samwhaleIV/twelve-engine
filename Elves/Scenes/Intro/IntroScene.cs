@@ -111,7 +111,7 @@ namespace Elves.Scenes.Intro {
         }
 
         private void IntroScene_OnUpdate() {
-            UpdateInputs();
+            UpdateInputDevices();
             timeline.Update(Now - StartTime);
             if(exiting) {
                 return;

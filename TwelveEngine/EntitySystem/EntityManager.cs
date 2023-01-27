@@ -45,9 +45,7 @@ namespace TwelveEngine.EntitySystem {
         /// <summary>
         /// Call when the depth evaluation of entites has substantially changed. E.g., a 3D camera changes positions and your entities are Z sorted.
         /// </summary>
-        public void RefreshEntitiesList() {
-            Entities.Refresh();
-        }
+        public void RefreshSorting() => Entities.Refresh();
 
         private readonly Queue<RegisteredEntity> EntitiesBuffer = new(EntityManager.STARTING_CAPACITY);
 

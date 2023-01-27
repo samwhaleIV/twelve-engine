@@ -5,10 +5,12 @@ namespace TwelveEngine.EntitySystem {
 
     internal sealed class LowMemorySortedSet<T> {
 
-        private readonly IComparer<T> comparer;
+        /* Value == int ID */
+        private T[] list;
+        private int[] idList;
 
-        private const int NO_ID = -1;
-        private static bool IsEmptyID(int ID) => ID < 0;
+        /* Key == int ID */
+        private readonly Dictionary<int,IndexWrapper> lookupTable = new();
 
         public LowMemorySortedSet(int capacity,IComparer<T> comparer) {
             list = new T[capacity];
@@ -19,9 +21,10 @@ namespace TwelveEngine.EntitySystem {
             this.comparer = comparer;
         }
 
-        /* Value == int ID */
-        private T[] list;
-        private int[] idList;
+        private readonly IComparer<T> comparer;
+
+        private const int NO_ID = -1;
+        private static bool IsEmptyID(int ID) => ID < 0;
 
         private struct IndexWrapper {
 
@@ -36,9 +39,6 @@ namespace TwelveEngine.EntitySystem {
 
         public T[] List => list;
         public int Count => lookupTable.Count;
-
-        /* Key == int ID */
-        private readonly Dictionary<int,IndexWrapper> lookupTable = new();
 
         private int GetInsertionIndex(T value) {
             int index = Array.BinarySearch(list,0,Count,value,comparer);
@@ -118,17 +118,21 @@ namespace TwelveEngine.EntitySystem {
         }
 
         /// <summary>
-        /// Remove all entities from the sorted set.
+        /// Remove all entries from the sorted set.
         /// </summary>
         public void Clear() {
-
+            lookupTable.Clear();
+            for(int i = 0;i<list.Length;i++) {
+                list[i] = default(T);
+                idList[i] = NO_ID;
+            }
         }
 
         /// <summary>
         /// Empty the sorted set then reorder them.
         /// </summary>
         public void Refresh() {
-
+            throw new NotImplementedException();
         }
     }
 }

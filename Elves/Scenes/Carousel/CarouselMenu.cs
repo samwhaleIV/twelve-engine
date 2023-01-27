@@ -85,10 +85,10 @@ namespace Elves.Scenes.Carousel {
         private Color GetTintColor() => carouselRotation.Interpolate(oldColor,currentColor);
 
         protected override void UpdateGame() {
-            UpdateInputs();
+            UpdateInputDevices();
             UpdateCameraScreenSize();
             UpdateItemPositions();
-            Entities.Update();
+            UpdateEntities();
             UpdateCamera();
         }
 

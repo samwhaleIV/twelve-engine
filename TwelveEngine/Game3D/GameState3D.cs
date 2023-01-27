@@ -65,10 +65,18 @@ namespace TwelveEngine.Game3D {
             _camera?.Update();
         }
 
-        protected virtual void UpdateGame() {
-            UpdateInputs();
-            UpdateCameraScreenSize();
+        protected void UpdateEntities() {
+            if(ViewMatrixUpdated && entitySortMode == EntitySortMode.CameraRelative) {
+                Entities.RefreshSorting();
+            }
             Entities.Update();
+        }
+
+        protected virtual void UpdateGame() {
+            /* Execution order is important. But sometimes it's important to do it yourself. */
+            UpdateInputDevices();
+            UpdateCameraScreenSize();
+            UpdateEntities();
             UpdateCamera();
         }
 
@@ -124,7 +132,6 @@ namespace TwelveEngine.Game3D {
             Game.GraphicsDevice.Clear(ClearColor);
         }
 
-
         public sealed class FixedCameraComparison:IComparer<Entity3D> {
             /* If the depth is the same fall to ID sorting.
              * Oldest entity is rendered on the lowest virtual layer.
@@ -132,7 +139,7 @@ namespace TwelveEngine.Game3D {
             public int Compare(Entity3D a,Entity3D b) => a.Depth == b.Depth ? a.ID.CompareTo(b.ID) : a.Depth.CompareTo(b.Depth);
         }
 
-        public IComparer<Entity3D> GetEntitySorter() => entitySortMode switch {
+        public IComparer<Entity3D> GetEntitySorter() => entitySortMode switch {         
             EntitySortMode.CreationOrder => new IEntitySorter<Entity3D,GameState3D>.DefaultComparison(),
             EntitySortMode.CameraFixed => new FixedCameraComparison(),
             EntitySortMode.CameraRelative => throw new NotImplementedException(),

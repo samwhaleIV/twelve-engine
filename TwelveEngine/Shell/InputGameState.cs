@@ -47,7 +47,7 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        protected void UpdateInputs() {
+        protected void UpdateInputDevices() {
             Mouse.Update(Game.MouseState,InputEnabled,Game.IsActive);
             if(!InputEnabled) {
                 return;
