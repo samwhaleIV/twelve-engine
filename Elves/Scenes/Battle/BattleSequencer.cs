@@ -45,28 +45,22 @@ namespace Elves.Scenes.Battle {
             if(options.Length < 1) {
                 options = DefaultOptions;
             }
+
             int end = Math.Min(options.Length,4);
             for(int i = 0;i<end;i++) {
-                ActionButton button = UI.GetActionButton(i);
+                Button button = UI.GetActionButton(i);
                 StringBuilder buttonLabel = button.Label;
                 buttonLabel.Clear();
                 buttonLabel.Append(options[i]);
             }
             
             switch(options.Length) {
-                case 1:
-                    ConfigSingleButton(isContinue);
-                    break;
-                case 2:
-                    ConfigDoubleButtons();
-                    break;
-                case 3:
-                    ConfigTripleButtons();
-                    break;
-                case 4:
-                    ConfigQuadButtons();
-                    break;
+                case 1: ConfigSingleButton(isContinue); break;
+                case 2: ConfigDoubleButtons(); break;
+                case 3: ConfigTripleButtons(); break;
+                case 4: ConfigQuadButtons(); break;
             }
+
             if(buttonTask != null) {
                 buttonTask.SetResult(-1);
                 Logger.WriteLine("Fatal script error! Tried to get more than one button at a time...");
@@ -110,42 +104,33 @@ namespace Elves.Scenes.Battle {
             UI.Tagline.Hide(Now);
         }
 
-        protected override void UpdateGame() {
-            UpdateUI();
-            UpdateInputDevices();
-            UpdateCameraScreenSize();
-            UpdateEntities();
-            UpdateCamera();
-            //do more advanced/long-running async validations here...
-        }
-
         protected override UserData GetPlayerData() => Script.Player;
         protected override UserData GetTargetData() => Script.Actor;
 
         private void ConfigSingleButton(bool isContinue) {
-            UI.ActionButton1.SetState(Now,new ButtonState(isContinue ? ButtonPosition.CenterBottom : ButtonPosition.CenterMiddle,true));
-            UI.ActionButton2.Hide(Now); UI.ActionButton3.Hide(Now); UI.ActionButton4.Hide(Now);
+            UI.Button1.SetState(Now,new(isContinue ? ButtonPosition.CenterBottom : ButtonPosition.CenterMiddle,true));
+            UI.Button2.Hide(Now); UI.Button3.Hide(Now); UI.Button4.Hide(Now);
         }
 
         private void ConfigDoubleButtons() {
-            UI.ActionButton1.SetState(Now,new ButtonState(ButtonPosition.CenterLeft,true));
-            UI.ActionButton2.SetState(Now,new ButtonState(ButtonPosition.CenterRight,true));
-            UI.ActionButton3.Hide(Now);
-            UI.ActionButton4.Hide(Now);
+            UI.Button1.SetState(Now,new(ButtonPosition.CenterLeft,true));
+            UI.Button2.SetState(Now,new(ButtonPosition.CenterRight,true));
+            UI.Button3.Hide(Now);
+            UI.Button4.Hide(Now);
         }
 
         private void ConfigTripleButtons() {
-            UI.ActionButton1.SetState(Now,new ButtonState(ButtonPosition.TopLeft,true));
-            UI.ActionButton2.SetState(Now,new ButtonState(ButtonPosition.TopRight,true));
-            UI.ActionButton3.SetState(Now,new ButtonState(ButtonPosition.CenterBottom,true));
-            UI.ActionButton4.Hide(Now);
+            UI.Button1.SetState(Now,new(ButtonPosition.TopLeft,true));
+            UI.Button2.SetState(Now,new(ButtonPosition.TopRight,true));
+            UI.Button3.SetState(Now,new(ButtonPosition.CenterBottom,true));
+            UI.Button4.Hide(Now);
         }
 
         private void ConfigQuadButtons() {
-            UI.ActionButton1.SetState(Now,new ButtonState(ButtonPosition.TopLeft,true));
-            UI.ActionButton2.SetState(Now,new ButtonState(ButtonPosition.TopRight,true));
-            UI.ActionButton3.SetState(Now,new ButtonState(ButtonPosition.BottomLeft,true));
-            UI.ActionButton4.SetState(Now,new ButtonState(ButtonPosition.BottomRight,true));
+            UI.Button1.SetState(Now,new(ButtonPosition.TopLeft,true));
+            UI.Button2.SetState(Now,new(ButtonPosition.TopRight,true));
+            UI.Button3.SetState(Now,new(ButtonPosition.BottomLeft,true));
+            UI.Button4.SetState(Now,new(ButtonPosition.BottomRight,true));
         }
     }
 }

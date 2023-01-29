@@ -1,6 +1,7 @@
 ﻿using TwelveEngine.UI;
 using System;
 using System.Collections.Generic;
+using TwelveEngine.UI.Interaction;
 
 namespace Elves.Scenes.SaveSelect {
 
@@ -8,15 +9,15 @@ namespace Elves.Scenes.SaveSelect {
 
         public SaveSelectUI(SaveSelectScene scene) {
 
-            BackButton = AddButton(0,123);
-            PlayButton = AddButton(17,123);
-            AcceptButton = AddButton(0,140);
-            DeleteButton = AddButton(17,140);
+            BackButton = AddButton(0,123,ButtonImpulse.Back);
+            PlayButton = AddButton(17,123,ButtonImpulse.Play);
+            AcceptButton = AddButton(0,140,ButtonImpulse.Accept);
+            DeleteButton = AddButton(17,140,ButtonImpulse.Delete);
 
-            BackButton.OnActivated += BackButton_OnActivated;
-            PlayButton.OnActivated += PlayButton_OnActivated;
-            AcceptButton.OnActivated += AcceptButton_OnActivated;
-            DeleteButton.OnActivated += DeleteButton_OnActivated;
+            BackButton.OnActivated += Button_OnActivated;
+            PlayButton.OnActivated += Button_OnActivated;
+            AcceptButton.OnActivated += Button_OnActivated;
+            DeleteButton.OnActivated += Button_OnActivated;
 
             Tag1 = AddTag(scene,0);
             Tag2 = AddTag(scene,1);
@@ -74,8 +75,8 @@ namespace Elves.Scenes.SaveSelect {
             return tag;
         }
 
-        private Button AddButton(int x,int y) {
-            var button = new Button(x,y) { Position = new(0.5f,5/7f) };
+        private Button AddButton(int x,int y,ButtonImpulse impulse) {
+            var button = new Button(x,y) { Position = new(0.5f,5/7f), Impulse = impulse };
             AddElement(button);
             Buttons.Add(button);
             return button;
@@ -87,13 +88,12 @@ namespace Elves.Scenes.SaveSelect {
             return element;
         }
 
-        public event Action<TimeSpan,ButtonImpulse> OnButtonPresed;
+        public event Action<ButtonImpulse> OnButtonPresed;
 
-        private void ButtonPressed(TimeSpan now,ButtonImpulse impulse) => OnButtonPresed?.Invoke(now,impulse);
+        private void ButtonPressed(ButtonImpulse impulse) => OnButtonPresed?.Invoke(impulse);
 
-        private void DeleteButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Delete);
-        private void AcceptButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Accept);
-        private void PlayButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Play);
-        private void BackButton_OnActivated(TimeSpan now) => ButtonPressed(now,ButtonImpulse.Back);
+        private void Button_OnActivated(Element element) {
+            ButtonPressed((element as Button).Impulse);
+        }
     }
 }

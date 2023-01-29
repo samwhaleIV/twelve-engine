@@ -18,7 +18,7 @@ namespace TwelveEngine.Game3D {
             this.entitySortMode = entitySortMode;
 
             OnLoad += GameState3D_OnLoad;
-            OnUpdate += UpdateGame;
+            OnUpdate +=GameState3D_OnUpdate;
             OnWriteDebug += GameState3D_OnWriteDebug;
             OnPreRender += GameState3D_OnPreRender;
             OnRender += GameState3D_OnRender;
@@ -57,7 +57,7 @@ namespace TwelveEngine.Game3D {
             Entities = new EntityManager<Entity3D,GameState3D>(this);
         }
 
-        protected void UpdateCameraScreenSize() {
+        private void UpdateCameraScreenSize() {
             _camera?.UpdateScreenSize(AspectRatio);
         }
 
@@ -75,10 +75,15 @@ namespace TwelveEngine.Game3D {
             Entities.Update();
         }
 
+
+        private void GameState3D_OnUpdate() {
+            UpdateCameraScreenSize();
+            UpdateGame();
+        }
+
         protected virtual void UpdateGame() {
             /* Execution order is important. But sometimes it's important to do it yourself. */
             UpdateInputDevices();
-            UpdateCameraScreenSize();
             UpdateEntities();
             UpdateCamera();
         }

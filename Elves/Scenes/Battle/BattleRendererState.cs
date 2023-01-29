@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine;
 using Elves.Scenes.Battle.UI;
+using TwelveEngine.Input;
+using TwelveEngine.UI.Interaction;
 
 namespace Elves.Scenes.Battle {
     public abstract class BattleRendererState:Scene3D {
@@ -52,8 +54,8 @@ namespace Elves.Scenes.Battle {
         }
 
         protected void UpdateUI() {
-            battleUI.Update((int)GetUIScale());
-            Game.CursorState = battleUI.GetCursorState();
+            battleUI.UpdateLayout((int)GetUIScale());
+            Game.CursorState = battleUI.CursorState;
         }
 
         protected abstract UserData GetPlayerData();
@@ -63,28 +65,36 @@ namespace Elves.Scenes.Battle {
 
         private void InitializeBattleUI() {
             battleUI = new BattleUI(Game);
-
-            Mouse.OnPress +=Mouse_OnPress;
-            Mouse.OnRelease +=Mouse_OnRelease;
-            Mouse.OnMove +=Mouse_OnMove;
-
             battleUI.OnActionButtonClick += ActionButtonClicked;
+
+            Input.OnAcceptDown += Input_OnAcceptDown;
+            Input.OnCancelDown += Input_OnCancelDown;
+            Mouse.OnPress += Mouse_OnPress;
+            Input.OnDirectionDown += Input_OnDirectionDown;
+            Input.OnAcceptUp += Input_OnAcceptUp;
+            Mouse.OnRelease += Mouse_OnRelease;
         }
 
-        private void Mouse_OnMove() {
-            battleUI.MouseMoved(Mouse.Position);
-        }
-
-        private void Mouse_OnRelease() {
-            battleUI.MouseRelease(Mouse.Position);
-        }
-
-        private void Mouse_OnPress() {
-            battleUI.MousePress(Mouse.Position);
-        }
+        private void Mouse_OnRelease() => UI?.SendEvent(InputEvent.MouseReleased);
+        private void Input_OnAcceptUp() => UI?.SendEvent(InputEvent.AcceptReleased);
+        private void Input_OnDirectionDown(Direction direction) => UI?.SendEvent(InputEvent.CreateDirectionImpulse(direction));
+        private void Mouse_OnPress() => UI?.SendEvent(InputEvent.MousePressed);
+        private void Input_OnCancelDown() => UI?.SendEvent(InputEvent.BackButtonActivated);
+        private void Input_OnAcceptDown() => UI?.SendEvent(InputEvent.AcceptPressed);
 
         private void BattleScene_OnRender() {
             battleUI.Render(Game.SpriteBatch,GetPlayerData(),GetTargetData());
+        }
+
+        protected override void UpdateGame() {
+            int uiScale = (int)GetUIScale();
+            battleUI.UpdateLayout(uiScale);
+            UpdateInputDevices();
+            UI.SendEvent(InputEvent.CreateMouseUpdate(Mouse.Position));
+            battleUI.UpdateLayout(uiScale); /* Interaction can be delayed by 1 frame if we don't update the UI again */
+            Game.CursorState = UI.CursorState;
+            UpdateEntities();
+            UpdateCamera();
         }
     }
 }

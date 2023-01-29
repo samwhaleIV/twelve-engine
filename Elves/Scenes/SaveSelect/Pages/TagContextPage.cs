@@ -73,7 +73,7 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        private void UI_OnButtonPresed(TimeSpan now,ButtonImpulse impulse) {
+        private void UI_OnButtonPresed(ButtonImpulse impulse) {
             switch(tag.Display) {
                 case TagDisplay.Custom:
                     switch(impulse) {
@@ -85,8 +85,7 @@ namespace Elves.Scenes.SaveSelect {
                             break;
                         case ButtonImpulse.Delete:
                             tag.Display = TagDisplay.Delete;
-                            tag.Blip(now);
-                            SetButtons(now,UI.BackButton,UI.AcceptButton);
+                            SetButtons(UI.Now,UI.BackButton,UI.AcceptButton);
                             UI.ResetInteractionState(UI.BackButton);
                             break;
                     }
@@ -95,7 +94,7 @@ namespace Elves.Scenes.SaveSelect {
                     switch(impulse) {
                         case ButtonImpulse.Back:
                             tag.Display = TagDisplay.Custom;
-                            tag.Blip(now);
+                            tag.Blip(UI.Now);
                             SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
                             UI.ResetInteractionState(UI.BackButton);
                             break;

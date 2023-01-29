@@ -44,7 +44,7 @@ namespace TwelveEngine.Shell {
 
         protected bool InputEnabled {
             get {
-                return Game.IsActive && (!IsTransitioning || TransitionState == TransitionState.In);
+                return Game.IsActive && !IsTransitioning;
             }
         }
 

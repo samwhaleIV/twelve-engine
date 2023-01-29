@@ -58,16 +58,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\SnowTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\SongTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StateTransitionTest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ActionButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\BattleUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\BattleUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonRenderData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\HealthBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\SpeechBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\Tagline.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\TargetButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleRendererState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuState.cs" />

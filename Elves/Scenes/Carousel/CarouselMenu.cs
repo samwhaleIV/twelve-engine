@@ -93,7 +93,6 @@ namespace Elves.Scenes.Carousel {
 
         protected override void UpdateGame() {
             UpdateInputDevices();
-            UpdateCameraScreenSize();
             UpdateItemPositions();
             UpdateEntities();
             UpdateCamera();

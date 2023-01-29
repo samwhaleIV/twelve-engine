@@ -72,7 +72,7 @@ namespace Elves.Scenes.Battle.UI {
             float x = 0;
             float y = IsShown ? elementDisplayInterpolator.Interpolate(viewport.Bottom,centerY-halfHeight) : elementDisplayInterpolator.Interpolate(centerY-halfHeight,viewport.Bottom);
 
-            Area = new VectorRectangle(x,y,width,height);
+            ScreenArea = new VectorRectangle(x,y,width,height);
 
             float textY = y + halfHeight;
 
@@ -91,7 +91,7 @@ namespace Elves.Scenes.Battle.UI {
             if(IsOffscreen) {
                 return;
             }
-            int textScale = (int)(Area.Height / font.LineHeight / 2);
+            int textScale = (int)(ScreenArea.Height / font.LineHeight / 2);
             if(!TextAnimationIsFinished) {
                 font.DrawCentered(_oldText,oldTextPosition.ToPoint(),textScale,Color.White);
             }
