@@ -59,7 +59,7 @@ namespace Elves.Scenes.Battle.UI {
 
             var onscreenArea = new VectorRectangle(x,y,width,height);
             var offscreenArea = LeftSided ? new VectorRectangle(viewport.X-width,onscreenArea.Y,width,height) : new VectorRectangle(viewport.Right,onscreenArea.Y,width,height);
-            Area = IsShown ? interpolator.Interpolate(offscreenArea,onscreenArea) : interpolator.Interpolate(onscreenArea,offscreenArea);
+            ScreenArea = IsShown ? interpolator.Interpolate(offscreenArea,onscreenArea) : interpolator.Interpolate(onscreenArea,offscreenArea);
         }
 
         private static readonly Rectangle TextureSource = new(32,16,64,48);
@@ -68,19 +68,19 @@ namespace Elves.Scenes.Battle.UI {
             if(IsOffscreen || Texture == null) {
                 return;
             }
-            spriteBatch.Draw(Texture,(Rectangle)Area,TextureSource,Color.White,0f,Vector2.Zero,LeftSided ? SpriteEffects.FlipHorizontally : SpriteEffects.None,1f);
+            spriteBatch.Draw(Texture,(Rectangle)ScreenArea,TextureSource,Color.White,0f,Vector2.Zero,LeftSided ? SpriteEffects.FlipHorizontally : SpriteEffects.None,1f);
         }
 
         public void DrawText(UVSpriteFont font) {
             if(IsOffscreen) {
                 return;
             }
-            int textScale = (int)(Area.Width / font.LineHeight / 16);
+            int textScale = (int)(ScreenArea.Width / font.LineHeight / 16);
 
-            float margin = Area.Width * 0.075F;
-            Vector2 location = Area.Position + new Vector2(margin);
-            location.X += Area.Width * (1/8F);
-            font.Draw(Text,location.ToPoint(),textScale,Color.Black,(int)(Area.Right - location.X - margin));
+            float margin = ScreenArea.Width * 0.075F;
+            Vector2 location = ScreenArea.Position + new Vector2(margin);
+            location.X += ScreenArea.Width * (1/8F);
+            font.Draw(Text,location.ToPoint(),textScale,Color.Black,(int)(ScreenArea.Right - location.X - margin));
         }
     }
 }

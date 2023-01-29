@@ -6,6 +6,8 @@ namespace Elves.Scenes.SaveSelect {
 
     public sealed class Button:SpriteElement {
 
+        public ButtonImpulse Impulse { get; set; } = ButtonImpulse.None;
+
         private const float ROTATION_AMOUNT = 1f;
 
         public Button(int textureX,int textureY) {

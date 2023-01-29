@@ -90,15 +90,15 @@ namespace Elves.Scenes.Battle.UI {
             if(Texture == null) {
                 return;
             }
-            Rectangle area = (Rectangle)Area;
+            Rectangle area = (Rectangle)ScreenArea;
             Color healthColor = color ?? Color.White;
 
-            int pixelSize = (int)(Area.Height * 0.0625f);
+            int pixelSize = (int)(ScreenArea.Height * 0.0625f);
             pixelSize += 1;
 
             (Color Color, int YOffset, Point textureOffset) stripeData;
 
-            int pixelCount = (int)MathF.Ceiling((Area.Width - pixelSize * 2) / pixelSize);
+            int pixelCount = (int)MathF.Ceiling((ScreenArea.Width - pixelSize * 2) / pixelSize);
             float halfPixelSize = pixelSize / 2;
 
             float healthNormal = GetDropHealthNormal();

@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using TwelveEngine.UI.Interaction;
 
 namespace TwelveEngine.UI {
 
-    public class Element {
+    public class Element:InteractionElement<Element> {
 
         private readonly AnimationInterpolator animator = new(Book<Element>.DefaultAnimationDuration);
 
@@ -154,8 +155,8 @@ namespace TwelveEngine.UI {
         /// <param name="viewport">The viewport of of the target area.</param>
         public void Update(TimeSpan now,VectorRectangle viewport) {
             animator.Update(now);
-            if(InputIsPausedByAnimation && animator.IsFinished) {
-                InputIsPausedByAnimation = false;
+            if(InputIsPaused && animator.IsFinished) {
+                InputIsPaused = false;
                 KeyAnimation(now);
             }
             ElementLayoutData layout;
@@ -164,7 +165,7 @@ namespace TwelveEngine.UI {
             } else {
                 layout = this.layout;
             }
-            if(IsUpdateable && !InputIsPausedByAnimation) {
+            if(CanUpdate && !InputIsPaused) {
                 OnUpdate?.Invoke(now);
             }
             UpdateComputedArea(layout,viewport);
@@ -172,63 +173,35 @@ namespace TwelveEngine.UI {
 
 
         public void PauseInputForAnimation() {
-            InputIsPausedByAnimation = true;
+            InputIsPaused = true;
         }
 
-        internal bool InputIsPausedByAnimation { get; private set; } = false;
+        public override VectorRectangle GetScreenArea() {
+            return ComputedArea.Destination;
+        }
+
+        public bool CanUpdate { get; set; }
 
         /// <summary>
         /// Update layout properties based on <c>Pressed</c> and <c>Selected</c> properties.
         /// </summary>
         protected internal event Action<TimeSpan> OnUpdate;
 
-        protected internal event Action<TimeSpan> OnActivated;
-
-        private bool _pressed = false, _selected = false;
-
-        /// <summary>
-        /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
-        /// </summary>
-        public bool Pressed {
-            get => _pressed && !InputIsPausedByAnimation;
-        }
-
-        /// <summary>
-        /// Filtered by <c>WaitingForAnimationBeforeInput</c>.
-        /// </summary>
-        public bool Selected {
-            get => _selected && !InputIsPausedByAnimation;
-        }
-
-        public Element PreviousElement { get; set; } = null;
-        public Element NextElement { get; set; } = null;
-
-        public ElementFlags Flags { get; set; } = ElementFlags.None;
-
-        public bool IsInteractable => Flags.HasFlag(ElementFlags.Interact);
-        public bool IsUpdateable => Flags.HasFlag(ElementFlags.Update);
-
-        internal void SetSelected() => _selected = true;
-        internal void SetPressed() => _pressed = true;
-
-        internal void ClearSelected() => _selected = false;
-        internal void ClearPressed() => _pressed = false;
-
-        public void Activate(TimeSpan now) {
-            if(!IsInteractable || InputIsPausedByAnimation) {
-                return;
+        public ElementFlags Flags {
+            get {
+                ElementFlags flags = ElementFlags.None;
+                if(CanUpdate) {
+                    flags |= ElementFlags.Update;
+                }
+                if(CanInteract) {
+                    flags |= ElementFlags.Interact;
+                }
+                return flags;
             }
-            OnActivated?.Invoke(now);
-        }
-
-        public void SetKeyFocus(Element previous,Element next) {
-            NextElement = next;
-            PreviousElement = previous;
-        }
-
-        public void ClearKeyFocus() {
-            PreviousElement = null;
-            NextElement = null;
+            set {
+                CanUpdate = value.HasFlag(ElementFlags.Update);
+                CanInteract = value.HasFlag(ElementFlags.Interact);
+            }
         }
     }
 }

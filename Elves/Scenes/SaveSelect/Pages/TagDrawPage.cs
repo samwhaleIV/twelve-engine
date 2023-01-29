@@ -63,9 +63,9 @@ namespace Elves.Scenes.SaveSelect {
             drawingFrame.Draw(Scene.Game,relativePosition);
         }
 
-        private void UI_OnButtonPresed(TimeSpan now,ButtonImpulse impulse) {
+        private void UI_OnButtonPresed(ButtonImpulse impulse) {
             if(impulse != ButtonImpulse.Accept) {
-                throw new InvalidOperationException("Unexpected button impulse for tag draw page.");
+                throw new InvalidOperationException("Unexpected button impulse on tag draw page.");
             }
             UI.SetPage(UI.TagContextPage);
         }

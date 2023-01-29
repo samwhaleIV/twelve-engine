@@ -25,6 +25,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\ParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\Screenspace3DSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\FocusSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InputEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InputEventResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InputEventType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionStateChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntryPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoggerLabel.cs" />

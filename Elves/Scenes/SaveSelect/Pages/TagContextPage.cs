@@ -31,9 +31,9 @@ namespace Elves.Scenes.SaveSelect {
                     disposedButtons.Remove(button);
                 }
                 if(lastButton is not null) {
-                    lastButton.NextElement = button;
+                    lastButton.NextFocusElement = button;
                 }
-                button.PreviousElement = lastButton;
+                button.PreviousFocusElement = lastButton;
                 lastButton = button;
                 button.Scale = 1;
                 button.Flags = ElementFlags.UpdateAndInteract;
@@ -73,7 +73,14 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        private void UI_OnButtonPresed(TimeSpan now,ButtonImpulse impulse) {
+        private void CancelDelete() {
+            tag.Display = TagDisplay.Custom;
+            tag.Blip(UI.Now);
+            SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
+            UI.ResetInteractionState(UI.BackButton);
+        }
+
+        private void UI_OnButtonPresed(ButtonImpulse impulse) {
             switch(tag.Display) {
                 case TagDisplay.Custom:
                     switch(impulse) {
@@ -85,8 +92,7 @@ namespace Elves.Scenes.SaveSelect {
                             break;
                         case ButtonImpulse.Delete:
                             tag.Display = TagDisplay.Delete;
-                            tag.Blip(now);
-                            SetButtons(now,UI.BackButton,UI.AcceptButton);
+                            SetButtons(UI.Now,UI.BackButton,UI.AcceptButton);
                             UI.ResetInteractionState(UI.BackButton);
                             break;
                     }
@@ -94,10 +100,7 @@ namespace Elves.Scenes.SaveSelect {
                 case TagDisplay.Delete:
                     switch(impulse) {
                         case ButtonImpulse.Back:
-                            tag.Display = TagDisplay.Custom;
-                            tag.Blip(now);
-                            SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
-                            UI.ResetInteractionState(UI.BackButton);
+                            CancelDelete();
                             break;
                         case ButtonImpulse.Accept:
                             tag.Display = TagDisplay.Empty;
@@ -118,6 +121,19 @@ namespace Elves.Scenes.SaveSelect {
                     }
                     break;
             }
+        }
+
+        public override bool Back() {
+            switch(tag.Display) {
+                case TagDisplay.Delete:
+                    CancelDelete();
+                    return true;
+                case TagDisplay.Custom:
+                case TagDisplay.Create:
+                    UI.SetPage(UI.TagSelectPage);
+                    return true;
+            }
+            return false;
         }
 
         public override void Close() {

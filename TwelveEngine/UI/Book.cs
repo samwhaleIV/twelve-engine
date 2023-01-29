@@ -1,20 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using TwelveEngine.Input;
 using TwelveEngine.Shell;
+using TwelveEngine.UI.Interaction;
 
 namespace TwelveEngine.UI {
-    public abstract class Book<TElement> where TElement:Element {
+    public class Book<TElement>:InteractionAgent<Element> where TElement:Element {
 
-        /* This property is heavily reliant on the context of the engine itself. */
-        /// <summary>
-        /// A proprety that determines if the last input event was from the mouse or a keyboard/gamepad. True if from mouse, false is from keyboard/gamepad.
-        /// </summary>
-        private static bool LastEventWasFromMouse => GameManager.LastInputEventWasFromMouse;
-
-        public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
-        public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(300);
+        public static readonly TimeSpan DefaultAnimationDuration = Constants.UI.DefaultAnimationDuration;
+        public static readonly TimeSpan DefaultTransitionDuration = Constants.UI.DefaultTransitionDuration;
 
         /// <summary>
         /// Must be iterated by a parent class in order to, for example, create a rendering method. See <c>SpriteBook</c> for an example.
@@ -37,18 +30,22 @@ namespace TwelveEngine.UI {
         /// </summary>
         private bool _elementsAreLocked = true;
 
-        private bool _keyboardIsPressingElement = false;
-        private Element _selectedElement = null, _pressedElement = null, _hiddenMouseHoverElement = null;
-
-        /// <summary>
-        /// Used to override <c>Page.DefaultFocusElement</c> (if it exists).
-        /// </summary>
-        private Element _lastSelectedElement = null, _defaultFocusElement = null;
-
         /// <summary>
         /// The time that <c>Update()</c> was last invoked with.
         /// </summary>
         private TimeSpan _currentTime = TimeSpan.FromHours(-1); /* Hopefully your users aren't time travelers. */
+
+        protected override bool GetLastEventWasFromMouse() {
+            return GameManager.LastInputEventWasFromMouse;
+        }
+
+        protected override bool GetContextTransitioning() {
+            return !pageTransitionAnimator.IsFinished;
+        }
+
+        protected override TimeSpan GetCurrentTime() => _currentTime;
+
+        protected override IEnumerable<Element> GetElements() => Elements;
 
         public void SetPage(Page<TElement> newPage) {
             if(newPage is null) {
@@ -74,8 +71,7 @@ namespace TwelveEngine.UI {
             newPage.SetTime(_currentTime);
             newPage.SetTransitionDuration(TransitionDuration);
 
-            _defaultFocusElement = newPage.Open();
-
+            DefaultFocusElement = newPage.Open();
             Page = newPage;
         }
 
@@ -96,20 +92,17 @@ namespace TwelveEngine.UI {
             foreach(var element in Elements) {
                 element.UnlockKeyAnimation();
             }
-            if(_defaultFocusElement is null) {
+            if(DefaultFocusElement is null) {
                 Logger.WriteLine($"UI page has been opened without a default keyboard focus element!",LoggerLabel.UI);
-            } else if(!LastEventWasFromMouse) {
-                SelectedElement = GetLastSelectedOrDefault();
             }
+            TrySetDefaultElement();
             _elementsAreLocked = false;
         }
-
-        public bool TransitionComplete => pageTransitionAnimator.IsFinished;
 
         public void Update(TimeSpan now,VectorRectangle viewport) {
             _currentTime = now;
             pageTransitionAnimator.Update(now);
-            if(_elementsAreLocked && TransitionComplete) {
+            if(_elementsAreLocked && pageTransitionAnimator.IsFinished) {
                 UnlockPageControls();
             }
             Page?.SetTime(now);
@@ -147,211 +140,11 @@ namespace TwelveEngine.UI {
             _elementsAreLocked = true;
         }
 
-        private Element GetLastSelectedOrDefault() {
-            return _lastSelectedElement ?? _defaultFocusElement;
+        protected override bool BackButtonPressed() {
+            if(Page is null) {
+                return false;
+            }
+            return Page.Back();
         }
-
-        /// <summary>
-        /// Current selected element. Selection status is guaranteed to be exclusive to one element from the element pool.
-        /// </summary>
-        public Element SelectedElement {
-            get => _selectedElement;
-            private set {
-                if(!TransitionComplete || _selectedElement == value) {
-                    return;
-                }
-                _selectedElement?.ClearSelected();
-                _selectedElement = value;
-                if(value is not null) {
-                    _lastSelectedElement = value;
-                }
-                value?.SetSelected();
-            }
-        }
-
-        /// <summary>
-        /// Current pressed element. I.e. key press or mouse down with valid selected element. Pressed status is guaranteed to be exclusive to one element from the element pool.
-        /// </summary>
-        public Element PressedElement {
-            get => _pressedElement;
-            private set {
-                if(_pressedElement == value || !TransitionComplete || value is not null && value.InputIsPausedByAnimation) {
-                    /* Do not set a new pressed element if it is waiting for an animation during a page */
-                    return;
-                }
-                _pressedElement?.ClearPressed();
-                _pressedElement = value;
-                value?.SetPressed();
-            }
-        }
-
-        /// <summary>
-        /// Clear the interaction state when you modify a page's UI but do not set a new page.
-        /// </summary>
-        public void ResetInteractionState(Element newSelectedElement = null) {
-            if(!LastEventWasFromMouse) {
-                SelectedElement = newSelectedElement;
-            } else {
-                SelectedElement = null;
-            }
-            PressedElement = null;
-            _hiddenMouseHoverElement = null;
-            _lastSelectedElement = newSelectedElement;
-
-            /* Strictly speaking this doesn't need to be cleared but we may as well drop the reference for internal consistency. */
-            _defaultFocusElement = null;
-        }
-
-        /// <summary>
-        /// Compute the true mouse hover element (no visual changes) and set the selected element to it if the current input state allows for it.
-        /// </summary>
-        /// <param name="location">Mouse location in viewport coordinates.</param>
-        private void UpdateHoveredElement(Point location) {
-            Element hoverElement = null;
-            /* O(n)! Wildcard, bitches! */
-            foreach(var element in Elements) {
-                if(!element.IsInteractable || !element.ComputedArea.Destination.Contains(location)) {
-                    continue;
-                }
-                hoverElement = element;
-                break;
-            }
-            _hiddenMouseHoverElement = hoverElement;
-
-            /* Yes, this one is a little dense... but realtime, multi-input UI logic is complex, okay? */
-            if(!LastEventWasFromMouse || (SelectedElement is not null || hoverElement is null) && PressedElement is not null) {
-                return;
-            }
-
-            SelectedElement = hoverElement;
-        }
-
-        /// <summary>
-        /// Call this every frame, regardless of whether or not the mouse position has changed. This allows for elements to change position and keep a valid mouse hover status.
-        /// </summary>
-        /// <param name="location"></param>
-        public void UpdateMouseLocation(Point location) {
-            UpdateHoveredElement(location);
-        }
-
-        public void MouseDown() {
-            if(PressedElement is not null || SelectedElement is null) {
-                return;
-            }
-            if(_hiddenMouseHoverElement == null) {
-                SelectedElement = null;
-                return;
-            }
-            if(SelectedElement != _hiddenMouseHoverElement) {
-                SelectedElement = _hiddenMouseHoverElement;
-            }
-            PressedElement = SelectedElement;
-        }
-
-        /// <summary>
-        /// A button, such as the enter button, has been pressed. Fire once per keystroke.
-        /// </summary>
-        public void AcceptDown() {
-            if(PressedElement is not null) {
-                return;
-            }
-            SelectedElement ??= GetLastSelectedOrDefault();
-            if(SelectedElement is null) {
-                return;
-            }
-            PressedElement = SelectedElement;
-            _keyboardIsPressingElement = true;
-        }
-
-        /// <summary>
-        /// A button, bound to a direction, has been pressed. Fire once per keystroke.
-        /// </summary>
-        /// <param name="direction">The direction representing the button that was pressed.</param>
-        public void DirectionDown(Direction direction) {
-            if(PressedElement is not null) {
-                return;
-            }
-            if(SelectedElement is null) {
-                SelectedElement = GetLastSelectedOrDefault();
-                return;
-            }
-            int uiDirection = GetUIDirection(direction);
-            Element newElement = null;
-            if(uiDirection < 0) {
-                newElement = SelectedElement.PreviousElement;
-            } else if(uiDirection > 0) {
-                newElement = SelectedElement.NextElement;
-            } else if(SelectedElement is null) {
-                /* This should be impossible, but might as well cover our ass if a "None" direction is ever added */
-                newElement = GetLastSelectedOrDefault();
-            }
-            if(newElement is null) {
-                return;
-            }
-            SelectedElement = newElement;
-        }
-
-        /// <summary>
-        /// A button, such as enter, has been released. Fire after <c>AcceptDown</c>.
-        /// </summary>
-        public void AcceptUp() {
-            if(PressedElement is null) {
-                return;
-            }
-            PressedElement.Activate(_currentTime);
-            PressedElement = null;
-            _keyboardIsPressingElement = false;
-        }
-
-        /// <summary>
-        /// Fire when the mouse button has been released.
-        /// </summary>
-        public void MouseUp() {
-            if(_keyboardIsPressingElement || PressedElement is null) {
-                return;
-            }
-            if(_hiddenMouseHoverElement == PressedElement) {
-                PressedElement.Activate(_currentTime);
-            }
-            PressedElement = null;
-            _hiddenMouseHoverElement = null;
-        }
-
-        /// <summary>
-        /// A way to implement a keyboard/gamepad back button. Not all pages need to have a back method.
-        /// </summary>
-        public void CancelDown() {
-            if(PressedElement is not null) {
-                return;
-            }
-            Page?.Back();
-        }
-
-        /// <summary>
-        /// A visual indication of the UI interaction state.
-        /// </summary>
-        /// <returns>The cursor state. <c>CursorState.Default</c> if the last event was from a keyboard/gamepad.</returns>
-        private CursorState GetCursorState() {
-            if(!LastEventWasFromMouse || _keyboardIsPressingElement) {
-                return CursorState.Default;
-            } else if(PressedElement is not null) {
-                return PressedElement == _hiddenMouseHoverElement ? CursorState.Pressed : CursorState.Default;
-            } else if(SelectedElement is not null) {
-                /* Don't show interaction cursor state if the element is waiting for its animation to finish. */
-                return SelectedElement == _hiddenMouseHoverElement && !SelectedElement.InputIsPausedByAnimation ? CursorState.Interact : CursorState.Default;
-            } else {
-                return _hiddenMouseHoverElement is not null ? CursorState.Interact : CursorState.Default;
-            }
-        }
-
-        public CursorState CursorState => GetCursorState();
-
-        public static int GetUIDirection(Direction direction) => direction switch {
-            Direction.Left => -1,
-            Direction.Right => 1,
-            Direction.Up => -1,
-            Direction.Down => 1,
-            _ => 0 /* Don't worry about zero, he's just chillin'. */
-        };
     }
 }

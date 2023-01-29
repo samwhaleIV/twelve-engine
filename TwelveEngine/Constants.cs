@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace TwelveEngine {
     public static class Constants {
@@ -47,6 +48,11 @@ namespace TwelveEngine {
             public const string NoVsync = "novsync";
             public const string Fullscreen = "fullscreen";
             public const string DrawDebug = "drawdebug";
+        }
+
+        public static class UI {
+            public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
+            public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(300);
         }
     }
 }

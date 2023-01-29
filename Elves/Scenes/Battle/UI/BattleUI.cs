@@ -5,60 +5,56 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Font;
 using TwelveEngine.Shell;
 using TwelveEngine;
+using TwelveEngine.UI.Interaction;
 
 namespace Elves.Scenes.Battle.UI {
 
-    public sealed class BattleUI {
+    public sealed class BattleUI:InteractionAgent<UIElement> {
 
         private readonly GameManager game;
         public BattleUI(GameManager game) {
             this.game = game;
+
             foreach(var button in actionButtons) {
                 interactableElements.Add(button);
-                button.OnClick += ActionButtonClicked;
+                button.OnActivated += Button_OnActivated;
             }
+
+            Button1 = actionButtons[0];
+            Button2 = actionButtons[1];
+            Button3 = actionButtons[2];
+            Button4 = actionButtons[3];
+
+            DefaultFocusElement = Button1;
         }
 
-        public const int ACTION_BUTTON_1 = 0;
-        public const int ACTION_BUTTON_2 = 1;
-        public const int ACTION_BUTTON_3 = 2;
-        public const int ACTION_BUTTON_4 = 3;
+        private void Button_OnActivated(UIElement element) {
+            OnActionButtonClick?.Invoke((element as Button).ID);
+        }
 
-        private readonly ActionButton[] actionButtons = new ActionButton[] {
-            new ActionButton() { State = ButtonState.TopLeft, ID = ACTION_BUTTON_1 },
-            new ActionButton() { State = ButtonState.TopRight, ID = ACTION_BUTTON_2 },
-            new ActionButton() { State = ButtonState.BottomLeft, ID = ACTION_BUTTON_3 },
-            new ActionButton() { State = ButtonState.BottomRight, ID = ACTION_BUTTON_4 }
+        public Action<int> OnActionButtonClick;
+
+        private readonly Button[] actionButtons = new Button[] {
+            new() { State = ButtonState.TopLeft, ID = 0 },
+            new() { State = ButtonState.TopRight, ID = 1 },
+            new() { State = ButtonState.BottomLeft, ID = 2 },
+            new() { State = ButtonState.BottomRight, ID = 3 }
         };
 
-        public ActionButton GetActionButton(int ID) {
+        public readonly Button Button1, Button2, Button3, Button4;
+
+        public Button GetActionButton(int ID) {
             if(ID >= actionButtons.Length || ID < 0) {
                 return null;
             }
             return actionButtons[ID];
         }
 
-        public ActionButton ActionButton1 => actionButtons[ACTION_BUTTON_1];
-        public ActionButton ActionButton2 => actionButtons[ACTION_BUTTON_2];
-        public ActionButton ActionButton3 => actionButtons[ACTION_BUTTON_3];
-        public ActionButton ActionButton4 => actionButtons[ACTION_BUTTON_4];
-
-        private TimeSpan Now => game.Time.TotalGameTime;
         private Rectangle Viewport => game.Viewport.Bounds;
-
-        private Button activeButton = null, pressedButton = null;
 
         private readonly HealthBar playerHealthBar = new() { Alignment = HealthBarAlignment.Left };
         private readonly HealthBar targetHealthBar = new() { Alignment = HealthBarAlignment.Right };
 
-        public Action<int> OnActionButtonClick;
-
-        private void ActionButtonClicked(int ID) {
-            OnActionButtonClick?.Invoke(ID);
-        }
-
-        //todo...
-        //private readonly TargetButton targetButton = new TargetButton();
         private readonly Tagline tagline = new();
         private readonly SpeechBox speechBox = new();
 
@@ -66,70 +62,17 @@ namespace Elves.Scenes.Battle.UI {
         public Tagline Tagline => tagline;
       
         private readonly List<Button> interactableElements = new();
-        private static readonly Point OffscreenMousePosition = new(-1);
-        private Point lastMousePosition = OffscreenMousePosition;
 
-        private Button GetButtonAtPosition(Point position) {
-            if(!Viewport.Contains(position)) {
-                lastMousePosition = OffscreenMousePosition;
-                return null;
-            }
-            Button button;
-            for(int i = interactableElements.Count-1;i>=0;i--) {
-                button = interactableElements[i];
-                if(button.Area.Contains(position)) {
-                    return button;
-                }
-            }
-            return null;
-        }
+        #region INTERACTION AGENT
 
-        private void UpdateButtonFocus(Point position) {
-            lastMousePosition = position;
-            var button = GetButtonAtPosition(position);
-            if(activeButton != null) {
-                activeButton.Selected = false;
-            }
-            if(button == null) {
-                activeButton = null;
-                return;
-            }
-            if(pressedButton != null && button != pressedButton) {
-                activeButton = null;
-                return;
-            }
-            button.Selected = true;
-            activeButton = button;
-        }
+        protected override bool GetLastEventWasFromMouse() => GameManager.LastInputEventWasFromMouse;
+        protected override bool GetContextTransitioning() => false;
+        protected override TimeSpan GetCurrentTime() => game.Time.TotalGameTime;
+        protected override IEnumerable<UIElement> GetElements() => interactableElements;
+        protected override bool BackButtonPressed() => false;
 
-        public void MouseMoved(Point position) {
-            UpdateButtonFocus(position);
-        }
-
-        public void MousePress(Point position) {
-            UpdateButtonFocus(position);
-            if(activeButton == null) {
-                return;
-            }
-            pressedButton = activeButton;
-            activeButton.Pressed = true;
-        }
-
-        public void MouseRelease(Point position) {
-            lastMousePosition = position;
-            if(activeButton == null || pressedButton == null || pressedButton != activeButton) {
-                if(pressedButton == null) {
-                    return;
-                }
-                pressedButton.Pressed = false;
-                pressedButton = null;
-                return;
-            }
-            var button = pressedButton;
-            pressedButton = null;
-            button.Click();
-            button.Pressed = false;
-        }
+        #endregion
+        #region UPDATE, RENDER, & LAYOUT
 
         public void UpdateActionButtons(Rectangle viewport,TimeSpan now,float margin,float halfMargin) {
             float buttonHeight = viewport.Height * 0.25f;
@@ -159,10 +102,10 @@ namespace Elves.Scenes.Battle.UI {
 
             float healthBarHeight = viewport.Height * 0.125f; /* Equal to half of action button height */
 
-            playerHealthBar.Area = new VectorRectangle(
+            playerHealthBar.ScreenArea = new VectorRectangle(
                 playerHealthBarLeft,healthBarY,playerHealthBarRight-playerHealthBarLeft,healthBarHeight
             );
-            targetHealthBar.Area = new VectorRectangle(
+            targetHealthBar.ScreenArea = new VectorRectangle(
                 targetHealthBarLeft,healthBarY,targetHealthBarRight-targetHealthBarLeft,healthBarHeight
             );
 
@@ -170,17 +113,8 @@ namespace Elves.Scenes.Battle.UI {
             targetHealthBar.Update(scale,Now);
         }
 
-        public CursorState GetCursorState() {
-            if(pressedButton != null && activeButton == pressedButton) {
-                return CursorState.Pressed;
-            }
-            if(activeButton != null && activeButton.IsEnabled) {
-                return CursorState.Interact;
-            }
-            return CursorState.Default;
-        }
 
-        public void Update(float scale) {
+        public void UpdateLayout(float scale) {
             Rectangle viewport = Viewport;
             TimeSpan now = Now;
 
@@ -191,9 +125,6 @@ namespace Elves.Scenes.Battle.UI {
             UpdateHealthBars(viewport,scale,margin,halfMargin);
             speechBox.Update(now,viewport);
             tagline.Update(now,viewport,margin);
-
-            /* Update for buttons that are changing positions */
-            UpdateButtonFocus(lastMousePosition);
         }
 
         private void RenderActionButtons(SpriteBatch spriteBatch) {
@@ -215,26 +146,26 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         private void RenderUsernames(UserData playerData,UserData targetData) {
-            int usernameScale = (int)(playerHealthBar.Area.Height * 0.5f / Fonts.RetroFont.LineHeight);
+            int usernameScale = (int)(playerHealthBar.ScreenArea.Height * 0.5f / Fonts.RetroFont.LineHeight);
             Color usernameColor = Color.White;
             if(playerData != null && playerData.Name != null) {
                 Fonts.RetroFont.Draw(
                     playerData.Name,
-                    new Point((int)playerHealthBar.Area.X,(int)(playerHealthBar.Area.Bottom + playerHealthBar.Area.Top)),
+                    new Point((int)playerHealthBar.ScreenArea.X,(int)(playerHealthBar.ScreenArea.Bottom + playerHealthBar.ScreenArea.Top)),
                     usernameScale,usernameColor
                 );
             }
             if(targetData != null && targetData.Name != null) {
                 Fonts.RetroFont.DrawRight(
                     targetData.Name,
-                    new Point((int)targetHealthBar.Area.Right,(int)(targetHealthBar.Area.Bottom + targetHealthBar.Area.Top)),
+                    new Point((int)targetHealthBar.ScreenArea.Right,(int)(targetHealthBar.ScreenArea.Bottom + targetHealthBar.ScreenArea.Top)),
                     usernameScale,usernameColor
                 );
             }
         }
 
         private void RenderActionButtonText() {
-            int buttonTextScale = (int)(ActionButton1.Area.Height / 50f);
+            int buttonTextScale = (int)(Button1.ScreenArea.Height / 50f);
             foreach(var button in actionButtons) {
                 button.DrawText(Fonts.RetroFont,buttonTextScale,Color.White);
             }
@@ -274,5 +205,6 @@ namespace Elves.Scenes.Battle.UI {
             RenderActionButtonText();
             Fonts.RetroFont.End();
         }
+        #endregion
     }
 }

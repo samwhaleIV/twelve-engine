@@ -2,15 +2,16 @@
 using System;
 using TwelveEngine;
 using Microsoft.Xna.Framework;
+using TwelveEngine.UI.Interaction;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagSelectPage:SaveSelectPage {
 
         public override void Close() {
 
-            UI.Tag1.OnActivated -= Tag1_OnActivated;
-            UI.Tag2.OnActivated -= Tag2_OnActivated;
-            UI.Tag3.OnActivated -= Tag3_OnActivated;
+            UI.Tag1.OnActivated -= Tag_OnActivated;
+            UI.Tag2.OnActivated -= Tag_OnActivated;
+            UI.Tag3.OnActivated -= Tag_OnActivated;
 
             var finger = UI.Finger;
             finger.Offset = (new(-1,-0.1f));
@@ -33,9 +34,9 @@ namespace Elves.Scenes.SaveSelect {
             tag2.SetKeyFocus(tag1,tag3);
             tag3.SetKeyFocus(tag2,null);
 
-            UI.Tag1.OnActivated += Tag1_OnActivated;
-            UI.Tag2.OnActivated += Tag2_OnActivated;
-            UI.Tag3.OnActivated += Tag3_OnActivated;
+            UI.Tag1.OnActivated += Tag_OnActivated;
+            UI.Tag2.OnActivated += Tag_OnActivated;
+            UI.Tag3.OnActivated += Tag_OnActivated;
 
             float tagRotation = -5f;
             foreach(var tag in UI.Tags) {
@@ -44,18 +45,8 @@ namespace Elves.Scenes.SaveSelect {
             return UI.SelectedTag ?? tag1;
         }
 
-        private void Tag3_OnActivated(TimeSpan now) {
-            UI.SelectedTag = UI.Tag3;
-            UI.SetPage(UI.TagContextPage);
-        }
-
-        private void Tag2_OnActivated(TimeSpan now) {
-            UI.SelectedTag = UI.Tag2;
-            UI.SetPage(UI.TagContextPage);
-        }
-
-        private void Tag1_OnActivated(TimeSpan now) {
-            UI.SelectedTag = UI.Tag1;
+        private void Tag_OnActivated(Element element) {
+            UI.SelectedTag = element as Tag;
             UI.SetPage(UI.TagContextPage);
         }
 

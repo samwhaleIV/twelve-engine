@@ -7,7 +7,7 @@ using Elves.Scenes.Battle.Sprite;
 using Elves.Scenes.Battle.Sprite.Animation;
 
 namespace Elves.Scenes.Battle {
-    public abstract class Script {
+    public abstract class BattleScript {
         public abstract Task<BattleResult> Main();
 
         private BattleSequencer _sequencer;
@@ -46,7 +46,7 @@ namespace Elves.Scenes.Battle {
             get {
                 var data = _playerData;
                 if(data == null) {
-                    Logger.WriteLine("Player UserData is null, creating a generic one.");
+                    Logger.WriteLine("Player UserData is null, creating a generic one.",LoggerLabel.Script);
                     data = new UserData() {
                         Name = Constants.Battle.PlayerName
                     };
@@ -60,7 +60,7 @@ namespace Elves.Scenes.Battle {
             get {
                 var data = _actorData;
                 if(data == null) {
-                    Logger.WriteLine("Actor UserData is null, creating a generic one.");
+                    Logger.WriteLine("Actor UserData is null, creating a generic one.",LoggerLabel.Script);
                     data = new UserData() {
                         Name = Constants.Battle.NoName
                     };

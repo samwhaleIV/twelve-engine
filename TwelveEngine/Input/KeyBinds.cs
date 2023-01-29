@@ -18,7 +18,21 @@ namespace TwelveEngine.Input {
             { Impulse.Ascend, keyBindSet.Ascend },
             { Impulse.Descend, keyBindSet.Descend },
 
-            { Impulse.Toggle, keyBindSet.Toggle }
+            { Impulse.Toggle, keyBindSet.Toggle },
+
+            { Impulse.Focus, keyBindSet.Focus }
+        };
+
+        public static Dictionary<Impulse,Buttons> GetControllerBinds() => new() {
+            { Impulse.Up, Buttons.DPadUp },
+            { Impulse.Down, Buttons.DPadDown },
+            { Impulse.Left, Buttons.DPadLeft },
+            { Impulse.Right, Buttons.DPadRight },
+            { Impulse.Accept, Buttons.A },
+            { Impulse.Cancel, Buttons.B },
+            { Impulse.Ascend, Buttons.LeftShoulder },
+            { Impulse.Descend, Buttons.RightShoulder },
+            { Impulse.Toggle, Buttons.Back }
         };
 
         public static string Path { get; set; }
