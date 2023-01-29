@@ -31,9 +31,9 @@ namespace Elves.Scenes.SaveSelect {
                     disposedButtons.Remove(button);
                 }
                 if(lastButton is not null) {
-                    lastButton.NextElement = button;
+                    lastButton.NextFocusElement = button;
                 }
-                button.PreviousElement = lastButton;
+                button.PreviousFocusElement = lastButton;
                 lastButton = button;
                 button.Scale = 1;
                 button.Flags = ElementFlags.UpdateAndInteract;

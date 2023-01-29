@@ -14,10 +14,18 @@ namespace Elves.Scenes.Battle.UI {
         private readonly GameManager game;
         public BattleUI(GameManager game) {
             this.game = game;
+
             foreach(var button in actionButtons) {
                 interactableElements.Add(button);
                 button.OnActivated += Button_OnActivated;
             }
+
+            Button1 = actionButtons[0];
+            Button2 = actionButtons[1];
+            Button3 = actionButtons[2];
+            Button4 = actionButtons[3];
+
+            DefaultFocusElement = Button1;
         }
 
         private void Button_OnActivated(UIElement element) {
@@ -33,10 +41,7 @@ namespace Elves.Scenes.Battle.UI {
             new() { State = ButtonState.BottomRight, ID = 3 }
         };
 
-        public Button Button1 => actionButtons[0];
-        public Button Button2 => actionButtons[1];
-        public Button Button3 => actionButtons[2];
-        public Button Button4 => actionButtons[3];
+        public readonly Button Button1, Button2, Button3, Button4;
 
         public Button GetActionButton(int ID) {
             if(ID >= actionButtons.Length || ID < 0) {
@@ -58,27 +63,16 @@ namespace Elves.Scenes.Battle.UI {
       
         private readonly List<Button> interactableElements = new();
 
-        protected override bool GetLastEventWasFromMouse() {
-            return GameManager.LastInputEventWasFromMouse;
-        }
+        #region INTERACTION AGENT
 
-        protected override bool GetContextTransitioning() {
-            return false;
-        }
+        protected override bool GetLastEventWasFromMouse() => GameManager.LastInputEventWasFromMouse;
+        protected override bool GetContextTransitioning() => false;
+        protected override TimeSpan GetCurrentTime() => game.Time.TotalGameTime;
+        protected override IEnumerable<UIElement> GetElements() => interactableElements;
+        protected override bool BackButtonPressed() => false;
 
-        protected override TimeSpan GetCurrentTime() {
-            return game.Time.TotalGameTime;
-        }
-
-        protected override IEnumerable<UIElement> GetElements() {
-            return interactableElements;
-        }
-
-        protected override bool BackButtonPressed() {
-            return false;
-        }
-
-        #region UPDATE & RENDER
+        #endregion
+        #region UPDATE, RENDER, & LAYOUT
 
         public void UpdateActionButtons(Rectangle viewport,TimeSpan now,float margin,float halfMargin) {
             float buttonHeight = viewport.Height * 0.25f;

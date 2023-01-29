@@ -5,6 +5,7 @@ using TwelveEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle.Sprite;
+using TwelveEngine.UI.Interaction;
 
 namespace Elves.Scenes.Battle {
     public class BattleSequencer:BattleRendererState {
@@ -48,6 +49,7 @@ namespace Elves.Scenes.Battle {
 
             for(int i = 0;i<4;i++) {
                 var button = UI.GetActionButton(i);
+                button.ClearKeyFocus();
                 button.CanInteract = false;
             }
 
@@ -55,22 +57,23 @@ namespace Elves.Scenes.Battle {
             for(int i = 0;i<end;i++) {
                 var button = UI.GetActionButton(i);
                 button.CanInteract = true;
-
                 var buttonLabel = button.Label;
                 buttonLabel.Clear();
                 buttonLabel.Append(options[i]);
             }
-            
+
+            UI.ResetInteractionState();
             switch(options.Length) {
                 case 1: ConfigSingleButton(isContinue); break;
                 case 2: ConfigDoubleButtons(); break;
                 case 3: ConfigTripleButtons(); break;
                 case 4: ConfigQuadButtons(); break;
             }
+            UI.TrySetDefaultElement();
 
             if(buttonTask != null) {
                 buttonTask.SetResult(-1);
-                Logger.WriteLine("Fatal script error! Tried to get more than one button at a time...");
+                Logger.WriteLine("Fatal script error! Tried to get more than one button at a time...",LoggerLabel.Script);
             }
             buttonTask = new TaskCompletionSource<int>();
             return buttonTask.Task;
@@ -117,6 +120,8 @@ namespace Elves.Scenes.Battle {
         private void ConfigSingleButton(bool isContinue) {
             UI.Button1.SetState(Now,new(isContinue ? ButtonPosition.CenterBottom : ButtonPosition.CenterMiddle,true));
             UI.Button2.Hide(Now); UI.Button3.Hide(Now); UI.Button4.Hide(Now);
+
+            UI.DefaultFocusElement = UI.Button1;
         }
 
         private void ConfigDoubleButtons() {
@@ -124,6 +129,11 @@ namespace Elves.Scenes.Battle {
             UI.Button2.SetState(Now,new(ButtonPosition.CenterRight,true));
             UI.Button3.Hide(Now);
             UI.Button4.Hide(Now);
+
+            UI.DefaultFocusElement = UI.Button1;
+
+            UI.Button1.FocusSet = new() { Right = UI.Button2 };
+            UI.Button2.FocusSet = new() { Left = UI.Button1 };
         }
 
         private void ConfigTripleButtons() {
@@ -131,6 +141,12 @@ namespace Elves.Scenes.Battle {
             UI.Button2.SetState(Now,new(ButtonPosition.TopRight,true));
             UI.Button3.SetState(Now,new(ButtonPosition.CenterBottom,true));
             UI.Button4.Hide(Now);
+
+            UI.DefaultFocusElement = UI.Button1;
+
+            UI.Button1.FocusSet = new() { Right = UI.Button2, Down = UI.Button3 };
+            UI.Button2.FocusSet = new() { Left = UI.Button1, Down = UI.Button3 };
+            UI.Button3.FocusSet = new() { Up = UI.Button1, Left = UI.Button1, Right = UI.Button2, IndeterminateUp = true };
         }
 
         private void ConfigQuadButtons() {
@@ -138,6 +154,13 @@ namespace Elves.Scenes.Battle {
             UI.Button2.SetState(Now,new(ButtonPosition.TopRight,true));
             UI.Button3.SetState(Now,new(ButtonPosition.BottomLeft,true));
             UI.Button4.SetState(Now,new(ButtonPosition.BottomRight,true));
+
+            UI.DefaultFocusElement = UI.Button1;
+
+            UI.Button1.FocusSet = new() { Right = UI.Button2, Down = UI.Button3 };
+            UI.Button2.FocusSet = new() { Left = UI.Button1, Down = UI.Button4 };
+            UI.Button3.FocusSet = new() { Up = UI.Button1, Right = UI.Button4 };
+            UI.Button4.FocusSet = new() { Up = UI.Button2, Left = UI.Button3 };
         }
     }
 }

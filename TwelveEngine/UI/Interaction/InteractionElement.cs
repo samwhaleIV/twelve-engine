@@ -27,8 +27,25 @@ namespace TwelveEngine.UI.Interaction {
         /// </summary>
         public bool Selected => _selected && !InputIsPaused;
 
-        public TElement PreviousElement { get; set; } = null;
-        public TElement NextElement { get; set; } = null;
+        public FocusSet<TElement> FocusSet { get; set; } = FocusSet<TElement>.Empty;
+
+        public TElement PreviousFocusElement {
+            set {
+                var set = FocusSet;
+                set.Left = value;
+                set.Up = value;
+                FocusSet = set;
+            }
+        }
+
+        public TElement NextFocusElement {
+            set {
+                var set = FocusSet;
+                set.Right = value;
+                set.Down = value;
+                FocusSet = set;
+            }
+        }
 
         public bool CanInteract { get; set; } = false;
 
@@ -51,13 +68,35 @@ namespace TwelveEngine.UI.Interaction {
         }
 
         public void SetKeyFocus(TElement previous,TElement next) {
-            NextElement = next;
-            PreviousElement = previous;
+            FocusSet = new FocusSet<TElement>() {
+                Up = previous,
+                Down = next,
+                Left = previous,
+                Right = next
+            };
+        }
+
+        public void SetKeyFocus(TElement up,TElement down,TElement left,TElement right) {
+            FocusSet = new FocusSet<TElement>() {
+                Up = up,
+                Down = down,
+                Left = left,
+                Right = right
+            };
         }
 
         public void ClearKeyFocus() {
-            PreviousElement = null;
-            NextElement = null;
+            FocusSet = FocusSet<TElement>.Empty;
+        }
+
+        public void LinkFocus(TElement nextFocusElement) {
+            NextFocusElement = nextFocusElement;
+            nextFocusElement.PreviousFocusElement = (TElement)this;
+        }
+
+        public static void LinkFocus(TElement a,TElement b) {
+            a.NextFocusElement = b;
+            b.PreviousFocusElement = a;
         }
     }
 }

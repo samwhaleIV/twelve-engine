@@ -26,12 +26,17 @@ namespace TwelveEngine {
             { LoggerLabel.Benchmark, "Benchmark" },
             { LoggerLabel.Logger, "Logger" },
             { LoggerLabel.GameManager, "Game Manager" },
-            { LoggerLabel.Flags, "Flags" }
+            { LoggerLabel.Flags, "Flags" },
+            { LoggerLabel.UI, "UI" },
+            { LoggerLabel.Script, "Script" }
         };
 
         private static string GetLoggerLabel(LoggerLabel label) {
-            if(label == LoggerLabel.None || !labelNames.TryGetValue(label,out string labelValue)) {
+            if(label == LoggerLabel.None) {
                 return null;
+            }
+            if(!labelNames.TryGetValue(label,out string labelValue)) {
+                return $"[{label}] ";
             }
             return $"[{labelValue}] ";
         }
