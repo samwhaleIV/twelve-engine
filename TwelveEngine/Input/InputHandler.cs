@@ -204,19 +204,11 @@ namespace TwelveEngine.Input {
                 () => OnDirectionUp?.Invoke(Direction.Right)
             )},
 
-            {Impulse.Toggle,(
-                () => OnToggleDown?.Invoke(),
-                () => OnToggleUp?.Invoke()
-            )},
-
             {Impulse.Focus,(
                 () => OnFocusDown?.Invoke(),
                 () => OnFocusUp?.Invoke()
             )}
         };
-
-        public event Action OnToggleDown;
-        public event Action OnToggleUp;
 
         public event Action OnAcceptDown;
         public event Action OnAcceptUp;

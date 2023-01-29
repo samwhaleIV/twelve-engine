@@ -2,13 +2,13 @@
 
 namespace TwelveEngine.UI {
     /// <summary>
-    /// Variable event parameter support. Only <c>T</c> to an arity of <c>1</c> is supported; you can fit anything you need inside of one <c>T</c>.
+    /// Variable event parameter support. Only <c>TReturnValue</c> to an arity of <c>1</c> is supported; you can fit anything you need inside of one value.
     /// </summary>
-    public sealed class EndPoint<TReturnValue>:EndPoint {
+    public sealed class Endpoint<TReturnValue>:Endpoint {
 
-        private readonly IEndPoint<TReturnValue> container;
+        private readonly IEndpoint<TReturnValue> container;
 
-        public EndPoint(IEndPoint<TReturnValue> container) => this.container = container;
+        public Endpoint(IEndpoint<TReturnValue> container) => this.container = container;
 
         public override void Activate() => container.FireActivationEvent(container.GetEndPointValue());
     }
@@ -16,12 +16,12 @@ namespace TwelveEngine.UI {
     /// <summary>
     /// Generic end point with no parameters.
     /// </summary>
-    public class EndPoint {
+    public class Endpoint {
 
         private readonly Action SendValue;
 
-        public EndPoint() => SendValue = null;
-        public EndPoint(Action sendValue) => SendValue = sendValue;
+        public Endpoint() => SendValue = null;
+        public Endpoint(Action sendValue) => SendValue = sendValue;
 
         public virtual void Activate() => SendValue.Invoke();
     }

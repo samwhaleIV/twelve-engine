@@ -14,7 +14,5 @@ namespace TwelveEngine.Input {
 
         public Keys Ascend = Keys.Space;
         public Keys Descend = Keys.LeftControl;
-
-        public Keys Toggle = Keys.Tab;
     }
 }

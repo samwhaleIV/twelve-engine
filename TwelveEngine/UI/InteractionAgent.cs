@@ -61,7 +61,7 @@ namespace TwelveEngine.UI {
         /// <summary>
         /// The selection state the last time that button focus was shifted with impulse events.
         /// </summary>
-        private FocusNavState<TElement> _historicalButtonFocusState = FocusNavState<TElement>.None;
+        private ButtonFocusNavState<TElement> _historicalButtonFocusState = ButtonFocusNavState<TElement>.None;
 
         /// <summary>
         /// The default focus element for focus, impulse-based interaction. <br/>
@@ -157,7 +157,7 @@ namespace TwelveEngine.UI {
             _hiddenMouseHoverElement = null;
             _lastSelectedElement = newSelectedElement;
 
-            _historicalButtonFocusState = FocusNavState<TElement>.None;
+            _historicalButtonFocusState = ButtonFocusNavState<TElement>.None;
             DefaultFocusElement = null;
         }
 
@@ -300,8 +300,8 @@ namespace TwelveEngine.UI {
         /// <summary>
         /// Central routing method for all interaction. See <see cref="InputEventType">InputEventType</see> for events.
         /// </summary>
-        /// <param name="inputEvent">A valuable diagnostic value, but not particularly useful for UI applications themselves.</param>
-        /// <returns></returns>
+        /// <param name="inputEvent">Type of event. See <see cref="InputEventType">InputEventType</see> for types. </param>
+        /// <returns>A valuable diagnostic value, but not particularly useful for UI applications themselves.</returns>
         public InputEventResponse SendEvent(InputEvent inputEvent) => inputEvent.Type switch {
             InputEventType.MouseUpdate => UpdateHoveredElement(inputEvent.MousePosition),
             InputEventType.MousePressed => MouseDown(),

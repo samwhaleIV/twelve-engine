@@ -10,7 +10,7 @@ namespace Elves.Scenes.SaveSelect {
 
     public enum TagDisplay { Empty, Create, Custom, Delete }
 
-    public sealed class Tag:SpriteElement, IEndPoint<Tag> {
+    public sealed class Tag:SpriteElement, IEndpoint<Tag> {
 
         public Tag GetEndPointValue() => this;
         public void FireActivationEvent(Tag value) => OnActivated?.Invoke(value);
@@ -51,7 +51,7 @@ namespace Elves.Scenes.SaveSelect {
 
             OnRender += Tag_OnRender;
 
-            EndPoint = new EndPoint<Tag>(this);
+            EndPoint = new Endpoint<Tag>(this);
         }
 
         private readonly AnimationInterpolator blipAnimator = new(TimeSpan.FromMilliseconds(175));

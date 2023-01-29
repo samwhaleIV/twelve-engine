@@ -5,9 +5,10 @@ using System;
 using System.Text;
 using TwelveEngine;
 using TwelveEngine.UI;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Battle.UI {
-    public sealed class Button:UIElement, IEndPoint<int> {
+    public sealed class Button:UIElement, IEndpoint<int> {
 
         public int GetEndPointValue() => ID;
         public void FireActivationEvent(int value) => OnActivated?.Invoke(value);
@@ -15,7 +16,7 @@ namespace Elves.Scenes.Battle.UI {
 
         public Button() {
             Texture = Program.Textures.Panel;
-            EndPoint = new EndPoint<int>(this);
+            EndPoint = new Endpoint<int>(this);
         }
 
         public Rectangle TextureSource { get; set; }
