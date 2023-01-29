@@ -83,7 +83,7 @@ namespace Elves {
         }
 
         private static void CarouselMenuExit(Scene3D scene,ExitValue data) {
-            BattleID battleID = data.battleID;
+            BattleID battleID = data.BattleID;
             scene.TransitionOut(new TransitionData() {
                 Generator = () => GetBattleScene(battleID),
                 Data = StateData.FadeIn(TransitionDuration),

@@ -1,15 +1,19 @@
-﻿using TwelveEngine.UI;
+﻿using TwelveEngine.UI.Book;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine;
 using System;
+using TwelveEngine.UI;
 
 namespace Elves.Scenes.SaveSelect {
 
     public enum TagDisplay { Empty, Create, Custom, Delete }
 
-    public sealed class Tag:SpriteElement {
+    public sealed class Tag:SpriteElement, IEndPoint<Tag> {
+
+        public Tag GetEndPointValue() => this;
+        public void FireActivationEvent(Tag value) => OnActivated?.Invoke(value);
 
         private static readonly Dictionary<TagDisplay,Rectangle> textureSources = new() {
             { TagDisplay.Empty, new(1,50,128,32) },
@@ -33,6 +37,8 @@ namespace Elves.Scenes.SaveSelect {
 
         public DrawingFrame DrawingFrame { get; set; } = null;
 
+        public event Action<Tag> OnActivated;
+
         public Tag(bool tagHasSaveFile) {
             Display = tagHasSaveFile ? TagDisplay.Custom : TagDisplay.Empty;
             TextureSource = textureSources[Display];
@@ -44,6 +50,8 @@ namespace Elves.Scenes.SaveSelect {
             PositionMode = CoordinateMode.Relative;
 
             OnRender += Tag_OnRender;
+
+            EndPoint = new EndPoint<Tag>(this);
         }
 
         private readonly AnimationInterpolator blipAnimator = new(TimeSpan.FromMilliseconds(175));

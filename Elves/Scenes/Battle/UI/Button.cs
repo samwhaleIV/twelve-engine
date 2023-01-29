@@ -4,9 +4,19 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Text;
 using TwelveEngine;
+using TwelveEngine.UI;
 
 namespace Elves.Scenes.Battle.UI {
-    public sealed class Button:UIElement {
+    public sealed class Button:UIElement, IEndPoint<int> {
+
+        public int GetEndPointValue() => ID;
+        public void FireActivationEvent(int value) => OnActivated?.Invoke(value);
+        public event Action<int> OnActivated;
+
+        public Button() {
+            Texture = Program.Textures.Panel;
+            EndPoint = new EndPoint<int>(this);
+        }
 
         public Rectangle TextureSource { get; set; }
         public int ID { get; set; }
@@ -25,8 +35,6 @@ namespace Elves.Scenes.Battle.UI {
         private static readonly Rectangle DefaultTexture = new(0,16,32,16);
         private static readonly Rectangle SelectedTexture = new(0,32,32,16);
         private static readonly Rectangle PressedTexture = new(0,48,32,16);
-
-        public Button() => Texture = Program.Textures.Panel;
 
         public readonly StringBuilder Label = new();
 

@@ -25,16 +25,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\ParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\Screenspace3DSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\FocusSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InputEvent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InputEventResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InputEventType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionElement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionAgent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ButtonFocusState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\IEndPoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\EndPoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\FocusElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\FocusSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InputEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InputEventResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InputEventType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntryPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoggerLabel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionStateChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionStateChange.cs" />
     <Compile Include="..\TwelveEngine\SaveFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InfinityBackground.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrollingBackground.cs" />
@@ -50,15 +54,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Book.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ComputedArea.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\CoordinateMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Element.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ElementFlags.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ElementLayoutData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Page.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\SpriteBook.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\SpriteElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\Book.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ComputedArea.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\CoordinateMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\BookElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ElementFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ElementLayoutData.cs" />
+    <Compile Include="..\TwelveEngine\UI\Book\BookPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\SpriteBook.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\SpriteElement.cs" />
     <Compile Include="..\TwelveEngine\Timeline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
@@ -103,5 +107,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />
+    <Folder Include="$(MSBuildThisFileDirectory)UI\Book\" />
   </ItemGroup>
 </Project>

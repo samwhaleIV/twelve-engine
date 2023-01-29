@@ -1,7 +1,6 @@
-﻿using TwelveEngine.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using TwelveEngine.UI.Interaction;
+using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
 
@@ -14,10 +13,10 @@ namespace Elves.Scenes.SaveSelect {
             AcceptButton = AddButton(0,140,ButtonImpulse.Accept);
             DeleteButton = AddButton(17,140,ButtonImpulse.Delete);
 
-            BackButton.OnActivated += Button_OnActivated;
-            PlayButton.OnActivated += Button_OnActivated;
-            AcceptButton.OnActivated += Button_OnActivated;
-            DeleteButton.OnActivated += Button_OnActivated;
+            BackButton.OnActivated += ButtonPressed;
+            PlayButton.OnActivated += ButtonPressed;
+            AcceptButton.OnActivated += ButtonPressed;
+            DeleteButton.OnActivated += ButtonPressed;
 
             Tag1 = AddTag(scene,0);
             Tag2 = AddTag(scene,1);
@@ -91,9 +90,5 @@ namespace Elves.Scenes.SaveSelect {
         public event Action<ButtonImpulse> OnButtonPresed;
 
         private void ButtonPressed(ButtonImpulse impulse) => OnButtonPresed?.Invoke(impulse);
-
-        private void Button_OnActivated(Element element) {
-            ButtonPressed((element as Button).Impulse);
-        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace TwelveEngine.UI {
-    public abstract class Page<TElement> where TElement:Element {
+namespace TwelveEngine.UI.Book {
+    public abstract class BookPage<TElement> where TElement:BookElement {
 
         /// <summary>
         /// Current total time. 
@@ -20,7 +20,7 @@ namespace TwelveEngine.UI {
         /// Setup the page because it has been opened. No need to key element animations. They will be dropped until the page transition period has ended.
         /// </summary>
         /// <returns>Default focus element. A hint for the UI selection system on how to approach the first element when no previous selected element has been used on this display of the page.</returns>
-        public abstract Element Open();
+        public abstract BookElement Open();
 
         /// <summary>
         /// A good place to remove an element's event handlers.

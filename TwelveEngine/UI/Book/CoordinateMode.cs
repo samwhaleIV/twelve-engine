@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine.UI {
+﻿namespace TwelveEngine.UI.Book {
     public enum CoordinateMode {
         /// <summary>
         /// No translation to the coordinate. The viewport origin is always added to coordinates.

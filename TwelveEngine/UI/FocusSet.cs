@@ -1,7 +1,7 @@
 ﻿using TwelveEngine.Input;
 
-namespace TwelveEngine.UI.Interaction {
-    public struct FocusSet<TElement> where TElement : class {
+namespace TwelveEngine.UI {
+    public struct FocusSet<TElement> {
 
         public TElement Up, Down, Left, Right;
 

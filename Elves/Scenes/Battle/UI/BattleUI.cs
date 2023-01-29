@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Font;
 using TwelveEngine.Shell;
 using TwelveEngine;
-using TwelveEngine.UI.Interaction;
+using TwelveEngine.UI;
 
 namespace Elves.Scenes.Battle.UI {
 
@@ -28,8 +28,8 @@ namespace Elves.Scenes.Battle.UI {
             DefaultFocusElement = Button1;
         }
 
-        private void Button_OnActivated(UIElement element) {
-            OnActionButtonClick?.Invoke((element as Button).ID);
+        private void Button_OnActivated(int ID) {
+            OnActionButtonClick?.Invoke(ID);
         }
 
         public Action<int> OnActionButtonClick;

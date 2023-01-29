@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using TwelveEngine.Shell;
-using TwelveEngine.UI.Interaction;
 
-namespace TwelveEngine.UI {
-    public class Book<TElement>:InteractionAgent<Element> where TElement:Element {
+namespace TwelveEngine.UI.Book {
+    public class Book<TElement>:InteractionAgent<BookElement> where TElement:BookElement {
 
         public static readonly TimeSpan DefaultAnimationDuration = Constants.UI.DefaultAnimationDuration;
         public static readonly TimeSpan DefaultTransitionDuration = Constants.UI.DefaultTransitionDuration;
@@ -17,7 +16,7 @@ namespace TwelveEngine.UI {
         /// <summary>
         /// The current, active page.
         /// </summary>
-        public Page<TElement> Page { get; private set; } = null;
+        public BookPage<TElement> Page { get; private set; } = null;
 
         /// <summary>
         /// The transition duration when changing the active page. By default, <c>DefaultTransitionDuration</c>.
@@ -45,16 +44,16 @@ namespace TwelveEngine.UI {
 
         protected override TimeSpan GetCurrentTime() => _currentTime;
 
-        protected override IEnumerable<Element> GetElements() => Elements;
+        protected override IEnumerable<BookElement> GetElements() => Elements;
 
-        public void SetPage(Page<TElement> newPage) {
+        public void SetPage(BookPage<TElement> newPage) {
             if(newPage is null) {
                 throw new ArgumentNullException(nameof(newPage));
             }
 
             pageTransitionAnimator.Duration = TransitionDuration;
 
-            Page<TElement> oldPage = Page;
+            BookPage<TElement> oldPage = Page;
 
             if(oldPage is not null) {
                 LockElementsForTransition(_currentTime);

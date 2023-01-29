@@ -1,11 +1,8 @@
-﻿using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using TwelveEngine;
-using TwelveEngine.UI;
 using TwelveEngine.Input;
+using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagDrawPage:SaveSelectPage {
@@ -19,7 +16,7 @@ namespace Elves.Scenes.SaveSelect {
             Scene.CreateSave(UI.SelectedTag.ID);
         }
 
-        public override Element Open() {
+        public override BookElement Open() {
             tag = UI.SelectedTag;
             tag.Flags = ElementFlags.Update;
             var label = UI.SignHereLabel;

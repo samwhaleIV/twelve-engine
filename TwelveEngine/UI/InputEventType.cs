@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine.UI.Interaction {
+﻿namespace TwelveEngine.UI {
     public enum InputEventType {
         /// <summary>
         /// Send a mouse update every frame, even if the mouse position has not changed.

@@ -1,10 +1,8 @@
-﻿using Elves.Scenes.SplashMenu;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Media;
 using System;
 using TwelveEngine;
 using TwelveEngine.Font;
-using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Intro {
     public sealed class IntroScene:Scene {

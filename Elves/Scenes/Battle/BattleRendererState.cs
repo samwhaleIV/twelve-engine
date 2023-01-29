@@ -2,7 +2,7 @@
 using TwelveEngine;
 using Elves.Scenes.Battle.UI;
 using TwelveEngine.Input;
-using TwelveEngine.UI.Interaction;
+using TwelveEngine.UI;
 
 namespace Elves.Scenes.Battle {
     public abstract class BattleRendererState:Scene3D {

@@ -1,6 +1,4 @@
-﻿using Elves.Scenes.Battle.Sprite.Elves;
-using System.Threading.Tasks;
-using Elves.Scenes.Battle.Sprite.Animation;
+﻿using System.Threading.Tasks;
 
 namespace Elves.Scenes.Battle.Battles {
     public class DebugBattle:BattleScript {
