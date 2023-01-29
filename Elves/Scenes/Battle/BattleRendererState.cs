@@ -73,6 +73,11 @@ namespace Elves.Scenes.Battle {
             Input.OnDirectionDown += Input_OnDirectionDown;
             Input.OnAcceptUp += Input_OnAcceptUp;
             Mouse.OnRelease += Mouse_OnRelease;
+            Input.OnFocusDown += Input_OnFocusDown;
+        }
+
+        private void Input_OnFocusDown() {
+            battleUI.SendEvent(InputEvent.FocusButtonActivated);
         }
 
         private void Mouse_OnRelease() => UI?.SendEvent(InputEvent.MouseReleased);

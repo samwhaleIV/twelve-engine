@@ -12,7 +12,7 @@ namespace TwelveEngine.Input {
         private static readonly Impulse[] impulses = (Impulse[])Enum.GetValues(typeof(Impulse));
 
         private readonly Dictionary<Impulse,KeyState> impulseStates = new();
-        private static readonly Dictionary<Impulse,Buttons> gamePadBinds = GetControllerBinds();
+        private static readonly Dictionary<Impulse,Buttons> gamePadBinds = KeyBinds.GetControllerBinds();
 
         internal InputHandler() {
             foreach(var impulse in impulses) {
@@ -208,6 +208,11 @@ namespace TwelveEngine.Input {
                 () => OnToggleDown?.Invoke(),
                 () => OnToggleUp?.Invoke()
             )},
+
+            {Impulse.Focus,(
+                () => OnFocusDown?.Invoke(),
+                () => OnFocusUp?.Invoke()
+            )}
         };
 
         public event Action OnToggleDown;
@@ -219,19 +224,10 @@ namespace TwelveEngine.Input {
         public event Action OnCancelDown;
         public event Action OnCancelUp;
 
+        public event Action OnFocusDown;
+        public event Action OnFocusUp;
+
         public event Action<Direction> OnDirectionUp;
         public event Action<Direction> OnDirectionDown;
-
-        private static Dictionary<Impulse,Buttons> GetControllerBinds() => new() {
-            { Impulse.Up, Buttons.DPadUp },
-            { Impulse.Down, Buttons.DPadDown },
-            { Impulse.Left, Buttons.DPadLeft },
-            { Impulse.Right, Buttons.DPadRight },
-            { Impulse.Accept, Buttons.A },
-            { Impulse.Cancel, Buttons.B },
-            { Impulse.Ascend, Buttons.LeftShoulder },
-            { Impulse.Descend, Buttons.RightShoulder },
-            { Impulse.Toggle, Buttons.Back }
-        };
     }
 }

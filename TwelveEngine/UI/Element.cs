@@ -155,8 +155,8 @@ namespace TwelveEngine.UI {
         /// <param name="viewport">The viewport of of the target area.</param>
         public void Update(TimeSpan now,VectorRectangle viewport) {
             animator.Update(now);
-            if(InputPaused && animator.IsFinished) {
-                InputPaused = false;
+            if(InputIsPaused && animator.IsFinished) {
+                InputIsPaused = false;
                 KeyAnimation(now);
             }
             ElementLayoutData layout;
@@ -165,7 +165,7 @@ namespace TwelveEngine.UI {
             } else {
                 layout = this.layout;
             }
-            if(CanUpdate && !InputPaused) {
+            if(CanUpdate && !InputIsPaused) {
                 OnUpdate?.Invoke(now);
             }
             UpdateComputedArea(layout,viewport);
@@ -173,7 +173,7 @@ namespace TwelveEngine.UI {
 
 
         public void PauseInputForAnimation() {
-            InputPaused = true;
+            InputIsPaused = true;
         }
 
         public override VectorRectangle GetScreenArea() {

@@ -32,6 +32,9 @@ namespace TwelveEngine.UI {
         /// <summary>
         /// Method is executed when a keyboard/gamepad cancel impulse has been pressed.
         /// </summary>
-        public virtual void Back() { }
+        /// <returns>A value indicating whether the back request was fulfilled or ignored. For diagnostic purposes.</returns>
+        public virtual bool Back() {
+            return false;
+        }
     }
 }

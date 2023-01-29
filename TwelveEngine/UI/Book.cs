@@ -139,5 +139,12 @@ namespace TwelveEngine.UI {
             ResetInteractionState();
             _elementsAreLocked = true;
         }
+
+        protected override bool BackButtonPressed() {
+            if(Page is null) {
+                return false;
+            }
+            return Page.Back();
+        }
     }
 }

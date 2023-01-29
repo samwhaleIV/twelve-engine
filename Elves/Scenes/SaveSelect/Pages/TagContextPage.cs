@@ -73,6 +73,13 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
+        private void CancelDelete() {
+            tag.Display = TagDisplay.Custom;
+            tag.Blip(UI.Now);
+            SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
+            UI.ResetInteractionState(UI.BackButton);
+        }
+
         private void UI_OnButtonPresed(ButtonImpulse impulse) {
             switch(tag.Display) {
                 case TagDisplay.Custom:
@@ -93,10 +100,7 @@ namespace Elves.Scenes.SaveSelect {
                 case TagDisplay.Delete:
                     switch(impulse) {
                         case ButtonImpulse.Back:
-                            tag.Display = TagDisplay.Custom;
-                            tag.Blip(UI.Now);
-                            SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
-                            UI.ResetInteractionState(UI.BackButton);
+                            CancelDelete();
                             break;
                         case ButtonImpulse.Accept:
                             tag.Display = TagDisplay.Empty;
@@ -117,6 +121,19 @@ namespace Elves.Scenes.SaveSelect {
                     }
                     break;
             }
+        }
+
+        public override bool Back() {
+            switch(tag.Display) {
+                case TagDisplay.Delete:
+                    CancelDelete();
+                    return true;
+                case TagDisplay.Custom:
+                case TagDisplay.Create:
+                    UI.SetPage(UI.TagSelectPage);
+                    return true;
+            }
+            return false;
         }
 
         public override void Close() {

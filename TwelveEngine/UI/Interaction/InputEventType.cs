@@ -27,6 +27,10 @@
         /// <summary>
         /// A cancel button has been pressed. Used for context aware back button/pagination.
         /// </summary>
-        BackButtonActivated
+        BackButtonActivated,
+        /// <summary>
+        /// A focus button that advances the focus queue to the right. The tab button, in most traditional applications.
+        /// </summary>
+        FocusButtonActivated
     }
 }

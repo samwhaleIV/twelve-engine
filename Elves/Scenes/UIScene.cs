@@ -10,14 +10,23 @@ namespace Elves.Scenes.SaveSelect {
 
         public UIScene() {
             Name = "UI Scene";
+
             OnRender += UIScene_OnRender;
             OnUpdate += UIScene_OnUpdate;
-            Input.OnAcceptDown += Input_OnAcceptDown;
-            Input.OnCancelDown += Input_OnCancelDown;
+
             Mouse.OnPress += Mouse_OnPress;
-            Input.OnDirectionDown += Input_OnDirectionDown;
-            Input.OnAcceptUp += Input_OnAcceptUp;
             Mouse.OnRelease += Mouse_OnRelease;
+
+            Input.OnAcceptDown += Input_OnAcceptDown;
+            Input.OnAcceptUp += Input_OnAcceptUp;
+
+            Input.OnCancelDown += Input_OnCancelDown;
+            Input.OnDirectionDown += Input_OnDirectionDown;
+            Input.OnFocusDown += Input_OnFocusDown;
+        }
+
+        private void Input_OnFocusDown() {
+            UI?.SendEvent(InputEvent.FocusButtonActivated);
         }
 
         private void Mouse_OnRelease() => UI?.SendEvent(InputEvent.MouseReleased);

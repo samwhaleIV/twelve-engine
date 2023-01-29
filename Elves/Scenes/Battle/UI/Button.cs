@@ -11,17 +11,22 @@ namespace Elves.Scenes.Battle.UI {
         public Rectangle TextureSource { get; set; }
         public int ID { get; set; }
 
-        public readonly AnimationInterpolator interpolator = new(Constants.AnimationTiming.ActionButtonMovement);
-
-        public bool AnimationIsFinished => interpolator.IsFinished;
-
-        private static readonly Rectangle PressedTextureSource = new(0,48,32,16);
-        private static readonly Rectangle SelectedTextureSource = new(0,32,32,16);
-
-        public Button() {
-            Texture = Program.Textures.Panel;
-            TextureSource = new Rectangle(0,16,32,16);
+        protected override bool GetInputPaused() {
+            /* Might need to ignore for turbo button pressing... */
+            return !interpolator.IsFinished;
         }
+
+        protected override void SetInputPaused(bool value) {
+            throw new InvalidOperationException("Input pause property is readonly for button elements.");
+        }
+
+        private readonly AnimationInterpolator interpolator = new(Constants.AnimationTiming.ActionButtonMovement);
+
+        private static readonly Rectangle DefaultTexture = new(0,16,32,16);
+        private static readonly Rectangle SelectedTexture = new(0,32,32,16);
+        private static readonly Rectangle PressedTexture = new(0,48,32,16);
+
+        public Button() => Texture = Program.Textures.Panel;
 
         public readonly StringBuilder Label = new();
 
@@ -79,11 +84,12 @@ namespace Elves.Scenes.Battle.UI {
 
         private Rectangle GetTextureSource() {
             if(Pressed) {
-                return PressedTextureSource;
+                return PressedTexture;
             } else if(Selected) {
-                return SelectedTextureSource;
+                return SelectedTexture;
+            } else {
+                return DefaultTexture;
             }
-            return TextureSource;
         }
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {

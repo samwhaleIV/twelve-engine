@@ -6,7 +6,6 @@ using TwelveEngine.Font;
 using TwelveEngine.Shell;
 using TwelveEngine;
 using TwelveEngine.UI.Interaction;
-using TwelveEngine.UI;
 
 namespace Elves.Scenes.Battle.UI {
 
@@ -18,7 +17,6 @@ namespace Elves.Scenes.Battle.UI {
             foreach(var button in actionButtons) {
                 interactableElements.Add(button);
                 button.OnActivated += Button_OnActivated;
-                button.CanInteract = true;
             }
         }
 
@@ -74,6 +72,10 @@ namespace Elves.Scenes.Battle.UI {
 
         protected override IEnumerable<UIElement> GetElements() {
             return interactableElements;
+        }
+
+        protected override bool BackButtonPressed() {
+            return false;
         }
 
         #region UPDATE & RENDER

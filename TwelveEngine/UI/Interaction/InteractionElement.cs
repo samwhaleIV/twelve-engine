@@ -1,9 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 
 namespace TwelveEngine.UI.Interaction {
     public abstract class InteractionElement<TElement> where TElement:InteractionElement<TElement> {
-        public bool InputPaused { get; protected set; }
+
+        private bool _inputPaused = false;
+
+        protected virtual bool GetInputPaused() => _inputPaused;
+        protected virtual void SetInputPaused(bool value) => _inputPaused = value;
+
+        public bool InputIsPaused {
+            get => GetInputPaused();
+            protected set => SetInputPaused(value);
+        }
 
         private bool _pressed = false, _selected = false;
 
@@ -12,12 +20,12 @@ namespace TwelveEngine.UI.Interaction {
         /// <summary>
         /// Filtered by <c>InputPaused</c>.
         /// </summary>
-        public bool Pressed => _pressed && !InputPaused;
+        public bool Pressed => _pressed && !InputIsPaused;
 
         /// <summary>
         /// Filtered by <c>InputPaused</c>.
         /// </summary>
-        public bool Selected => _selected && !InputPaused;
+        public bool Selected => _selected && !InputIsPaused;
 
         public TElement PreviousElement { get; set; } = null;
         public TElement NextElement { get; set; } = null;
@@ -36,7 +44,7 @@ namespace TwelveEngine.UI.Interaction {
         public event Action<TElement> OnActivated;
 
         public void Activate() {
-            if(!CanInteract || InputPaused) {
+            if(!CanInteract || InputIsPaused) {
                 return;
             }
             OnActivated?.Invoke((TElement)this);

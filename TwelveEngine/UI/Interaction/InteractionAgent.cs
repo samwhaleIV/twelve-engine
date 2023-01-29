@@ -19,7 +19,11 @@ namespace TwelveEngine.UI.Interaction {
         protected abstract TimeSpan GetCurrentTime();
         public TimeSpan Now => GetCurrentTime();
 
-        protected event Action OnBackButtonPressed;
+        /// <summary>
+        /// Activated when the back button is pressed. E.g., the escape button. Useful for pagination.
+        /// </summary>
+        /// <returns>A value indicating if the back button request was accepted.</returns>
+        protected abstract bool BackButtonPressed();
 
         private bool _keyboardIsPressingElement = false;
         private TElement _selectedElement = null, _pressedElement = null, _hiddenMouseHoverElement = null;
@@ -69,7 +73,7 @@ namespace TwelveEngine.UI.Interaction {
         public TElement PressedElement {
             get => _pressedElement;
             private set {
-                if(_pressedElement == value || IsTransitioning || value is not null && value.InputPaused) {
+                if(_pressedElement == value || IsTransitioning || value is not null && value.InputIsPaused) {
                     /* Do not set a new pressed element if it is waiting for an animation during a page */
                     return;
                 }
@@ -160,7 +164,7 @@ namespace TwelveEngine.UI.Interaction {
         /// A button, bound to a direction, has been pressed. Fire once per keystroke.
         /// </summary>
         /// <param name="direction">The direction representing the button that was pressed.</param>
-        private InputEventResponse DirectionDown(Direction direction) {
+        private InputEventResponse DirectionDown(Direction direction,bool rollover = false) {
             if(PressedElement is not null || direction == Direction.None) {
                 return InputEventResponse.NoChange;
             }
@@ -174,6 +178,9 @@ namespace TwelveEngine.UI.Interaction {
                 newElement = SelectedElement.PreviousElement;
             } else if(uiDirection > 0) {
                 newElement = SelectedElement.NextElement;
+                if(newElement is null && rollover) {
+                    newElement = DefaultFocusElement;
+                }
             } else if(SelectedElement is null) {
                 /* This should be impossible, but might as well cover our ass if a "None" direction is ever added */
                 newElement = GetLastSelectedOrDefault();
@@ -220,11 +227,7 @@ namespace TwelveEngine.UI.Interaction {
             if(PressedElement is not null) {
                 return InputEventResponse.NoChange;
             }
-            if(OnBackButtonPressed is null) {
-                return InputEventResponse.NoChange;
-            }
-            OnBackButtonPressed.Invoke();
-            return InputEventResponse.Success;
+            return BackButtonPressed() ? InputEventResponse.Success : InputEventResponse.NoChange;
         }
 
         /// <summary>
@@ -236,10 +239,11 @@ namespace TwelveEngine.UI.Interaction {
             InputEventType.MouseUpdate => UpdateHoveredElement(inputEvent.MousePosition),
             InputEventType.MousePressed => MouseDown(),
             InputEventType.MouseReleased => MouseUp(),
-            InputEventType.DirectionImpulse => DirectionDown(inputEvent.Direction),
+            InputEventType.DirectionImpulse => DirectionDown(inputEvent.Direction,rollover: false),
             InputEventType.AcceptPressed => AcceptDown(),
             InputEventType.AcceptReleased => AcceptUp(),
             InputEventType.BackButtonActivated => CancelDown(),
+            InputEventType.FocusButtonActivated => DirectionDown(Direction.Right,rollover: true),
             _ => InputEventResponse.UnsupportedEventType
         };
 
@@ -254,7 +258,7 @@ namespace TwelveEngine.UI.Interaction {
                 return PressedElement == _hiddenMouseHoverElement ? CursorState.Pressed : CursorState.Default;
             } else if(SelectedElement is not null) {
                 /* Don't show interaction cursor state if the element is waiting for its animation to finish. */
-                return SelectedElement == _hiddenMouseHoverElement && !SelectedElement.InputPaused ? CursorState.Interact : CursorState.Default;
+                return SelectedElement == _hiddenMouseHoverElement && !SelectedElement.InputIsPaused ? CursorState.Interact : CursorState.Default;
             } else {
                 return _hiddenMouseHoverElement is not null ? CursorState.Interact : CursorState.Default;
             }

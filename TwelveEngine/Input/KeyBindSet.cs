@@ -7,7 +7,9 @@ namespace TwelveEngine.Input {
         public Keys Left = Keys.A;
         public Keys Right = Keys.D;
 
-        public Keys Accept = Keys.E;
+        public Keys Focus = Keys.Tab;
+
+        public Keys Accept = Keys.Enter;
         public Keys Cancel = Keys.Escape;
 
         public Keys Ascend = Keys.Space;

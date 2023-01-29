@@ -44,5 +44,7 @@ namespace TwelveEngine.UI.Interaction {
         public static readonly InputEvent AcceptReleased = new(InputEventType.AcceptReleased);
 
         public static readonly InputEvent BackButtonActivated = new(InputEventType.BackButtonActivated);
+
+        public static readonly InputEvent FocusButtonActivated = new(InputEventType.FocusButtonActivated);
     }
 }

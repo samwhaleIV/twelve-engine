@@ -46,10 +46,17 @@ namespace Elves.Scenes.Battle {
                 options = DefaultOptions;
             }
 
+            for(int i = 0;i<4;i++) {
+                var button = UI.GetActionButton(i);
+                button.CanInteract = false;
+            }
+
             int end = Math.Min(options.Length,4);
             for(int i = 0;i<end;i++) {
-                Button button = UI.GetActionButton(i);
-                StringBuilder buttonLabel = button.Label;
+                var button = UI.GetActionButton(i);
+                button.CanInteract = true;
+
+                var buttonLabel = button.Label;
                 buttonLabel.Clear();
                 buttonLabel.Append(options[i]);
             }
