@@ -152,7 +152,12 @@ namespace TwelveEngine.Shell {
 
         public TransitionState TransitionState { get; private set; }
 
-        public bool IsTransitioning => TransitionState != TransitionState.None;
+        public bool IsTransitioning {
+            get {
+                bool isTransitioning = TransitionState != TransitionState.None;
+                return isTransitioning;
+            }
+        }
 
         private TimeSpan transitionStartTime = TimeSpan.Zero;
         private TimeSpan transitionDuration = TimeSpan.Zero;

@@ -12,7 +12,10 @@ namespace Elves.Scenes.Battle.UI {
     public sealed class BattleUI:InteractionAgent<UIElement> {
 
         private readonly GameManager game;
-        public BattleUI(GameManager game) {
+        private readonly GameState owner;
+
+        public BattleUI(GameState owner,GameManager game) {
+            this.owner = owner;
             this.game = game;
 
             foreach(var button in actionButtons) {
@@ -66,7 +69,7 @@ namespace Elves.Scenes.Battle.UI {
         #region INTERACTION AGENT
 
         protected override bool GetLastEventWasFromMouse() => GameManager.LastInputEventWasFromMouse;
-        protected override bool GetContextTransitioning() => false;
+        protected override bool GetContextTransitioning() => owner.IsTransitioning;
         protected override TimeSpan GetCurrentTime() => game.Time.TotalGameTime;
         protected override IEnumerable<UIElement> GetElements() => interactableElements;
         protected override bool BackButtonPressed() => false;
@@ -199,11 +202,11 @@ namespace Elves.Scenes.Battle.UI {
             RenderHealthBars(spriteBatch,playerData,targetData);
             spriteBatch.End();
 
-            RenderTagline(spriteBatch);
-
             Fonts.RetroFont.Begin(spriteBatch);
             RenderActionButtonText();
             Fonts.RetroFont.End();
+
+            RenderTagline(spriteBatch);
         }
         #endregion
     }

@@ -64,7 +64,7 @@ namespace Elves.Scenes.Battle {
         protected abstract void ActionButtonClicked(int ID);
 
         private void InitializeBattleUI() {
-            battleUI = new BattleUI(Game);
+            battleUI = new BattleUI(this,Game);
             battleUI.OnActionButtonClick += ActionButtonClicked;
 
             Input.OnAcceptDown += Input_OnAcceptDown;

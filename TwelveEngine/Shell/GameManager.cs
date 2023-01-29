@@ -343,9 +343,11 @@ namespace TwelveEngine.Shell {
             /* Priority for keyboard or gamepad events, even if the mouse data changed in the same frame. */
             if(IsActive && mouseState != LastMouseState) {
                 LastInputEventWasFromMouse = true;
+                //Console.WriteLine("MOUSE ACTIVE");
             }
             if(IsActive && keyboardState != LastKeyboardState || gamePadState != LastGamePadState) {
                 LastInputEventWasFromMouse = false;
+                //Console.WriteLine("KEYBOARD ACTIVE");
             }
 
             LastMouseState = mouseState;
