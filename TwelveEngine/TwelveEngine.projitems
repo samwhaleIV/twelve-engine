@@ -30,11 +30,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InputEventResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InputEventType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionElement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionStateChange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntryPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoggerLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Interaction\InteractionStateChange.cs" />
     <Compile Include="..\TwelveEngine\SaveFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InfinityBackground.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrollingBackground.cs" />
