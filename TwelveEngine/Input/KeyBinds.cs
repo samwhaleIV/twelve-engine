@@ -6,7 +6,7 @@ using System;
 namespace TwelveEngine.Input {
     public static class KeyBinds {
 
-        private static Dictionary<Impulse,Keys> GetBinds(KeyBindSet keyBindSet) => new() {
+        private static Dictionary<Impulse,MultiBindKey> GetBinds(KeyBindSet keyBindSet) => new() {
             { Impulse.Up, keyBindSet.Up },
             { Impulse.Down, keyBindSet.Down },
             { Impulse.Left, keyBindSet.Left },
@@ -37,16 +37,16 @@ namespace TwelveEngine.Input {
 
         public static string Path { get; set; }
 
-        private static readonly Dictionary<Impulse,Keys> impulses = GetBinds(new KeyBindSet());
+        private static readonly Dictionary<Impulse,MultiBindKey> impulses = GetBinds(new KeyBindSet());
 
-        public static Keys Get(Impulse type) {
+        public static MultiBindKey Get(Impulse type) {
             return impulses[type];
         }
 
-        public static bool TryGet(Impulse type,out Keys key) {
+        public static bool TryGet(Impulse type,out MultiBindKey key) {
             var hasImpulse = impulses.TryGetValue(type, out key);
             if(!hasImpulse) {
-                key = Keys.None;
+                key = MultiBindKey.None;
             }
             return hasImpulse;
         }
@@ -55,8 +55,8 @@ namespace TwelveEngine.Input {
             return impulses.ContainsKey(type);
         }
 
-        public static void Set(Impulse type,Keys key) {
-            if(!validKeys.Contains(key)) {
+        public static void Set(Impulse type,MultiBindKey key) {
+            if(!ValidKeys.Contains(ref key)) {
                 return;
             }
             impulses[type] = key;
@@ -104,7 +104,7 @@ namespace TwelveEngine.Input {
             writer.Write(impulses.Count);
             foreach(var (impulse,key) in impulses) {
                 writer.Write((int)impulse);
-                writer.Write((int)key);
+                key.Write(writer);
             }
         }
 
@@ -112,90 +112,13 @@ namespace TwelveEngine.Input {
             int count = reader.ReadInt32();
             for(var i = 0;i<count;i++) {
                 var impulse = (Impulse)reader.ReadInt32();
-                var key = (Keys)reader.ReadInt32();
-                if(!validKeys.Contains(key)) {
+                MultiBindKey key = MultiBindKey.Read(reader);
+                if(!ValidKeys.Contains(ref key)) {
                     continue;
                 }
                 impulses[impulse] = key;
             }
         }
 
-        private static readonly Keys[] ValidKeysList = new Keys[] {
-            Keys.OemTilde,
-            Keys.D1,
-            Keys.D2,
-            Keys.D3,
-            Keys.D4,
-            Keys.D5,
-            Keys.D6,
-            Keys.D7,
-            Keys.Tab,
-            Keys.Q,
-            Keys.W,
-            Keys.E,
-            Keys.R,
-            Keys.T,
-            Keys.Y,
-            Keys.U,
-            Keys.Space,
-            Keys.A,
-            Keys.S,
-            Keys.D,
-            Keys.F,
-            Keys.G,
-            Keys.H,
-            Keys.J,
-            Keys.LeftShift,
-            Keys.Z,
-            Keys.X,
-            Keys.C,
-            Keys.V,
-            Keys.B,
-            Keys.N,
-            Keys.M,
-            Keys.Up,
-            Keys.Down,
-            Keys.Left,
-            Keys.Right,
-            Keys.Insert,
-            Keys.Home,
-            Keys.PageUp,
-            Keys.PageDown,
-            Keys.D8,
-            Keys.D9,
-            Keys.D0,
-            Keys.OemMinus,
-            Keys.OemPlus,
-            Keys.Back,
-            Keys.OemComma,
-            Keys.OemPeriod,
-            Keys.I,
-            Keys.O,
-            Keys.P,
-            Keys.OemOpenBrackets,
-            Keys.OemCloseBrackets,
-            Keys.OemBackslash,
-            Keys.OemQuestion,
-            Keys.LeftControl,
-            Keys.K,
-            Keys.L,
-            Keys.OemSemicolon,
-            Keys.OemQuotes,
-            Keys.Enter,
-            Keys.Delete,
-            Keys.End,
-            Keys.Escape
-        };
-
-        private static readonly HashSet<Keys> validKeys = GetValidKeysSet();
-
-        private static HashSet<Keys> GetValidKeysSet() {
-            HashSet<Keys> hashSet = new();
-            Keys[] list = ValidKeysList;
-            foreach(var key in list) {
-                hashSet.Add(key);
-            }
-            return hashSet;
-        }
     }
 }

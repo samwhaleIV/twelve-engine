@@ -102,6 +102,8 @@ namespace TwelveEngine.Shell {
             }
         }
 
+        /* This method lends itself to having a frame of latency with the input system.
+         * Not expected to impact user experience, with 1 frame generally over a total of 1000. */
         internal void UpdateTransition() {
             if(TransitionState == TransitionState.None || TransitionT < 1) {
                 return;

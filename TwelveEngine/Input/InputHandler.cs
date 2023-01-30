@@ -28,9 +28,9 @@ namespace TwelveEngine.Input {
             return button;
         }
 
-        public static Keys GetKeyboardBind(Impulse impulse) {
-            if(!KeyBinds.TryGet(impulse,out Keys key)) {
-                return Keys.None;
+        public static MultiBindKey GetKeyboardBind(Impulse impulse) {
+            if(!KeyBinds.TryGet(impulse,out MultiBindKey key)) {
+                return MultiBindKey.None;
             }
             return key;
         }
@@ -60,29 +60,17 @@ namespace TwelveEngine.Input {
         }
 
         private KeyState GetImpulseState(Impulse impulse) {
-            Keys bind = GetKeyboardBind(impulse);
-            if(bind == Keys.None) {
-                return KeyState.Up;
-            }
-            bool keyboard = KeyboardState.IsKeyDown(bind);
-            if(keyboard) {
+            if(GetKeyboardBind(impulse).IsPressed(KeyboardState)) {
                 return KeyState.Down;
             }
-            Buttons gamepadBind = GetGamePadBind(impulse);
-            if(gamepadBind == Buttons.None) {
-                return KeyState.Up;
-            }
-            bool gamePad = GamePadState.IsButtonDown(gamepadBind);
-            if(gamePad) {
+            if(GamePadState.IsButtonDown(GetGamePadBind(impulse))) {
                 return KeyState.Down;
-            } else {
-                return KeyState.Up;
             }
+            return KeyState.Up;
         }
 
         private void UpdateImpulse(Impulse impulse) {
-            KeyState newState = GetImpulseState(impulse);
-            KeyState oldState = impulseStates[impulse];
+            KeyState newState = GetImpulseState(impulse), oldState = impulseStates[impulse];
 
             if(newState == oldState) {
                 return;
@@ -94,9 +82,9 @@ namespace TwelveEngine.Input {
                 return;
             }
             if(newState == KeyState.Down) {
-                endpoints[impulse].Down.Invoke();
+                endpoint.Down.Invoke();
             } else {
-                endpoints[impulse].Up.Invoke();
+                endpoint.Up.Invoke();
             }
         }
 
