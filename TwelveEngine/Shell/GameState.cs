@@ -102,17 +102,8 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        internal void Update() {
-            if(!_hasStartTime) {
-                UpdateStartTime();
-            }
-            IsUpdating = true;
-            OnUpdate?.Invoke();
-            IsUpdating = false;
-            if(TransitionState == TransitionState.None) {
-                return;
-            }
-            if(TransitionT < 1f) {
+        internal void UpdateTransition() {
+            if(TransitionState == TransitionState.None || TransitionT < 1) {
                 return;
             }
             if(TransitionState == TransitionState.Out && _transitionOutData.HasValue) {
@@ -120,6 +111,15 @@ namespace TwelveEngine.Shell {
                 _transitionOutData = null;
             }
             TransitionState = TransitionState.None;
+        }
+
+        internal void Update() {
+            if(!_hasStartTime) {
+                UpdateStartTime();
+            }
+            IsUpdating = true;
+            OnUpdate?.Invoke();
+            IsUpdating = false;
         }
 
         internal void Render() {
@@ -154,10 +154,10 @@ namespace TwelveEngine.Shell {
                     return 0;
                 }
                 float t = (float)((Now - _transitionStartTime) / _transitionDuration);
-                if(t < 0f) {
+                if(t < 0) {
                     return t;
-                } else if(t > 1f) {
-                    return 1f;
+                } else if(t >= 1) {
+                    return 1;
                 }
                 return t;
             }

@@ -100,7 +100,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\InputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\SerialInputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\VCRDisplay.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\ProxyGametime.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\ProxyGameTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\MouseHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameManager.cs" />

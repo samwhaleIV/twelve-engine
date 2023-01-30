@@ -185,19 +185,9 @@ namespace TwelveEngine.Shell {
 
         private static readonly StringBuilder stringBuilder = new();
 
-        private void ResetLeakyStateProperties() {
-            GraphicsDevice.Reset();
-            CursorState = CursorState.Default;
-        }
-
-        //public event Action<GameState> OnStateLoaded;
-
-        private void LoadState(GameState state) {
-            ResetLeakyStateProperties();
-            state.Load(this);
-            //OnStateLoaded?.Invoke(state);
+        private static void LogStateChange(GameState state) {
             stringBuilder.Append('[');
-            stringBuilder.AppendFormat(Constants.TimeSpanFormat,proxyGameTime.RealTime);
+            stringBuilder.AppendFormat(Constants.TimeSpanFormat,ProxyGameTime.GetElapsedTime());
             stringBuilder.Append("] Set state: ");
             string stateName = state.Name;
             stringBuilder.Append('"');
@@ -219,6 +209,12 @@ namespace TwelveEngine.Shell {
 
             Logger.Write(stringBuilder);
             stringBuilder.Clear();
+        }
+
+        private void LoadState(GameState state) {
+            CursorState = CursorState.Default;
+            state.Load(this);
+            LogStateChange(state);
         }
 
         public void SetState(Func<GameState> stateGenerator,StateData? data = null) {
@@ -506,9 +502,7 @@ namespace TwelveEngine.Shell {
             var gameState = State;
 
             if(gameState is not null && !gameState.IsLoaded) {
-                /* Calm yourself, this isn't buffered into a log file - but hopefully you never see this in production */
-                Console.WriteLine($"[{proxyGameTime.RealTime}] WARNING: Attempt to render game state after it has been unloaded");
-                return;
+                throw new InvalidOperationException("Attempted to render game state after it has been unloaded.");
             }
 
             watch.Start();
@@ -535,6 +529,7 @@ namespace TwelveEngine.Shell {
             renderDuration = ReadWatchAndReset();
 
             rendering = false;
+            gameState?.UpdateTransition();
             TryApplyPendingStateGenerator();
         }
 
