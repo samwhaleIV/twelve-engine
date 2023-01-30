@@ -67,7 +67,7 @@ namespace Elves.Scenes.Test {
             Vector3 position;
             Vector2 velocity;
 
-            TimeSpan elapsedTime = Time.ElapsedGameTime;
+            TimeSpan elapsedTime = TimeDelta;
             float delta = (float)elapsedTime.TotalSeconds / TIME_BASE;
 
             for(int i = 0;i<SNOW_COUNT;i++) {

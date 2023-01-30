@@ -28,7 +28,7 @@ namespace TwelveEngine.Shell.Automation {
             for(var i = 0;i < pressedKeys.Length;i++) {
                 pressedKeys[i] = (byte)keysState[i];
             }
-            elapsedTime = frame.ElapsedTime.Ticks;
+            elapsedTime = frame.FrameDelta.Ticks;
 
             var mouse = frame.MouseState;
 

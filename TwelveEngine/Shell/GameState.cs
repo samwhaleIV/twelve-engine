@@ -21,21 +21,25 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        public bool HasFlag(StateFlags flag) {
-            return Data.Flags.HasFlag(flag);
-        }
-
-        public bool FadeInIsFlagged {
-            get {
-                return Data.Flags.HasFlag(StateFlags.FadeIn);
-            }
-        }
+        public bool HasFlag(StateFlags flag) => Data.Flags.HasFlag(flag);
+        public bool FadeInIsFlagged => Data.Flags.HasFlag(StateFlags.FadeIn);
 
         public GameManager Game { get; private set; } = null;
         public ContentManager Content => Game?.Content;
 
-        public TimeSpan Now => Game?.Time.TotalGameTime ?? TimeSpan.Zero;
-        public GameTime Time => Game?.Time;
+        private TimeSpan _nowOffset, _realTimeOffset;
+
+        private TimeSpan _transitionStartTime = TimeSpan.Zero, _transitionDuration = TimeSpan.Zero;
+
+        public Color ClearColor { get; set; } = Color.Black;
+
+        private TransitionData? _transitionOutData = null;
+
+        public TimeSpan Now => (Game?.ProxyTime.Now ?? TimeSpan.Zero) - _nowOffset;
+        public TimeSpan RealTime => (Game?.ProxyTime.RealTime ?? TimeSpan.Zero) - _realTimeOffset;
+        public TimeSpan TimeDelta => Game?.ProxyTime.FrameDelta ?? TimeSpan.Zero;
+
+        //public ProxyGameTime Time => Game?.Time;
 
         public event Action OnLoad, OnUnload;
 
@@ -53,27 +57,12 @@ namespace TwelveEngine.Shell {
         public bool IsRendering { get; private set; } = false;
         public bool IsPreRendering { get; private set; } = false;
 
-        private TimeSpan _startTime;
-
         private bool _hasStartTime = false;
 
         private void UpdateStartTime() {
-            TimeSpan now = Now;
-            transitionStartTime = now;
-            StartTime = now;
+            _nowOffset = Game.ProxyTime.Now;
+            _realTimeOffset = Game.ProxyTime.RealTime;
             _hasStartTime = true;
-        }
-
-        public TimeSpan StartTime {
-            get {
-                if(!_hasStartTime) {
-                    throw new InvalidOperationException("Property 'StartTime' cannot be evaluated before the first 'Update' frame.");
-                }
-                return _startTime;
-            }
-            private set {
-                _startTime = value;
-            }
         }
 
         public string Name { get; set; } = string.Empty;
@@ -113,6 +102,17 @@ namespace TwelveEngine.Shell {
             }
         }
 
+        internal void UpdateTransition() {
+            if(TransitionState == TransitionState.None || TransitionT < 1) {
+                return;
+            }
+            if(TransitionState == TransitionState.Out && _transitionOutData.HasValue) {
+                HandleTransitionOut(_transitionOutData.Value);
+                _transitionOutData = null;
+            }
+            TransitionState = TransitionState.None;
+        }
+
         internal void Update() {
             if(!_hasStartTime) {
                 UpdateStartTime();
@@ -120,17 +120,6 @@ namespace TwelveEngine.Shell {
             IsUpdating = true;
             OnUpdate?.Invoke();
             IsUpdating = false;
-            if(TransitionState == TransitionState.None) {
-                return;
-            }
-            if(TransitionT < 1f) {
-                return;
-            }
-            if(TransitionState == TransitionState.Out && transitionOutData.HasValue) {
-                HandleTransitionOut(transitionOutData.Value);
-                transitionOutData = null;
-            }
-            TransitionState = TransitionState.None;
         }
 
         internal void Render() {
@@ -152,23 +141,23 @@ namespace TwelveEngine.Shell {
 
         public TransitionState TransitionState { get; private set; }
 
-        public bool IsTransitioning => TransitionState != TransitionState.None;
-
-        private TimeSpan transitionStartTime = TimeSpan.Zero;
-        private TimeSpan transitionDuration = TimeSpan.Zero;
-
-        private TransitionData? transitionOutData = null;
+        public bool IsTransitioning {
+            get {
+                bool isTransitioning = TransitionState != TransitionState.None;
+                return isTransitioning;
+            }
+        }
 
         public float TransitionT {
             get {
                 if(!IsTransitioning) {
                     return 0;
                 }
-                float t = (float)((Now - transitionStartTime) / transitionDuration);
-                if(t < 0f) {
+                float t = (float)((Now - _transitionStartTime) / _transitionDuration);
+                if(t < 0) {
                     return t;
-                } else if(t > 1f) {
-                    return 1f;
+                } else if(t >= 1) {
+                    return 1;
                 }
                 return t;
             }
@@ -179,18 +168,16 @@ namespace TwelveEngine.Shell {
                 throw new InvalidOperationException("Transition out data cannot contain two game state values.");
             }
             TransitionState = TransitionState.Out;
-            transitionStartTime = Now;
-            transitionDuration = transitionData.Duration;
-            transitionOutData = transitionData;
+            _transitionStartTime = Now;
+            _transitionDuration = transitionData.Duration;
+            _transitionOutData = transitionData;
         }
 
         private void TransitionIn(TimeSpan duration) {
             TransitionState = TransitionState.In;
-            transitionDuration = duration;
-            transitionOutData = null;
+            _transitionDuration = duration;
+            _transitionOutData = null;
         }
-
-        public Color ClearColor { get; set; } = Color.Black;
 
         public virtual void ResetGraphicsState(GraphicsDevice graphicsDevice) {
             graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;

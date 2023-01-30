@@ -2,8 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace TwelveEngine.UI {
-    public class SpriteElement:Element {
+namespace TwelveEngine.UI.Book {
+    public class SpriteElement:BookElement {
 
         public Texture2D Texture { get; set; }
         public Rectangle? TextureSource { get; set; } = null;

@@ -34,13 +34,18 @@ namespace TwelveEngine {
         public const char ConfigValueOperand = '=';
         public const char ConfigArrayDelimiter = ',';
 
+        public const Keys CycleTimeDisplay = Keys.F2;
+
         public const Keys RecordingKey = Keys.F3;
         public const Keys PlaybackKey = Keys.F4;
-
         public const Keys PauseGameKey = Keys.F5;
         public const Keys AdvanceFrameKey = Keys.F6;
-
         public const Keys FullscreenKey = Keys.F11;
+
+        /// <summary>
+        /// Smoothing rate limit for the debug presentation of frame times and FPS.
+        /// </summary>
+        public static readonly TimeSpan FrameTimeFrequency = TimeSpan.FromMilliseconds(250);
 
         public static class Flags {
             public const string NoFailSafe = "nofailsafe";
@@ -53,6 +58,8 @@ namespace TwelveEngine {
         public static class UI {
             public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
             public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(300);
+
         }
+
     }
 }

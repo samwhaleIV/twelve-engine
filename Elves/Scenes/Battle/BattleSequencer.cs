@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using TwelveEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle.Sprite;
-using TwelveEngine.UI.Interaction;
 
 namespace Elves.Scenes.Battle {
     public class BattleSequencer:BattleRendererState {

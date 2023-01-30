@@ -24,7 +24,7 @@ namespace Elves.Scenes.SaveSelect {
             OnUnload += SaveSelectScene_OnUnload;
         }
 
-        private bool[] modifiedSaves = new bool[3] { false, false, false };
+        private readonly bool[] modifiedSaves = new bool[3] { false, false, false };
 
         private void SaveSelectScene_OnUnload() {
 

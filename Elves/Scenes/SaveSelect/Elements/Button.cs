@@ -1,10 +1,15 @@
 ﻿using System;
 using TwelveEngine.UI;
+using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
     public enum ButtonImpulse { None, Back, Play, Accept, Delete };
 
-    public sealed class Button:SpriteElement {
+    public sealed class Button:SpriteElement, IEndpoint<ButtonImpulse> {
+
+        public ButtonImpulse GetEndPointValue() => Impulse;
+        public void FireActivationEvent(ButtonImpulse value) => OnActivated?.Invoke(value);
+        public event Action<ButtonImpulse> OnActivated;
 
         public ButtonImpulse Impulse { get; set; } = ButtonImpulse.None;
 
@@ -16,6 +21,8 @@ namespace Elves.Scenes.SaveSelect {
             OnUpdate += Button_OnUpdate;
             Position = new(0.5f);
             PositionMode = CoordinateMode.Relative;
+
+            EndPoint = new Endpoint<ButtonImpulse>(this);
         }
 
         public bool IsEven { get; set; } = false;

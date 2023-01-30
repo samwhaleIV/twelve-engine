@@ -1,10 +1,11 @@
 ﻿using Elves.Scenes.Battle.Sprite.Elves;
 using System.Threading.Tasks;
-using Elves.Scenes.Battle.Sprite.Animation;
 
 namespace Elves.Scenes.Battle.Battles {
     public class DebugBattle:BattleScript {
         public override async Task<BattleResult> Main() {
+            CreatePlayer();
+            CreateActor(new HarmlessElf());
             while(EverybodyIsAlive) {
                 await GetButton("EAT","MY","ASS","PLEASE");
                 await Tag("THIS IS NOT VERY EFFECTIVE");

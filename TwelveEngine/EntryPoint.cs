@@ -77,6 +77,8 @@ namespace TwelveEngine {
         protected void EngineMain(string saveDirectory,string[] args) {
             _ = "Hello, world!";
 
+            ProxyGameTime.Start();
+
             SaveDirectory = saveDirectory;
 
             string logFile = GetSaveDirectoryPath(Constants.LogFile);

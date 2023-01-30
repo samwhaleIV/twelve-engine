@@ -2,7 +2,7 @@
 using TwelveEngine;
 using Elves.Scenes.Battle.UI;
 using TwelveEngine.Input;
-using TwelveEngine.UI.Interaction;
+using TwelveEngine.UI;
 
 namespace Elves.Scenes.Battle {
     public abstract class BattleRendererState:Scene3D {
@@ -64,7 +64,7 @@ namespace Elves.Scenes.Battle {
         protected abstract void ActionButtonClicked(int ID);
 
         private void InitializeBattleUI() {
-            battleUI = new BattleUI(Game);
+            battleUI = new BattleUI(this,Game);
             battleUI.OnActionButtonClick += ActionButtonClicked;
 
             Input.OnAcceptDown += Input_OnAcceptDown;

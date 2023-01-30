@@ -1,9 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using TwelveEngine;
 using TwelveEngine.Shell;
-using TwelveEngine.Shell.UI;
 
 namespace Elves.Scenes.Test {
     public sealed class ScrollingBackgroundTest:GameState {

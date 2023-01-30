@@ -1,8 +1,8 @@
-﻿using TwelveEngine.UI;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using TwelveEngine;
+using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagContextPage:SaveSelectPage {
@@ -24,7 +24,7 @@ namespace Elves.Scenes.SaveSelect {
 
             buttonList.Clear();
             bool isEven = false;
-            Element lastButton = null;
+            BookElement lastButton = null;
             foreach(var button in buttons) {
                 button.KeyAnimation(now,buttonShiftTime);
                 if(disposedButtons.Contains(button)) {
@@ -50,7 +50,7 @@ namespace Elves.Scenes.SaveSelect {
             disposedButtons.Clear();
         }
 
-        public override Element Open() {
+        public override BookElement Open() {
             tag = UI.SelectedTag;
             tag.Flags = ElementFlags.Update;
 

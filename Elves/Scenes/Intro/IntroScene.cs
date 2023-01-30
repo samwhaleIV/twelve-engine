@@ -1,10 +1,8 @@
-﻿using Elves.Scenes.SplashMenu;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Media;
 using System;
 using TwelveEngine;
 using TwelveEngine.Font;
-using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Intro {
     public sealed class IntroScene:Scene {
@@ -94,7 +92,7 @@ namespace Elves.Scenes.Intro {
         }
 
         private void Debug_Reset() {
-            timeline.StartTimeOffset = (-Now - StartTime);
+            timeline.StartTimeOffset = -RealTime;
             exiting = false;
         }
         private bool exiting = false;
@@ -112,7 +110,7 @@ namespace Elves.Scenes.Intro {
 
         private void IntroScene_OnUpdate() {
             UpdateInputDevices();
-            timeline.Update(Now - StartTime);
+            timeline.Update(RealTime);
             if(exiting) {
                 return;
             }

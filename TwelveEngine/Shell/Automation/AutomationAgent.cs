@@ -155,14 +155,14 @@ namespace TwelveEngine.Shell.Automation {
             long ticks = 0;
             int count = playbackFrames.Length;
             for(int i = 0;i < count;i++) {
-                ticks += playbackFrames[i].ElapsedTime.Ticks;
+                ticks += playbackFrames[i].FrameDelta.Ticks;
             }
             return TimeSpan.FromTicks((long)Math.Floor((double)ticks / count));
         }
 
-        internal TimeSpan GetFrameTime() => playbackFrame.ElapsedTime;
-        internal void UpdateRecordingFrame(GameTime gameTime) {
-            recordingFrame.ElapsedTime = gameTime.ElapsedGameTime;
+        internal TimeSpan GetFrameTime() => playbackFrame.FrameDelta;
+        internal void UpdateRecordingFrame(TimeSpan frameDelta) {
+            recordingFrame.FrameDelta = frameDelta;
         }
 
     }

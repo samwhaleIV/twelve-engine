@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using TwelveEngine.UI.Interaction;
 
-namespace TwelveEngine.UI {
+namespace TwelveEngine.UI.Book {
 
-    public class Element:InteractionElement<Element> {
+    public class BookElement:InteractionElement<BookElement> {
 
-        private readonly AnimationInterpolator animator = new(Book<Element>.DefaultAnimationDuration);
+        private readonly AnimationInterpolator animator = new(Book<BookElement>.DefaultAnimationDuration);
 
         /// <summary>
         /// The computed area to be supplied to a renderer or mouse input system. Coordinates in floating point pixels.

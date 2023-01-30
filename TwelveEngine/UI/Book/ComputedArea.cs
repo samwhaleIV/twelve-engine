@@ -1,6 +1,4 @@
-﻿using TwelveEngine;
-
-namespace TwelveEngine.UI {
+﻿namespace TwelveEngine.UI.Book {
     public readonly struct ComputedArea {
         /// <summary>
         /// Floating point rectangle in screen space.

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TwelveEngine.Shell;
 using TwelveEngine.Input;
 
-namespace TwelveEngine.UI.Interaction {
+namespace TwelveEngine.UI {
     public abstract class InteractionAgent<TElement> where TElement:InteractionElement<TElement> {
 
         /// <summary>
@@ -59,26 +59,9 @@ namespace TwelveEngine.UI.Interaction {
         private TElement _lastSelectedElement = null;
 
         /// <summary>
-        /// A cache used to allow opposite direction focus travel to a repeatable destination.<br/>
-        /// E.g., one row has 2 values but the following only has 1 and your focus direction is alternating between row 1 and 2 (See <see cref="DirectionIsOpposite(Direction, Direction)"/>.<br/>
-        /// The cache is retained even if the mouse has manipulated the cursor state by manner of checking <see cref="Current"/> against <see cref="SelectedElement"/>.
-        /// </summary>
-        private struct ButtonFocusState {
-
-            public TElement Previous, Current;
-            public Direction Direction;
-
-            public static ButtonFocusState None = new() {
-                Direction = Direction.None,
-                Current = null,
-                Previous = null
-            };
-        }
-
-        /// <summary>
         /// The selection state the last time that button focus was shifted with impulse events.
         /// </summary>
-        private ButtonFocusState _historicalButtonFocusState = ButtonFocusState.None;
+        private ButtonFocusNavState<TElement> _historicalButtonFocusState = ButtonFocusNavState<TElement>.None;
 
         /// <summary>
         /// The default focus element for focus, impulse-based interaction. <br/>
@@ -174,7 +157,7 @@ namespace TwelveEngine.UI.Interaction {
             _hiddenMouseHoverElement = null;
             _lastSelectedElement = newSelectedElement;
 
-            _historicalButtonFocusState = ButtonFocusState.None;
+            _historicalButtonFocusState = ButtonFocusNavState<TElement>.None;
             DefaultFocusElement = null;
         }
 
@@ -220,18 +203,14 @@ namespace TwelveEngine.UI.Interaction {
 
         private bool UseHistoricalFocusShift(FocusSet<TElement> focusSet,Direction direction) {
             return focusSet.IsIndeterminate(direction) &&
-                _historicalButtonFocusState.Current == SelectedElement &&
+                _historicalButtonFocusState.CurrentFocusElement == SelectedElement &&
                 DirectionIsOpposite(direction,_historicalButtonFocusState.Direction);
         }
 
         private void SetButtonFocus(TElement newElement,Direction direction) {
             var oldSelectedElement = SelectedElement;
             SelectedElement = newElement;
-            _historicalButtonFocusState = new() {
-                Previous = oldSelectedElement,
-                Current = newElement,
-                Direction = direction
-            };
+            _historicalButtonFocusState = new(oldSelectedElement,newElement,direction);
         }
 
         /// <summary>
@@ -252,7 +231,7 @@ namespace TwelveEngine.UI.Interaction {
 
             /* A solution for handling mismatched column/row sizes and using directional navigation */
             if(UseHistoricalFocusShift(focusSet,direction)) {
-                SetButtonFocus(_historicalButtonFocusState.Previous,direction);
+                SetButtonFocus(_historicalButtonFocusState.PreviousFocusElement,direction);
                 return InputEventResponse.Success;
             }
 
@@ -272,6 +251,14 @@ namespace TwelveEngine.UI.Interaction {
             return InputEventResponse.Success;
         }
 
+        private static bool TryActivateElement(TElement element) {
+            if(!element.CanInteract || element.InputIsPaused  || element.EndPoint is null) {
+                return false;
+            }
+            element.EndPoint.Activate();
+            return true;
+        }
+
         /// <summary>
         /// A button, such as enter, has been released. Fire after <c>AcceptDown</c>.
         /// </summary>
@@ -279,7 +266,7 @@ namespace TwelveEngine.UI.Interaction {
             if(PressedElement is null) {
                 return InputEventResponse.NoChange;
             }
-            PressedElement.Activate();
+            TryActivateElement(PressedElement);
             PressedElement = null;
             _keyboardIsPressingElement = false;
             return InputEventResponse.Success;
@@ -293,7 +280,7 @@ namespace TwelveEngine.UI.Interaction {
                 return InputEventResponse.NoChange;
             }
             if(_hiddenMouseHoverElement == PressedElement) {
-                PressedElement.Activate();
+                TryActivateElement(PressedElement);
             }
             PressedElement = null;
             _hiddenMouseHoverElement = null;
@@ -313,8 +300,8 @@ namespace TwelveEngine.UI.Interaction {
         /// <summary>
         /// Central routing method for all interaction. See <see cref="InputEventType">InputEventType</see> for events.
         /// </summary>
-        /// <param name="inputEvent">A valuable diagnostic value, but not particularly useful for UI applications themselves.</param>
-        /// <returns></returns>
+        /// <param name="inputEvent">Type of event. See <see cref="InputEventType">InputEventType</see> for types. </param>
+        /// <returns>A valuable diagnostic value, but not particularly useful for UI applications themselves.</returns>
         public InputEventResponse SendEvent(InputEvent inputEvent) => inputEvent.Type switch {
             InputEventType.MouseUpdate => UpdateHoveredElement(inputEvent.MousePosition),
             InputEventType.MousePressed => MouseDown(),

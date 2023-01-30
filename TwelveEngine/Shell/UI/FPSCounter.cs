@@ -3,12 +3,10 @@
 namespace TwelveEngine.Shell.UI {
     public sealed class FPSCounter {
 
-        public static TimeSpan DefaultFrequency => TimeSpan.FromMilliseconds(250);
-
         private readonly TimeSpan frequency;
 
         public FPSCounter(TimeSpan? frequency = null) {
-            this.frequency = frequency ?? DefaultFrequency;
+            this.frequency = frequency ?? Constants.FrameTimeFrequency;
         }
 
         private int frameCount;

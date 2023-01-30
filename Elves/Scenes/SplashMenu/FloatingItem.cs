@@ -57,7 +57,7 @@ namespace Elves.Scenes.SplashMenu {
         private bool RandomBoolean() => random.NextSingle() > 0.5f;
 
         private void Reset() {
-            StartTime = Game.Time.TotalGameTime;
+            StartTime = Now;
 
             Duration = TimeSpan.FromSeconds(random.NextSingle() * DURATION_RANGE + MIN_DURATION);
 

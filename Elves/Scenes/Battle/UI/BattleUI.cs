@@ -5,14 +5,17 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Font;
 using TwelveEngine.Shell;
 using TwelveEngine;
-using TwelveEngine.UI.Interaction;
+using TwelveEngine.UI;
 
 namespace Elves.Scenes.Battle.UI {
 
     public sealed class BattleUI:InteractionAgent<UIElement> {
 
         private readonly GameManager game;
-        public BattleUI(GameManager game) {
+        private readonly GameState owner;
+
+        public BattleUI(GameState owner,GameManager game) {
+            this.owner = owner;
             this.game = game;
 
             foreach(var button in actionButtons) {
@@ -28,8 +31,8 @@ namespace Elves.Scenes.Battle.UI {
             DefaultFocusElement = Button1;
         }
 
-        private void Button_OnActivated(UIElement element) {
-            OnActionButtonClick?.Invoke((element as Button).ID);
+        private void Button_OnActivated(int ID) {
+            OnActionButtonClick?.Invoke(ID);
         }
 
         public Action<int> OnActionButtonClick;
@@ -66,8 +69,8 @@ namespace Elves.Scenes.Battle.UI {
         #region INTERACTION AGENT
 
         protected override bool GetLastEventWasFromMouse() => GameManager.LastInputEventWasFromMouse;
-        protected override bool GetContextTransitioning() => false;
-        protected override TimeSpan GetCurrentTime() => game.Time.TotalGameTime;
+        protected override bool GetContextTransitioning() => owner.IsTransitioning;
+        protected override TimeSpan GetCurrentTime() => owner.Now;
         protected override IEnumerable<UIElement> GetElements() => interactableElements;
         protected override bool BackButtonPressed() => false;
 
@@ -199,11 +202,11 @@ namespace Elves.Scenes.Battle.UI {
             RenderHealthBars(spriteBatch,playerData,targetData);
             spriteBatch.End();
 
-            RenderTagline(spriteBatch);
-
             Fonts.RetroFont.Begin(spriteBatch);
             RenderActionButtonText();
             Fonts.RetroFont.End();
+
+            RenderTagline(spriteBatch);
         }
         #endregion
     }

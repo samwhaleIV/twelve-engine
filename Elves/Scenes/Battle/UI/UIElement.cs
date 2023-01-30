@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine;
-using TwelveEngine.UI.Interaction;
+using TwelveEngine.UI;
 
 namespace Elves.Scenes.Battle.UI {
-    public class UIElement:InteractionElement<UIElement> {
+    public abstract class UIElement:InteractionElement<UIElement> {
 
         protected Texture2D Texture { get; set; } = Program.Textures.Nothing;
         public VectorRectangle ScreenArea { get; set; }

@@ -1,8 +1,6 @@
-﻿using TwelveEngine.UI;
-using System;
-using TwelveEngine;
+﻿using TwelveEngine;
 using Microsoft.Xna.Framework;
-using TwelveEngine.UI.Interaction;
+using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagSelectPage:SaveSelectPage {
@@ -21,8 +19,8 @@ namespace Elves.Scenes.SaveSelect {
             finger.Position = newPos;
         }
 
-        public override Element Open() {
-            Element tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
+        public override BookElement Open() {
+            BookElement tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
 
             foreach(var tag in UI.Tags) {
                 tag.Flags = ElementFlags.UpdateAndInteract;
@@ -45,8 +43,8 @@ namespace Elves.Scenes.SaveSelect {
             return UI.SelectedTag ?? tag1;
         }
 
-        private void Tag_OnActivated(Element element) {
-            UI.SelectedTag = element as Tag;
+        private void Tag_OnActivated(Tag tag) {
+            UI.SelectedTag = tag;
             UI.SetPage(UI.TagContextPage);
         }
 

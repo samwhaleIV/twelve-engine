@@ -1,5 +1,4 @@
 ﻿using Elves.Scenes.Battle;
-using Elves.Scenes.Battle.Battles;
 
 namespace Elves.Scenes {
     /// <summary>
@@ -34,6 +33,6 @@ namespace Elves.Scenes {
         public readonly bool QuickExit => IsFlagged;
 
         public readonly BattleResult BattleResult => (BattleResult)_value;
-        public readonly BattleID battleID => (BattleID)_value;
+        public readonly BattleID BattleID => (BattleID)_value;
     }
 }
