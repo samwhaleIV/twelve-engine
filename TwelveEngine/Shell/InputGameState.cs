@@ -1,16 +1,16 @@
 ﻿using System;
-using TwelveEngine.Input;
+using TwelveEngine.Input.Routing;
 
 namespace TwelveEngine.Shell {
     public class InputGameState:GameState {
 
         private readonly TimeoutManager timeoutManager = new();
 
-        public InputHandler Input { get; private set; } = new InputHandler();
-        public MouseHandler Mouse { get; private set; } = new MouseHandler();
+        public ImpulseEventHandler Input { get; private set; } = new();
+        public MouseEventHandler Mouse { get; private set; } = new();
 
-        private static InputHandler oldInputHandler;
-        private static MouseHandler oldMouseHandler;
+        private static ImpulseEventHandler oldInputHandler;
+        private static MouseEventHandler oldMouseHandler;
 
         public InputGameState() {
             OnLoad += InputGameState_OnLoad;

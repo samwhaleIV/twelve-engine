@@ -25,7 +25,7 @@ namespace TwelveEngine.Shell {
         public bool FadeInIsFlagged => Data.Flags.HasFlag(StateFlags.FadeIn);
 
         public GameManager Game { get; private set; } = null;
-        public ContentManager Content => Game?.Content;
+        public ContentManager Content => Game.Content;
 
         private TimeSpan _nowOffset, _realTimeOffset;
 
@@ -35,11 +35,28 @@ namespace TwelveEngine.Shell {
 
         private TransitionData? _transitionOutData = null;
 
-        public TimeSpan Now => (Game?.ProxyTime.Now ?? TimeSpan.Zero) - _nowOffset;
-        public TimeSpan RealTime => (Game?.ProxyTime.RealTime ?? TimeSpan.Zero) - _realTimeOffset;
-        public TimeSpan TimeDelta => Game?.ProxyTime.FrameDelta ?? TimeSpan.Zero;
+        public TimeSpan Now => Game?.ProxyTime.Now ?? throw new InvalidOperationException("Cannot access time before loading has started.");
+        public TimeSpan RealTime => Game?.ProxyTime.RealTime ?? throw new InvalidOperationException("Cannot access time before loading has started.");
 
-        //public ProxyGameTime Time => Game?.Time;
+        public TimeSpan LocalNow {
+            get {
+                if(!_hasStartTime) {
+                    throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
+                }
+                return Game.ProxyTime.Now - _nowOffset;
+            }
+        }
+
+        public TimeSpan LocalRealTime {
+            get {
+                if(!_hasStartTime) {
+                    throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
+                }
+                return Game.ProxyTime.RealTime - _realTimeOffset;
+            }
+        }
+
+        public TimeSpan TimeDelta => Game.ProxyTime.FrameDelta;
 
         public event Action OnLoad, OnUnload;
 
@@ -59,7 +76,7 @@ namespace TwelveEngine.Shell {
 
         private bool _hasStartTime = false;
 
-        private void UpdateStartTime() {
+        private void SetStartTime() {
             _nowOffset = Game.ProxyTime.Now;
             _realTimeOffset = Game.ProxyTime.RealTime;
             _hasStartTime = true;
@@ -102,6 +119,8 @@ namespace TwelveEngine.Shell {
             }
         }
 
+        /* This method lends itself to having a frame of latency with the input system.
+         * Not expected to impact user experience, with 1 frame generally over a total of 1000. */
         internal void UpdateTransition() {
             if(TransitionState == TransitionState.None || TransitionT < 1) {
                 return;
@@ -115,7 +134,7 @@ namespace TwelveEngine.Shell {
 
         internal void Update() {
             if(!_hasStartTime) {
-                UpdateStartTime();
+                SetStartTime();
             }
             IsUpdating = true;
             OnUpdate?.Invoke();
@@ -153,7 +172,7 @@ namespace TwelveEngine.Shell {
                 if(!IsTransitioning) {
                     return 0;
                 }
-                float t = (float)((Now - _transitionStartTime) / _transitionDuration);
+                float t = (float)((LocalNow - _transitionStartTime) / _transitionDuration);
                 if(t < 0) {
                     return t;
                 } else if(t >= 1) {
@@ -168,7 +187,7 @@ namespace TwelveEngine.Shell {
                 throw new InvalidOperationException("Transition out data cannot contain two game state values.");
             }
             TransitionState = TransitionState.Out;
-            _transitionStartTime = Now;
+            _transitionStartTime = LocalNow;
             _transitionDuration = transitionData.Duration;
             _transitionOutData = transitionData;
         }

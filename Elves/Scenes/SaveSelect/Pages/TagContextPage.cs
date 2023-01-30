@@ -92,6 +92,7 @@ namespace Elves.Scenes.SaveSelect {
                             break;
                         case ButtonImpulse.Delete:
                             tag.Display = TagDisplay.Delete;
+                            tag.Blip(UI.Now);
                             SetButtons(UI.Now,UI.BackButton,UI.AcceptButton);
                             UI.ResetInteractionState(UI.BackButton);
                             break;

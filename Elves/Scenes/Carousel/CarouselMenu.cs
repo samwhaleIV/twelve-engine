@@ -35,8 +35,8 @@ namespace Elves.Scenes.Carousel {
             var position = Camera.Position;
             position.Z = CAMERA_Z;
             Camera.Position = position;
-            Input.OnDirectionDown += Input_OnDirectionDown;
-            Input.OnAcceptDown += Input_OnAcceptDown;
+            Input.Router.OnDirectionDown += Input_OnDirectionDown;
+            Input.Router.OnAcceptDown += Input_OnAcceptDown;
             OnRender += CarouselMenu_OnRender;
         }
 
