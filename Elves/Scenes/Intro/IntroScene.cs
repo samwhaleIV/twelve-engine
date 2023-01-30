@@ -92,7 +92,7 @@ namespace Elves.Scenes.Intro {
         }
 
         private void Debug_Reset() {
-            timeline.StartTimeOffset = -RealTime;
+            timeline.StartTimeOffset = -LocalRealTime;
             exiting = false;
         }
         private bool exiting = false;
@@ -110,7 +110,7 @@ namespace Elves.Scenes.Intro {
 
         private void IntroScene_OnUpdate() {
             UpdateInputDevices();
-            timeline.Update(RealTime);
+            timeline.Update(LocalRealTime);
             if(exiting) {
                 return;
             }

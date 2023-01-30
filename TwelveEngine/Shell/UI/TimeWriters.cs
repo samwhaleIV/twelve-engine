@@ -5,25 +5,23 @@ namespace TwelveEngine.Shell.UI {
         private static readonly Action<GameManager,DebugWriter>[] writers = new Action<GameManager,DebugWriter>[] {
 
             static (game,writer) => {
-                writer.Write(game.State?.Now ?? TimeSpan.Zero,"Local Time");
+                writer.Write("[Game Time]");
+                writer.Write(game.State?.Now ?? TimeSpan.Zero,"T");
+                writer.Write(game.State?.RealTime ?? TimeSpan.Zero,"RT");
             },
 
             static (game,writer) => {
-                writer.Write(game.State?.RealTime ?? TimeSpan.Zero,"Local Realtime");
+                writer.Write("[Local Time]");
+                writer.Write(game.State?.LocalNow ?? TimeSpan.Zero,"T");
+                writer.Write(game.State?.LocalRealTime ?? TimeSpan.Zero,"RT");
             },
 
             static (game,writer) => {
-                writer.Write(game.ProxyTime.Now,"Global Time");
-            },
+                writer.Write("[Global Time]");
+                writer.Write(game.ProxyTime.PauseTime,"P");
+                writer.Write(game.ProxyTime.Drift,"D");
+                writer.Write(ProxyGameTime.GetElapsedTime(),"LT");
 
-            static (game,writer) => {
-                writer.Write(game.ProxyTime.RealTime,"Global Realtime");
-            },
-
-            static (game,writer) => {
-                writer.Write(game.ProxyTime.PauseTime,"Pause");
-                writer.Write(game.ProxyTime.Drift,"Drift");
-                writer.Write(ProxyGameTime.GetElapsedTime(),"Lifetime");
             }
         };
 

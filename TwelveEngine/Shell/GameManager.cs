@@ -74,7 +74,7 @@ namespace TwelveEngine.Shell {
         private readonly FrameTimeSmoother renderDurationSmoother = new();
 
         private Action<GameManager,DebugWriter> _timeWriter = TimeWriters.Get(0);
-        private int _timeWriterIndex = 0;
+        private int _timeWriterIndex = 1;
 
         private void CycleTimeWriter() {
             _timeWriterIndex %= TimeWriters.Count;
@@ -92,11 +92,10 @@ namespace TwelveEngine.Shell {
             updateDurationSmoother.Update(now,updateDuration);
             writer.WriteTimeMS(updateDurationSmoother.Average,"U");
 
-            writer.ToBottomLeft();
-
             fpsCounter.Update(now);
             writer.WriteFPS(fpsCounter.FPS);
 
+            writer.ToBottomLeft();
             _timeWriter(this,writer);
         }
 
@@ -134,7 +133,7 @@ namespace TwelveEngine.Shell {
 
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public AutomationAgent AutomationAgent => automationAgent;
-        public ProxyGameTime ProxyTime => proxyGameTime;
+        internal ProxyGameTime ProxyTime => proxyGameTime;
 
         public SpriteBatch SpriteBatch { get; private set; }
         public SpriteFont DebugFont { get; private set; }

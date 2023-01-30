@@ -69,8 +69,17 @@ namespace Elves.Scenes.Battle.UI {
         #region INTERACTION AGENT
 
         protected override bool GetLastEventWasFromMouse() => GameManager.LastInputEventWasFromMouse;
-        protected override bool GetContextTransitioning() => owner.IsTransitioning;
-        protected override TimeSpan GetCurrentTime() => owner.Now;
+
+        protected override bool GetContextTransitioning() {
+            var isTransitioning = owner.IsTransitioning;
+            return isTransitioning;
+        }
+
+        protected override TimeSpan GetCurrentTime() {
+            var now = owner.Now;
+            return now;
+        }
+
         protected override IEnumerable<UIElement> GetElements() => interactableElements;
         protected override bool BackButtonPressed() => false;
 
