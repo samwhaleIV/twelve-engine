@@ -24,7 +24,7 @@ namespace Elves.Scenes.Test {
         }
 
         private void DVDCornerTest_OnUpdate() {
-            bouncingSimulator.Update(Time.ElapsedGameTime);
+            bouncingSimulator.Update(Now);
         }
     }
 }

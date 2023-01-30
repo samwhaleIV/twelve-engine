@@ -70,7 +70,7 @@ namespace Elves.Scenes.Battle.UI {
 
         protected override bool GetLastEventWasFromMouse() => GameManager.LastInputEventWasFromMouse;
         protected override bool GetContextTransitioning() => owner.IsTransitioning;
-        protected override TimeSpan GetCurrentTime() => game.Time.TotalGameTime;
+        protected override TimeSpan GetCurrentTime() => owner.Now;
         protected override IEnumerable<UIElement> GetElements() => interactableElements;
         protected override bool BackButtonPressed() => false;
 

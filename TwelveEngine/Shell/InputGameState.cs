@@ -38,7 +38,7 @@ namespace TwelveEngine.Shell {
         }
 
         public int SetTimeout(Action action,TimeSpan delay) {
-            return timeoutManager.Add(action,delay,Game.Time.TotalGameTime);
+            return timeoutManager.Add(action,delay,Now);
         }
 
         protected bool InputEnabled {

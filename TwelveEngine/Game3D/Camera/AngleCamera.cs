@@ -114,7 +114,7 @@ namespace TwelveEngine.Game3D {
         }
 
         public void UpdateFreeCam(InputGameState gameState,float lookSpeed,float moveSpeed) {
-            var timeDelta = (float)gameState.Game.Time.ElapsedGameTime.TotalSeconds;
+            var timeDelta = (float)gameState.Now.TotalSeconds;
             lookSpeed *= timeDelta;
             moveSpeed *= timeDelta;
             var mouseDelta = gameState.Mouse.Delta;

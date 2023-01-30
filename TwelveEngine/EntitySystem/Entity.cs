@@ -32,8 +32,8 @@ namespace TwelveEngine.EntitySystem {
         public GameManager Game { get; private set; }
         public TOwner Owner { get; private set; } = null;
 
-        public TimeSpan Now => Owner?.Now ?? TimeSpan.Zero;
-        public GameTime Time => Owner?.Time;
+        public TimeSpan Now => Owner.Now;
+        public TimeSpan TimeDelta => Owner.TimeDelta;
 
         internal object EntityManager { get; private set; } = null;
 

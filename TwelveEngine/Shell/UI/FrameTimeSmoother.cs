@@ -3,12 +3,10 @@
 namespace TwelveEngine.Shell.UI {
     public sealed class FrameTimeSmoother {
 
-        public static TimeSpan DefaultFrequency => TimeSpan.FromMilliseconds(250);
-
         private readonly TimeSpan frequency;
 
         public FrameTimeSmoother(TimeSpan? frequency = null) {
-            this.frequency = frequency ?? DefaultFrequency;
+            this.frequency = frequency ?? Constants.FrameTimeFrequency;
         }
 
         private int frameCount;

@@ -14,7 +14,10 @@ namespace TwelveEngine.Shell {
 
         public bool DrawDebug { get; set; } = false;
 
-        public GameState _gameState  = null;
+        /// <summary>
+        /// Do not use externally except for diagnostic purposes. Has poor parity during transitions. The value is undefined during certain operations.
+        /// </summary>
+        internal GameState State { get; private set; }
 
         public GameManager(
             bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true
@@ -46,14 +49,12 @@ namespace TwelveEngine.Shell {
                 GraphicsDeviceManager.PreferredBackBufferHeight = height ?? displayMode.Height;
             }
 
-            GraphicsDeviceManager.ApplyChanges();
-
             IsFixedTimeStep = false;
 
             vcrDisplay = new VCRDisplay(this,automationAgent);
 
-            automationAgent.PlaybackStarted += proxyGameTime.Freeze;
-            automationAgent.PlaybackStopped += proxyGameTime.Unfreeze;
+            automationAgent.PlaybackStarted += proxyGameTime.Pause;
+            automationAgent.PlaybackStopped += proxyGameTime.Resume;
 
             automationAgent.PlaybackStarted += AutomationAgent_PlaybackStarted;
             automationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
@@ -71,23 +72,31 @@ namespace TwelveEngine.Shell {
         private readonly FrameTimeSmoother updateDurationSmoother = new();
         private readonly FrameTimeSmoother renderDurationSmoother = new();
 
-        private void DrawGameTimeDebug(GameTime trueGameTime,DebugWriter writer) {
-            TimeSpan trueNow = trueGameTime.TotalGameTime;
+        private Action<GameManager,DebugWriter> _timeWriter = TimeWriters.Get(0);
+        private int _timeWriterIndex = 0;
+
+        private void CycleTimeWriter() {
+            _timeWriterIndex %= TimeWriters.Count;
+            _timeWriter = TimeWriters.Get(_timeWriterIndex++);
+        }
+
+        private void DrawGameTimeDebug(DebugWriter writer) {
+            TimeSpan now = ProxyGameTime.GetElapsedTime();
 
             writer.ToBottomRight();
 
-            renderDurationSmoother.Update(trueNow,renderDuration);
+            renderDurationSmoother.Update(now,renderDuration);
             writer.WriteTimeMS(renderDurationSmoother.Average,"R");
 
-            updateDurationSmoother.Update(trueNow,updateDuration);
+            updateDurationSmoother.Update(now,updateDuration);
             writer.WriteTimeMS(updateDurationSmoother.Average,"U");
 
             writer.ToBottomLeft();
 
-            fpsCounter.Update(trueNow);
+            fpsCounter.Update(now);
             writer.WriteFPS(fpsCounter.FPS);
 
-            writer.Write(proxyGameTime.TotalGameTime,"PT");
+            _timeWriter(this,writer);
         }
 
         private (Keys Key, Action Action)[] GetDebugControls() => new (Keys,Action)[]{
@@ -96,7 +105,8 @@ namespace TwelveEngine.Shell {
 
             (Constants.PauseGameKey, () => SetPaused(!gamePaused)),
             (Constants.AdvanceFrameKey, () => advanceFrameIsQueued = true),
-            (Constants.FullscreenKey, () => GraphicsDeviceManager.ToggleFullScreen())
+            (Constants.FullscreenKey, GraphicsDeviceManager.ToggleFullScreen),
+            (Constants.CycleTimeDisplay, CycleTimeWriter)
         };
 
         private void AutomationAgent_PlaybackStopped() {
@@ -123,7 +133,7 @@ namespace TwelveEngine.Shell {
 
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public AutomationAgent AutomationAgent => automationAgent;
-        public GameTime Time => proxyGameTime;
+        public ProxyGameTime ProxyTime => proxyGameTime;
 
         public SpriteBatch SpriteBatch { get; private set; }
         public SpriteFont DebugFont { get; private set; }
@@ -147,9 +157,9 @@ namespace TwelveEngine.Shell {
                 return;
             }
             if(!gamePaused) {
-                proxyGameTime.Freeze();
+                proxyGameTime.Pause();
             } else {
-                proxyGameTime.Unfreeze();
+                proxyGameTime.Resume();
             }
             gamePaused = paused;
         }
@@ -187,7 +197,7 @@ namespace TwelveEngine.Shell {
             state.Load(this);
             //OnStateLoaded?.Invoke(state);
             stringBuilder.Append('[');
-            stringBuilder.AppendFormat(Constants.TimeSpanFormat,proxyGameTime.TotalGameTime);
+            stringBuilder.AppendFormat(Constants.TimeSpanFormat,proxyGameTime.RealTime);
             stringBuilder.Append("] Set state: ");
             string stateName = state.Name;
             stringBuilder.Append('"');
@@ -233,8 +243,8 @@ namespace TwelveEngine.Shell {
                 pendingGenerator = (stateGenerator, data ?? StateData.Empty);
                 return;
             }
-            GameState oldState = _gameState;
-            _gameState = null;
+            GameState oldState = State;
+            State = null;
             oldState?.Unload();
             pendingState = stateGenerator.Invoke();
             pendingState.Data = data ?? StateData.Empty;
@@ -282,8 +292,8 @@ namespace TwelveEngine.Shell {
         }
 
         protected override void UnloadContent() {
-            _gameState?.Unload();
-            _gameState = null;
+            State?.Unload();
+            State = null;
 
             EmptyTexture?.Dispose();
             EmptyTexture = null;
@@ -315,7 +325,7 @@ namespace TwelveEngine.Shell {
             } else if(gamePaused && !shouldAdvanceFrame) {
 
                 TimeSpan simTime = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
-                proxyGameTime.AddSimTime(simTime);
+                proxyGameTime.AddSimulationTime(simTime);
                 shouldAdvanceFrame = true;
                 framesToSkip = 0;
                 vcrDisplay.AdvanceFrame(gameTime);
@@ -363,17 +373,18 @@ namespace TwelveEngine.Shell {
 
         private void UpdateGame(GameTime trueGameTime) {
             proxyGameTime.Update(trueGameTime);
+
             automationAgent.StartUpdate();
 
             if(automationAgent.PlaybackActive) {
-                proxyGameTime.AddSimTime(automationAgent.GetFrameTime());
+                proxyGameTime.AddSimulationTime(automationAgent.GetFrameTime());
             }
             if(automationAgent.RecordingActive) {
-                automationAgent.UpdateRecordingFrame(proxyGameTime);
+                automationAgent.UpdateRecordingFrame(proxyGameTime.FrameDelta);
             }
 
             UpdateInputStateCache();
-            _gameState.Update();
+            State.Update();
 
             automationAgent.EndUpdate();
         }
@@ -407,10 +418,10 @@ namespace TwelveEngine.Shell {
             framesToSkip = count;
         }
 
-        private bool HasGameState => _gameState is not null;
+        private bool HasGameState => State is not null;
 
         private void HotSwapPendingState() {
-            _gameState = pendingState;
+            State = pendingState;
             pendingState = null;
             if(!gamePaused) {
                 return;
@@ -492,11 +503,11 @@ namespace TwelveEngine.Shell {
         protected override void Draw(GameTime trueGameTime) {
             rendering = true;
 
-            var gameState = _gameState;
+            var gameState = State;
 
             if(gameState is not null && !gameState.IsLoaded) {
                 /* Calm yourself, this isn't buffered into a log file - but hopefully you never see this in production */
-                Console.WriteLine($"[{proxyGameTime.TotalGameTime}] WARNING: Attempt to render game state after it has been unloaded");
+                Console.WriteLine($"[{proxyGameTime.RealTime}] WARNING: Attempt to render game state after it has been unloaded");
                 return;
             }
 
@@ -515,7 +526,7 @@ namespace TwelveEngine.Shell {
             SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp);
 
             if(DrawDebug) {
-                DrawGameTimeDebug(trueGameTime,debugWriter);
+                DrawGameTimeDebug(debugWriter);
                 gameState?.WriteDebug(debugWriter);
             }
 
