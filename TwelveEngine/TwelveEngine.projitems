@@ -25,8 +25,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\ParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\Screenspace3DSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\MultiBindKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\ValidKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\IHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\InputEventHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\IRouter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\Routers\ImpulseEventRouter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\InputEventRouter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MouseEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\Routers\MouseEventRouter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\MouseEventType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\MultiBindKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\ValidKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\TimeWriters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\ButtonFocusNavState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\IEndpoint.cs" />
@@ -49,9 +58,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FrameTimeSmoother.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FPSCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnimationInterpolator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Hotkeys\Hotkey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Hotkeys\HotkeyData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Hotkeys\HotkeySet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Hotkeys\Hotkey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Hotkeys\HotkeyData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\Hotkeys\HotkeySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\StateData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\StateFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionData.cs" />
@@ -87,29 +96,31 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\DebugWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\Corner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\Direction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\GamePadType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Impulse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBindSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\KeyBindSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\Handlers\ImpulseEventHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TimeoutManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\ScrollDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\AutomationAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\AutomationIO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\InputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\SerialInputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\VCRDisplay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\ProxyGameTime.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\KeyBinds.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\MouseHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\KeyBinds.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\Handlers\MouseEventHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Input\Binding\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Input\Routing\Handlers\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Input\Routing\Routers\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\Book\" />
   </ItemGroup>
 </Project>

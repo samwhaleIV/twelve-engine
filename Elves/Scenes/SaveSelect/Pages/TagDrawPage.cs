@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using TwelveEngine;
-using TwelveEngine.Input;
+using TwelveEngine.Input.Routing;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
@@ -49,7 +49,7 @@ namespace Elves.Scenes.SaveSelect {
         }
 
         private void Scene_OnUpdate() {
-            MouseHandler mouse = Scene.Mouse;
+            MouseEventHandler mouse = Scene.Mouse;
             DrawingFrame drawingFrame = tag.DrawingFrame;
             if(!mouse.Capturing) {
                 drawingFrame.ReleaseDraw();

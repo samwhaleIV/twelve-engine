@@ -8,6 +8,7 @@ using TwelveEngine.Shell.Automation;
 using System.Collections.Generic;
 using TwelveEngine.Shell.UI;
 using System.Text;
+using TwelveEngine.Shell.Hotkeys;
 
 namespace TwelveEngine.Shell {
     public sealed class GameManager:Game {

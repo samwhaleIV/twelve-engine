@@ -14,15 +14,15 @@ namespace Elves.Scenes.SaveSelect {
             OnRender += UIScene_OnRender;
             OnUpdate += UIScene_OnUpdate;
 
-            Mouse.OnPress += Mouse_OnPress;
-            Mouse.OnRelease += Mouse_OnRelease;
+            Mouse.Router.OnPress += Mouse_OnPress;
+            Mouse.Router.OnRelease += Mouse_OnRelease;
 
-            Input.OnAcceptDown += Input_OnAcceptDown;
-            Input.OnAcceptUp += Input_OnAcceptUp;
+            Input.Router.OnAcceptDown += Input_OnAcceptDown;
+            Input.Router.OnAcceptUp += Input_OnAcceptUp;
 
-            Input.OnCancelDown += Input_OnCancelDown;
-            Input.OnDirectionDown += Input_OnDirectionDown;
-            Input.OnFocusDown += Input_OnFocusDown;
+            Input.Router.OnCancelDown += Input_OnCancelDown;
+            Input.Router.OnDirectionDown += Input_OnDirectionDown;
+            Input.Router.OnFocusDown += Input_OnFocusDown;
         }
 
         private void Input_OnFocusDown() {

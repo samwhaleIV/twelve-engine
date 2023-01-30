@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
-namespace TwelveEngine.Input {
+namespace TwelveEngine.Input.Binding {
     public sealed class KeyBindSet {
         public MultiBindKey Up = (Keys.W, Keys.Up);
         public MultiBindKey Down = (Keys.S, Keys.Down);

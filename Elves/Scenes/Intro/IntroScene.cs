@@ -25,9 +25,9 @@ namespace Elves.Scenes.Intro {
             ClearColor = Color.Black;
             OnUpdate += IntroScene_OnUpdate;
             OnRender += IntroScene_OnRender;
-            Input.OnCancelDown += Input_OnCancelDown;
+            Input.Router.OnCancelDown += Input_OnCancelDown;
             if(Flags.Get(Constants.Flags.Debug)) {
-                Input.OnAcceptDown += Debug_Reset;
+                Input.Router.OnAcceptDown += Debug_Reset;
             }
             OnLoad += IntroScene_OnLoad;
             OnUnload += IntroScene_OnUnload;

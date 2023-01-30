@@ -67,13 +67,14 @@ namespace Elves.Scenes.Battle {
             battleUI = new BattleUI(this,Game);
             battleUI.OnActionButtonClick += ActionButtonClicked;
 
-            Input.OnAcceptDown += Input_OnAcceptDown;
-            Input.OnCancelDown += Input_OnCancelDown;
-            Mouse.OnPress += Mouse_OnPress;
-            Input.OnDirectionDown += Input_OnDirectionDown;
-            Input.OnAcceptUp += Input_OnAcceptUp;
-            Mouse.OnRelease += Mouse_OnRelease;
-            Input.OnFocusDown += Input_OnFocusDown;
+            Input.Router.OnAcceptDown += Input_OnAcceptDown;
+            Input.Router.OnCancelDown += Input_OnCancelDown;
+            Input.Router.OnDirectionDown += Input_OnDirectionDown;
+            Input.Router.OnAcceptUp += Input_OnAcceptUp;
+            Input.Router.OnFocusDown += Input_OnFocusDown;
+
+            Mouse.Router.OnPress += Mouse_OnPress;
+            Mouse.Router.OnRelease += Mouse_OnRelease;
         }
 
         private void Input_OnFocusDown() {

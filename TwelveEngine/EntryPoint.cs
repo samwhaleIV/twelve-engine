@@ -1,8 +1,8 @@
 ﻿using TwelveEngine.Shell;
 using System;
 using System.IO;
-using TwelveEngine.Input;
 using TwelveEngine.Font;
+using TwelveEngine.Input.Binding;
 
 namespace TwelveEngine {
 

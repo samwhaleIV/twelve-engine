@@ -19,8 +19,8 @@ namespace Elves.Scenes.SplashMenu {
             Name = "Elves Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
-            Mouse.OnPress += Mouse_OnPress;
-            Input.OnAcceptDown += Input_OnAcceptDown;
+            Mouse.Router.OnPress += Mouse_OnPress;
+            Input.Router.OnAcceptDown += Input_OnAcceptDown;
         }
 
         private void Input_OnAcceptDown() {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
-namespace TwelveEngine.Input {
+namespace TwelveEngine.Input.Binding {
     internal static class ValidKeys {
 
         private static readonly Keys[] ValidKeysList = new Keys[] {
