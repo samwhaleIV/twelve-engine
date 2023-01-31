@@ -67,8 +67,6 @@ namespace Elves.Scenes.Battle.UI {
 
         #region INTERACTION AGENT
 
-        protected override bool GetLastEventWasFromMouse() => InputStateCache.LastInputEventWasFromMouse;
-
         protected override bool GetContextTransitioning() {
             return owner.IsTransitioning;
         }

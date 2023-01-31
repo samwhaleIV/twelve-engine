@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine.UI {
+﻿using TwelveEngine.Shell;
+
+namespace TwelveEngine.UI {
     public abstract class InteractionAgent<TElement> where TElement:InteractionElement<TElement> {
 
         /// <summary>
@@ -15,7 +17,7 @@
         /// Indicate if the most recent event was from a mouse or keyboard/gamepad.
         /// </summary>
         /// <returns>True if the last input event was cursor related, false if it was another type of impulse based device.</returns>
-        protected abstract bool GetLastEventWasFromMouse();
+        protected virtual bool GetLastEventWasFromMouse() => InputStateCache.LastInputEventWasFromMouse;
 
         /// <summary>
         /// Context dependent meaning. Typically, if a layout is animating to an alternate layout or the UI is part of a higher order transitioning state.<br/>
