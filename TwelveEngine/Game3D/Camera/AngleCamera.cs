@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using TwelveEngine.Shell;
+﻿using TwelveEngine.Shell;
 
 namespace TwelveEngine.Game3D {
     public sealed class AngleCamera:Camera3D {
@@ -114,7 +112,7 @@ namespace TwelveEngine.Game3D {
         }
 
         public void UpdateFreeCam(InputGameState gameState,float lookSpeed,float moveSpeed) {
-            var timeDelta = (float)gameState.TimeDelta.TotalSeconds;
+            var timeDelta = (float)gameState.FrameDelta.TotalSeconds;
             lookSpeed *= timeDelta;
             moveSpeed *= timeDelta;
             var mouseDelta = gameState.Mouse.Delta;

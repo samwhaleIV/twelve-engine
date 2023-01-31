@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using TwelveEngine.Shell;
+﻿using TwelveEngine.Shell;
 
 namespace TwelveEngine.UI.Book {
     public class Book<TElement>:InteractionAgent<BookElement> where TElement:BookElement {
@@ -22,7 +20,7 @@ namespace TwelveEngine.UI.Book {
         /// The transition duration when changing the active page. By default, <c>DefaultTransitionDuration</c>.
         /// </summary>
         public TimeSpan TransitionDuration { get; set; } = DefaultTransitionDuration;
-        private readonly AnimationInterpolator pageTransitionAnimator = new(DefaultAnimationDuration);
+        private readonly Interpolator pageTransitionAnimator = new(DefaultAnimationDuration);
 
         /// <summary>
         /// Flag controlled by <c>UnlockPageControls</c> and <c>LockElementsForTransition</c>. Checked in <c>Update</c>.
@@ -35,7 +33,7 @@ namespace TwelveEngine.UI.Book {
         private TimeSpan _currentTime = TimeSpan.FromHours(-1); /* Hopefully your users aren't time travelers. */
 
         protected override bool GetLastEventWasFromMouse() {
-            return GameManager.LastInputEventWasFromMouse;
+            return InputStateCache.LastInputEventWasFromMouse;
         }
 
         protected override bool GetContextTransitioning() {
@@ -98,7 +96,7 @@ namespace TwelveEngine.UI.Book {
             _elementsAreLocked = false;
         }
 
-        public void Update(TimeSpan now,VectorRectangle viewport) {
+        public void Update(TimeSpan now,FloatRectangle viewport) {
             _currentTime = now;
             pageTransitionAnimator.Update(now);
             if(_elementsAreLocked && pageTransitionAnimator.IsFinished) {

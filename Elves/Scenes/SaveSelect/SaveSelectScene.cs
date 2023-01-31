@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using TwelveEngine;
+using TwelveEngine.Effects;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class SaveSelectScene:UIScene {
@@ -57,8 +59,8 @@ namespace Elves.Scenes.SaveSelect {
         }
 
         private void SaveSelectScene_OnRender() {
-            background.Render(Game.SpriteBatch,Game.Viewport);
-            UI.Render(Game.SpriteBatch);
+            background.Render(SpriteBatch,Viewport);
+            UI.Render(SpriteBatch);
         }
 
         private void LoadDrawingFrames() {
@@ -69,7 +71,7 @@ namespace Elves.Scenes.SaveSelect {
                     BrushTexture = Program.Textures.CircleBrush,
                     BrushSize = 5
                 };
-                drawingFrame.Load(Game.GraphicsDevice);
+                drawingFrame.Load(GraphicsDevice);
                 drawingFrames[i] = drawingFrame;
             }
 
@@ -92,7 +94,7 @@ namespace Elves.Scenes.SaveSelect {
 
         public void DeleteSave(int ID) {
             modifiedSaves[ID] = true;
-            drawingFrames[ID].Reset(Game);
+            drawingFrames[ID].Reset(this);
             Program.Saves[ID].Clear();
             Program.GlobalSave.RemoveKey(SaveKeys.SaveImage1+ID);
         }
@@ -116,7 +118,7 @@ namespace Elves.Scenes.SaveSelect {
                 Texture = Program.Textures.GiftPattern,
                 Direction = new(1,0.27f),
             };
-            background.Load(Game.Content);
+            background.Load(Content);
         }
 
         private const float BACKGROUND_SCALE_AMOUNT = 1.25f;
@@ -143,6 +145,6 @@ namespace Elves.Scenes.SaveSelect {
             backgroundScaleAnimator.ResetCarryOver(Now);
         }
 
-        private readonly AnimationInterpolator backgroundScaleAnimator = new();
+        private readonly Interpolator backgroundScaleAnimator = new();
     }
 }

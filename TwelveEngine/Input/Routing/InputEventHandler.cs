@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.Input.Routing {
+﻿namespace TwelveEngine.Input.Routing {
     public abstract class InputEventHandler<TEvent,TRouter>:IHandler<TEvent> where TRouter:IIRouter<TEvent>, new() {
         public event Action<TEvent> OnEvent;
         public void SendEvent(TEvent @event) => OnEvent?.Invoke(@event);
@@ -14,9 +12,7 @@ namespace TwelveEngine.Input.Routing {
         private TRouter _router = default;
         public TRouter Router {
             get {
-                if(_router is null) {
-                    _router = CreateRouter();
-                }
+                _router ??= CreateRouter();
                 return _router;
             }
         }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace TwelveEngine.Input.Routing {
+﻿namespace TwelveEngine.Input.Routing {
     public sealed class ImpulseEventRouter:InputEventRouter<ImpulseEvent,ImpulseEventHandler> {
         private readonly Dictionary<Impulse,(Action OnPressed,Action OnReleased)> endPoints;
 

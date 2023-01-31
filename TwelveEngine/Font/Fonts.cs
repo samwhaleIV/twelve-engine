@@ -1,5 +1,4 @@
 ﻿using TwelveEngine.Shell;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Font {
     public static partial class Fonts {
@@ -11,7 +10,7 @@ namespace TwelveEngine.Font {
 
         public static UVSpriteFont RetroFontOutlined { get; private set; }
 
-        public static void Load(GameManager game) {
+        public static void Load(GameStateManager game) {
             if(IsLoaded) {
                 return;
             }

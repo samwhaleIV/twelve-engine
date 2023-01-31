@@ -1,41 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Shell.Automation {
 
-    public sealed class AutomationAgent {
-        private int frameNumber = 0;
-        public int FrameNumber => frameNumber;
+    public static class AutomationAgent {
+        private static int frameNumber = 0;
+        public static int FrameNumber => frameNumber;
 
-        private bool recording = false;
-        public bool RecordingActive => recording;
+        private static bool recording = false;
+        public static bool RecordingActive => recording;
 
-        private bool playbackActive = false;
-        public bool PlaybackActive => playbackActive;
+        private static bool playbackActive = false;
+        public static bool PlaybackActive => playbackActive;
 
-        private string playbackFile = null;
-        public string PlaybackFile => playbackFile;
+        private static string playbackFile = null;
+        public static string PlaybackFile => playbackFile;
 
-        private bool playbackLoading = false;
-        public bool PlaybackLoading => playbackLoading;
+        private static bool playbackLoading = false;
+        public static bool PlaybackLoading => playbackLoading;
 
-        private Queue<InputFrame> outputBuffer = null;
-        private InputFrame[] playbackFrames = null;
+        private static Queue<InputFrame> outputBuffer = null;
+        private static InputFrame[] playbackFrames = null;
 
-        private InputFrame recordingFrame;
-        private InputFrame playbackFrame;
+        private static InputFrame recordingFrame;
+        private static InputFrame playbackFrame;
 
-        internal void StartRecording() {
+        internal static void StartRecording() {
             if(recording) {
                 throw new InvalidOperationException("Cannot start recording, recording is already happening!");
             }
             outputBuffer = new Queue<InputFrame>();
             recording = true;
         }
-        internal async Task StopRecording() {
+
+        internal static async Task StopRecording() {
             if(!recording) {
                 throw new InvalidOperationException("Cannot stop recording, we never started!");
             }
@@ -50,7 +47,7 @@ namespace TwelveEngine.Shell.Automation {
             Console.WriteLine($"[Automation Agent] Recording saved to '{path}'.");
         }
 
-        internal async Task StartPlayback() {
+        internal static async Task StartPlayback() {
             if(playbackLoading) {
                 return;
             }
@@ -71,9 +68,9 @@ namespace TwelveEngine.Shell.Automation {
             Console.WriteLine($"[Automation Agent] Playing input file '{path}'");
         }
 
-        internal event Action PlaybackStopped, PlaybackStarted;
+        internal static event Action PlaybackStopped, PlaybackStarted;
 
-        internal void StopPlayback() {
+        internal static void StopPlayback() {
             if(!playbackActive) {
                 throw new InvalidOperationException("Cannot stop playback, playback is not active!");
             }
@@ -83,7 +80,7 @@ namespace TwelveEngine.Shell.Automation {
             PlaybackStopped?.Invoke();
         }
 
-        internal async void TogglePlayback() {
+        internal static async void TogglePlayback() {
             if(!recording) {
                 if(playbackLoading) {
                     return;
@@ -95,7 +92,8 @@ namespace TwelveEngine.Shell.Automation {
                 }
             }
         }
-        internal async void ToggleRecording() {
+
+        internal static async void ToggleRecording() {
             if(!playbackActive) {
                 if(recording) {
                     await StopRecording();
@@ -105,7 +103,7 @@ namespace TwelveEngine.Shell.Automation {
             }
         }
 
-        internal int? PlaybackFrameCount {
+        internal static int? PlaybackFrameCount {
             get {
                 if(playbackFrames == null) {
                     return null;
@@ -115,7 +113,7 @@ namespace TwelveEngine.Shell.Automation {
             }
         }
 
-        internal KeyboardState FilterKeyboardState(KeyboardState state) {
+        internal static KeyboardState FilterKeyboardState(KeyboardState state) {
             if(playbackActive) {
                 state = playbackFrame.KeyboardState;
             }
@@ -124,7 +122,7 @@ namespace TwelveEngine.Shell.Automation {
             }
             return state;
         }
-        internal MouseState FilterMouseState(MouseState state) {
+        internal static MouseState FilterMouseState(MouseState state) {
             if(playbackActive) {
                 state = playbackFrame.MouseState;
             }
@@ -134,7 +132,7 @@ namespace TwelveEngine.Shell.Automation {
             return state;
         }
 
-        internal void StartUpdate() {
+        internal static void StartUpdate() {
             if(playbackActive) {
                 playbackFrame = playbackFrames[frameNumber];
                 frameNumber += 1;
@@ -143,7 +141,7 @@ namespace TwelveEngine.Shell.Automation {
             }
         }
 
-        internal void EndUpdate() {
+        internal static void EndUpdate() {
             if(recording) outputBuffer.Enqueue(recordingFrame);
             if(playbackActive && frameNumber >= playbackFrames.Length) {
                 StopPlayback();
@@ -151,7 +149,7 @@ namespace TwelveEngine.Shell.Automation {
             }
         }
 
-        internal TimeSpan GetAveragePlaybackFrameTime() {
+        internal static TimeSpan GetAveragePlaybackFrameTime() {
             long ticks = 0;
             int count = playbackFrames.Length;
             for(int i = 0;i < count;i++) {
@@ -160,8 +158,8 @@ namespace TwelveEngine.Shell.Automation {
             return TimeSpan.FromTicks((long)Math.Floor((double)ticks / count));
         }
 
-        internal TimeSpan GetFrameTime() => playbackFrame.FrameDelta;
-        internal void UpdateRecordingFrame(TimeSpan frameDelta) {
+        internal static TimeSpan GetFrameTime() => playbackFrame.FrameDelta;
+        internal static void UpdateRecordingFrame(TimeSpan frameDelta) {
             recordingFrame.FrameDelta = frameDelta;
         }
 

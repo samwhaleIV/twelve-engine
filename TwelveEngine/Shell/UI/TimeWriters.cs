@@ -1,31 +1,28 @@
-﻿using System;
-
-namespace TwelveEngine.Shell.UI {
-    public static class TimeWriters {
-        private static readonly Action<GameManager,DebugWriter>[] writers = new Action<GameManager,DebugWriter>[] {
+﻿namespace TwelveEngine.Shell.UI {
+    internal static class TimeWriters {
+        private static readonly Action<GameStateManager,DebugWriter>[] writers = new Action<GameStateManager,DebugWriter>[] {
 
             static (game,writer) => {
                 writer.Write("[Game Time]");
-                writer.Write(game.State?.Now ?? TimeSpan.Zero,"T");
-                writer.Write(game.State?.RealTime ?? TimeSpan.Zero,"RT");
+                writer.Write(ProxyTime.Now,"T");
+                writer.Write(ProxyTime.RealTime,"RT");
             },
 
             static (game,writer) => {
                 writer.Write("[Local Time]");
-                writer.Write(game.State?.LocalNow ?? TimeSpan.Zero,"T");
-                writer.Write(game.State?.LocalRealTime ?? TimeSpan.Zero,"RT");
+                writer.Write(game.GameState?.LocalNow ?? TimeSpan.Zero,"T");
+                writer.Write(game.GameState?.LocalRealTime ?? TimeSpan.Zero,"RT");
             },
 
             static (game,writer) => {
                 writer.Write("[Global Time]");
-                writer.Write(game.ProxyTime.PauseTime,"P");
-                writer.Write(game.ProxyTime.Drift,"D");
-                writer.Write(ProxyGameTime.GetElapsedTime(),"LT");
-
+                writer.Write(ProxyTime.PauseTime,"P");
+                writer.Write(ProxyTime.Drift,"D");
+                writer.Write(ProxyTime.GetElapsedTime(),"LT");
             }
         };
 
-        public static int Count => writers.Length;
-        public static Action<GameManager,DebugWriter> Get(int index) => writers[index];
+        internal static int Count => writers.Length;
+        internal static Action<GameStateManager,DebugWriter> Get(int index) => writers[index];
     }
 }

@@ -1,17 +1,16 @@
 ﻿using TwelveEngine.Shell;
-using System;
-using System.IO;
 using TwelveEngine.Font;
 using TwelveEngine.Input.Binding;
+using Microsoft.Xna.Framework;
 
 namespace TwelveEngine {
 
     public abstract class EntryPoint {
 
-        protected abstract void OnGameLoad(GameManager game,string saveDirectory);
+        protected abstract void OnGameLoad(GameStateManager game,string saveDirectory);
         protected abstract void OnGameCrashed();
 
-        private void Game_OnLoad(GameManager game) {
+        private void Game_OnLoad(GameStateManager game) {
 
             game.Disposed += Game_Disposed;
             game.Exiting += Game_Exiting;
@@ -30,24 +29,27 @@ namespace TwelveEngine {
             Logger.CleanUp();
         }
 
+        private void RunGameWithExceptionHandling(GameStateManager game) {
+            try {
+                game.Run();
+            } catch(Exception exception) {
+                Logger.WriteLine($"An unexpected error has occurred: {exception}");
+                OnGameCrashed();
+            }
+        }
+
         private void InitializeGameManager() {
-            using var game = new GameManager(
+            using GameStateManager game = new(
                 fullscreen: Flags.Get(Constants.Flags.Fullscreen),
                 hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
-                verticalSync: !Flags.Get(Constants.Flags.NoVsync)
-            ) {
-                DrawDebug = Flags.Get(Constants.Flags.DrawDebug)
-            };
+                verticalSync: !Flags.Get(Constants.Flags.NoVsync),
+                drawDebug: Flags.Get(Constants.Flags.DrawDebug)
+            );
             game.OnLoad += Game_OnLoad;
             if(Flags.Get(Constants.Flags.NoFailSafe)) {
                 game.Run();
             } else {
-                try {
-                    game.Run();
-                } catch(Exception exception) {
-                    Logger.WriteLine($"An unexpected error has occurred: {exception}");
-                    OnGameCrashed();
-                }
+                RunGameWithExceptionHandling(game);
             }
         }
 
@@ -77,7 +79,7 @@ namespace TwelveEngine {
         protected void EngineMain(string saveDirectory,string[] args) {
             _ = "Hello, world!";
 
-            ProxyGameTime.Start();
+            ProxyTime.Start();
 
             SaveDirectory = saveDirectory;
 

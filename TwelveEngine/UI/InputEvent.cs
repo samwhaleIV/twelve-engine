@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using TwelveEngine.Input;
-
-namespace TwelveEngine.UI {
+﻿namespace TwelveEngine.UI {
     public readonly struct InputEvent {
 
         private readonly int value1, value2;

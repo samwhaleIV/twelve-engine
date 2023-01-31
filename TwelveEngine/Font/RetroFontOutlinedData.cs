@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace TwelveEngine.Font {
+﻿namespace TwelveEngine.Font {
     public static partial class Fonts {
         private static Dictionary<char,Glyph> GetRetroFontOutlinedData() {
             var glyphDictionary = new Dictionary<char,Glyph>();

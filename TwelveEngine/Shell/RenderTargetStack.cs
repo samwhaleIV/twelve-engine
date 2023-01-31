@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Shell {
+﻿namespace TwelveEngine.Shell {
     public sealed class RenderTargetStack {
 
         internal RenderTargetStack(GraphicsDevice graphicsDevice) {
@@ -22,7 +19,7 @@ namespace TwelveEngine.Shell {
             public readonly Viewport Viewport;
         }
 
-        public Viewport GetViewport() {
+        internal Viewport GetViewport() {
             if(renderTargetStack.Count == 0) {
                 return graphicsDevice.Viewport;
             } else {
@@ -45,6 +42,10 @@ namespace TwelveEngine.Shell {
             } else {
                 graphicsDevice.SetRenderTarget(renderTargetData.RenderTarget);
             }
+        }
+
+        internal void Reset() {
+            renderTargetStack.Clear();
         }
     }
 }

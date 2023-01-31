@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Input.Binding;
 
 namespace TwelveEngine.Input.Routing {
@@ -82,7 +79,7 @@ namespace TwelveEngine.Input.Routing {
             return true;
         }
 
-        public void Update(KeyboardState keyboardState,GamePadState gamePadState) {
+        public void Update(in KeyboardState keyboardState,in GamePadState gamePadState) {
             KeyboardState = keyboardState;
             GamePadState = gamePadState;
 

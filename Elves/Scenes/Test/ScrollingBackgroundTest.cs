@@ -1,5 +1,5 @@
 ﻿using System;
-using TwelveEngine;
+using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Test {
@@ -15,12 +15,12 @@ namespace Elves.Scenes.Test {
         }
 
         private void ScrollingBackgroundTest_OnLoad() {
-            infinityBackground.Load(Game.Content);
+            infinityBackground.Load(Content);
         }
 
         private void ScrollingBackgroundTest_OnRender() {
             infinityBackground.Rotation = (float)(Now / TimeSpan.FromSeconds(4)) * 360;
-            infinityBackground.Render(Game.SpriteBatch,Game.Viewport);
+            infinityBackground.Render(SpriteBatch,Viewport);
         }
     }
 }

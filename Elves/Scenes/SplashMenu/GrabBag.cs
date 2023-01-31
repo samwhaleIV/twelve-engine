@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwelveEngine {
+namespace Elves.Scenes.SplashMenu {
     public sealed class GrabBag<T> {
 
         private readonly T[] grabBag;

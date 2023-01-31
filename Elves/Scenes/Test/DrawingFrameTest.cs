@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using TwelveEngine;
+using TwelveEngine.Effects;
 
 namespace Elves.Scenes.Test {
 
@@ -22,7 +23,7 @@ namespace Elves.Scenes.Test {
         private Rectangle frameDestination;
 
         private void UpdateFrameDestination() {
-            var bounds = new VectorRectangle(Game.Viewport.Bounds);
+            var bounds = new FloatRectangle(Viewport.Bounds);
             float scale = bounds.Height / drawingFrame.Height * 0.75f;
             Vector2 drawingFrameSize = drawingFrame.Size * scale;
             Vector2 origin = bounds.Center - drawingFrameSize * 0.5f;
@@ -35,13 +36,13 @@ namespace Elves.Scenes.Test {
                 return;
             }
             Vector2 relativePosition = (Mouse.Position.ToVector2() - frameDestination.Location.ToVector2()) / frameDestination.Size.ToVector2();
-            drawingFrame.Draw(Game,relativePosition);
+            drawingFrame.Draw(this,relativePosition);
         }
 
         private void DrawingFrameTest_OnRender() {
-            Game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
-            Game.SpriteBatch.Draw(drawingFrame.RenderTarget,frameDestination,Color.White);
-            Game.SpriteBatch.End();
+            SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
+            SpriteBatch.Draw(drawingFrame.RenderTarget,frameDestination,Color.White);
+            SpriteBatch.End();
         }
 
         private void DrawingFrameTest_OnUnload() {
@@ -52,7 +53,7 @@ namespace Elves.Scenes.Test {
         private DrawingFrame drawingFrame = new(256,128) { BrushTexture = Program.Textures.CircleBrush, BrushSize = 5 };
 
         private void DrawingFrameTest_OnLoad() {
-            drawingFrame.Load(Game.GraphicsDevice);
+            drawingFrame.Load(GraphicsDevice);
             var byteCount = drawingFrame.PixelCount / 8;
             var array = new byte[byteCount];
             drawingFrame.Import(array);

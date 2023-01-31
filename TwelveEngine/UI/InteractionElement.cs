@@ -19,7 +19,7 @@
 
         private bool _pressed = false, _selected = false;
 
-        public abstract VectorRectangle GetScreenArea();
+        public abstract FloatRectangle GetScreenArea();
 
         /// <summary>
         /// Filtered by <c>InputPaused</c>.

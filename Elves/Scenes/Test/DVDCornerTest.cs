@@ -1,4 +1,4 @@
-﻿using Elves.FX;
+﻿using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -16,11 +16,9 @@ namespace Elves.Scenes.Test {
         }
 
         private void DVDCornerTest_OnRender() {
-            SpriteBatch spriteBatch = Game.SpriteBatch;
-
-            spriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
-            bouncingSimulator.Render(spriteBatch,Program.Textures.Warning,Game.Viewport.Height * 0.025f,Game.Viewport.Bounds);
-            spriteBatch.End();
+            SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
+            bouncingSimulator.Render(SpriteBatch,Program.Textures.Warning,Viewport.Height * 0.025f,Viewport.Bounds);
+            SpriteBatch.End();
         }
 
         private void DVDCornerTest_OnUpdate() {

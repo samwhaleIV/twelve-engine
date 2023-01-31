@@ -1,13 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace TwelveEngine.Shell {
-    public sealed class ProxyGameTime {
+    internal static class ProxyTime {
 
-        private readonly TimeSpan MAX_ELAPSED_TIME = TimeSpan.FromMilliseconds(Constants.MaxFrameDelta);
+        private static readonly TimeSpan MAX_ELAPSED_TIME = TimeSpan.FromMilliseconds(Constants.MaxFrameDelta);
 
-        private bool _shouldAddPauseTime = false;
+        private static bool _shouldAddPauseTime = false;
 
         private static readonly Stopwatch stopwatch = new();
 
@@ -21,7 +19,7 @@ namespace TwelveEngine.Shell {
         /// <returns>Total, elapsed duration since <see cref="Start"/> was first called.</returns>
         internal static TimeSpan GetElapsedTime() => stopwatch.Elapsed;
 
-        private void UpdateFrameDelta(TimeSpan frameDelta) {
+        private static void UpdateFrameDelta(TimeSpan frameDelta) {
             if(Config.GetBool(Config.Keys.LimitFrameDelta) && frameDelta > MAX_ELAPSED_TIME) {
                 Console.WriteLine($"[WARNING] Exceeded frame delta limit: {frameDelta} > {MAX_ELAPSED_TIME}");
                 frameDelta = MAX_ELAPSED_TIME;
@@ -32,36 +30,36 @@ namespace TwelveEngine.Shell {
         /// <summary>
         /// Total duration that the engine has been paused. Does not a reflect window/MonoGame hang. See <see cref="Drift"/>.
         /// </summary>
-        public TimeSpan PauseTime { get; private set; } = TimeSpan.Zero;
+        internal static TimeSpan PauseTime { get; private set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Elapsed time delta provided by MonoGame. Filtered against <see cref="Constants.MaxFrameDelta"/> if engine config allows for it. See <see cref="Config.Keys.LimitFrameDelta"/>.
         /// </summary>
-        public TimeSpan FrameDelta { get; private set; }
+        internal static TimeSpan FrameDelta { get; private set; }
 
         /// <summary>
         /// Total duration. Realtime, minus paused game duration. Not affected by <see cref="Now"/> lag.
         /// </summary>
-        public TimeSpan RealTime { get; private set; }
+        internal static TimeSpan RealTime { get; private set; }
 
         /// <summary>
         /// Total duration. The game time provided by MonoGame minus paused game duration.
         /// </summary>
-        public TimeSpan Now { get; private set; }
+        internal static TimeSpan Now { get; private set; }
 
         /// <summary>
         /// The difference between <c>Now</c> and <c>GameTime</c>.<br/>
         /// E.g. MonoGame pauses the game loop while moving the window.<br/>
         /// This makes <see cref="Now"/> unsuitable for long, timelined events.
         /// </summary>
-        public TimeSpan Drift => RealTime - Now;
+        internal static TimeSpan Drift => RealTime - Now;
 
         /// <summary>
         /// Indicates if time updating is paused. <see cref="FrameDelta"/> continues to update while paused.
         /// </summary>
-        public bool IsPaused => _pauseCount > 0;
+        internal static bool IsPaused => _pauseCount > 0;
 
-        internal void Update(GameTime gameTime) {
+        internal static void Update(GameTime gameTime) {
             TimeSpan now = GetElapsedTime();
 
             if(_shouldAddPauseTime) {
@@ -85,17 +83,17 @@ namespace TwelveEngine.Shell {
             Now = gameTime.TotalGameTime - PauseTime;
         }
 
-        internal void AddPauseTime(TimeSpan pauseTime) {
+        internal static void AddPauseTime(TimeSpan pauseTime) {
             PauseTime += pauseTime;
         }
 
-        private int _pauseCount = 0;
+        private static int _pauseCount = 0;
 
-        internal void Pause() {
+        internal static void Pause() {
             _pauseCount += 1;
         }
 
-        internal void Resume() {
+        internal static void Resume() {
             if(_pauseCount <= 0) {
                 _pauseCount = 0;
                 return;
@@ -112,7 +110,7 @@ namespace TwelveEngine.Shell {
         /// Add simulation time if the game is being updated outside of the primary update path. I.e. when using <see cref="Automation.AutomationAgent"/>.
         /// </summary>
         /// <param name="frameDelta">The delta of the frame that is being simulated.</param>
-        internal void AddSimulationTime(TimeSpan frameDelta) {
+        internal static void AddSimulationTime(TimeSpan frameDelta) {
             FrameDelta = frameDelta;
             RealTime += frameDelta;
             Now += frameDelta;

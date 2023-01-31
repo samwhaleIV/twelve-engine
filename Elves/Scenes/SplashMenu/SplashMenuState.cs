@@ -79,20 +79,20 @@ namespace Elves.Scenes.SplashMenu {
         }
 
         private void PlayButton_OnUpdate() {
-            Rectangle bounds = Game.Viewport.Bounds;
+            Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale() * PLAY_BUTTON_SCALE;
             Vector2 size = playButton.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
-            playButton.Area = new VectorRectangle(center,size);
+            playButton.Area = new FloatRectangle(center,size);
         }
 
         private void NameBadge_OnUpdate() {
-            Rectangle bounds = Game.Viewport.Bounds;
+            Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = nameBadge.TextureSource.Size.ToVector2() * scale;
 
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (1/3f) - size.Y * 0.5f);
-            nameBadge.Area = new VectorRectangle(center,size);
+            nameBadge.Area = new FloatRectangle(center,size);
         }
 
         private void AddFloatingItems(Texture2D texture) {
@@ -104,7 +104,7 @@ namespace Elves.Scenes.SplashMenu {
         }
 
         private void FallingElf_OnUpdate() {
-            Rectangle bounds = Game.Viewport.Bounds;
+            Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = fallingElf.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
@@ -114,7 +114,7 @@ namespace Elves.Scenes.SplashMenu {
             var offset2 = MathF.Cos(MathF.PI * 2 * t2);
             center.X += (offset * 8f) / FloatingItem.WIGGLE_BASE_SCALE * scale;
             center.Y += (offset2 * 4f) / FloatingItem.WIGGLE_BASE_SCALE * scale;
-            fallingElf.Area = new VectorRectangle(center,size);
+            fallingElf.Area = new FloatRectangle(center,size);
         }
     }
 }

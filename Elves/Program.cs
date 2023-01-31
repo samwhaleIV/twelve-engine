@@ -9,7 +9,7 @@ using System.IO;
 namespace Elves {
     public static class Program {
 
-        public static GameManager Game { get; private set; }
+        public static GameStateManager Game { get; private set; }
         public static Textures Textures { get; private set; }
 
         public static SaveFile Save { get; set; } = null;
@@ -40,7 +40,7 @@ namespace Elves {
 
         public static string SaveDirectory { get; private set; }
 
-        public static void Start(GameManager game,string saveDirectory) {
+        public static void Start(GameStateManager game,string saveDirectory) {
             Game = game;
 
             Game.Window.Title = "Elves!";
@@ -51,7 +51,7 @@ namespace Elves {
 
             if(!Flags.Get(Constants.Flags.OSCursor)) {
                 AddCustomCursors();
-                game.UseCustomCursor = true;
+                CustomCursor.UseCustomCursor = true;
             }
 
             SaveDirectory = saveDirectory;
@@ -69,7 +69,7 @@ namespace Elves {
         private static void AddCursorState(
             CursorState cursorState,Texture2D texture,int? originX = null,int? originY = null
         ) {
-            Game.CursorSources.Add(cursorState,MouseCursor.FromTexture2D(texture,originX ?? 0,originY ?? 0));
+            CustomCursor.Sources.Add(cursorState,MouseCursor.FromTexture2D(texture,originX ?? 0,originY ?? 0));
         }
 
         private static void AddCustomCursors() {

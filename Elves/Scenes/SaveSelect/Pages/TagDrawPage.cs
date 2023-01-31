@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using TwelveEngine;
+using TwelveEngine.Effects;
 using TwelveEngine.Input.Routing;
 using TwelveEngine.UI.Book;
 
@@ -34,7 +35,7 @@ namespace Elves.Scenes.SaveSelect {
             return button;
         }
 
-        public override void Update(VectorRectangle viewport) {
+        public override void Update(FloatRectangle viewport) {
             tag.Position = new(0.5f,1/2f);
             tag.Rotation = 0f;
             float tagHeight = viewport.Height * (1 / 3f);
@@ -55,9 +56,9 @@ namespace Elves.Scenes.SaveSelect {
                 drawingFrame.ReleaseDraw();
                 return;
             }
-            VectorRectangle frameDestination = tag.ComputedArea.Destination;
+            FloatRectangle frameDestination = tag.ComputedArea.Destination;
             Vector2 relativePosition = (mouse.Position.ToVector2() - frameDestination.Position) / frameDestination.Size;
-            drawingFrame.Draw(Scene.Game,relativePosition);
+            drawingFrame.Draw(Scene,relativePosition);
         }
 
         private void UI_OnButtonPresed(ButtonImpulse impulse) {

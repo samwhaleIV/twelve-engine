@@ -9,8 +9,6 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)FX\Static.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FX\WillTheDVDHitTheCornerSimulator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleResult.cs" />
@@ -18,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Battles\DebugBattle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\GrabBag.cs" />
     <Compile Include="..\Elves\Scenes\Battle\BattleScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\BattleScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselItem.cs" />

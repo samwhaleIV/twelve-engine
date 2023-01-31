@@ -1,16 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using TwelveEngine.EntitySystem;
+﻿using TwelveEngine.EntitySystem;
 using TwelveEngine.Game3D.Entity;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game3D {
     public class GameState3D:InputGameState,IEntitySorter<Entity3D,GameState3D> {
-
-        public GraphicsDevice GraphicsDevice => Game.GraphicsDevice;
 
         private readonly EntitySortMode entitySortMode;
 
@@ -96,7 +90,7 @@ namespace TwelveEngine.Game3D {
             Entities.PreRender();
         }
 
-        public float AspectRatio => Game.Viewport.AspectRatio;
+        public float AspectRatio => Viewport.AspectRatio;
 
         private Camera3D _camera;
         public Camera3D Camera { get => _camera; set => SetNewCamera(value); }
@@ -132,12 +126,12 @@ namespace TwelveEngine.Game3D {
             return BufferSet.Create(GraphicsDevice,vertices);
         }
 
-        public override void ResetGraphicsState(GraphicsDevice graphicsDevice) {
+        protected internal override void ResetGraphicsState(GraphicsDevice graphicsDevice) {
             graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
             graphicsDevice.DepthStencilState = DepthStencilState.Default;
             graphicsDevice.BlendState = BlendState.AlphaBlend;
             graphicsDevice.BlendFactor = Color.White;
-            Game.GraphicsDevice.Clear(ClearColor);
+            graphicsDevice.Clear(ClearColor);
         }
 
         public static int CameraFixedSort(Entity3D a,Entity3D b) {

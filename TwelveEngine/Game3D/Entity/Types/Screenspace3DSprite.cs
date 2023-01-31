@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Game3D.Entity.Types {
+﻿namespace TwelveEngine.Game3D.Entity.Types {
     public class Screenspace3DSprite:TextureEntity {
 
         public Screenspace3DSprite() => Initialize();
@@ -9,7 +6,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
         public Screenspace3DSprite(string textureName) : base(textureName) => Initialize();
         public Screenspace3DSprite(Texture2D texture) : base(texture) => Initialize();
 
-        public VectorRectangle Area { get; set; } = VectorRectangle.Zero; /* Space in pixels */
+        public FloatRectangle Area { get; set; } = FloatRectangle.Zero; /* Space in pixels */
         public Rectangle TextureSource { get; set; }
 
         private void Initialize() {
@@ -23,7 +20,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
             SetUVArea(TextureSource);
 
             var orthoArea = Owner.Camera.OrthographicArea;
-            var viewportSize = Owner.Game.Viewport.Bounds.Size.ToVector2();
+            var viewportSize = Owner.Viewport.Bounds.Size.ToVector2();
 
             float left = (Area.Left / viewportSize.X) * orthoArea.Width + orthoArea.Left;
             float right = (Area.Right / viewportSize.X) * orthoArea.Width + orthoArea.Left;

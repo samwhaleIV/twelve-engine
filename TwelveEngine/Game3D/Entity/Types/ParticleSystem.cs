@@ -1,8 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Game3D.Entity.Types {
+﻿namespace TwelveEngine.Game3D.Entity.Types {
     public class ParticleSystem:Entity3D {
 
         protected readonly Vector3[] p_position;
@@ -45,7 +41,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         public float ParticleSize { get; set; } = 0.025f;
 
-        public VectorRectangle UVArea { get; set; }
+        public FloatRectangle UVArea { get; set; }
 
         private void UpdateVertices() {
             float s = ParticleSize * 0.5f;
@@ -86,11 +82,11 @@ namespace TwelveEngine.Game3D.Entity.Types {
         private EffectParameter textureSamplerParameter;
 
         private void ParticleSystem_OnLoad() {
-            effect = Game.Content.Load<Effect>("Shaders/ParticleSystemEffect");
+            effect = Content.Load<Effect>("Shaders/ParticleSystemEffect");
             worldViewProjectionMatrixParameter = effect.Parameters["WorldViewProjection"];
             textureSamplerParameter = effect.Parameters["TextureSampler"];
             vertices = new VertexPositionTexture[particleCount * SHAPE_VERTEX_COUNT];
-            bufferSet = BufferSet.Create<VertexPositionTexture>(Game.GraphicsDevice,vertices.Length);
+            bufferSet = BufferSet.Create<VertexPositionTexture>(GraphicsDevice,vertices.Length);
         }
 
         public SamplerState SamplerState { get; set; } = null;

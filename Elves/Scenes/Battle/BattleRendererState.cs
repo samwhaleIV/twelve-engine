@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine;
 using Elves.Scenes.Battle.UI;
-using TwelveEngine.Input;
 using TwelveEngine.UI;
+using TwelveEngine.Effects;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Battle {
     public abstract class BattleRendererState:Scene3D {
@@ -10,7 +11,7 @@ namespace Elves.Scenes.Battle {
         private readonly string backgroundTexture;
 
         private void LoadBackgroundTexture() {
-            background.Texture = Game.Content.Load<Texture2D>(backgroundTexture);
+            background.Texture = Content.Load<Texture2D>(backgroundTexture);
         }
 
         public BattleRendererState(string background) {
@@ -38,7 +39,7 @@ namespace Elves.Scenes.Battle {
 
         private void BattleRendererState_OnPreRender() {
             background.Update(Now);
-            background.Render(Game.SpriteBatch,Game.Viewport);
+            background.Render(SpriteBatch,Viewport);
         }
 
         private void Initialize() {
@@ -50,12 +51,12 @@ namespace Elves.Scenes.Battle {
 
         private void BattleScene_OnLoad() {
             InitializeBattleUI();
-            background.Load(Game.Content);
+            background.Load(Content);
         }
 
         protected void UpdateUI() {
             battleUI.UpdateLayout((int)GetUIScale());
-            Game.CursorState = battleUI.CursorState;
+            CustomCursor.State = battleUI.CursorState;
         }
 
         protected abstract UserData GetPlayerData();
@@ -64,7 +65,7 @@ namespace Elves.Scenes.Battle {
         protected abstract void ActionButtonClicked(int ID);
 
         private void InitializeBattleUI() {
-            battleUI = new BattleUI(this,Game);
+            battleUI = new BattleUI(this);
             battleUI.OnActionButtonClick += ActionButtonClicked;
 
             Input.Router.OnAcceptDown += Input_OnAcceptDown;
@@ -89,7 +90,7 @@ namespace Elves.Scenes.Battle {
         private void Input_OnAcceptDown() => UI?.SendEvent(InputEvent.AcceptPressed);
 
         private void BattleScene_OnRender() {
-            battleUI.Render(Game.SpriteBatch,GetPlayerData(),GetTargetData());
+            battleUI.Render(SpriteBatch,GetPlayerData(),GetTargetData());
         }
 
         protected override void UpdateGame() {
@@ -98,7 +99,7 @@ namespace Elves.Scenes.Battle {
             UpdateInputDevices();
             UI.SendEvent(InputEvent.CreateMouseUpdate(Mouse.Position));
             battleUI.UpdateLayout(uiScale); /* Interaction can be delayed by 1 frame if we don't update the UI again */
-            Game.CursorState = UI.CursorState;
+            CustomCursor.State = UI.CursorState;
             UpdateEntities();
             UpdateCamera();
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Shell.Hotkeys {
     public sealed class Hotkey {

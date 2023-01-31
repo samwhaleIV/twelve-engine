@@ -10,8 +10,8 @@ namespace Elves.Scenes.Battle.UI {
 
         private const int DEFAULT_BUFFER_SIZE = 128;
 
-        private readonly AnimationInterpolator textPositionInterpolator = new(Constants.AnimationTiming.TaglineTextMovement);
-        private readonly AnimationInterpolator elementDisplayInterpolator = new(Constants.AnimationTiming.TaglineMovement);
+        private readonly Interpolator textPositionInterpolator = new(Constants.AnimationTiming.TaglineTextMovement);
+        private readonly Interpolator elementDisplayInterpolator = new(Constants.AnimationTiming.TaglineMovement);
 
         private StringBuilder _oldText = new(DEFAULT_BUFFER_SIZE);
         private StringBuilder _currentText = new(DEFAULT_BUFFER_SIZE);
@@ -72,7 +72,7 @@ namespace Elves.Scenes.Battle.UI {
             float x = 0;
             float y = IsShown ? elementDisplayInterpolator.Interpolate(viewport.Bottom,centerY-halfHeight) : elementDisplayInterpolator.Interpolate(centerY-halfHeight,viewport.Bottom);
 
-            ScreenArea = new VectorRectangle(x,y,width,height);
+            ScreenArea = new FloatRectangle(x,y,width,height);
 
             float textY = y + halfHeight;
 
@@ -87,7 +87,7 @@ namespace Elves.Scenes.Battle.UI {
             base.Draw(spriteBatch,Color.Black);
         }
 
-        public void DrawText(UVSpriteFont font) {
+        public void DrawText(TwelveEngine.Font.UVSpriteFont font) {
             if(IsOffscreen) {
                 return;
             }

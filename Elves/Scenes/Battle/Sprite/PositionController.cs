@@ -8,7 +8,7 @@ namespace Elves.Scenes.Battle.Sprite {
 
         private const float SCREEN_EDGE_MARGIN = 0.015f;
 
-        private readonly AnimationInterpolator interpolator = new(Constants.AnimationTiming.TargetMovementDuration);
+        private readonly Interpolator interpolator = new(Constants.AnimationTiming.TargetMovementDuration);
 
         private static readonly Dictionary<SpritePosition,Vector3> positionTable = new() {
             {SpritePosition.Left,new Vector3(-0.4f,0f,Constants.Depth.MiddleFar)},

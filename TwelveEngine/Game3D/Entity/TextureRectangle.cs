@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Game3D.Entity {
+﻿namespace TwelveEngine.Game3D.Entity {
     public abstract class TextureRectangle:WorldMatrixEntity {
 
         private Texture2D _texture;
@@ -107,7 +104,7 @@ namespace TwelveEngine.Game3D.Entity {
         private void TextureRectangle_OnLoad() {
             bufferSet = Owner.CreateBufferSet(vertices);
             
-            effect = new BasicEffect(Game.GraphicsDevice) {
+            effect = new BasicEffect(GraphicsDevice) {
                 TextureEnabled = true,
                 VertexColorEnabled = true,
                 LightingEnabled = false

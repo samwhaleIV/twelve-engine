@@ -1,11 +1,27 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Shell {
     public class GameState {
+
+        private GameStateManager _game = null;
+
+        public ContentManager Content => _game.Content;
+        public SpriteBatch SpriteBatch => _game.SpriteBatch;
+        public RenderTargetStack RenderTarget => _game.RenderTarget;
+        public GraphicsDevice GraphicsDevice => _game.GraphicsDevice;
+        public Viewport Viewport => _game.RenderTarget.GetViewport();
+        public bool GameIsActive => _game.IsActive;
+        public bool GameIsPaused => _game.IsPaused;
+
+        /* Having time defined in gamestate can save our ass later. */
+        public TimeSpan Now => ProxyTime.Now;
+        public TimeSpan RealTime => ProxyTime.RealTime;
+        public TimeSpan FrameDelta => ProxyTime.FrameDelta;
+
+        public TimeSpan LocalNow => GetLocalNow();
+        public TimeSpan LocalRealTime => GetLocalRealTime();
 
         private StateData data;
         public StateData Data {
@@ -24,9 +40,6 @@ namespace TwelveEngine.Shell {
         public bool HasFlag(StateFlags flag) => Data.Flags.HasFlag(flag);
         public bool FadeInIsFlagged => Data.Flags.HasFlag(StateFlags.FadeIn);
 
-        public GameManager Game { get; private set; } = null;
-        public ContentManager Content => Game.Content;
-
         private TimeSpan _nowOffset, _realTimeOffset;
 
         private TimeSpan _transitionStartTime = TimeSpan.Zero, _transitionDuration = TimeSpan.Zero;
@@ -35,28 +48,20 @@ namespace TwelveEngine.Shell {
 
         private TransitionData? _transitionOutData = null;
 
-        public TimeSpan Now => Game?.ProxyTime.Now ?? throw new InvalidOperationException("Cannot access time before loading has started.");
-        public TimeSpan RealTime => Game?.ProxyTime.RealTime ?? throw new InvalidOperationException("Cannot access time before loading has started.");
-
-        public TimeSpan LocalNow {
-            get {
-                if(!_hasStartTime) {
-                    throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
-                }
-                return Game.ProxyTime.Now - _nowOffset;
+        private TimeSpan GetLocalNow() {
+            if(!_hasStartTime) {
+                throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
             }
+            return Now - _nowOffset;
         }
 
-        public TimeSpan LocalRealTime {
-            get {
-                if(!_hasStartTime) {
-                    throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
-                }
-                return Game.ProxyTime.RealTime - _realTimeOffset;
+        private TimeSpan GetLocalRealTime() {
+            if(!_hasStartTime) {
+                throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
             }
+            return RealTime - _realTimeOffset;
         }
 
-        public TimeSpan TimeDelta => Game.ProxyTime.FrameDelta;
 
         public event Action OnLoad, OnUnload;
 
@@ -77,8 +82,8 @@ namespace TwelveEngine.Shell {
         private bool _hasStartTime = false;
 
         private void SetStartTime() {
-            _nowOffset = Game.ProxyTime.Now;
-            _realTimeOffset = Game.ProxyTime.RealTime;
+            _nowOffset = Now;
+            _realTimeOffset = RealTime;
             _hasStartTime = true;
         }
 
@@ -91,9 +96,9 @@ namespace TwelveEngine.Shell {
             TransitionIn(Data.TransitionDuration);
         }
 
-        internal void Load(GameManager game) {
+        internal void Load(GameStateManager game) {
             IsLoading = true;
-            Game = game;
+            _game = game;
             OnLoad?.Invoke();
             IsLoaded = true;
             IsLoading = false;
@@ -103,7 +108,7 @@ namespace TwelveEngine.Shell {
 
         internal void Unload() {
             OnUnload?.Invoke();
-            Game = null;
+            _game = null;
             IsLoaded = false;
         }
 
@@ -113,9 +118,9 @@ namespace TwelveEngine.Shell {
 
         private void HandleTransitionOut(TransitionData data) {
             if(data.Generator != null) {
-                Game.SetState(data.Generator,data.Data);
+                _game.SetState(data.Generator,data.Data);
             } else {
-                Game.SetState(data.State,data.Data);
+                _game.SetState(data.State,data.Data);
             }
         }
 
@@ -145,9 +150,9 @@ namespace TwelveEngine.Shell {
             IsRendering = true;
             OnRender?.Invoke();
             if(TransitionState == TransitionState.Out) {
-                TransitionRenderer.DrawOut(Game,TransitionT);
+                TransitionRenderer.DrawOut(SpriteBatch,Viewport.Bounds,TransitionT);
             } else if(TransitionState == TransitionState.In) {
-                TransitionRenderer.DrawIn(Game,TransitionT);
+                TransitionRenderer.DrawIn(SpriteBatch,Viewport.Bounds,TransitionT);
             }
             IsRendering = false;
         }
@@ -160,27 +165,22 @@ namespace TwelveEngine.Shell {
 
         public TransitionState TransitionState { get; private set; }
 
-        public bool IsTransitioning {
-            get {
-                bool isTransitioning = TransitionState != TransitionState.None;
-                return isTransitioning;
+        public bool IsTransitioning => TransitionState != TransitionState.None;
+
+        private float GetTransitionT() {
+            if(!IsTransitioning) {
+                return 0;
             }
+            float t = (float)((LocalNow - _transitionStartTime) / _transitionDuration);
+            if(t < 0) {
+                return t;
+            } else if(t >= 1) {
+                return 1;
+            }
+            return t;
         }
 
-        public float TransitionT {
-            get {
-                if(!IsTransitioning) {
-                    return 0;
-                }
-                float t = (float)((LocalNow - _transitionStartTime) / _transitionDuration);
-                if(t < 0) {
-                    return t;
-                } else if(t >= 1) {
-                    return 1;
-                }
-                return t;
-            }
-        }
+        public float TransitionT => GetTransitionT();
 
         public void TransitionOut(TransitionData transitionData) {
             if(transitionData.Generator != null && transitionData.State != null) {
@@ -198,12 +198,12 @@ namespace TwelveEngine.Shell {
             _transitionOutData = null;
         }
 
-        public virtual void ResetGraphicsState(GraphicsDevice graphicsDevice) {
+         protected internal virtual void ResetGraphicsState(GraphicsDevice graphicsDevice) {
             graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
             graphicsDevice.DepthStencilState = DepthStencilState.None;
             graphicsDevice.BlendState = BlendState.AlphaBlend;
             graphicsDevice.BlendFactor = Color.White;
-            Game.GraphicsDevice.Clear(ClearColor);
+            graphicsDevice.Clear(ClearColor);
         }
     }
 }

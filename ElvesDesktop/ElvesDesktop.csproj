@@ -10,6 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <Nullable>disable</Nullable>
+    <StartupObject>ElvesDesktop.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icon.ico" />
@@ -27,9 +28,11 @@
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
   </Target>
-  <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
   <Import Project="..\Elves\Elves.projitems" Label="Shared" />
   <ItemGroup>
     <MonoGameContentReference Include="..\Content\Elves.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TwelveEngineLibrary\TwelveEngineLibrary.csproj" />
   </ItemGroup>
 </Project>

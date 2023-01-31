@@ -1,12 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-
-namespace TwelveEngine {
-    public struct VectorRectangle {
+﻿namespace TwelveEngine {
+    public struct FloatRectangle {
         private float x, y, width, height;
 
-        public VectorRectangle(int x,int y,int width,int height) {
+        public FloatRectangle(int x,int y,int width,int height) {
             this.x = x;
             this.y = y;
 
@@ -14,7 +10,7 @@ namespace TwelveEngine {
             this.height = height;
         }
 
-        public VectorRectangle(int x,int y,float width,float height) {
+        public FloatRectangle(int x,int y,float width,float height) {
             this.x = x;
             this.y = y;
 
@@ -22,7 +18,7 @@ namespace TwelveEngine {
             this.height = height;
         }
 
-        public VectorRectangle(float x,float y,int width,int height) {
+        public FloatRectangle(float x,float y,int width,int height) {
             this.x = x;
             this.y = y;
 
@@ -30,7 +26,7 @@ namespace TwelveEngine {
             this.height = height;
         }
 
-        public VectorRectangle(float x,float y,float width,float height) {
+        public FloatRectangle(float x,float y,float width,float height) {
             this.x = x;
             this.y = y;
 
@@ -38,14 +34,14 @@ namespace TwelveEngine {
             this.height = height;
         }
 
-        public VectorRectangle(int x,int y,int width,int height,Texture2D uvSource) {
+        public FloatRectangle(int x,int y,int width,int height,Texture2D uvSource) {
             this.x = (float)x / uvSource.Width;
             this.y = (float)y / uvSource.Height;
             this.width = (float)width / uvSource.Width;
             this.height = (float)height / uvSource.Height;
         }
 
-        public VectorRectangle(Vector2 position,Vector2 size) {
+        public FloatRectangle(Vector2 position,Vector2 size) {
             x = position.X;
             y = position.Y;
 
@@ -53,7 +49,7 @@ namespace TwelveEngine {
             height = size.Y;
         }
 
-        public VectorRectangle(Vector2 position,float width,float height) {
+        public FloatRectangle(Vector2 position,float width,float height) {
             x = position.X;
             y = position.Y;
 
@@ -61,7 +57,7 @@ namespace TwelveEngine {
             this.height = height;
         }
 
-        public VectorRectangle(float x,float y,Vector2 size) {
+        public FloatRectangle(float x,float y,Vector2 size) {
             this.x = x;
             this.y = y;
 
@@ -69,7 +65,7 @@ namespace TwelveEngine {
             height = size.Y;
         }
 
-        public VectorRectangle(Rectangle rectangle) {
+        public FloatRectangle(Rectangle rectangle) {
             x = rectangle.X;
             y = rectangle.Y;
 
@@ -113,9 +109,9 @@ namespace TwelveEngine {
         public Vector2 BottomLeft => new(x,y+height);
         public Vector2 TopRight => new(x+width,y);
 
-        public static readonly VectorRectangle Zero = new(0,0,0,0);
-        public static readonly VectorRectangle One = new(0,0,1,1);
-        public static readonly VectorRectangle Empty = new(Vector2.Zero,Vector2.Zero);
+        public static readonly FloatRectangle Zero = new(0,0,0,0);
+        public static readonly FloatRectangle One = new(0,0,1,1);
+        public static readonly FloatRectangle Empty = new(Vector2.Zero,Vector2.Zero);
 
         public bool Contains(Point point) {
             return x <= point.X && point.X < x + width && y <= point.Y && point.Y < y + height;
@@ -133,7 +129,7 @@ namespace TwelveEngine {
             return this.x <= x && x < this.x + width && this.y <= y && y < this.y + height;
         }
 
-        public static explicit operator Rectangle(VectorRectangle vectorRectangle) {
+        public static explicit operator Rectangle(FloatRectangle vectorRectangle) {
             return new Rectangle((int)vectorRectangle.x,(int)vectorRectangle.y,(int)vectorRectangle.width,(int)vectorRectangle.height);
         }
 
@@ -146,20 +142,20 @@ namespace TwelveEngine {
         }
 
         public override bool Equals(object obj) {
-            return obj is VectorRectangle other && Equals(other);
+            return obj is FloatRectangle other && Equals(other);
         }
 
-        public bool Equals(VectorRectangle vectorRectangle) {
+        public bool Equals(FloatRectangle vectorRectangle) {
             return x == vectorRectangle.X &&
                    y == vectorRectangle.Y &&
                    width == vectorRectangle.Width &&
                    height == vectorRectangle.Height;
         }
 
-        public static bool operator ==(VectorRectangle a,VectorRectangle b) {
+        public static bool operator ==(FloatRectangle a,FloatRectangle b) {
             return a.Equals(b);
         }
-        public static bool operator !=(VectorRectangle a,VectorRectangle b) {
+        public static bool operator !=(FloatRectangle a,FloatRectangle b) {
             return !a.Equals(b);
         }
     }

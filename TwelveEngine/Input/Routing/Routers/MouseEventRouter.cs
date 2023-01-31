@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.Input.Routing {
+﻿namespace TwelveEngine.Input.Routing {
     public sealed class MouseEventRouter:InputEventRouter<MouseEvent,MouseEventHandler> {
 
         public event Action OnPress, OnRelease, OnMove;

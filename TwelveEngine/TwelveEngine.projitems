@@ -10,21 +10,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DrawingFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Effects\DrawingFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\IEntitySorter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\LowMemorySortedSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Flags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\CustomCursor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\Fonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\Glyph.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\RetroFontData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\RetroFontOutlinedData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\TwelvenFontData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\UVSpriteFont.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Effects\Static.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Effects\WillTheDVDHitTheCornerSimulator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\EntitySortMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\ParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game3D\Entity\Types\Screenspace3DSprite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\IHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\InputEventHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseEvent.cs" />
@@ -36,6 +38,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\MouseEventType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\MultiBindKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\ValidKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\RuntimeTextures.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\InputStateCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\TimeWriters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\ButtonFocusNavState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\IEndpoint.cs" />
@@ -52,12 +56,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)LoggerLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionStateChange.cs" />
     <Compile Include="..\TwelveEngine\SaveFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)InfinityBackground.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ScrollingBackground.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\CursorState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Effects\InfinityBackground.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Effects\ScrollingBackground.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CursorState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FrameTimeSmoother.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\FPSCounter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnimationInterpolator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interpolator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Hotkeys\Hotkey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Hotkeys\HotkeyData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Hotkeys\HotkeySet.cs" />
@@ -75,8 +79,8 @@
     <Compile Include="..\TwelveEngine\UI\Book\BookPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\SpriteBook.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\SpriteElement.cs" />
-    <Compile Include="..\TwelveEngine\Timeline.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VectorRectangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Timeline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FloatRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\EntityContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityContainer\ContainerReader.cs" />
@@ -110,10 +114,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\InputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\SerialInputFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\VCRDisplay.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\ProxyGameTime.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\ProxyTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\KeyBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\Handlers\MouseEventHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\GameManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\GameStateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameState.cs" />
   </ItemGroup>
   <ItemGroup>

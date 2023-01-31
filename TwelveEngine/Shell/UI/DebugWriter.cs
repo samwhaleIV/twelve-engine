@@ -1,19 +1,16 @@
-﻿using System;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System.Text;
 
 namespace TwelveEngine.Shell.UI {
     public sealed class DebugWriter {
 
         private const string NUMBER_FORMAT = "{0:0.00}";
 
-        private readonly GameManager game;
+        internal GameStateManager Game { get; private init; }
+        internal DebugWriter(GameStateManager game) => Game = game;
 
-        public DebugWriter(GameManager game) => this.game = game;
-        public DebugWriter(GameState state) => game = state.Game;
-
-        private SpriteFont Font => game.DebugFont;
+        private SpriteFont SpriteFont => Game.DebugFont;
+        private SpriteBatch SpriteBatch => Game.SpriteBatch;
+        private Viewport Viewport => Game.RenderTarget.GetViewport();
 
         public int Padding { get; set; } = Constants.ScreenEdgePadding;
 
@@ -30,10 +27,10 @@ namespace TwelveEngine.Shell.UI {
                 for(int i = writer.Length-1;i>=0;i--) {
                     reverseBuffer.Append(writer[i]);
                 }
-                game.SpriteBatch.DrawString(Font,reverseBuffer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,true);
+                SpriteBatch.DrawString(SpriteFont,reverseBuffer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,true);
                 reverseBuffer.Clear();
             } else {
-                game.SpriteBatch.DrawString(Font,writer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,false);
+                SpriteBatch.DrawString(SpriteFont,writer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,false);
             }
             writer.Clear();
         }
@@ -43,8 +40,8 @@ namespace TwelveEngine.Shell.UI {
             var padding = Padding;
             float x = padding, y = padding / 2 + 1;
 
-            var viewport = game.Viewport;
-            var lineHeight = Font.LineSpacing;
+            var viewport = Viewport;
+            var lineHeight = SpriteFont.LineSpacing;
 
             switch(corner) {
                 case Corner.TopRight:
@@ -223,6 +220,36 @@ namespace TwelveEngine.Shell.UI {
 
         public void ToBottomRight(Color? color = null) {
             Begin(Corner.BottomRight,color);
+        }
+
+        private readonly FPSCounter fpsCounter = new();
+
+        private readonly FrameTimeSmoother updateDurationSmoother = new(), renderDurationSmoother = new();
+
+        private Action<GameStateManager,DebugWriter> _timeWriter = TimeWriters.Get(0);
+        private int _timeWriterIndex = 1;
+
+        public void CycleTimeWriter() {
+            _timeWriterIndex %= TimeWriters.Count;
+            _timeWriter = TimeWriters.Get(_timeWriterIndex++);
+        }
+
+        public void DrawGameTimeDebug(TimeSpan updateDuration,TimeSpan renderDuration) {
+            TimeSpan now = ProxyTime.GetElapsedTime();
+
+            ToBottomRight();
+
+            renderDurationSmoother.Update(now,renderDuration);
+            WriteTimeMS(renderDurationSmoother.Average,"R");
+
+            updateDurationSmoother.Update(now,updateDuration);
+            WriteTimeMS(updateDurationSmoother.Average,"U");
+
+            fpsCounter.Update(now);
+            WriteFPS(fpsCounter.FPS);
+
+            ToBottomLeft();
+            _timeWriter(Game,this);
         }
     }
 }

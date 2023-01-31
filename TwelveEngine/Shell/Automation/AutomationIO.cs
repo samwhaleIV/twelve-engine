@@ -1,9 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.IO.Compression;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace TwelveEngine.Shell.Automation {
     internal static class IO {

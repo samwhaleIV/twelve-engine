@@ -8,7 +8,7 @@ using TwelveEngine;
 namespace Elves.Scenes.Battle.UI {
     public sealed class SpeechBox:UIElement {
 
-        private readonly AnimationInterpolator interpolator = new(Constants.AnimationTiming.SpeechBoxMovement);
+        private readonly Interpolator interpolator = new(Constants.AnimationTiming.SpeechBoxMovement);
 
         public SpeechBox() {
             Texture = Program.Textures.Panel;
@@ -57,8 +57,8 @@ namespace Elves.Scenes.Battle.UI {
 
             x += width * 0.25f * (LeftSided ? -1 : 1);
 
-            var onscreenArea = new VectorRectangle(x,y,width,height);
-            var offscreenArea = LeftSided ? new VectorRectangle(viewport.X-width,onscreenArea.Y,width,height) : new VectorRectangle(viewport.Right,onscreenArea.Y,width,height);
+            var onscreenArea = new FloatRectangle(x,y,width,height);
+            var offscreenArea = LeftSided ? new FloatRectangle(viewport.X-width,onscreenArea.Y,width,height) : new FloatRectangle(viewport.Right,onscreenArea.Y,width,height);
             ScreenArea = IsShown ? interpolator.Interpolate(offscreenArea,onscreenArea) : interpolator.Interpolate(onscreenArea,offscreenArea);
         }
 
@@ -71,7 +71,7 @@ namespace Elves.Scenes.Battle.UI {
             spriteBatch.Draw(Texture,(Rectangle)ScreenArea,TextureSource,Color.White,0f,Vector2.Zero,LeftSided ? SpriteEffects.FlipHorizontally : SpriteEffects.None,1f);
         }
 
-        public void DrawText(UVSpriteFont font) {
+        public void DrawText(TwelveEngine.Font.UVSpriteFont font) {
             if(IsOffscreen) {
                 return;
             }

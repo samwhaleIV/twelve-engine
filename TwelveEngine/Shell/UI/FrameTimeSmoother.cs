@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.Shell.UI {
+﻿namespace TwelveEngine.Shell.UI {
     public sealed class FrameTimeSmoother {
 
         private readonly TimeSpan frequency;

@@ -83,7 +83,7 @@ namespace Elves.Scenes.Intro {
         }
 
         private void IntroScene_OnLoad() {
-            song = Game.Content.Load<Song>(Constants.Songs.Intro);
+            song = Content.Load<Song>(Constants.Songs.Intro);
             MediaPlayer.Play(song);
             MediaPlayer.IsRepeating = false;
             MediaPlayer.Volume = 1f;
@@ -120,7 +120,7 @@ namespace Elves.Scenes.Intro {
         }
 
         private int GetTextSize() {
-            float height = Game.Viewport.Bounds.Size.Y;
+            float height = Viewport.Bounds.Size.Y;
             int lineHeight = Fonts.RetroFont.LineHeight;
             int totalHeight = lineHeight * lineHeight;
             float size = height / totalHeight * 0.5f;
@@ -149,12 +149,12 @@ namespace Elves.Scenes.Intro {
             float t = timeline.Stage == STAGE_TEXT ? timeline.LocalT : 1;
             int end = Math.Min((int)(t * Text.Length) + 1,Text.Length);
 
-            Vector2 size = Game.Viewport.Bounds.Size.ToVector2();
+            Vector2 size = Viewport.Bounds.Size.ToVector2();
             float rowSize = size.Y / (Text.Length + 1);
             int centerX = (int)(size.X * 0.5f);
             int textSize = GetTextSize();
 
-            Fonts.RetroFont.Begin(Game.SpriteBatch);
+            Fonts.RetroFont.Begin(SpriteBatch);
             for(int i = 0;i<end;i++) {
                 Color color = GetTextColor(t,i);
                 Point destination = new(centerX,(int)(rowSize*(i+1)));
