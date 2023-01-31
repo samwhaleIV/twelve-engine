@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using TwelveEngine.Shell;
+﻿using TwelveEngine.Shell;
 
 namespace TwelveEngine.Game3D {
     public sealed class AngleCamera:Camera3D {

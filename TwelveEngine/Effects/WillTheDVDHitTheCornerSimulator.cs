@@ -1,8 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-
-namespace TwelveEngine.Effects {
+﻿namespace TwelveEngine.Effects {
     public sealed class WillTheDVDHitTheCornerSimulator {
 
         private readonly Random random;

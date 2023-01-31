@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 
 namespace TwelveEngine.Input.Routing {
     public sealed class MouseEventHandler:InputEventHandler<MouseEvent,MouseEventRouter> {

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ElvesWindows": {
-      "commandName": "Project",
-      "commandLineArgs": "nofailsafe"
-    }
-  }
-}

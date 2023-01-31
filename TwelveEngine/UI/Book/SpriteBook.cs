@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-
-namespace TwelveEngine.UI.Book {
+﻿namespace TwelveEngine.UI.Book {
     public class SpriteBook:Book<SpriteElement> {
         public void Render(SpriteBatch spriteBatch) {
             spriteBatch.Begin(SpriteSortMode.FrontToBack,null,SamplerState.PointClamp);

@@ -1,6 +1,4 @@
-﻿using TwelveEngine.Input;
-
-namespace TwelveEngine.UI {
+﻿namespace TwelveEngine.UI {
     /// <summary>
     /// A cache used to allow opposite direction focus travel to a repeatable destination.<br/>
     /// E.g., one row has 2 values but the following only has 1 and your focus direction is alternating between row 1 and 2 (See <see cref="DirectionIsOpposite(Direction, Direction)"/>.<br/>

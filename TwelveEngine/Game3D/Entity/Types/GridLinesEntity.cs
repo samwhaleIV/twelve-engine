@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Game3D.Entity.Types {
+﻿namespace TwelveEngine.Game3D.Entity.Types {
     public sealed class GridLinesEntity:WorldMatrixEntity {
         
         private static readonly Color X_AXIS_COLOR = Color.Red;
@@ -26,7 +23,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         private void GridLinesEntity_OnLoad() {
             bufferSet = Owner.CreateBufferSet(GetVertices(cellSize,gridSize));
-            effect = new BasicEffect(Game.GraphicsDevice) {
+            effect = new BasicEffect(GraphicsDevice) {
                 TextureEnabled = false,
                 LightingEnabled = false,
                 VertexColorEnabled = true

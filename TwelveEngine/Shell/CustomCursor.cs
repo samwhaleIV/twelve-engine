@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
 
 namespace TwelveEngine.Shell {
     public static class CustomCursor {

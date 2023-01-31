@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Shell.Automation {
+﻿namespace TwelveEngine.Shell.Automation {
     internal sealed class VCRDisplay {
 
         private const int RENDER_SIZE = 60;
@@ -48,10 +43,10 @@ namespace TwelveEngine.Shell.Automation {
             return Mode.None;
         }
 
-        private GameManager Game { get; init; }
+        private GameStateManager Game { get; init; }
         private SpriteBatch spriteBatch;
 
-        internal VCRDisplay(GameManager game) => Game = game;
+        internal VCRDisplay(GameStateManager game) => Game = game;
 
         private Texture2D vcrTexture;
 

@@ -16,7 +16,7 @@ namespace ElvesDesktop {
             EngineMain(saveDirectory,args);
         }
 
-        protected override void OnGameLoad(GameManager game,string saveDirectory) {
+        protected override void OnGameLoad(GameStateManager game,string saveDirectory) {
             Elves.Program.Start(game,saveDirectory);
         }
 

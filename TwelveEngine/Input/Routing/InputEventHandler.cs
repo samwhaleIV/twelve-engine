@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.Input.Routing {
+﻿namespace TwelveEngine.Input.Routing {
     public abstract class InputEventHandler<TEvent,TRouter>:IHandler<TEvent> where TRouter:IIRouter<TEvent>, new() {
         public event Action<TEvent> OnEvent;
         public void SendEvent(TEvent @event) => OnEvent?.Invoke(@event);

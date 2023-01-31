@@ -9,7 +9,7 @@ namespace Elves.Scenes.Test {
         }
 
         private void SongTest_OnLoad() {
-            var song = Game.Content.Load<Song>(Constants.Songs.UV2T3);
+            var song = Content.Load<Song>(Constants.Songs.UV2T3);
             MediaPlayer.Play(song);
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 1f;       

@@ -36,7 +36,7 @@ namespace Elves.Scenes {
 
 
         public float GetUIScale() {
-            return Game.Viewport.Height / VERTICAL_SCALE_DIVISOR;
+            return Viewport.Height / VERTICAL_SCALE_DIVISOR;
         }
 
         private void Scene_OnUpdate() {

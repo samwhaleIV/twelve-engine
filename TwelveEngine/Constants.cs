@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Input;
-using System;
 
 namespace TwelveEngine {
     public static class Constants {

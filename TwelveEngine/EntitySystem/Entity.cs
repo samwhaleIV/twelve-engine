@@ -1,9 +1,23 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using Microsoft.Xna.Framework.Content;
 using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {
     public abstract class Entity<TOwner> where TOwner:GameState {
+
+        public TOwner Owner { get; private set; } = null;
+
+        public ContentManager Content => Owner.Content;
+        public SpriteBatch SpriteBatch => Owner.SpriteBatch;
+        public RenderTargetStack RenderTarget => Owner.RenderTarget;
+        public GraphicsDevice GraphicsDevice => Owner.GraphicsDevice;
+        public Viewport Viewport => Owner.RenderTarget.GetViewport();
+        public TimeSpan Now => Owner.Now;
+        public TimeSpan RealTime => Owner.RealTime;
+        public TimeSpan FrameDelta => Owner.FrameDelta;
+        public TimeSpan LocalNow => Owner.LocalNow;
+        public TimeSpan LocalRealTime => Owner.LocalRealTime;
+        public bool GameIsActive => Owner.GameIsActive;
+        public bool GameIsPaused => Owner.GameIsPaused;
 
         private const int DEFAULT_ID = EntitySystem.EntityManager.NO_ID;
 
@@ -29,19 +43,11 @@ namespace TwelveEngine.EntitySystem {
         public bool IsLoaded { get; private set; } = false;
         public bool IsLoading { get; private set; } = false;
 
-        public GameManager Game { get; private set; }
-        public TOwner Owner { get; private set; } = null;
-
-        public TimeSpan Now => Owner.Now;
-        public TimeSpan FrameDelta => Owner.FrameDelta;
-        public TimeSpan RealTime => Owner.RealTime;
-
         internal object EntityManager { get; private set; } = null;
 
         internal void Register(int ID,TOwner owner,object entityManager) {
             this.ID = ID;
             Owner = owner;
-            Game = owner.Game;
             EntityManager = entityManager;
         }
 
@@ -61,7 +67,6 @@ namespace TwelveEngine.EntitySystem {
             OnUnload?.Invoke();
             ID = DEFAULT_ID;
             Owner = null;
-            Game = null;
             IsLoaded = false;
         }
 

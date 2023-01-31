@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.UI {
+﻿namespace TwelveEngine.UI {
     /// <summary>
     /// Variable event parameter support. Only <c>TReturnValue</c> to an arity of <c>1</c> is supported; you can fit anything you need inside of one value.
     /// </summary>

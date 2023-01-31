@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace TwelveEngine.Font {
+﻿namespace TwelveEngine.Font {
     public readonly struct Glyph {
         public readonly Rectangle Source;
 

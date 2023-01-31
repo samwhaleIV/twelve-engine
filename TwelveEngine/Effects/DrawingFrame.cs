@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections;
-using Microsoft.Xna.Framework;
+﻿using System.Collections;
 using TwelveEngine.Shell;
 
 namespace TwelveEngine.Effects {
@@ -42,15 +39,15 @@ namespace TwelveEngine.Effects {
             lastDrawLocation = null;
         }
 
-        public void Reset(GameManager game) {
-            game.RenderTarget.Push(RenderTarget);
-            game.GraphicsDevice.Clear(ClearOptions.Target,EmptyColor,1,0);
-            game.RenderTarget.Pop();
+        public void Reset(GameState state) {
+            state.RenderTarget.Push(RenderTarget);
+            state.GraphicsDevice.Clear(ClearOptions.Target,EmptyColor,1,0);
+            state.RenderTarget.Pop();
         }
 
         public Texture2D BrushTexture { get; set; } = null;
 
-        public void Draw(GameManager game,Vector2 location) {
+        public void Draw(GameState state,Vector2 location) {
 
             Color drawingColor = DrawColor;
 
@@ -71,8 +68,8 @@ namespace TwelveEngine.Effects {
 
             newLocation -= halfBrushSize; oldLocation -= halfBrushSize;
 
-            game.RenderTarget.Push(RenderTarget);
-            game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
+            state.RenderTarget.Push(RenderTarget);
+            state.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
 
             Vector2 difference = oldLocation - newLocation;
             int steps = (int)Vector2.Distance(oldLocation,newLocation);
@@ -83,11 +80,11 @@ namespace TwelveEngine.Effects {
             for(int i = 0;i<steps;i++) {
                 Vector2 interpolatedPosition = newLocation + difference * ((float)i / steps);
                 interpolatedPosition = Vector2.Floor(interpolatedPosition);
-                game.SpriteBatch.Draw(BrushTexture,interpolatedPosition,null,drawingColor,0f,Vector2.Zero,brushScale,SpriteEffects.None,1f);
+                state.SpriteBatch.Draw(BrushTexture,interpolatedPosition,null,drawingColor,0f,Vector2.Zero,brushScale,SpriteEffects.None,1f);
             }
 
-            game.SpriteBatch.End();
-            game.RenderTarget.Pop();
+            state.SpriteBatch.End();
+            state.RenderTarget.Pop();
 
             lastDrawLocation = location;
         }

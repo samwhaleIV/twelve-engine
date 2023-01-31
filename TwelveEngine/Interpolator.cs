@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-
-namespace TwelveEngine {
+﻿namespace TwelveEngine {
     public sealed class Interpolator {
 
         public Interpolator(TimeSpan duration) {

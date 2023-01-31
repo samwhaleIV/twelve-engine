@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using TwelveEngine.EntitySystem;
+﻿using TwelveEngine.EntitySystem;
 
 namespace TwelveEngine.Game3D.Entity {
     public abstract class Entity3D:Entity<GameState3D> {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using TwelveEngine.Shell.UI;
+﻿using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine {
     public sealed class Timeline {

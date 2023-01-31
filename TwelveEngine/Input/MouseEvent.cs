@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace TwelveEngine.Input {
+﻿namespace TwelveEngine.Input {
     public readonly struct MouseEvent {
 
         public readonly MouseEventType Type;

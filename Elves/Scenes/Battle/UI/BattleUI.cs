@@ -11,12 +11,10 @@ namespace Elves.Scenes.Battle.UI {
 
     public sealed class BattleUI:InteractionAgent<UIElement> {
 
-        private readonly GameManager game;
         private readonly GameState owner;
 
-        public BattleUI(GameState owner,GameManager game) {
+        public BattleUI(GameState owner) {
             this.owner = owner;
-            this.game = game;
 
             foreach(var button in actionButtons) {
                 interactableElements.Add(button);
@@ -53,7 +51,7 @@ namespace Elves.Scenes.Battle.UI {
             return actionButtons[ID];
         }
 
-        private Rectangle Viewport => game.Viewport.Bounds;
+        private Rectangle Viewport => owner.Viewport.Bounds;
 
         private readonly HealthBar playerHealthBar = new() { Alignment = HealthBarAlignment.Left };
         private readonly HealthBar targetHealthBar = new() { Alignment = HealthBarAlignment.Right };

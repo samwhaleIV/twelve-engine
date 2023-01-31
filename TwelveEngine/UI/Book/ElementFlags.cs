@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.UI.Book {
+﻿namespace TwelveEngine.UI.Book {
     [Flags]
     public enum ElementFlags {
         None = 0b00,

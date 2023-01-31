@@ -1,5 +1,4 @@
-﻿using System;
-using TwelveEngine.Input.Routing;
+﻿using TwelveEngine.Input.Routing;
 
 namespace TwelveEngine.Shell {
     public class InputGameState:GameState {
@@ -43,12 +42,12 @@ namespace TwelveEngine.Shell {
 
         protected bool InputEnabled {
             get {
-                return Game.IsActive && !IsTransitioning;
+                return GameIsActive && !IsTransitioning;
             }
         }
 
         protected void UpdateInputDevices() {
-            Mouse.Update(InputStateCache.Mouse,InputEnabled,Game.IsActive);
+            Mouse.Update(InputStateCache.Mouse,InputEnabled,GameIsActive);
             if(!InputEnabled) {
                 return;
             }

@@ -1,8 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-
-namespace TwelveEngine {
+﻿namespace TwelveEngine {
     public struct FloatRectangle {
         private float x, y, width, height;
 

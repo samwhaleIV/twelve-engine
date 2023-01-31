@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace TwelveEngine.Shell.UI {
-    public static class TimeWriters {
-        private static readonly Action<GameManager,DebugWriter>[] writers = new Action<GameManager,DebugWriter>[] {
+﻿namespace TwelveEngine.Shell.UI {
+    internal static class TimeWriters {
+        private static readonly Action<GameStateManager,DebugWriter>[] writers = new Action<GameStateManager,DebugWriter>[] {
 
             static (game,writer) => {
                 writer.Write("[Game Time]");
@@ -12,8 +10,8 @@ namespace TwelveEngine.Shell.UI {
 
             static (game,writer) => {
                 writer.Write("[Local Time]");
-                writer.Write(game.State?.LocalNow ?? TimeSpan.Zero,"T");
-                writer.Write(game.State?.LocalRealTime ?? TimeSpan.Zero,"RT");
+                writer.Write(game.GameState?.LocalNow ?? TimeSpan.Zero,"T");
+                writer.Write(game.GameState?.LocalRealTime ?? TimeSpan.Zero,"RT");
             },
 
             static (game,writer) => {
@@ -24,7 +22,7 @@ namespace TwelveEngine.Shell.UI {
             }
         };
 
-        public static int Count => writers.Length;
-        public static Action<GameManager,DebugWriter> Get(int index) => writers[index];
+        internal static int Count => writers.Length;
+        internal static Action<GameStateManager,DebugWriter> Get(int index) => writers[index];
     }
 }

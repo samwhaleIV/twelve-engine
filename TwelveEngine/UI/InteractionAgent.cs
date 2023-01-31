@@ -1,10 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using TwelveEngine.Shell;
-using TwelveEngine.Input;
-
-namespace TwelveEngine.UI {
+﻿namespace TwelveEngine.UI {
     public abstract class InteractionAgent<TElement> where TElement:InteractionElement<TElement> {
 
         /// <summary>

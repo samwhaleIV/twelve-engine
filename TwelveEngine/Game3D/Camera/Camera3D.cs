@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-
-namespace TwelveEngine.Game3D {
+﻿namespace TwelveEngine.Game3D {
     public abstract class Camera3D {
 
         private Vector3 position = Vector3.Zero;

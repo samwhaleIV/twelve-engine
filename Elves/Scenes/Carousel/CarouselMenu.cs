@@ -53,13 +53,13 @@ namespace Elves.Scenes.Carousel {
 
         private void CreateBackground() {
             background.Texture = Program.Textures.Mountains;
-            background.Load(Game.Content);
+            background.Load(Content);
             OnPreRender += CarouselMenu_OnPreRender;
         }
 
         private void CarouselMenu_OnPreRender() {
             background.Update(Now);
-            background.Render(Game.SpriteBatch,Game.Viewport);
+            background.Render(SpriteBatch,Viewport);
         }
 
         private void CarouselMenu_OnLoad() {
@@ -77,8 +77,8 @@ namespace Elves.Scenes.Carousel {
 
         private void CarouselMenu_OnRender() {
             var font = Fonts.RetroFontOutlined;
-            font.Begin(Game.SpriteBatch);
-            Point center = Game.Viewport.Bounds.Center;
+            font.Begin(SpriteBatch);
+            Point center = Viewport.Bounds.Center;
             int scale = Math.Max((int)(GetUIScale()*0.5f),1);
             center.Y = 16 * scale;
             font.DrawCentered(centerItem.DisplayName,center,scale,Color.White);

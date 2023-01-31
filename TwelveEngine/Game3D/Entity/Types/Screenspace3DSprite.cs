@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Game3D.Entity.Types {
+﻿namespace TwelveEngine.Game3D.Entity.Types {
     public class Screenspace3DSprite:TextureEntity {
 
         public Screenspace3DSprite() => Initialize();
@@ -23,7 +20,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
             SetUVArea(TextureSource);
 
             var orthoArea = Owner.Camera.OrthographicArea;
-            var viewportSize = Owner.Game.Viewport.Bounds.Size.ToVector2();
+            var viewportSize = Owner.Viewport.Bounds.Size.ToVector2();
 
             float left = (Area.Left / viewportSize.X) * orthoArea.Width + orthoArea.Left;
             float right = (Area.Right / viewportSize.X) * orthoArea.Width + orthoArea.Left;

@@ -1,8 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Game3D.Entity.Types {
+﻿namespace TwelveEngine.Game3D.Entity.Types {
     public sealed class RenderTargetEntity:TextureRectangle {
 
         public const int DEFAULT_SIZE = 256;
@@ -23,13 +19,13 @@ namespace TwelveEngine.Game3D.Entity.Types {
             if(RenderOnTarget == null) {
                 return;
             }
-            Game.RenderTarget.Push(renderTarget);
+            RenderTarget.Push(renderTarget);
             RenderOnTarget.Invoke();
-            Game.RenderTarget.Pop();
+            RenderTarget.Pop();
         }
 
         private void RenderTargetEntity_OnLoad() {
-            renderTarget = new RenderTarget2D(Game.GraphicsDevice,Size.X,Size.Y);
+            renderTarget = new RenderTarget2D(GraphicsDevice,Size.X,Size.Y);
             Texture = renderTarget;
         }
 
