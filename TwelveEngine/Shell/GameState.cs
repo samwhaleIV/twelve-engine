@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework.Content;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Shell {
@@ -29,45 +28,24 @@ namespace TwelveEngine.Shell {
         public TimeSpan LocalNow => GetLocalNow();
         public TimeSpan LocalRealTime => GetLocalRealTime();
 
-        private StateData data;
+        private StateData _data;
+
         public StateData Data {
-            get {
-                if(!(IsLoaded || IsLoading)) {
-                    /* If you need to access data before a 'Load' call, don't use 'Data.Args'; Use regular parameters in the state constructor */
-                    throw new InvalidOperationException("Cannot access 'Data' before the state has started loading!");
-                }
-                return data;
-            }
-            internal set {
-                data = value;
-            }
+            get => GetValidatedStateData();
+            internal set => _data = value;
         }
 
         public bool HasFlag(StateFlags flag) => Data.Flags.HasFlag(flag);
         public bool FadeInIsFlagged => Data.Flags.HasFlag(StateFlags.FadeIn);
 
-        private TimeSpan _nowOffset, _realTimeOffset;
+        private TimeSpan _nowOffset, _realTimeOffset, _transitionStartTime, _transitionDuration;
 
-        private TimeSpan _transitionStartTime = TimeSpan.Zero, _transitionDuration = TimeSpan.Zero;
-
+        /// <summary>
+        /// Graphics device clear color. See <see cref="ResetGraphicsState"/>.
+        /// </summary>
         public Color ClearColor { get; set; } = Color.Black;
 
         private TransitionData? _transitionOutData = null;
-
-        private TimeSpan GetLocalNow() {
-            if(!_hasStartTime) {
-                throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
-            }
-            return Now - _nowOffset;
-        }
-
-        private TimeSpan GetLocalRealTime() {
-            if(!_hasStartTime) {
-                throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
-            }
-            return RealTime - _realTimeOffset;
-        }
-
 
         public event Action OnLoad, OnUnload, OnTransitionInFinished;
 
@@ -85,15 +63,44 @@ namespace TwelveEngine.Shell {
         public bool IsRendering { get; private set; } = false;
         public bool IsPreRendering { get; private set; } = false;
 
+        public TransitionState TransitionState { get; private set; }
+        public bool IsTransitioning => GetIsTransitioning();
+        public float TransitionT => GetTransitionT();
+
         private bool _hasStartTime = false;
+
+        /// <summary>
+        /// For logging information. Not intended to be used for application control.
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        private StateData GetValidatedStateData() {
+            if(!(IsLoaded || IsLoading)) {
+                /* If you need to access data before a 'Load' call, don't use 'Data.Args'; Use regular parameters in the state constructor. */
+                throw new InvalidOperationException("Cannot access 'Data' before the state has started loading!");
+            }
+            return _data;
+        }
+
+        private TimeSpan GetLocalNow() {
+            if(!_hasStartTime) {
+                throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
+            }
+            return Now - _nowOffset;
+        }
+
+        private TimeSpan GetLocalRealTime() {
+            if(!_hasStartTime) {
+                throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
+            }
+            return RealTime - _realTimeOffset;
+        }
 
         private void SetStartTime() {
             _nowOffset = Now;
             _realTimeOffset = RealTime;
             _hasStartTime = true;
         }
-
-        public string Name { get; set; } = string.Empty;
 
         private void TryTransitionIn() {
             if(!FadeInIsFlagged) {
@@ -129,8 +136,8 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        /* This method lends itself to having a frame of latency with the input system.
-         * Not expected to impact user experience, with 1 frame generally over a total of 1000. */
+        /* This method of transitioning (with how its ordered in the game loop) lends itself to creatin a frame of latency against the input system.
+         * Not expected to impact user experience, with 1 frame of loss (generally) over a total of 1000 (1 second long transition). */
         internal void UpdateTransition() {
             if(TransitionState == TransitionState.None || TransitionT < 1) {
                 return;
@@ -173,15 +180,11 @@ namespace TwelveEngine.Shell {
             IsPreRendering = false;
         }
 
-        public TransitionState TransitionState { get; private set; }
-
-        public bool IsTransitioning {
-            get {
-                if(!IsLoaded && FadeInIsFlagged) {
-                    return true;
-                } else {
-                    return TransitionState != TransitionState.None;
-                }
+        private bool GetIsTransitioning() {
+            if((!IsLoaded || IsLoading) && FadeInIsFlagged) {
+                return true;
+            } else {
+                return TransitionState != TransitionState.None;
             }
         }
 
@@ -197,8 +200,6 @@ namespace TwelveEngine.Shell {
             }
             return t;
         }
-
-        public float TransitionT => GetTransitionT();
 
         public void TransitionOut(TransitionData transitionData) {
             if(transitionData.Generator != null && transitionData.State != null) {
