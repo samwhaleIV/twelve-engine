@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.Shell {
+﻿namespace TwelveEngine.Shell {
     [Flags]
     public enum StateFlags {
         None = 0x00000000,

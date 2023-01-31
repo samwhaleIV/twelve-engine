@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-
-namespace TwelveEngine.UI.Book {
+﻿namespace TwelveEngine.UI.Book {
 
     public class BookElement:InteractionElement<BookElement> {
 

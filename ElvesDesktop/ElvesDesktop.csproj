@@ -28,9 +28,11 @@
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
   </Target>
-  <Import Project="..\TwelveEngine\TwelveEngine.projitems" Label="Shared" />
   <Import Project="..\Elves\Elves.projitems" Label="Shared" />
   <ItemGroup>
     <MonoGameContentReference Include="..\Content\Elves.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TwelveEngineLibrary\TwelveEngineLibrary.csproj" />
   </ItemGroup>
 </Project>

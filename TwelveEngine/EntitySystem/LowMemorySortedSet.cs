@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace TwelveEngine.EntitySystem {
+﻿namespace TwelveEngine.EntitySystem {
 
     internal sealed class LowMemorySortedSet<T> {
 

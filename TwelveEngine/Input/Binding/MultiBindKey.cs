@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Input;
-using System.IO;
 
 namespace TwelveEngine.Input.Binding {
     public readonly struct MultiBindKey {

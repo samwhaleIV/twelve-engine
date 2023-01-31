@@ -41,7 +41,7 @@ namespace Elves.Scenes.SaveSelect {
             if(UI is null) {
                 return;
             }
-            FloatRectangle viewport = new(Game.Viewport.Bounds);
+            FloatRectangle viewport = new(Viewport.Bounds);
             UI.Update(Now,viewport);
             UpdateInputDevices();
             UI.SendEvent(InputEvent.CreateMouseUpdate(Mouse.Position));
@@ -49,6 +49,6 @@ namespace Elves.Scenes.SaveSelect {
             CustomCursor.State = UI.CursorState;
         }
 
-        private void UIScene_OnRender() => UI?.Render(Game.SpriteBatch);
+        private void UIScene_OnRender() => UI?.Render(SpriteBatch);
     }
 }

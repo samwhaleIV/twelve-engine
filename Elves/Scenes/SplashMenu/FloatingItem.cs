@@ -90,12 +90,12 @@ namespace Elves.Scenes.SplashMenu {
             }
 
             Vector2 size = TextureSource.Size.ToVector2() * scale;
-            float xValue = X * Game.Viewport.Width;
+            float xValue = X * Viewport.Width;
 
             Rotation = new Vector3(0f,0f,t * 360f * (RotationPolarity ? 1 : -1));
 
             Vector2 position = Vector2.Lerp(
-                new Vector2(xValue,Game.Viewport.Height),
+                new Vector2(xValue,Viewport.Height),
                 new Vector2(xValue,-MathF.Max(size.X,size.Y)),t
             );
 

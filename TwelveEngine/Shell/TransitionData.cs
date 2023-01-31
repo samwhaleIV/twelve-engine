@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.Shell {
+﻿namespace TwelveEngine.Shell {
     public struct TransitionData {
         public Func<GameState> Generator { get; set; }
         public GameState State { get; set; }

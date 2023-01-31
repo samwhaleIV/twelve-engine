@@ -79,7 +79,7 @@ namespace Elves.Scenes.SplashMenu {
         }
 
         private void PlayButton_OnUpdate() {
-            Rectangle bounds = Game.Viewport.Bounds;
+            Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale() * PLAY_BUTTON_SCALE;
             Vector2 size = playButton.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
@@ -87,7 +87,7 @@ namespace Elves.Scenes.SplashMenu {
         }
 
         private void NameBadge_OnUpdate() {
-            Rectangle bounds = Game.Viewport.Bounds;
+            Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = nameBadge.TextureSource.Size.ToVector2() * scale;
 
@@ -104,7 +104,7 @@ namespace Elves.Scenes.SplashMenu {
         }
 
         private void FallingElf_OnUpdate() {
-            Rectangle bounds = Game.Viewport.Bounds;
+            Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = fallingElf.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);

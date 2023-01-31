@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace TwelveEngine.Shell {
+﻿namespace TwelveEngine.Shell {
 
     public sealed class TimeoutManager {
 

@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Game3D.Entity.Types {
+﻿namespace TwelveEngine.Game3D.Entity.Types {
     public class TextureEntity:TextureRectangle {
 
         private void BindEvents() {
@@ -59,7 +56,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         private void TextureEntity_OnLoad() {
             if(_textureName != null) {
-                Texture = Game.Content.Load<Texture2D>(TextureName);
+                Texture = Content.Load<Texture2D>(TextureName);
             } else if(pendingTexture != null) {
                 Texture = pendingTexture;
                 pendingTexture = null;

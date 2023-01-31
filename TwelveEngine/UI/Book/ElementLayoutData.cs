@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace TwelveEngine.UI.Book {
+﻿namespace TwelveEngine.UI.Book {
     public struct ElementLayoutData {
 
         public Vector2 Position, Size, Offset;

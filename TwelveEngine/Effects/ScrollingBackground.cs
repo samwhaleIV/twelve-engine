@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-
-namespace TwelveEngine.Effects {
+﻿namespace TwelveEngine.Effects {
     public sealed class ScrollingBackground:InfinityBackground {
 
         public static ScrollingBackground GetCheckered() {

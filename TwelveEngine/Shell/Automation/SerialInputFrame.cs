@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Input;
-using System;
-using System.IO;
 
 namespace TwelveEngine.Shell.Automation {
     internal struct SerialInputFrame {

@@ -58,7 +58,7 @@ namespace Elves.Scenes.SaveSelect {
             }
             FloatRectangle frameDestination = tag.ComputedArea.Destination;
             Vector2 relativePosition = (mouse.Position.ToVector2() - frameDestination.Position) / frameDestination.Size;
-            drawingFrame.Draw(Scene.Game,relativePosition);
+            drawingFrame.Draw(Scene,relativePosition);
         }
 
         private void UI_OnButtonPresed(ButtonImpulse impulse) {

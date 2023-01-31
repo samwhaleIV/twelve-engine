@@ -1,19 +1,16 @@
-﻿using System;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System.Text;
 
 namespace TwelveEngine.Shell.UI {
     public sealed class DebugWriter {
 
         private const string NUMBER_FORMAT = "{0:0.00}";
 
-        internal GameManager Game { get; private init; }
-        public DebugWriter(GameManager game) => Game = game;
+        internal GameStateManager Game { get; private init; }
+        internal DebugWriter(GameStateManager game) => Game = game;
 
         private SpriteFont SpriteFont => Game.DebugFont;
         private SpriteBatch SpriteBatch => Game.SpriteBatch;
-        private Viewport Viewport => Game.Viewport;
+        private Viewport Viewport => Game.RenderTarget.GetViewport();
 
         public int Padding { get; set; } = Constants.ScreenEdgePadding;
 
@@ -229,7 +226,7 @@ namespace TwelveEngine.Shell.UI {
 
         private readonly FrameTimeSmoother updateDurationSmoother = new(), renderDurationSmoother = new();
 
-        private Action<GameManager,DebugWriter> _timeWriter = TimeWriters.Get(0);
+        private Action<GameStateManager,DebugWriter> _timeWriter = TimeWriters.Get(0);
         private int _timeWriterIndex = 1;
 
         public void CycleTimeWriter() {

@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Shell {
+﻿namespace TwelveEngine.Shell {
     public static class RuntimeTextures {
 
         private static void LoadEmpty(GraphicsDevice graphicsDevice) {

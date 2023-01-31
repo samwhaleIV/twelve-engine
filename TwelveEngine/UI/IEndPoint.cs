@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.UI {
+﻿namespace TwelveEngine.UI {
     public interface IEndpoint<TReturnValue> {
         public TReturnValue GetEndPointValue();
         public void FireActivationEvent(TReturnValue value);

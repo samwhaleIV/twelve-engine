@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TwelveEngine.UI.Book {
+﻿namespace TwelveEngine.UI.Book {
     public abstract class BookPage<TElement> where TElement:BookElement {
 
         /// <summary>

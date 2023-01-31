@@ -117,7 +117,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\ProxyTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\KeyBinds.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\Handlers\MouseEventHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\GameManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\GameStateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameState.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using TwelveEngine.EntitySystem.EntityContainer;
+﻿using TwelveEngine.EntitySystem.EntityContainer;
 using TwelveEngine.Shell;
 
 namespace TwelveEngine.EntitySystem {

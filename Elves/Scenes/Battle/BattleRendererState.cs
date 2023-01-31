@@ -11,7 +11,7 @@ namespace Elves.Scenes.Battle {
         private readonly string backgroundTexture;
 
         private void LoadBackgroundTexture() {
-            background.Texture = Game.Content.Load<Texture2D>(backgroundTexture);
+            background.Texture = Content.Load<Texture2D>(backgroundTexture);
         }
 
         public BattleRendererState(string background) {
@@ -39,7 +39,7 @@ namespace Elves.Scenes.Battle {
 
         private void BattleRendererState_OnPreRender() {
             background.Update(Now);
-            background.Render(Game.SpriteBatch,Game.Viewport);
+            background.Render(SpriteBatch,Viewport);
         }
 
         private void Initialize() {
@@ -51,7 +51,7 @@ namespace Elves.Scenes.Battle {
 
         private void BattleScene_OnLoad() {
             InitializeBattleUI();
-            background.Load(Game.Content);
+            background.Load(Content);
         }
 
         protected void UpdateUI() {
@@ -65,7 +65,7 @@ namespace Elves.Scenes.Battle {
         protected abstract void ActionButtonClicked(int ID);
 
         private void InitializeBattleUI() {
-            battleUI = new BattleUI(this,Game);
+            battleUI = new BattleUI(this);
             battleUI.OnActionButtonClick += ActionButtonClicked;
 
             Input.Router.OnAcceptDown += Input_OnAcceptDown;
@@ -90,7 +90,7 @@ namespace Elves.Scenes.Battle {
         private void Input_OnAcceptDown() => UI?.SendEvent(InputEvent.AcceptPressed);
 
         private void BattleScene_OnRender() {
-            battleUI.Render(Game.SpriteBatch,GetPlayerData(),GetTargetData());
+            battleUI.Render(SpriteBatch,GetPlayerData(),GetTargetData());
         }
 
         protected override void UpdateGame() {

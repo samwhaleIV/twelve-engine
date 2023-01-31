@@ -9,7 +9,7 @@ using System.IO;
 namespace Elves {
     public static class Program {
 
-        public static GameManager Game { get; private set; }
+        public static GameStateManager Game { get; private set; }
         public static Textures Textures { get; private set; }
 
         public static SaveFile Save { get; set; } = null;
@@ -40,7 +40,7 @@ namespace Elves {
 
         public static string SaveDirectory { get; private set; }
 
-        public static void Start(GameManager game,string saveDirectory) {
+        public static void Start(GameStateManager game,string saveDirectory) {
             Game = game;
 
             Game.Window.Title = "Elves!";

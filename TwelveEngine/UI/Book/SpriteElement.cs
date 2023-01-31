@@ -1,8 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-
-namespace TwelveEngine.UI.Book {
+﻿namespace TwelveEngine.UI.Book {
     public class SpriteElement:BookElement {
 
         public Texture2D Texture { get; set; }

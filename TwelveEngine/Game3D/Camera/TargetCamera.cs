@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace TwelveEngine.Game3D {
+﻿namespace TwelveEngine.Game3D {
     public sealed class TargetCamera:Camera3D {
 
         private Vector3 target = Vector3.Zero;

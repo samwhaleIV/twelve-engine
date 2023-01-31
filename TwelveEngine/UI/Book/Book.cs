@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using TwelveEngine.Shell;
+﻿using TwelveEngine.Shell;
 
 namespace TwelveEngine.UI.Book {
     public class Book<TElement>:InteractionAgent<BookElement> where TElement:BookElement {

@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-
-namespace TwelveEngine.Game3D {
+﻿namespace TwelveEngine.Game3D {
     public sealed class BufferSet {
 
         private readonly GraphicsDevice graphicsDevice;
