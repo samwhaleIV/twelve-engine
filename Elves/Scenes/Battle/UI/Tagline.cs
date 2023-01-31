@@ -87,7 +87,7 @@ namespace Elves.Scenes.Battle.UI {
             base.Draw(spriteBatch,Color.Black);
         }
 
-        public void DrawText(TwelveEngine.Font.UVSpriteFont font) {
+        public void DrawText(UVSpriteFont font) {
             if(IsOffscreen) {
                 return;
             }

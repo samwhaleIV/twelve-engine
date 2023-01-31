@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using TwelveEngine;
 
-namespace Elves.Scenes.Battle.Sprite {
+namespace Elves.Battle {
     public sealed class PositionController {
 
         private const float SCREEN_EDGE_MARGIN = 0.015f;

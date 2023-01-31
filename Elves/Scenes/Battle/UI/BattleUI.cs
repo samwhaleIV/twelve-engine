@@ -6,6 +6,7 @@ using TwelveEngine.Font;
 using TwelveEngine.Shell;
 using TwelveEngine;
 using TwelveEngine.UI;
+using Elves.Battle;
 
 namespace Elves.Scenes.Battle.UI {
 
@@ -68,7 +69,9 @@ namespace Elves.Scenes.Battle.UI {
 
         protected override bool GetLastEventWasFromMouse() => InputStateCache.LastInputEventWasFromMouse;
 
-        protected override bool GetContextTransitioning() => owner.IsTransitioning;
+        protected override bool GetContextTransitioning() {
+            return owner.IsTransitioning;
+        }
 
         protected override TimeSpan GetCurrentTime() => owner.Now;
 

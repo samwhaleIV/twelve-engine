@@ -4,9 +4,10 @@ using Elves.Scenes.Battle.UI;
 using TwelveEngine.UI;
 using TwelveEngine.Effects;
 using TwelveEngine.Shell;
+using Elves.Battle;
 
 namespace Elves.Scenes.Battle {
-    public abstract class BattleRendererState:Scene3D {
+    public abstract class BattleRendererScene:Scene3D {
 
         private readonly string backgroundTexture;
 
@@ -14,18 +15,18 @@ namespace Elves.Scenes.Battle {
             background.Texture = Content.Load<Texture2D>(backgroundTexture);
         }
 
-        public BattleRendererState(string background) {
+        public BattleRendererScene(string background) {
             backgroundTexture = background;
             OnLoad += LoadBackgroundTexture;
             Initialize();
         }
 
-        public BattleRendererState(Texture2D background) {
+        public BattleRendererScene(Texture2D background) {
             this.background.Texture = background;
             Initialize();
         }
 
-        public BattleRendererState() {
+        public BattleRendererScene() {
             background.Texture = Program.Textures.Nothing;
             Initialize();
         }

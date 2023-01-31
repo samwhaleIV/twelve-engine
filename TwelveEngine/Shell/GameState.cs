@@ -69,7 +69,7 @@ namespace TwelveEngine.Shell {
         }
 
 
-        public event Action OnLoad, OnUnload;
+        public event Action OnLoad, OnUnload, OnTransitionInFinished;
 
         public event Action<DebugWriter> OnWriteDebug;
         public event Action OnUpdate, OnRender, OnPreRender;
@@ -108,7 +108,6 @@ namespace TwelveEngine.Shell {
             OnLoad?.Invoke();
             IsLoaded = true;
             IsLoading = false;
-
             TryTransitionIn();
         }
 
@@ -140,7 +139,12 @@ namespace TwelveEngine.Shell {
                 HandleTransitionOut(_transitionOutData.Value);
                 _transitionOutData = null;
             }
+            TransitionState oldTransitionState = TransitionState;
             TransitionState = TransitionState.None;
+            if(oldTransitionState != TransitionState.In) {
+                return;
+            }
+            OnTransitionInFinished?.Invoke();
         }
 
         internal void Update() {
@@ -171,7 +175,15 @@ namespace TwelveEngine.Shell {
 
         public TransitionState TransitionState { get; private set; }
 
-        public bool IsTransitioning => TransitionState != TransitionState.None;
+        public bool IsTransitioning {
+            get {
+                if(!IsLoaded && FadeInIsFlagged) {
+                    return true;
+                } else {
+                    return TransitionState != TransitionState.None;
+                }
+            }
+        }
 
         private float GetTransitionT() {
             if(!IsTransitioning) {

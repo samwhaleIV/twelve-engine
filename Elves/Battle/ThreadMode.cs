@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Elves.Scenes.Battle {
+namespace Elves.Battle {
     [Flags]
     public enum ThreadMode {
         NoRepeat, SkipFirstOnRepeat, RepeatLast, Random

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using TwelveEngine;
-using Elves.Scenes.Battle.Sprite;
-using Elves.Scenes.Battle.Sprite.Animation;
+using Elves.Animation;
+using Elves.ElfData;
 
-namespace Elves.Scenes.Battle {
+namespace Elves.Battle {
     public abstract class BattleScript {
         public abstract Task<BattleResult> Main();
 
@@ -47,9 +47,7 @@ namespace Elves.Scenes.Battle {
                 var data = _playerData;
                 if(data == null) {
                     Logger.WriteLine("Player UserData is null, creating a generic one.",LoggerLabel.Script);
-                    data = new UserData() {
-                        Name = Constants.Battle.PlayerName
-                    };
+                    data = CreateFallbackPlayerData();
                     _playerData = data;
                 }
                 return data;
@@ -61,22 +59,23 @@ namespace Elves.Scenes.Battle {
                 var data = _actorData;
                 if(data == null) {
                     Logger.WriteLine("Actor UserData is null, creating a generic one.",LoggerLabel.Script);
-                    data = new UserData() {
-                        Name = Constants.Battle.NoName
-                    };
-                    _actorData = data;
+                    data = GetFallbackUserData();
                 }
                 return data;
             }
         }
 
         protected void CreatePlayer(string name = null) {
-            _playerData = new UserData() {
-                Name = string.IsNullOrEmpty(name) ? Constants.Battle.PlayerName : name
-            };
+            _playerData = new(string.IsNullOrEmpty(name) ? Constants.Battle.PlayerName : name);
         }
 
         protected void CreateActor(BattleSprite sprite) {
+            _sequencer.Entities.Add(sprite);
+            SetActor(sprite);
+        }
+
+        protected void CreateActor(Elf elf) {
+            BattleSprite sprite = new(elf);
             _sequencer.Entities.Add(sprite);
             SetActor(sprite);
         }
@@ -87,12 +86,16 @@ namespace Elves.Scenes.Battle {
             _actorSprite = sprite;
         }
 
+        private static UserData GetFallbackUserData() {
+            return new(Constants.Battle.NoName);
+        }
+
+        private static UserData CreateFallbackPlayerData() {
+            return new(Constants.Battle.PlayerName);
+        }
+
         private static BattleSprite GetFallbackSprite() {
-            BattleSprite battleSprite = new(
-                Program.Textures.Missing,160,
-                AnimationFactory.CreateStatic(0,0,96,160)
-            );
-            return battleSprite;
+            return new(GetFallbackUserData(),Program.Textures.Missing,8,AnimationFactory.CreateStatic(0,0,4,8));
         }
 
         public BattleSprite ActorSprite {
@@ -156,19 +159,24 @@ namespace Elves.Scenes.Battle {
             string value = values[index];
             if(threadMode.HasFlag(ThreadMode.Random)) {
                 index = _random.Next(0,values.Length);
+                SetThreadIndex(threadID,index);
+                return value;
+            }
+
+            index += 1;
+            if(index < values.Length) {
+                SetThreadIndex(threadID,index);
+                return value;
+            }
+
+            if(threadMode.HasFlag(ThreadMode.NoRepeat)) {
+                index = values.Length;
+            } else if(threadMode.HasFlag(ThreadMode.RepeatLast) && values.Length >= 1) {
+                index = values.Length - 1;
+            } else if(threadMode.HasFlag(ThreadMode.SkipFirstOnRepeat) && values.Length > 1) {
+                index = 1;
             } else {
-                index += 1;
-                if(index >= values.Length) {
-                    if(threadMode.HasFlag(ThreadMode.NoRepeat)) {
-                        index = values.Length;
-                    } else if(threadMode.HasFlag(ThreadMode.RepeatLast) && values.Length >= 1) {
-                        index = values.Length - 1;
-                    } else if(threadMode.HasFlag(ThreadMode.SkipFirstOnRepeat) && values.Length > 1) {
-                        index = 1;
-                    } else {
-                        index = 0;
-                    }
-                }
+                index = 0;
             }
 
             SetThreadIndex(threadID,index);

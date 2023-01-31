@@ -1,4 +1,5 @@
-﻿using Elves.Scenes.Battle;
+﻿using Elves.Battle;
+using Elves.ElfData;
 
 namespace Elves.Scenes {
     /// <summary>
@@ -17,7 +18,7 @@ namespace Elves.Scenes {
         public static ExitValue Get(bool flag) => new(flag ? FLAGGED_VALUE : DEFAULT_VALUE);
 
         public static ExitValue Get(BattleResult battleResult) => new((int)battleResult);
-        public static ExitValue Get(BattleID battleID) => new((int)battleID);
+        public static ExitValue Get(ElfID elfID) => new((int)elfID);
 
         /// <summary>
         /// An untyped, generic integer. Useful for lots of exit parameters! Indices, success codes, a quantity of nuclear bombs, etc.
@@ -33,6 +34,6 @@ namespace Elves.Scenes {
         public readonly bool QuickExit => IsFlagged;
 
         public readonly BattleResult BattleResult => (BattleResult)_value;
-        public readonly BattleID BattleID => (BattleID)_value;
+        public readonly ElfID BattleID => (ElfID)_value;
     }
 }

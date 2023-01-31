@@ -71,7 +71,7 @@ namespace Elves.Scenes.Battle.UI {
             spriteBatch.Draw(Texture,(Rectangle)ScreenArea,TextureSource,Color.White,0f,Vector2.Zero,LeftSided ? SpriteEffects.FlipHorizontally : SpriteEffects.None,1f);
         }
 
-        public void DrawText(TwelveEngine.Font.UVSpriteFont font) {
+        public void DrawText(UVSpriteFont font) {
             if(IsOffscreen) {
                 return;
             }

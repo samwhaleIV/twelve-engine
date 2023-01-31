@@ -6,6 +6,7 @@ using TwelveEngine.Font;
 using TwelveEngine.Input;
 using Elves.Scenes.Battle;
 using TwelveEngine.Effects;
+using Elves.ElfData;
 
 namespace Elves.Scenes.Carousel {
 
@@ -43,7 +44,7 @@ namespace Elves.Scenes.Carousel {
 
         private void Input_OnAcceptDown() {
             //DEBUG. TODO: FINISH SHIT
-            EndScene(ExitValue.Get(BattleID.Debug));
+            EndScene(ExitValue.Get(ElfID.HarmlessElf));
         }
 
         private readonly ScrollingBackground background = new() {

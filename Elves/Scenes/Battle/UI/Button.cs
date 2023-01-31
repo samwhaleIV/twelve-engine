@@ -8,7 +8,7 @@ using TwelveEngine.UI;
 using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Battle.UI {
-    public sealed class Button:UIElement, IEndpoint<int> {
+    public sealed class Button:UIElement,IEndpoint<int> {
 
         public int GetEndPointValue() => ID;
         public void FireActivationEvent(int value) => OnActivated?.Invoke(value);
@@ -33,9 +33,9 @@ namespace Elves.Scenes.Battle.UI {
 
         private readonly Interpolator interpolator = new(Constants.AnimationTiming.ActionButtonMovement);
 
-        private static readonly Rectangle DefaultTexture = new(0,16,32,16);
-        private static readonly Rectangle SelectedTexture = new(0,32,32,16);
-        private static readonly Rectangle PressedTexture = new(0,48,32,16);
+        private static readonly Rectangle DefaultTextureSource = new(0,16,32,16);
+        private static readonly Rectangle SelectedTextureSource = new(0,32,32,16);
+        private static readonly Rectangle PressedTextureSource = new(0,48,32,16);
 
         public readonly StringBuilder Label = new();
 
@@ -80,7 +80,7 @@ namespace Elves.Scenes.Battle.UI {
             ScreenArea = interpolator.Interpolate(startPosition,endPosition);
         }
 
-        public void DrawText(TwelveEngine.Font.UVSpriteFont spriteFont,int scale,Color color) {
+        public void DrawText(UVSpriteFont spriteFont,int scale,Color color) {
             if(IsOffscreen) {
                 return;
             }
@@ -93,11 +93,11 @@ namespace Elves.Scenes.Battle.UI {
 
         private Rectangle GetTextureSource() {
             if(Pressed) {
-                return PressedTexture;
+                return PressedTextureSource;
             } else if(Selected) {
-                return SelectedTexture;
+                return SelectedTextureSource;
             } else {
-                return DefaultTexture;
+                return DefaultTextureSource;
             }
         }
 

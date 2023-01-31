@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Elves.Battle;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using TwelveEngine;
 
-namespace Elves.Scenes.Battle.Sprite.Animation {
+namespace Elves.Animation {
     public sealed class FrameController {
 
         private readonly BattleSprite sprite;
@@ -17,7 +18,7 @@ namespace Elves.Scenes.Battle.Sprite.Animation {
         private readonly FrameSet defaultFrameSet;
         private readonly Dictionary<int,FrameSet> frameSets = new();
 
-        public FrameController(BattleSprite battleSprite,FrameSet[] frameSets,int baseHeight) {
+        public FrameController(BattleSprite battleSprite,FrameSet[] frameSets) {
             frameSets ??= Array.Empty<FrameSet>();
             sprite = battleSprite;
             foreach(FrameSet frameSet in frameSets) {
@@ -29,6 +30,7 @@ namespace Elves.Scenes.Battle.Sprite.Animation {
 
             Rectangle defaultFrameArea;
             if(!hasStaticFrameSet && !hasIdleFrameSet) {
+                int baseHeight = sprite.BaseHeight;
                 defaultFrameArea = new Rectangle(0,0,baseHeight,baseHeight);
                 defaultFrameSet = FrameSet.CreateStatic(AnimationType.Static,defaultFrameArea);
                 Logger.WriteLine($"Battle sprite for {sprite.Name} is missing their frame sets! Resorting to an (ugly) fallback!");

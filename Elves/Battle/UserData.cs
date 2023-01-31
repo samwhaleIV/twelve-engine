@@ -1,9 +1,26 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Elves.ElfData;
+using Microsoft.Xna.Framework;
 
-namespace Elves.Scenes.Battle {
+namespace Elves.Battle {
     public sealed class UserData {
-        public string Name { get; set; } = Constants.Battle.NoName;
-        public Color Color { get; set; } = Constants.Battle.DefaultUserColor;
+ 
+        public string Name { get; private init; }
+        public Color Color { get; private init; }
+
+        public UserData(Elf elf) {
+            Name = elf.Name;
+            Color = elf.Color;
+        }
+
+        public UserData(string name,Color color) {
+            Name = name;
+            Color = color;
+        }
+
+        public UserData(string name) {
+            Name = name;
+            Color = Color.White;
+        }
 
         private float _maxHealth = Constants.Battle.DefaultHealth;
         private float _health = Constants.Battle.DefaultHealth;
