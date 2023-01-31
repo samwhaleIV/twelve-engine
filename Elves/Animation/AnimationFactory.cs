@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace Elves.Scenes.Battle.Sprite.Animation {
+namespace Elves.Animation {
     public static class AnimationFactory {
 
         private const int BLINK_IDLE_FRAME_COUNT = 10;

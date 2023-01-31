@@ -3,34 +3,31 @@ using System.Threading.Tasks;
 using TwelveEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.Scenes.Battle.UI;
-using Elves.Scenes.Battle.Sprite;
+using Elves.Scenes.Battle;
+using Elves.Scenes;
 
-namespace Elves.Scenes.Battle {
-    public class BattleSequencer:BattleRendererState {
+namespace Elves.Battle {
+    public class BattleSequencer:BattleRendererScene {
          
-        private readonly BattleScript _script;
-        public BattleScript Script => _script;
+        public BattleScript Script { get; private set; }
 
-        public BattleSequencer(BattleScript script,string background) : base(background) {
-            _script = script;
-            _script.SetSequencer(this);
+        private void Initialize(BattleScript script) {
+            script.SetSequencer(this);
+            Script = script;
             OnLoad += BattleSequencer_OnLoad;
+            OnTransitionInFinished += BattleSequencer_OnTransitionInFinished;
         }
 
-        public BattleSequencer(BattleScript script,Texture2D background) : base(background) {
-            _script = script;
-            _script.SetSequencer(this);
-            OnLoad += BattleSequencer_OnLoad;
-        }
+        public BattleSequencer(BattleScript script,string background):base(background) => Initialize(script);
+        public BattleSequencer(BattleScript script,Texture2D background):base(background) => Initialize(script);
+        public BattleSequencer(BattleScript script):base() => Initialize(script);
 
-        public BattleSequencer(BattleScript script) : base() {
-            _script = script;
-            _script.SetSequencer(this);
-            OnLoad += BattleSequencer_OnLoad;
+        private void BattleSequencer_OnTransitionInFinished() {
+            UI.TrySetDefaultElement();
         }
 
         private async void BattleSequencer_OnLoad() {
-            BattleResult battleResult = await _script.Main();
+            BattleResult battleResult = await Script.Main();
             EndScene(ExitValue.Get(battleResult));
         }
 

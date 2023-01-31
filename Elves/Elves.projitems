@@ -9,16 +9,31 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleRendererState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScript.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSequencer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battles\DebugBattle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\PositionController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\SpritePosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\ThreadMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\BattleUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonPosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonRenderData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\HealthBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\SpeechBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\Tagline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\UIElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\UserData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ElfData\Elf.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ElfData\ElfID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ElfData\ElfManifest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveKeys.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleSequencer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleDictionary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleID.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Battles\DebugBattle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\GrabBag.cs" />
-    <Compile Include="..\Elves\Scenes\Battle\BattleScript.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\BattleScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
@@ -42,40 +57,25 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StencilButtonTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Scene3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\FloatingItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\Animation\AnimationFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\Animation\AnimationMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\Elves\HarmlessElf.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\Animation\AnimationType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\BattleSprite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\ThreadMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\Animation\FrameController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\PositionController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\Animation\FrameSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\Sprite\SpritePosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimationFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimationMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimationType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\FrameController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\FrameSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\FloatingItemData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\OrthoBackgroundScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\SnowTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\SongTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\StateTransitionTest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\Button.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\BattleUI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonPosition.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonRenderData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\HealthBar.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\SpeechBox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\Tagline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleRendererState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UserData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\UIScene.cs" />
     <Compile Include="..\Elves\Textures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\UIElement.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\" />
+    <Folder Include="$(MSBuildThisFileDirectory)ElfData\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Scenes\Battle\" />
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\" />
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\" />
   </ItemGroup>

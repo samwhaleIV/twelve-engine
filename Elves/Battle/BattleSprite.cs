@@ -1,16 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using TwelveEngine.Game3D.Entity.Types;
+using Elves.Animation;
 using Microsoft.Xna.Framework.Graphics;
-using Elves.Scenes.Battle.Sprite.Animation;
+using Elves.ElfData;
 
-namespace Elves.Scenes.Battle.Sprite {
+namespace Elves.Battle {
     public class BattleSprite:TextureEntity {
 
         private readonly FrameController frameController;
         private readonly PositionController positionController;
 
-        private readonly UserData userData = new();
-        public UserData UserData => userData;
+        public UserData UserData { get; private init; }
 
         public float XOffset { get; set; } = 0f;
 
@@ -30,26 +30,41 @@ namespace Elves.Scenes.Battle.Sprite {
             frameController.SetDefaultAnimation(Now);
         }
 
-        private readonly int baseHeight;
+        public int BaseHeight { get; private init; }
 
-        public BattleSprite(string textureName,int baseHeight,params FrameSet[] frameSets) :base(textureName) {
-            this.baseHeight = baseHeight;
+        public BattleSprite(Elf elf):base(elf.Texture) {
+            UserData = new(elf);
+            BaseHeight = elf.BaseHeight;
 
             PixelSmoothing = false;
 
-            frameController = new FrameController(this,frameSets,baseHeight);
+            frameController = new FrameController(this,elf.FrameSets);
             positionController = new PositionController(this);
 
             OnLoad += BattleSprite_OnLoad;
             OnUpdate += BattleSprite_OnUpdate;
         }
 
-        public BattleSprite(Texture2D texture,int baseHeight,params FrameSet[] frameSets) : base(texture) {
-            this.baseHeight = baseHeight;
+        public BattleSprite(string name,Color color,Texture2D texture,int baseHeight,params FrameSet[] frameSets):base(texture) {
+            UserData = new(name,color);
+            BaseHeight = baseHeight;
 
             PixelSmoothing = false;
 
-            frameController = new FrameController(this,frameSets,baseHeight);
+            frameController = new FrameController(this,frameSets);
+            positionController = new PositionController(this);
+
+            OnLoad += BattleSprite_OnLoad;
+            OnUpdate += BattleSprite_OnUpdate;
+        }
+
+        public BattleSprite(UserData userData,Texture2D texture,int baseHeight,params FrameSet[] frameSets):base(texture) {
+            UserData = userData;
+            BaseHeight = baseHeight;
+
+            PixelSmoothing = false;
+
+            frameController = new FrameController(this,frameSets);
             positionController = new PositionController(this);
 
             OnLoad += BattleSprite_OnLoad;
@@ -62,7 +77,7 @@ namespace Elves.Scenes.Battle.Sprite {
         }
 
         private void BattleSprite_OnLoad() {
-            float baseSize = baseHeight;
+            float baseSize = BaseHeight;
             float width = frameController.Width / baseSize, height = frameController.Height / baseSize;
             float halfWidth = width * 0.5f, halfHeight = height * 0.5f;
             Vector3 baseSizeOffset = new(0f,(1f-height)*-0.5f,0f);

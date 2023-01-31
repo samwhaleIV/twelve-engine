@@ -6,6 +6,7 @@ using TwelveEngine.Font;
 using TwelveEngine.Shell;
 using TwelveEngine;
 using TwelveEngine.UI;
+using Elves.Battle;
 
 namespace Elves.Scenes.Battle.UI {
 
@@ -66,16 +67,11 @@ namespace Elves.Scenes.Battle.UI {
 
         #region INTERACTION AGENT
 
-        protected override bool GetLastEventWasFromMouse() => InputStateCache.LastInputEventWasFromMouse;
-
         protected override bool GetContextTransitioning() {
-            var isTransitioning = owner.IsTransitioning;
-            return isTransitioning;
+            return owner.IsTransitioning;
         }
 
-        protected override TimeSpan GetCurrentTime() {
-            return Now;
-        }
+        protected override TimeSpan GetCurrentTime() => owner.Now;
 
         protected override IEnumerable<UIElement> GetElements() => interactableElements;
         protected override bool BackButtonPressed() => false;

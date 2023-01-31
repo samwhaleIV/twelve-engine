@@ -32,10 +32,6 @@ namespace TwelveEngine.UI.Book {
         /// </summary>
         private TimeSpan _currentTime = TimeSpan.FromHours(-1); /* Hopefully your users aren't time travelers. */
 
-        protected override bool GetLastEventWasFromMouse() {
-            return InputStateCache.LastInputEventWasFromMouse;
-        }
-
         protected override bool GetContextTransitioning() {
             return !pageTransitionAnimator.IsFinished;
         }

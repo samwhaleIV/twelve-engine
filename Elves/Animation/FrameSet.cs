@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Elves.Scenes.Battle.Sprite.Animation {
+namespace Elves.Animation {
     public readonly struct FrameSet {
 
         public readonly int ID;

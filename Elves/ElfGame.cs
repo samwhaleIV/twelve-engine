@@ -5,16 +5,14 @@ using Elves.Scenes.Intro;
 using Elves.Scenes.SaveSelect;
 using Elves.Scenes.SplashMenu;
 using Elves.Scenes;
-using Elves.Scenes.Battle;
 using static Elves.Constants;
-using static Elves.Scenes.Battle.BattleDictionary;
-using Elves.Scenes.Battle.Battles;
+using Elves.Battle;
+using Elves.ElfData;
 
 namespace Elves {
     public static class ElfGame {
 
         private static readonly TimeSpan TransitionDuration = AnimationTiming.TransitionDuration;
-        static ElfGame() => AddBattles();
 
         /// <summary>
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
@@ -72,8 +70,9 @@ namespace Elves {
             Duration = TransitionDuration
         });
 
-        private static GameState GetBattleScene(BattleID battleID) {
-            var battleSequencer = new BattleSequencer(CreateScript(battleID));
+        private static GameState GetBattleScene(ElfID elfID) {
+            BattleScript battleScript = ElfManifest.Get(elfID).ScriptGenerator.Invoke();
+            BattleSequencer battleSequencer = new(battleScript);
             battleSequencer.OnSceneEnd += BattleSequencer_OnSceneEnd;
             return battleSequencer;
         }
@@ -83,17 +82,12 @@ namespace Elves {
         }
 
         private static void CarouselMenuExit(Scene3D scene,ExitValue data) {
-            BattleID battleID = data.BattleID;
+            ElfID elfID = data.BattleID;
             scene.TransitionOut(new TransitionData() {
-                Generator = () => GetBattleScene(battleID),
+                Generator = () => GetBattleScene(elfID),
                 Data = StateData.FadeIn(TransitionDuration),
                 Duration = TransitionDuration
             });               
-        }
-
-        private static void AddBattles() {
-            AddBattle<DebugBattle>(BattleID.Debug);
-
         }
     }
 }

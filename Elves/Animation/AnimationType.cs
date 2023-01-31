@@ -1,4 +1,4 @@
-﻿namespace Elves.Scenes.Battle.Sprite.Animation {
+﻿namespace Elves.Animation {
     public enum AnimationType {
         Static, Idle, Hurt, Dead
     }
