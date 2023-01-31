@@ -7,7 +7,7 @@ namespace Elves.Scenes.Battle.UI {
     public abstract class UIElement:InteractionElement<UIElement> {
 
         protected Texture2D Texture { get; set; } = Program.Textures.Nothing;
-        public VectorRectangle ScreenArea { get; set; }
+        public FloatRectangle ScreenArea { get; set; }
 
         public virtual void Draw(SpriteBatch spriteBatch,Color? color = null) {
             if(Texture == null) {
@@ -16,6 +16,6 @@ namespace Elves.Scenes.Battle.UI {
             spriteBatch.Draw(Texture,ScreenArea.ToRectangle(),color ?? Color.White);
         }
 
-        public override VectorRectangle GetScreenArea() => ScreenArea;
+        public override FloatRectangle GetScreenArea() => ScreenArea;
     }
 }

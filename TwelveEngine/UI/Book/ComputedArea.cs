@@ -3,7 +3,7 @@
         /// <summary>
         /// Floating point rectangle in screen space.
         /// </summary>
-        public readonly VectorRectangle Destination;
+        public readonly FloatRectangle Destination;
         
         /// <summary>
         /// Rotation (in degress).
@@ -11,11 +11,11 @@
         public readonly float Rotation;
 
         public ComputedArea() {
-            Destination = VectorRectangle.Empty;
+            Destination = FloatRectangle.Empty;
             Rotation = 0;
         }
 
-        public ComputedArea(VectorRectangle area,float rotation) {
+        public ComputedArea(FloatRectangle area,float rotation) {
             Destination = area;
             Rotation = rotation;
         }

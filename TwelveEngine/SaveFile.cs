@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TwelveEngine {
 
-    public enum SaveValueType:int { String, Int, Flag, Bool, ByteArray }
+    public enum SaveValueType { String, Int, Flag, Bool, ByteArray }
 
     public readonly struct SaveValue {
         public SaveValue(SaveValueType type,object value) {

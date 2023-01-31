@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Elves.FX {
+namespace TwelveEngine.Effects {
     public sealed class Static {
 
         public Texture2D Texture { get; set; }

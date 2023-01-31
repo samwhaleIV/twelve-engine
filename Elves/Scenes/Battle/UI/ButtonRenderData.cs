@@ -26,7 +26,7 @@ namespace Elves.Scenes.Battle.UI {
         public readonly float HalfWidth => Width * 0.5f;
         public readonly float HalfHeight => Height * 0.5f;
 
-        public VectorRectangle GetPosition(ButtonState buttonState) {
+        public FloatRectangle GetPosition(ButtonState buttonState) {
 
             Vector2 position = buttonState.Position switch {
                 ButtonPosition.CenterLeft => new Vector2(        CenterX - HalfMargin - Width,    CenterY - HalfHeight),
@@ -44,18 +44,18 @@ namespace Elves.Scenes.Battle.UI {
             };
 
             if(buttonState.OnScreen) {
-                return new VectorRectangle(position.X,position.Y,Width,Height);
+                return new FloatRectangle(position.X,position.Y,Width,Height);
             }
 
             if(buttonState.Position == ButtonPosition.CenterMiddle || buttonState.Position == ButtonPosition.CenterBottom) {
-                return new VectorRectangle(position.X,Viewport.Bottom,Width,Height);
+                return new FloatRectangle(position.X,Viewport.Bottom,Width,Height);
             }
 
             float centerX = position.X + Width * 0.5f;
             if(centerX < CenterX) {
-                return new VectorRectangle(Viewport.Left-Width,position.Y,Width,Height);
+                return new FloatRectangle(Viewport.Left-Width,position.Y,Width,Height);
             } else {
-                return new VectorRectangle(Viewport.Right,position.Y,Width,Height);
+                return new FloatRectangle(Viewport.Right,position.Y,Width,Height);
             }
 
         }

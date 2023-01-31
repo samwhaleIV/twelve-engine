@@ -31,7 +31,7 @@ namespace Elves.Scenes.Battle.UI {
             throw new InvalidOperationException("Input pause property is readonly for button elements.");
         }
 
-        private readonly AnimationInterpolator interpolator = new(Constants.AnimationTiming.ActionButtonMovement);
+        private readonly Interpolator interpolator = new(Constants.AnimationTiming.ActionButtonMovement);
 
         private static readonly Rectangle DefaultTexture = new(0,16,32,16);
         private static readonly Rectangle SelectedTexture = new(0,32,32,16);
@@ -74,13 +74,13 @@ namespace Elves.Scenes.Battle.UI {
         public void Update(TimeSpan now,ButtonRenderData buttonRenderData) {
             interpolator.Update(now);
 
-            VectorRectangle startPosition = buttonRenderData.GetPosition(oldState);
-            VectorRectangle endPosition = buttonRenderData.GetPosition(currentState);
+            FloatRectangle startPosition = buttonRenderData.GetPosition(oldState);
+            FloatRectangle endPosition = buttonRenderData.GetPosition(currentState);
 
             ScreenArea = interpolator.Interpolate(startPosition,endPosition);
         }
 
-        public void DrawText(UVSpriteFont spriteFont,int scale,Color color) {
+        public void DrawText(TwelveEngine.Font.UVSpriteFont spriteFont,int scale,Color color) {
             if(IsOffscreen) {
                 return;
             }

@@ -20,6 +20,19 @@ namespace TwelveEngine.Shell {
         /// </summary>
         internal GameState State { get; private set; }
 
+        /* State fields */
+        private GameState pendingState = null;
+        private (Func<GameState> Value, StateData Data) pendingGenerator = (null, StateData.Empty);
+
+        public event Action<GameManager> OnLoad;
+
+        /// <summary>
+        /// Why does this exist? MonoGame calls a duplicate first update call.
+        /// <see href="https://github.com/MonoGame/MonoGame/blob/2fa596123f834f322be19811d97fe6c20616d570/MonoGame.Framework/Game.cs#L489"/>
+        /// </summary>
+        public bool DidUpdateFirstFrame { get; private set; } = false;
+        public bool AdvanceFrameIsQueued { get; private set; } = false;
+
         public GameManager(
             bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true
         ) {
@@ -52,61 +65,29 @@ namespace TwelveEngine.Shell {
 
             IsFixedTimeStep = false;
 
-            vcrDisplay = new VCRDisplay(this,automationAgent);
+            VCRDisplay = new VCRDisplay(this);
 
-            automationAgent.PlaybackStarted += proxyGameTime.Pause;
-            automationAgent.PlaybackStopped += proxyGameTime.Resume;
+            AutomationAgent.PlaybackStarted += ProxyTime.Pause;
+            AutomationAgent.PlaybackStopped += ProxyTime.Resume;
 
-            automationAgent.PlaybackStarted += AutomationAgent_PlaybackStarted;
-            automationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
+            AutomationAgent.PlaybackStarted += AutomationAgent_PlaybackStarted;
+            AutomationAgent.PlaybackStopped += AutomationAgent_PlaybackStopped;
 
-            keyWatcherSet = new HotkeySet(GetDebugControls());
-
-            debugWriter = new DebugWriter(this);
+            KeyWatcherSet = new HotkeySet(GetDebugControls());
+            DebugWriter = new(this);
         }
 
         private readonly Stopwatch watch = new();
         private TimeSpan updateDuration, renderDuration;
 
-        private readonly FPSCounter fpsCounter = new();
-
-        private readonly FrameTimeSmoother updateDurationSmoother = new();
-        private readonly FrameTimeSmoother renderDurationSmoother = new();
-
-        private Action<GameManager,DebugWriter> _timeWriter = TimeWriters.Get(0);
-        private int _timeWriterIndex = 1;
-
-        private void CycleTimeWriter() {
-            _timeWriterIndex %= TimeWriters.Count;
-            _timeWriter = TimeWriters.Get(_timeWriterIndex++);
-        }
-
-        private void DrawGameTimeDebug(DebugWriter writer) {
-            TimeSpan now = ProxyGameTime.GetElapsedTime();
-
-            writer.ToBottomRight();
-
-            renderDurationSmoother.Update(now,renderDuration);
-            writer.WriteTimeMS(renderDurationSmoother.Average,"R");
-
-            updateDurationSmoother.Update(now,updateDuration);
-            writer.WriteTimeMS(updateDurationSmoother.Average,"U");
-
-            fpsCounter.Update(now);
-            writer.WriteFPS(fpsCounter.FPS);
-
-            writer.ToBottomLeft();
-            _timeWriter(this,writer);
-        }
-
         private (Keys Key, Action Action)[] GetDebugControls() => new (Keys,Action)[]{
-            (Constants.PlaybackKey, automationAgent.TogglePlayback),
-            (Constants.RecordingKey, automationAgent.ToggleRecording),
+            (Constants.PlaybackKey, AutomationAgent.TogglePlayback),
+            (Constants.RecordingKey, AutomationAgent.ToggleRecording),
 
-            (Constants.PauseGameKey, () => SetPaused(!gamePaused)),
-            (Constants.AdvanceFrameKey, () => advanceFrameIsQueued = true),
+            (Constants.PauseGameKey, () => SetPaused(!_gameIsPaused)),
+            (Constants.AdvanceFrameKey, () => AdvanceFrameIsQueued = true),
             (Constants.FullscreenKey, GraphicsDeviceManager.ToggleFullScreen),
-            (Constants.CycleTimeDisplay, CycleTimeWriter)
+            (Constants.CycleTimeDisplay, () => DebugWriter.CycleTimeWriter())
         };
 
         private void AutomationAgent_PlaybackStopped() {
@@ -114,108 +95,55 @@ namespace TwelveEngine.Shell {
         }
 
         private void AutomationAgent_PlaybackStarted() {
-            TargetElapsedTime = automationAgent.GetAveragePlaybackFrameTime();
+            TargetElapsedTime = AutomationAgent.GetAveragePlaybackFrameTime();
             IsFixedTimeStep = true;
         }
 
         /* Loading, automation, and time maniuplation state */
-        private bool initialized = false, gamePaused = false, updating = false, rendering = false;
+        private bool initialized = false, _gameIsPaused = false, updating = false, rendering = false;
 
         private bool fastForwarding = false, shouldAdvanceFrame = false;
         private int framesToSkip = 0;
 
-        private readonly VCRDisplay vcrDisplay;
-        private readonly HotkeySet keyWatcherSet;
-
-        private readonly AutomationAgent automationAgent = new();
-        private readonly ProxyGameTime proxyGameTime = new();
-        private readonly DebugWriter debugWriter;
-
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-        public AutomationAgent AutomationAgent => automationAgent;
-        internal ProxyGameTime ProxyTime => proxyGameTime;
+
+        public RenderTargetStack RenderTarget { get; private set; }
+        public Viewport Viewport => RenderTarget.GetViewport();
+
+        private VCRDisplay VCRDisplay { get; init; }
+        private HotkeySet KeyWatcherSet { get; init; }
 
         public SpriteBatch SpriteBatch { get; private set; }
         public SpriteFont DebugFont { get; private set; }
-        private RenderTargetStack RenderTargets { get; set; }
-
-        public KeyboardState KeyboardState { get; private set; }
-        public MouseState MouseState { get; private set; }
-        public GamePadState GamePadState { get; private set; }
-
-        public void PushRenderTarget(RenderTarget2D renderTarget) => RenderTargets.Push(renderTarget);
-        public void PopRenderTarget() => RenderTargets.Pop();
-        public Viewport Viewport => RenderTargets.GetViewport();
+        public DebugWriter DebugWriter { get; private init; }
 
         public bool IsPaused {
-            get => gamePaused;
+            get => _gameIsPaused;
             set => SetPaused(value);
         }
 
         public void SetPaused(bool paused) {
-            if(gamePaused == paused) {
+            if(_gameIsPaused == paused) {
                 return;
             }
-            if(!gamePaused) {
-                proxyGameTime.Pause();
+            if(!_gameIsPaused) {
+                ProxyTime.Pause();
             } else {
-                proxyGameTime.Resume();
+                ProxyTime.Resume();
             }
-            gamePaused = paused;
+            _gameIsPaused = paused;
         }
 
-        private static GamePadState GetGamepadState() {
-            var state = GamePad.GetState(Config.GetInt(Config.Keys.GamePadIndex),GamePadDeadZone.Circular);
-            return state;
-        }
 
-        private KeyboardState GetKeyboardState() {
-            var state = Keyboard.GetState();
-            return automationAgent.FilterKeyboardState(state);
-        }
-
-        private MouseState GetMouseState() {
-            var state = Mouse.GetState();
-            return automationAgent.FilterMouseState(state);
-        }
-
-        /* State fields */
-        private GameState pendingState = null;
-        private (Func<GameState> Value, StateData Data) pendingGenerator = (null, StateData.Empty);
-
-        private static readonly StringBuilder stringBuilder = new();
-
-        private static void LogStateChange(GameState state) {
-            stringBuilder.Append('[');
-            stringBuilder.AppendFormat(Constants.TimeSpanFormat,ProxyGameTime.GetElapsedTime());
-            stringBuilder.Append("] Set state: ");
-            string stateName = state.Name;
-            stringBuilder.Append('"');
-            stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);
-            stringBuilder.Append("\" { Args = ");
-            StateData data = state.Data;
-            if(data.Args is not null && data.Args.Length >= 1) {
-                foreach(var arg in data.Args) {
-                    if(string.IsNullOrWhiteSpace(arg)) {
-                        continue;
-                    }
-                    stringBuilder.Append($"{arg}, ");
-                }
-                stringBuilder.Remove(stringBuilder.Length-2,2);
-            } else {
-                stringBuilder.Append("None");
-            }
-            stringBuilder.AppendLine($", Flags = {data.Flags.ToString()} }}");
-
-            Logger.Write(stringBuilder);
-            stringBuilder.Clear();
-        }
 
         private void LoadState(GameState state) {
-            CursorState = CursorState.Default;
+            CustomCursor.State = CursorState.Default;
             state.Load(this);
-            LogStateChange(state);
+            Logger.LogStateChange(state);
         }
+
+        public void SetState(GameState state,StateData? data = null) => SetState(() => state,data ?? StateData.Empty);
+        public void SetState<TState>(StateData? data = null) where TState : GameState, new() => SetState(() => new TState(),data ?? StateData.Empty);
 
         public void SetState(Func<GameState> stateGenerator,StateData? data = null) {
             if(pendingState is not null || pendingGenerator.Value is not null) {
@@ -247,52 +175,27 @@ namespace TwelveEngine.Shell {
             LoadState(pendingState);
         }
 
-        public void SetState(GameState state,StateData? data = null) {
-            SetState(() => state,data ?? StateData.Empty);
-        }
-
-        public void SetState<TState>(StateData? data = null) where TState : GameState, new() {
-            SetState(() => new TState(),data ?? StateData.Empty);
-        }
-
         protected override void Initialize() {
             Window.AllowUserResizing = true;
             Window.AllowAltF4 = true;
             base.Initialize();
         }
 
-        public event Action<GameManager> OnLoad;
-        
-        public Texture2D EmptyTexture { get; private set; }
-
-        private void SetEmptyTexture() {
-            int size = Constants.EmptyTextureSize;
-            int pixelCount = size * size;
-            Texture2D emptyTexture = new(GraphicsDevice,size,size);
-            Color[] pixels = new Color[pixelCount];
-            for(int i = 0;i<pixelCount;i++) {
-                pixels[i] = Color.White;
-            }
-            emptyTexture.SetData(pixels);
-            EmptyTexture = emptyTexture;
-        }
-
         protected override void LoadContent() {
-            SetEmptyTexture();
+            RuntimeTextures.Load(GraphicsDevice);
             SpriteBatch = new SpriteBatch(GraphicsDevice);
-            RenderTargets = new RenderTargetStack(GraphicsDevice);
+            RenderTarget = new RenderTargetStack(GraphicsDevice);
             DebugFont = Content.Load<SpriteFont>(Constants.DebugFont);
-            vcrDisplay.Load();
+            VCRDisplay.Load();
             initialized = true;
             OnLoad?.Invoke(this);
         }
 
         protected override void UnloadContent() {
+            RuntimeTextures.Unload();
+
             State?.Unload();
             State = null;
-
-            EmptyTexture?.Dispose();
-            EmptyTexture = null;
 
             if(pendingState?.IsLoaded ?? false) {
                 pendingState.Unload();
@@ -307,82 +210,46 @@ namespace TwelveEngine.Shell {
             GraphicsDeviceManager = null;
         }
 
-        private bool advanceFrameIsQueued = false;
-
         private void AdvanceFrame(KeyboardState keyboardState,GameTime gameTime) {
             int frameAdvance = 0;
-            if(automationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
+            if(AutomationAgent.PlaybackActive && keyboardState.IsKeyDown(Keys.LeftShift)) {
 
                 shouldAdvanceFrame = false;
                 framesToSkip = Constants.ShiftFrameSkip;
-                vcrDisplay.AdvanceFramesMany(gameTime);
+                VCRDisplay.AdvanceFramesMany(gameTime);
                 frameAdvance = Constants.ShiftFrameSkip;
 
-            } else if(gamePaused && !shouldAdvanceFrame) {
-
-                TimeSpan simTime = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
-                proxyGameTime.AddSimulationTime(simTime);
+            } else if(_gameIsPaused && !shouldAdvanceFrame) {
+                TimeSpan simulationTIme = TimeSpan.FromMilliseconds(Constants.SimFrameTime);
+                ProxyTime.AddSimulationTime(simulationTIme);
                 shouldAdvanceFrame = true;
                 framesToSkip = 0;
-                vcrDisplay.AdvanceFrame(gameTime);
+                VCRDisplay.AdvanceFrame(gameTime);
                 frameAdvance = 1;
             }
 
-            if(frameAdvance > 0 && automationAgent.PlaybackActive) {
-                int maxFrame = automationAgent.PlaybackFrameCount.HasValue ? automationAgent.PlaybackFrameCount.Value - 1 : int.MaxValue;
-                Console.WriteLine($"[Automation Agent] Advanced to frame {MathF.Min(automationAgent.FrameNumber + frameAdvance,maxFrame)}");
+            if(frameAdvance > 0 && AutomationAgent.PlaybackActive) {
+                int maxFrame = AutomationAgent.PlaybackFrameCount.HasValue ? AutomationAgent.PlaybackFrameCount.Value - 1 : int.MaxValue;
+                Console.WriteLine($"[Automation Agent] Advanced to frame {MathF.Min(AutomationAgent.FrameNumber + frameAdvance,maxFrame)}");
             }
         }
-
-        public static KeyboardState LastKeyboardState { get; private set; }
-        public static MouseState LastMouseState { get; private set; }
-        public static GamePadState LastGamePadState { get; private set; }
-
-        /* A little bit expensive... but powerful. */
-        private void UpdateInputStateCache() {
-
-            /* States are filtered by the automation agent. State cannot be changed while the game is paused or waiting. */
-            MouseState mouseState = GetMouseState();
-            KeyboardState keyboardState = GetKeyboardState();
-            GamePadState gamePadState = GetGamepadState();
-
-            /* Priority for keyboard or gamepad events, even if the mouse data changed in the same frame. */
-            if(IsActive && mouseState != LastMouseState) {
-                LastInputEventWasFromMouse = true;
-                //Console.WriteLine("MOUSE ACTIVE");
-            }
-            if(IsActive && keyboardState != LastKeyboardState || gamePadState != LastGamePadState) {
-                LastInputEventWasFromMouse = false;
-                //Console.WriteLine("KEYBOARD ACTIVE");
-            }
-
-            LastMouseState = mouseState;
-            LastKeyboardState = keyboardState;
-            LastGamePadState = gamePadState;
-
-            KeyboardState = keyboardState;
-            MouseState = mouseState;
-            GamePadState = gamePadState;
-        }
-
-        public static bool LastInputEventWasFromMouse { get; private set; } = false;
 
         private void UpdateGame(GameTime trueGameTime) {
-            proxyGameTime.Update(trueGameTime);
+            ProxyTime.Update(trueGameTime);
 
-            automationAgent.StartUpdate();
+            AutomationAgent.StartUpdate();
 
-            if(automationAgent.PlaybackActive) {
-                proxyGameTime.AddSimulationTime(automationAgent.GetFrameTime());
+            if(AutomationAgent.PlaybackActive) {
+                ProxyTime.AddSimulationTime(AutomationAgent.GetFrameTime());
             }
-            if(automationAgent.RecordingActive) {
-                automationAgent.UpdateRecordingFrame(proxyGameTime.FrameDelta);
+            if(AutomationAgent.RecordingActive) {
+                AutomationAgent.UpdateRecordingFrame(ProxyTime.FrameDelta);
             }
 
-            UpdateInputStateCache();
+            InputStateCache.Update(IsActive);
             State.Update();
 
-            automationAgent.EndUpdate();
+            AutomationAgent.EndUpdate();
         }
 
         private void FastForward() {
@@ -393,14 +260,14 @@ namespace TwelveEngine.Shell {
             int count = framesToSkip;
             framesToSkip = 0;
 
-            int limit = automationAgent.FrameNumber + count;
-            int? playbackFrameCount = automationAgent.PlaybackFrameCount;
+            int limit = AutomationAgent.FrameNumber + count;
+            int? playbackFrameCount = AutomationAgent.PlaybackFrameCount;
 
             if(playbackFrameCount.HasValue) {
                 limit = Math.Min(playbackFrameCount.Value,limit);
             }
 
-            for(int i = automationAgent.FrameNumber;i < limit;i++) {
+            for(int i = AutomationAgent.FrameNumber;i < limit;i++) {
                 UpdateGame(null); /* Automation agent supplies a game time when playback is active */
             }
 
@@ -408,18 +275,16 @@ namespace TwelveEngine.Shell {
         }
 
         public void FastForward(int count) {
-            if(!automationAgent.PlaybackActive) {
+            if(!AutomationAgent.PlaybackActive) {
                 return;
             }
             framesToSkip = count;
         }
 
-        private bool HasGameState => State is not null;
-
         private void HotSwapPendingState() {
             State = pendingState;
             pendingState = null;
-            if(!gamePaused) {
+            if(!_gameIsPaused) {
                 return;
             }
             shouldAdvanceFrame = true;
@@ -432,20 +297,14 @@ namespace TwelveEngine.Shell {
             return elapsed;
         }
 
-        /// <summary>
-        /// Why does this exist? MonoGame calls a duplicate first update call.
-        /// <see href="https://github.com/MonoGame/MonoGame/blob/2fa596123f834f322be19811d97fe6c20616d570/MonoGame.Framework/Game.cs#L489"/>
-        /// </summary>
-        private bool didUpdateFirstFrame = false;
-
         protected override void Update(GameTime gameTime) {
-            if(!didUpdateFirstFrame) {
-                didUpdateFirstFrame = true;
+            if(!DidUpdateFirstFrame) {
+                DidUpdateFirstFrame = true;
                 return;
             }
             updating = true;
             watch.Start();
-            if(!HasGameState) {
+            if(State is null) {
                 if(pendingState is not null) {
                     HotSwapPendingState();
                 } else {
@@ -456,13 +315,13 @@ namespace TwelveEngine.Shell {
             }
 
             KeyboardState vanillaKeyboardState = Keyboard.GetState();
-            keyWatcherSet.Update(vanillaKeyboardState);
-            if(advanceFrameIsQueued) {
+            KeyWatcherSet.Update(vanillaKeyboardState);
+            if(AdvanceFrameIsQueued) {
                 AdvanceFrame(vanillaKeyboardState,gameTime);
-                advanceFrameIsQueued = false;
+                AdvanceFrameIsQueued = false;
             }
 
-            if(!gamePaused) {
+            if(!_gameIsPaused) {
                 UpdateGame(gameTime);             
             } else if(shouldAdvanceFrame) {
                 UpdateGame(gameTime);
@@ -516,12 +375,12 @@ namespace TwelveEngine.Shell {
                 /* Notice: No game state */
             }
 
-            vcrDisplay.Render(trueGameTime);
+            VCRDisplay.Render(trueGameTime);
             SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.LinearClamp);
 
             if(DrawDebug) {
-                DrawGameTimeDebug(debugWriter);
-                gameState?.WriteDebug(debugWriter);
+                DebugWriter.DrawGameTimeDebug(updateDuration,renderDuration);
+                gameState?.WriteDebug(DebugWriter);
             }
 
             SpriteBatch.End();
@@ -532,44 +391,5 @@ namespace TwelveEngine.Shell {
             gameState?.UpdateTransition();
             TryApplyPendingStateGenerator();
         }
-
-        private bool TrySetCustomCursor() {
-            if(_useCustomCursor && CursorSources.TryGetValue(_cursorState,out MouseCursor cursor)) {
-                Mouse.SetCursor(cursor);
-                return true;
-            } else {
-                Mouse.SetCursor(MouseCursor.Arrow);
-                return false;
-            }
-        }
-
-        private bool _useCustomCursor = false;
-        public bool UseCustomCursor {
-            get => _useCustomCursor;
-            set {
-                if(_useCustomCursor == value) {
-                    return;
-                }
-                _useCustomCursor = value;
-                TrySetCustomCursor();
-            }
-        }
-
-        private CursorState _cursorState = CursorState.Default;
-        public CursorState CursorState {
-            get => _cursorState;
-            set {
-                if(_cursorState == value) {
-                    return;
-                }
-                _cursorState = value;
-                if(!_useCustomCursor) {
-                    return;
-                }
-                TrySetCustomCursor();
-            }
-        }
-
-        public readonly Dictionary<CursorState,MouseCursor> CursorSources = new();
     }
 }

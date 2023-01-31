@@ -13,9 +13,6 @@ namespace TwelveEngine.Shell.Automation {
 
         private const int GLPYH_SIZE = 15;
 
-        private bool Loading => automationAgent.PlaybackLoading;
-        private bool Paused => gameManager.IsPaused;
-
         private enum Mode { None, Recording, Playback };
 
         private enum Symbol { Record, Play, Pause, Load, Advance, AdvanceMany };
@@ -41,31 +38,26 @@ namespace TwelveEngine.Shell.Automation {
             return recetangle;
         }
 
-        private Mode GetMode() {
-            var automationAgent = gameManager.AutomationAgent;
-            if(automationAgent.PlaybackActive) {
+        private static Mode GetMode() {
+            if(AutomationAgent.PlaybackActive) {
                 return Mode.Playback;
             }
-            if(automationAgent.RecordingActive) {
+            if(AutomationAgent.RecordingActive) {
                 return Mode.Recording;
             }
             return Mode.None;
         }
 
-        private readonly AutomationAgent automationAgent;
-        private readonly GameManager gameManager;
+        private GameManager Game { get; init; }
         private SpriteBatch spriteBatch;
 
-        internal VCRDisplay(GameManager gameManager,AutomationAgent automationAgent) {
-            this.automationAgent = automationAgent;
-            this.gameManager = gameManager;
-        }
+        internal VCRDisplay(GameManager game) => Game = game;
 
         private Texture2D vcrTexture;
 
         public void Load() {
-            vcrTexture = gameManager.Content.Load<Texture2D>("vcr");
-            spriteBatch = gameManager.SpriteBatch;
+            vcrTexture = Game.Content.Load<Texture2D>("vcr");
+            spriteBatch = Game.SpriteBatch;
         }
 
         private void DrawSymbol(ref int x,Symbol symbol) {
@@ -96,8 +88,8 @@ namespace TwelveEngine.Shell.Automation {
 
             int x = SPACE;
 
-            bool paused = Paused;
-            bool loading = Loading;
+            bool paused = Game.IsPaused;
+            bool loading = AutomationAgent.PlaybackLoading;
 
             bool hasMode = mode != Mode.None;
 

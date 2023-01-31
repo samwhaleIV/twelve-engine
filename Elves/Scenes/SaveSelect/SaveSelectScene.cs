@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using TwelveEngine;
+using TwelveEngine.Effects;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class SaveSelectScene:UIScene {
@@ -143,6 +145,6 @@ namespace Elves.Scenes.SaveSelect {
             backgroundScaleAnimator.ResetCarryOver(Now);
         }
 
-        private readonly AnimationInterpolator backgroundScaleAnimator = new();
+        private readonly Interpolator backgroundScaleAnimator = new();
     }
 }

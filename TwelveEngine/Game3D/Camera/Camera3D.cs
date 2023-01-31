@@ -94,7 +94,7 @@ namespace TwelveEngine.Game3D {
             return MathHelper.ToRadians(FieldOfView);
         }
 
-        public VectorRectangle OrthographicArea { get; private set; } = VectorRectangle.Zero;
+        public FloatRectangle OrthographicArea { get; private set; } = FloatRectangle.Zero;
 
         private Matrix GetProjectionMatrix() {
             if(orthographic) {
@@ -121,7 +121,7 @@ namespace TwelveEngine.Game3D {
                 height = 1f;
             }
             float x = width * -0.5f, y = height * -0.5f;
-            OrthographicArea = new VectorRectangle(x,y,width,height);
+            OrthographicArea = new FloatRectangle(x,y,width,height);
         }
 
         public void Update() {

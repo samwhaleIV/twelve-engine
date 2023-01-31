@@ -35,15 +35,17 @@ namespace TwelveEngine.Shell {
 
         private TransitionData? _transitionOutData = null;
 
-        public TimeSpan Now => Game?.ProxyTime.Now ?? throw new InvalidOperationException("Cannot access time before loading has started.");
-        public TimeSpan RealTime => Game?.ProxyTime.RealTime ?? throw new InvalidOperationException("Cannot access time before loading has started.");
+        /* Having this defined in gamestate can save our ass later. */
+        public TimeSpan Now => ProxyTime.Now;
+        public TimeSpan RealTime = ProxyTime.RealTime;
+        public TimeSpan FrameDelta => ProxyTime.FrameDelta;
 
         public TimeSpan LocalNow {
             get {
                 if(!_hasStartTime) {
                     throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
                 }
-                return Game.ProxyTime.Now - _nowOffset;
+                return Now - _nowOffset;
             }
         }
 
@@ -52,11 +54,9 @@ namespace TwelveEngine.Shell {
                 if(!_hasStartTime) {
                     throw new InvalidOperationException("Cannot use local time until the first update frame has started.");
                 }
-                return Game.ProxyTime.RealTime - _realTimeOffset;
+                return RealTime - _realTimeOffset;
             }
         }
-
-        public TimeSpan TimeDelta => Game.ProxyTime.FrameDelta;
 
         public event Action OnLoad, OnUnload;
 
@@ -77,8 +77,8 @@ namespace TwelveEngine.Shell {
         private bool _hasStartTime = false;
 
         private void SetStartTime() {
-            _nowOffset = Game.ProxyTime.Now;
-            _realTimeOffset = Game.ProxyTime.RealTime;
+            _nowOffset = Now;
+            _realTimeOffset = RealTime;
             _hasStartTime = true;
         }
 

@@ -2,14 +2,14 @@
 using System;
 
 namespace TwelveEngine {
-    public sealed class AnimationInterpolator {
+    public sealed class Interpolator {
 
-        public AnimationInterpolator(TimeSpan duration) {
+        public Interpolator(TimeSpan duration) {
             Duration = duration;
             Start = -duration;
         }
 
-        public AnimationInterpolator() {
+        public Interpolator() {
             /* If the start time is set the minimum value there will be an overflow error in the calculation of 'Value' */
             Start = TimeSpan.FromHours(-1); /* Hopefully an (negative) hour is reasonable. I can think of no god forsaken reason you'd have an animation last 1 hour in a video game */
         }
@@ -92,10 +92,10 @@ namespace TwelveEngine {
             return new Rectangle(point,size);
         }
 
-        public VectorRectangle Interpolate(VectorRectangle start,VectorRectangle end) {
+        public FloatRectangle Interpolate(FloatRectangle start,FloatRectangle end) {
             Vector2 position = Interpolate(start.Position,end.Position);
             Vector2 size = Interpolate(start.Size,end.Size);
-            return new VectorRectangle(position,size);
+            return new FloatRectangle(position,size);
         }
     }
 }

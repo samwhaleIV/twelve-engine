@@ -6,8 +6,8 @@ namespace TwelveEngine.Shell.UI {
 
             static (game,writer) => {
                 writer.Write("[Game Time]");
-                writer.Write(game.State?.Now ?? TimeSpan.Zero,"T");
-                writer.Write(game.State?.RealTime ?? TimeSpan.Zero,"RT");
+                writer.Write(ProxyTime.Now,"T");
+                writer.Write(ProxyTime.RealTime,"RT");
             },
 
             static (game,writer) => {
@@ -18,10 +18,9 @@ namespace TwelveEngine.Shell.UI {
 
             static (game,writer) => {
                 writer.Write("[Global Time]");
-                writer.Write(game.ProxyTime.PauseTime,"P");
-                writer.Write(game.ProxyTime.Drift,"D");
-                writer.Write(ProxyGameTime.GetElapsedTime(),"LT");
-
+                writer.Write(ProxyTime.PauseTime,"P");
+                writer.Write(ProxyTime.Drift,"D");
+                writer.Write(ProxyTime.GetElapsedTime(),"LT");
             }
         };
 

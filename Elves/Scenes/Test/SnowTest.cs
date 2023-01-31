@@ -34,7 +34,7 @@ namespace Elves.Scenes.Test {
 
             Texture = Program.Textures.Drowning;
             SamplerState = SamplerState.PointClamp;
-            UVArea = new VectorRectangle(38,78,4,4,Texture);
+            UVArea = new FloatRectangle(38,78,4,4,Texture);
 
             for(int i = 0;i<SNOW_COUNT;i++) {
                 ResetParticle(i);
@@ -67,7 +67,7 @@ namespace Elves.Scenes.Test {
             Vector3 position;
             Vector2 velocity;
 
-            TimeSpan elapsedTime = TimeDelta;
+            TimeSpan elapsedTime = FrameDelta;
             float delta = (float)elapsedTime.TotalSeconds / TIME_BASE;
 
             for(int i = 0;i<SNOW_COUNT;i++) {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using TwelveEngine;
+using TwelveEngine.Effects;
 
 namespace Elves.Scenes.Test {
 
@@ -22,7 +23,7 @@ namespace Elves.Scenes.Test {
         private Rectangle frameDestination;
 
         private void UpdateFrameDestination() {
-            var bounds = new VectorRectangle(Game.Viewport.Bounds);
+            var bounds = new FloatRectangle(Game.Viewport.Bounds);
             float scale = bounds.Height / drawingFrame.Height * 0.75f;
             Vector2 drawingFrameSize = drawingFrame.Size * scale;
             Vector2 origin = bounds.Center - drawingFrameSize * 0.5f;

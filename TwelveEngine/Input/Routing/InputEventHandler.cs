@@ -14,9 +14,7 @@ namespace TwelveEngine.Input.Routing {
         private TRouter _router = default;
         public TRouter Router {
             get {
-                if(_router is null) {
-                    _router = CreateRouter();
-                }
+                _router ??= CreateRouter();
                 return _router;
             }
         }

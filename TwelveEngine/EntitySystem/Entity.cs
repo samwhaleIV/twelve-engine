@@ -33,7 +33,8 @@ namespace TwelveEngine.EntitySystem {
         public TOwner Owner { get; private set; } = null;
 
         public TimeSpan Now => Owner.Now;
-        public TimeSpan TimeDelta => Owner.TimeDelta;
+        public TimeSpan FrameDelta => Owner.FrameDelta;
+        public TimeSpan RealTime => Owner.RealTime;
 
         internal object EntityManager { get; private set; } = null;
 

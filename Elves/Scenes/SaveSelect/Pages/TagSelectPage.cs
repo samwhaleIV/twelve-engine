@@ -48,7 +48,7 @@ namespace Elves.Scenes.SaveSelect {
             UI.SetPage(UI.TagContextPage);
         }
 
-        private void UpdateFinger(VectorRectangle viewport) {
+        private void UpdateFinger(FloatRectangle viewport) {
             var fingerHeight = 0.375f * viewport.Height;
             var fingerSize = new Vector2(174f / 40 * fingerHeight,fingerHeight);
             UI.Finger.Size = fingerSize;
@@ -70,7 +70,7 @@ namespace Elves.Scenes.SaveSelect {
             finger.Offset = (new(-1.2f,-0.1f));
         }
 
-        public override void Update(VectorRectangle viewport) {
+        public override void Update(FloatRectangle viewport) {
             SpriteElement tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
             float twoThirdsX = viewport.Width * (2 / 3f);
             float scale = viewport.Height / tag1.SourceHeight * 0.26f;

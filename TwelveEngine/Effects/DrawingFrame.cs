@@ -4,7 +4,7 @@ using System.Collections;
 using Microsoft.Xna.Framework;
 using TwelveEngine.Shell;
 
-namespace TwelveEngine {
+namespace TwelveEngine.Effects {
     public sealed class DrawingFrame {
 
         private readonly int width, height, pixelCount;
@@ -43,9 +43,9 @@ namespace TwelveEngine {
         }
 
         public void Reset(GameManager game) {
-            game.PushRenderTarget(RenderTarget);
+            game.RenderTarget.Push(RenderTarget);
             game.GraphicsDevice.Clear(ClearOptions.Target,EmptyColor,1,0);
-            game.PopRenderTarget();
+            game.RenderTarget.Pop();
         }
 
         public Texture2D BrushTexture { get; set; } = null;
@@ -71,7 +71,7 @@ namespace TwelveEngine {
 
             newLocation -= halfBrushSize; oldLocation -= halfBrushSize;
 
-            game.PushRenderTarget(RenderTarget);
+            game.RenderTarget.Push(RenderTarget);
             game.SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
 
             Vector2 difference = oldLocation - newLocation;
@@ -87,7 +87,7 @@ namespace TwelveEngine {
             }
 
             game.SpriteBatch.End();
-            game.PopRenderTarget();
+            game.RenderTarget.Pop();
 
             lastDrawLocation = location;
         }

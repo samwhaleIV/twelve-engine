@@ -1,5 +1,5 @@
 ﻿using System;
-using TwelveEngine;
+using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Test {

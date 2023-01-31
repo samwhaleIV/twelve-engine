@@ -5,6 +5,7 @@ using TwelveEngine;
 using TwelveEngine.Font;
 using TwelveEngine.Input;
 using Elves.Scenes.Battle;
+using TwelveEngine.Effects;
 
 namespace Elves.Scenes.Carousel {
 
@@ -123,7 +124,7 @@ namespace Elves.Scenes.Carousel {
             }
         }
 
-        private readonly AnimationInterpolator carouselRotation = new(Constants.AnimationTiming.CarouselRotationDuration);
+        private readonly Interpolator carouselRotation = new(Constants.AnimationTiming.CarouselRotationDuration);
 
         private readonly List<CarouselItem> items = new();
 

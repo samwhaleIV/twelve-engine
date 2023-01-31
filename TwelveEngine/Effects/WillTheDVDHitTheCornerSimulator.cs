@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Elves.FX {
+namespace TwelveEngine.Effects {
     public sealed class WillTheDVDHitTheCornerSimulator {
 
         private readonly Random random;

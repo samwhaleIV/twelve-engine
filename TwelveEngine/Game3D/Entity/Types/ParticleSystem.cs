@@ -45,7 +45,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
 
         public float ParticleSize { get; set; } = 0.025f;
 
-        public VectorRectangle UVArea { get; set; }
+        public FloatRectangle UVArea { get; set; }
 
         private void UpdateVertices() {
             float s = ParticleSize * 0.5f;

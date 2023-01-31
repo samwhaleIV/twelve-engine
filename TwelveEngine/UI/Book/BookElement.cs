@@ -5,7 +5,7 @@ namespace TwelveEngine.UI.Book {
 
     public class BookElement:InteractionElement<BookElement> {
 
-        private readonly AnimationInterpolator animator = new(Book<BookElement>.DefaultAnimationDuration);
+        private readonly Interpolator animator = new(Book<BookElement>.DefaultAnimationDuration);
 
         /// <summary>
         /// The computed area to be supplied to a renderer or mouse input system. Coordinates in floating point pixels.
@@ -88,7 +88,7 @@ namespace TwelveEngine.UI.Book {
             _ => value
         };
 
-        private void UpdateComputedArea(ElementLayoutData layout,VectorRectangle viewport) {
+        private void UpdateComputedArea(ElementLayoutData layout,FloatRectangle viewport) {
             Vector2 size = new(GetCoordinate(layout.Size.X,viewport.Width,SizeModeX),
                                GetCoordinate(layout.Size.Y,viewport.Height,SizeModeY));
 
@@ -152,7 +152,7 @@ namespace TwelveEngine.UI.Book {
         /// </summary>
         /// <param name="now">Current, total elapsed time.</param>
         /// <param name="viewport">The viewport of of the target area.</param>
-        public void Update(TimeSpan now,VectorRectangle viewport) {
+        public void Update(TimeSpan now,FloatRectangle viewport) {
             animator.Update(now);
             if(InputIsPaused && animator.IsFinished) {
                 InputIsPaused = false;
@@ -175,7 +175,7 @@ namespace TwelveEngine.UI.Book {
             InputIsPaused = true;
         }
 
-        public override VectorRectangle GetScreenArea() {
+        public override FloatRectangle GetScreenArea() {
             return ComputedArea.Destination;
         }
 

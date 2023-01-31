@@ -82,7 +82,7 @@ namespace TwelveEngine.Input.Routing {
             return true;
         }
 
-        public void Update(KeyboardState keyboardState,GamePadState gamePadState) {
+        public void Update(in KeyboardState keyboardState,in GamePadState gamePadState) {
             KeyboardState = keyboardState;
             GamePadState = gamePadState;
 

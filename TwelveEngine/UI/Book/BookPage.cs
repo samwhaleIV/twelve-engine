@@ -27,7 +27,7 @@ namespace TwelveEngine.UI.Book {
         /// </summary>
         public abstract void Close();
 
-        public abstract void Update(VectorRectangle viewport);
+        public abstract void Update(FloatRectangle viewport);
 
         /// <summary>
         /// Method is executed when a keyboard/gamepad cancel impulse has been pressed.

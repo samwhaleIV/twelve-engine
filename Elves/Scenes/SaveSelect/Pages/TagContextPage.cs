@@ -149,7 +149,7 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        private void UpdateButtons(VectorRectangle viewport) {
+        private void UpdateButtons(FloatRectangle viewport) {
 
             int buttonCount = buttonList.Count;
 
@@ -167,7 +167,7 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        public override void Update(VectorRectangle viewport) {
+        public override void Update(FloatRectangle viewport) {
             tag.Position = new(0.5f,2/7f);
             tag.Rotation = 0f;
             float height = viewport.Height * (1 / 3f);

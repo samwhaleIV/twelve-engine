@@ -1,4 +1,4 @@
-﻿using Elves.FX;
+﻿using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -24,7 +24,7 @@ namespace Elves.Scenes.Test {
         }
 
         private void DVDCornerTest_OnUpdate() {
-            bouncingSimulator.Update(Now);
+            bouncingSimulator.Update(ProxyTime.Now);
         }
     }
 }

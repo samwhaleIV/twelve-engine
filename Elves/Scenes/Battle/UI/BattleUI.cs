@@ -68,7 +68,7 @@ namespace Elves.Scenes.Battle.UI {
 
         #region INTERACTION AGENT
 
-        protected override bool GetLastEventWasFromMouse() => GameManager.LastInputEventWasFromMouse;
+        protected override bool GetLastEventWasFromMouse() => InputStateCache.LastInputEventWasFromMouse;
 
         protected override bool GetContextTransitioning() {
             var isTransitioning = owner.IsTransitioning;
@@ -76,8 +76,7 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         protected override TimeSpan GetCurrentTime() {
-            var now = owner.Now;
-            return now;
+            return Now;
         }
 
         protected override IEnumerable<UIElement> GetElements() => interactableElements;
@@ -114,10 +113,10 @@ namespace Elves.Scenes.Battle.UI {
 
             float healthBarHeight = viewport.Height * 0.125f; /* Equal to half of action button height */
 
-            playerHealthBar.ScreenArea = new VectorRectangle(
+            playerHealthBar.ScreenArea = new FloatRectangle(
                 playerHealthBarLeft,healthBarY,playerHealthBarRight-playerHealthBarLeft,healthBarHeight
             );
-            targetHealthBar.ScreenArea = new VectorRectangle(
+            targetHealthBar.ScreenArea = new FloatRectangle(
                 targetHealthBarLeft,healthBarY,targetHealthBarRight-targetHealthBarLeft,healthBarHeight
             );
 

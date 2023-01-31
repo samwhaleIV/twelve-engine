@@ -9,7 +9,7 @@ namespace TwelveEngine.Game3D.Entity.Types {
         public Screenspace3DSprite(string textureName) : base(textureName) => Initialize();
         public Screenspace3DSprite(Texture2D texture) : base(texture) => Initialize();
 
-        public VectorRectangle Area { get; set; } = VectorRectangle.Zero; /* Space in pixels */
+        public FloatRectangle Area { get; set; } = FloatRectangle.Zero; /* Space in pixels */
         public Rectangle TextureSource { get; set; }
 
         private void Initialize() {

@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine;
 using Elves.Scenes.Battle.UI;
-using TwelveEngine.Input;
 using TwelveEngine.UI;
+using TwelveEngine.Effects;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Battle {
     public abstract class BattleRendererState:Scene3D {
@@ -55,7 +56,7 @@ namespace Elves.Scenes.Battle {
 
         protected void UpdateUI() {
             battleUI.UpdateLayout((int)GetUIScale());
-            Game.CursorState = battleUI.CursorState;
+            CustomCursor.State = battleUI.CursorState;
         }
 
         protected abstract UserData GetPlayerData();
@@ -98,7 +99,7 @@ namespace Elves.Scenes.Battle {
             UpdateInputDevices();
             UI.SendEvent(InputEvent.CreateMouseUpdate(Mouse.Position));
             battleUI.UpdateLayout(uiScale); /* Interaction can be delayed by 1 frame if we don't update the UI again */
-            Game.CursorState = UI.CursorState;
+            CustomCursor.State = UI.CursorState;
             UpdateEntities();
             UpdateCamera();
         }

@@ -59,7 +59,7 @@ namespace TwelveEngine.UI.Book {
         }
 
         protected void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
-            VectorRectangle destination = ComputedArea.Destination;
+            FloatRectangle destination = ComputedArea.Destination;
             destination.Position += destination.Size * 0.5f;
 
             Vector2 origin = sourceArea.Size.ToVector2() * 0.5f;

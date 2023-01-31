@@ -14,11 +14,11 @@ namespace TwelveEngine.Shell {
         }
 
         public virtual void DrawIn(GameManager game,float t) {
-            DrawDefault(game.EmptyTexture,game.Viewport.Bounds,game.SpriteBatch,1-t);
+            DrawDefault(RuntimeTextures.Empty,game.Viewport.Bounds,game.SpriteBatch,1-t);
         }
 
         public virtual void DrawOut(GameManager game,float t) {
-            DrawDefault(game.EmptyTexture,game.Viewport.Bounds,game.SpriteBatch,t);
+            DrawDefault(RuntimeTextures.Empty,game.Viewport.Bounds,game.SpriteBatch,t);
         }
     }
 }

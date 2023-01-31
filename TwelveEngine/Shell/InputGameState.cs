@@ -48,11 +48,11 @@ namespace TwelveEngine.Shell {
         }
 
         protected void UpdateInputDevices() {
-            Mouse.Update(Game.MouseState,InputEnabled,Game.IsActive);
+            Mouse.Update(InputStateCache.Mouse,InputEnabled,Game.IsActive);
             if(!InputEnabled) {
                 return;
             }
-            Input.Update(Game.KeyboardState,Game.GamePadState);
+            Input.Update(InputStateCache.Keyboard,InputStateCache.GamePad);
             timeoutManager.Update(Now);
         }
     }

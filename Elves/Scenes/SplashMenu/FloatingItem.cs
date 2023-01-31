@@ -103,7 +103,7 @@ namespace Elves.Scenes.SplashMenu {
             var offset = RotationPolarity ? MathF.Sin(MathF.PI * 2 * wiggleT) : MathF.Cos(MathF.PI * 2 * wiggleT);
             position.X += (offset * WiggleStrength) / WIGGLE_BASE_SCALE * scale;
 
-            Area = new VectorRectangle(position - new Vector2(size.X*0.5f,0f),size);
+            Area = new FloatRectangle(position - new Vector2(size.X*0.5f,0f),size);
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine;
 using System;
 using TwelveEngine.UI;
+using TwelveEngine.Effects;
 
 namespace Elves.Scenes.SaveSelect {
 
@@ -54,7 +55,7 @@ namespace Elves.Scenes.SaveSelect {
             EndPoint = new Endpoint<Tag>(this);
         }
 
-        private readonly AnimationInterpolator blipAnimator = new(TimeSpan.FromMilliseconds(175));
+        private readonly Interpolator blipAnimator = new(TimeSpan.FromMilliseconds(175));
 
         private void Tag_OnUpdate(TimeSpan now) {
             blipAnimator.Update(now);
