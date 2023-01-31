@@ -68,7 +68,7 @@ namespace Elves.Scenes.SaveSelect {
         /// <param name="ID">Save tag ID. Index starts at 0.</param>
         /// <returns></returns>
         private Tag AddTag(SaveSelectScene scene,int ID) {
-            var tag = new Tag(scene.HasSaveFile(ID)) { ID = ID, DrawingFrame = scene.DrawingFrames[ID] };
+            var tag = new Tag(SaveSelectScene.HasSaveFile(ID)) { ID = ID, DrawingFrame = scene.DrawingFrames[ID] };
             AddElement(tag);
             Tags.Add(tag);
             return tag;

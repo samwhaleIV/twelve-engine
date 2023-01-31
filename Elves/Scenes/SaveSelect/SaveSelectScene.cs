@@ -104,7 +104,7 @@ namespace Elves.Scenes.SaveSelect {
             Program.Saves[ID].SetFlag(SaveKeys.DoIExist);
         }
 
-        public bool HasSaveFile(int ID) {
+        public static bool HasSaveFile(int ID) {
             return Program.Saves[ID].HasFlag(SaveKeys.DoIExist);
         }
 

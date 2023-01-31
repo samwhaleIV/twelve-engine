@@ -10,15 +10,21 @@ namespace TwelveEngine.Shell {
         public ContentManager Content => _game.Content;
         public SpriteBatch SpriteBatch => _game.SpriteBatch;
         public RenderTargetStack RenderTarget => _game.RenderTarget;
+
         public GraphicsDevice GraphicsDevice => _game.GraphicsDevice;
         public Viewport Viewport => _game.RenderTarget.GetViewport();
+
         public bool GameIsActive => _game.IsActive;
         public bool GameIsPaused => _game.IsPaused;
 
-        /* Having time defined in gamestate can save our ass later. */
+        #pragma warning disable CA1822 // Mark members as static
+
+        /* Having time aliased in gamestate might save my ass some day. */
         public TimeSpan Now => ProxyTime.Now;
         public TimeSpan RealTime => ProxyTime.RealTime;
         public TimeSpan FrameDelta => ProxyTime.FrameDelta;
+
+        #pragma warning restore CA1822 // Mark members as static
 
         public TimeSpan LocalNow => GetLocalNow();
         public TimeSpan LocalRealTime => GetLocalRealTime();

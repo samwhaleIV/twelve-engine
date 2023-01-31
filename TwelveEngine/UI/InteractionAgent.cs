@@ -28,7 +28,7 @@
         /// Allow elements and super classes to reference current, total elapsed time.
         /// </summary>
         /// <returns>Current, total time.</returns>
-        protected abstract TimeSpan GetCurrentTime();
+        protected abstract TimeSpan GetCurrentTime(); /* Careful not to return a circular reference to this getter method. */
         public TimeSpan Now => GetCurrentTime();
 
         /// <summary>

@@ -89,7 +89,7 @@ namespace Elves.Scenes.Carousel {
 
         private Color currentColor, oldColor;
 
-        private Color GetTintColor() => carouselRotation.Interpolate(oldColor,currentColor);
+        public Color GetTintColor() => carouselRotation.Interpolate(oldColor,currentColor);
 
         protected override void UpdateGame() {
             UpdateInputDevices();
@@ -186,7 +186,7 @@ namespace Elves.Scenes.Carousel {
             items[^2].IsLocked = true;
         }
 
-        private int GetStartIndex() {
+        private static int GetStartIndex() {
             return 0; //todo, probably get this value from the save file
         }
 
@@ -198,7 +198,7 @@ namespace Elves.Scenes.Carousel {
             return index;
         }
 
-        private int? GetLeftIndex(int index) {
+        private static int? GetLeftIndex(int index) {
             index -= 1;
             if(index < 0) {
                 return null;
