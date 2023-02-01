@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Input;
-using TwelveEngine.Input.Routing;
-using TwelveEngine.Shell;
+﻿using TwelveEngine.Shell;
 
 namespace TwelveEngine.UI {
     public abstract class InteractionAgent<TElement> where TElement:InteractionElement<TElement> {
@@ -120,7 +118,7 @@ namespace TwelveEngine.UI {
         /// Compute the true mouse hover element (no visual changes) and set the selected element to it if the current input state/mode allows for it.
         /// </summary>
         /// <param name="location">Mouse location in viewport coordinates.</param>
-        private InputEventResponse UpdateHoveredElement(Point location) {
+        private void UpdateHoveredElement(Point location) {
             TElement hoverElement = null;
             /* O(n)! Wildcard, bitches! */
             foreach(var element in GetElements()) {
@@ -135,11 +133,10 @@ namespace TwelveEngine.UI {
             /* Yes, this one is a little dense... but realtime, multi-input UI logic is complex, okay?
              * But seriously, after a few refactors, I have no idea what's happening here. This boolean logic is black magic. */
             if(!LastEventWasFromMouse || (SelectedElement is not null || hoverElement is null) && PressedElement is not null || SelectedElement == hoverElement) {
-                return InputEventResponse.NoChange;
+                return;
             }
 
             SelectedElement = hoverElement;
-            return InputEventResponse.Success;
         }
 
         /// <summary>
@@ -159,35 +156,33 @@ namespace TwelveEngine.UI {
             DefaultFocusElement = null;
         }
 
-        private InputEventResponse MouseDown() {
+        private void MouseDown() {
             if(PressedElement is not null || SelectedElement is null) {
-                return InputEventResponse.NoChange;
+                return;
             }
             if(_hiddenMouseHoverElement == null) {
                 SelectedElement = null;
-                return InputEventResponse.NoChange;
+                return;
             }
             if(SelectedElement != _hiddenMouseHoverElement) {
                 SelectedElement = _hiddenMouseHoverElement;
             }
             PressedElement = SelectedElement;
-            return InputEventResponse.Success;
         }
 
         /// <summary>
         /// A button, such as the enter button, has been pressed. Fire once per keystroke.
         /// </summary>
-        private InputEventResponse AcceptDown() {
+        private void AcceptDown() {
             if(PressedElement is not null) {
-                return InputEventResponse.NoChange;
+                return;
             }
             SelectedElement ??= GetLastSelectedOrDefault();
             if(SelectedElement is null) {
-                return InputEventResponse.NoChange;
+                return;
             }
             PressedElement = SelectedElement;
             _keyboardIsPressingElement = true;
-            return InputEventResponse.Success;
         }
 
         /* If performance mattered, you could do this with arithmetic and setting enum values to specific integers */
@@ -215,14 +210,14 @@ namespace TwelveEngine.UI {
         /// A button, bound to a direction, has been pressed. Fire once per keystroke.
         /// </summary>
         /// <param name="direction">The direction representing the button that was pressed.</param>
-        private InputEventResponse DirectionDown(Direction direction,bool rollover = false) {
+        private void DirectionDown(Direction direction,bool rollover = false) {
             if(PressedElement is not null || direction == Direction.None) {
-                return InputEventResponse.NoChange;
+                return;
             }
 
             if(SelectedElement is null) {
                 SelectedElement = GetLastSelectedOrDefault();
-                return InputEventResponse.Success;
+                return;
             }
 
             FocusSet<TElement> focusSet = SelectedElement.FocusSet;
@@ -230,7 +225,7 @@ namespace TwelveEngine.UI {
             /* A solution for handling mismatched column/row sizes and using directional navigation */
             if(UseHistoricalFocusShift(focusSet,direction)) {
                 SetButtonFocus(_historicalButtonFocusState.PreviousFocusElement,direction);
-                return InputEventResponse.Success;
+                return;
             }
 
             TElement newElement = direction switch {
@@ -243,10 +238,9 @@ namespace TwelveEngine.UI {
             };
 
             if(newElement is null || newElement == SelectedElement) {
-                return InputEventResponse.NoChange;
+                return;
             }
             SetButtonFocus(newElement,direction);
-            return InputEventResponse.Success;
         }
 
         private static bool TryActivateElement(TElement element) {
@@ -260,83 +254,82 @@ namespace TwelveEngine.UI {
         /// <summary>
         /// A button, such as enter, has been released. Fire after <c>AcceptDown</c>.
         /// </summary>
-        private InputEventResponse AcceptUp() {
+        private void AcceptUp() {
             if(PressedElement is null) {
-                return InputEventResponse.NoChange;
+                return;
             }
             TryActivateElement(PressedElement);
             PressedElement = null;
             _keyboardIsPressingElement = false;
-            return InputEventResponse.Success;
         }
 
         /// <summary>
         /// Fire when the mouse button has been released.
         /// </summary>
-        private InputEventResponse MouseUp() {
+        private void MouseUp() {
             if(_keyboardIsPressingElement || PressedElement is null) {
-                return InputEventResponse.NoChange;
+                return;
             }
             if(_hiddenMouseHoverElement == PressedElement) {
                 TryActivateElement(PressedElement);
             }
             PressedElement = null;
             _hiddenMouseHoverElement = null;
-            return InputEventResponse.Success;
         }
 
         /// <summary>
         /// A way to implement a keyboard/gamepad back button. Not all pages need to have a back method.
         /// </summary>
-        private InputEventResponse CancelDown() {
+        private void CancelDown() {
             if(PressedElement is not null) {
-                return InputEventResponse.NoChange;
+                return;
             }
-            return BackButtonPressed() ? InputEventResponse.Success : InputEventResponse.NoChange;
+            BackButtonPressed();
         }
 
-        /// <summary>
-        /// Central routing method for all interaction. See <see cref="InputEventType">InputEventType</see> for events.
-        /// </summary>
-        /// <param name="inputEvent">Type of event. See <see cref="InputEventType">InputEventType</see> for types. </param>
-        /// <returns>A valuable diagnostic value, but not particularly useful for UI applications themselves.</returns>
-        public InputEventResponse SendEvent(InputEvent inputEvent) => inputEvent.Type switch {
-            InputEventType.MouseUpdate => UpdateHoveredElement(inputEvent.MousePosition),
-            InputEventType.MousePressed => MouseDown(),
-            InputEventType.MouseReleased => MouseUp(),
-            InputEventType.DirectionImpulse => DirectionDown(inputEvent.Direction,rollover: false),
-            InputEventType.AcceptPressed => AcceptDown(),
-            InputEventType.AcceptReleased => AcceptUp(),
-            InputEventType.BackButtonActivated => CancelDown(),
-            InputEventType.FocusButtonActivated => DirectionDown(Direction.Right,rollover: true),
-            _ => InputEventResponse.UnsupportedEventType
-        };
-
-        private void SendMouseReleased() => SendEvent(InputEvent.MouseReleased);
-        private void SendAcceptReleased() => SendEvent(InputEvent.AcceptReleased);
-        private void SendDirection(Direction direction) => SendEvent(InputEvent.CreateDirectionImpulse(direction));
-        private void SendMousePressed() => SendEvent(InputEvent.MousePressed);
-        private void SendBackButtonActivated() => SendEvent(InputEvent.BackButtonActivated);
-        private void SendAcceptPressed() => SendEvent(InputEvent.AcceptPressed);
-        private void SendFocusButtonActivated() => SendEvent(InputEvent.FocusButtonActivated);
+        private void SendMouseUpdate(Point position) => UpdateHoveredElement(position);
+        private void SendMouseReleased() => MouseUp();
+        private void SendAcceptReleased() => AcceptUp();
+        private void SendDirection(Direction direction) => DirectionDown(direction,rollover: false);
+        private void SendMousePressed() => MouseDown();
+        private void SendBackButtonActivated() => CancelDown();
+        private void SendAcceptPressed() => AcceptDown();
+        private void SendFocusButtonActivated() => DirectionDown(Direction.Right,rollover: true);
 
         /// <summary>
-        /// Bind generic routers to this interaction agent. Does not bind <see cref="InputEventType.MouseUpdate"/>.
+        /// Bind generic routers to this interaction agent.
         /// </summary>
         /// <param name="inputGameState">The state to obtain the input routers from.</param>
         public void BindInputEvents(InputGameState inputGameState) {
-            MouseEventRouter mouseRouter = inputGameState.Mouse.Router;
-            ImpulseEventRouter impulseRouter = inputGameState.Impulse.Router;
+            var mouse = inputGameState.Mouse.Router;
+            var impulse = inputGameState.Impulse.Router;
 
-            mouseRouter.OnPress += SendMousePressed;
-            mouseRouter.OnRelease += SendMouseReleased;
+            mouse.OnPress += SendMousePressed;
+            mouse.OnRelease += SendMouseReleased;
+            mouse.OnUpdate += SendMouseUpdate;
 
-            impulseRouter.OnAcceptDown += SendAcceptPressed;
-            impulseRouter.OnAcceptUp += SendAcceptReleased;
+            impulse.OnAcceptDown += SendAcceptPressed;
+            impulse.OnAcceptUp += SendAcceptReleased;
 
-            impulseRouter.OnCancelDown += SendBackButtonActivated;
-            impulseRouter.OnDirectionDown += SendDirection;
-            impulseRouter.OnFocusDown += SendFocusButtonActivated;
+            impulse.OnCancelDown += SendBackButtonActivated;
+            impulse.OnDirectionDown += SendDirection;
+            impulse.OnFocusDown += SendFocusButtonActivated;
+        }
+
+        public void UnbindInputEvents(InputGameState inputGameState) {
+            var mouse = inputGameState.Mouse.Router;
+            var impulse = inputGameState.Impulse.Router;
+
+            mouse.OnPress -= SendMousePressed;
+            mouse.OnRelease -= SendMouseReleased;
+            mouse.OnUpdate -= SendMouseUpdate;
+
+            impulse.OnAcceptDown -= SendAcceptPressed;
+            impulse.OnAcceptUp -= SendAcceptReleased;
+
+            impulse.OnCancelDown -= SendBackButtonActivated;
+            impulse.OnDirectionDown -= SendDirection;
+            impulse.OnFocusDown -= SendFocusButtonActivated;
         }
 
         /// <summary>

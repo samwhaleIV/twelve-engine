@@ -1,29 +1,22 @@
-﻿using TwelveEngine;
-using TwelveEngine.Shell;
-using TwelveEngine.UI;
+﻿using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Carousel {
     public sealed class CarouselMenu:CarouselScene3D {
 
-        private CarouselUI UI;
+        private readonly CarouselUI UI;
 
         public CarouselMenu() {
             UI = new(this);
             UI.BindInputEvents(this);
             OnPreRender += PreRenderCarouselScene;
             OnRender += CarouselMenu_OnRender;
+            OnUpdate += CarouselMenu_OnUpdate;
         }
 
-        protected override void UpdateGame() {
-            FloatRectangle viewport = new(Viewport);
-            UI.Update(Now,viewport);
-            UpdateInputDevices();
-            UI.SendEvent(InputEvent.CreateMouseUpdate(Mouse.Position));
-            UI.Update(Now,viewport);
+        private void CarouselMenu_OnUpdate() {
+            UI.Update(Now,new(Viewport));
             CustomCursor.State = UI.CursorState;
             UpdateCarouselItems();
-            UpdateEntities();
-            UpdateCamera();
         }
 
         private void CarouselMenu_OnRender() {

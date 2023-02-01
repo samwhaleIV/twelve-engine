@@ -149,8 +149,8 @@
             return HashCode.Combine(x,y,width,height);
         }
 
-        public override bool Equals(object obj) {
-            return obj is FloatRectangle other && Equals(other);
+        public override bool Equals(object self) {
+            return self is FloatRectangle other && Equals(other);
         }
 
         public bool Equals(FloatRectangle vectorRectangle) {

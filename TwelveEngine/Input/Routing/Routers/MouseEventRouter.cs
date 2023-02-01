@@ -4,8 +4,11 @@
         public event Action OnPress, OnRelease, OnMove;
         public event Action<Direction> OnScroll;
 
+        public event Action<Point> OnUpdate;
+
         public override void RouteEvent(MouseEvent routedEvent) {
             switch(routedEvent.Type) {
+                case MouseEventType.Update: OnUpdate?.Invoke(routedEvent.Position); break;
                 case MouseEventType.LeftClickPressed: OnPress?.Invoke(); break;
                 case MouseEventType.LeftClickReleased: OnRelease?.Invoke();  break;
                 case MouseEventType.ScrollUp: OnScroll?.Invoke(Direction.Up); break;

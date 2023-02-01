@@ -19,7 +19,7 @@ namespace Elves.Scenes.Carousel {
         private const float MIDDLE_DEPTH = Constants.Depth.Middle;
         private const float CLOSE_DEPTH = Constants.Depth.MiddleClose;
 
-        private int highestCompletedBattle = GetHighestCompletedBattle();
+        private readonly int highestCompletedBattle = GetHighestCompletedBattle();
 
         private CarouselItem centerItem, leftItem, rightItem;
 

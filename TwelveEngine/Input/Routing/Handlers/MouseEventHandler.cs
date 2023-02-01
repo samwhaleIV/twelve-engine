@@ -37,7 +37,7 @@ namespace TwelveEngine.Input.Routing {
 
         private bool lastUpdateHadInactiveWindow = false;
 
-        private void UpdateLeftClick(in MouseState mouseState,in MouseState lastState) {
+        private void UpdateLeftClick(MouseState mouseState,MouseState lastState) {
             if(mouseState.LeftButton == lastState.LeftButton) {
                 return;
             }
@@ -50,7 +50,7 @@ namespace TwelveEngine.Input.Routing {
             }
         }
 
-        private void UpdateRightClick(in MouseState mouseState,in MouseState lastState) {
+        private void UpdateRightClick(MouseState mouseState,MouseState lastState) {
             if(mouseState.RightButton == lastState.RightButton) {
                 return;
             }
@@ -63,7 +63,7 @@ namespace TwelveEngine.Input.Routing {
             }
         }
 
-        public void Update(in MouseState mouseState,bool eventsAreAllowed,bool gameIsActive) {
+        public void Update(MouseState mouseState,bool eventsAreAllowed,bool gameIsActive) {
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }
@@ -71,6 +71,8 @@ namespace TwelveEngine.Input.Routing {
             Position = mouseState.Position;
             this.lastState = mouseState;
             Delta = lastState.Position - Position;
+
+            SendEvent(MouseEvent.Update(Position));
 
             if(!eventsAreAllowed) {
                 Delta = Point.Zero;

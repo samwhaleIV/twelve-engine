@@ -46,9 +46,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Endpoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\FocusElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\FocusSet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\InputEvent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\InputEventResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\InputEventType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />

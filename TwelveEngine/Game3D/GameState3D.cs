@@ -12,11 +12,13 @@ namespace TwelveEngine.Game3D {
             this.entitySortMode = entitySortMode;
 
             OnLoad += GameState3D_OnLoad;
-            OnUpdate +=GameState3D_OnUpdate;
             OnWriteDebug += GameState3D_OnWriteDebug;
             OnPreRender += GameState3D_OnPreRender;
             OnRender += GameState3D_OnRender;
+
+            OnUpdate += UpdateCameraScreenSize;
         }
+
 
         public Matrix ViewMatrix, ProjectionMatrix;
 
@@ -49,6 +51,20 @@ namespace TwelveEngine.Game3D {
 
         private void GameState3D_OnLoad() {
             Entities = new EntityManager<Entity3D,GameState3D>(this);
+            OnUpdate += FinalizeUpdate;
+        }
+
+        public bool UpdateCameraAfterEntities { get; set; } = true;
+
+        /* Hopefully calling this in the load constructor allows this to invoke after the derived class updates (usually bound in the constructor) */
+        private void FinalizeUpdate() {
+            if(UpdateCameraAfterEntities) {
+                UpdateEntities();
+                UpdateCamera();
+            } else {
+                UpdateCamera();
+                UpdateEntities();
+            }
         }
 
         private void UpdateCameraScreenSize() {
@@ -69,26 +85,8 @@ namespace TwelveEngine.Game3D {
             Entities.Update();
         }
 
-
-        private void GameState3D_OnUpdate() {
-            UpdateCameraScreenSize();
-            UpdateGame();
-        }
-
-        protected virtual void UpdateGame() {
-            /* Execution order is important. But sometimes it's important to do it yourself. */
-            UpdateInputDevices();
-            UpdateEntities();
-            UpdateCamera();
-        }
-
-        public void RenderEntities() {
-            Entities.Render();
-        }
-
-        public void PreRenderEntities() {
-            Entities.PreRender();
-        }
+        public void RenderEntities() => Entities.Render();
+        public void PreRenderEntities() => Entities.PreRender();
 
         public float AspectRatio => Viewport.AspectRatio;
 

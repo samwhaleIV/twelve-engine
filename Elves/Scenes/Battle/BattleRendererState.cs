@@ -45,6 +45,7 @@ namespace Elves.Scenes.Battle {
 
         private void Initialize() {
             OnLoad += BattleScene_OnLoad;
+            OnUpdate += UpdateUI;
             OnRender += BattleScene_OnRender;
             OnPreRender += BattleRendererState_OnPreRender;
             Camera.Orthographic = !Debug;
@@ -55,7 +56,7 @@ namespace Elves.Scenes.Battle {
             background.Load(Content);
         }
 
-        protected void UpdateUI() {
+        private void UpdateUI() {
             battleUI.UpdateLayout((int)GetUIScale());
             CustomCursor.State = battleUI.CursorState;
         }
@@ -73,17 +74,6 @@ namespace Elves.Scenes.Battle {
 
         private void BattleScene_OnRender() {
             battleUI.Render(SpriteBatch,GetPlayerData(),GetTargetData());
-        }
-
-        protected override void UpdateGame() {
-            int uiScale = (int)GetUIScale();
-            battleUI.UpdateLayout(uiScale);
-            UpdateInputDevices();
-            UI.SendEvent(InputEvent.CreateMouseUpdate(Mouse.Position));
-            battleUI.UpdateLayout(uiScale); /* Interaction can be delayed by 1 frame if we don't update the UI again */
-            CustomCursor.State = UI.CursorState;
-            UpdateEntities();
-            UpdateCamera();
         }
     }
 }

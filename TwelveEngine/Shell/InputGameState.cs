@@ -14,6 +14,7 @@ namespace TwelveEngine.Shell {
         public InputGameState() {
             OnLoad += InputGameState_OnLoad;
             OnUnload += InputGameState_OnUnload;
+            OnUpdate += UpdateInputDevices;
         }
 
         private void InputGameState_OnUnload() {
@@ -46,7 +47,7 @@ namespace TwelveEngine.Shell {
             }
         }
 
-        protected void UpdateInputDevices() {
+        private void UpdateInputDevices() {
             Mouse.Update(InputStateCache.Mouse,InputEnabled,GameIsActive);
             if(!InputEnabled) {
                 return;

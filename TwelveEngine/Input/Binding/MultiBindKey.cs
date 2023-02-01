@@ -7,7 +7,7 @@ namespace TwelveEngine.Input.Binding {
 
         public bool IsEmpty => Bind == Keys.None && AltBind == Keys.None;
 
-        public bool IsPressed(in KeyboardState keyboardState) {
+        public bool IsPressed(KeyboardState keyboardState) {
             return keyboardState.IsKeyDown(Bind) || keyboardState.IsKeyDown(AltBind);
         }
 

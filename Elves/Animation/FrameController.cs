@@ -16,7 +16,7 @@ namespace Elves.Animation {
         public int Height => frameHeight;
 
         private readonly FrameSet defaultFrameSet;
-        private Dictionary<AnimationType,FrameSet> frameSets;
+        private readonly Dictionary<AnimationType,FrameSet> frameSets;
 
         public FrameController(BattleSprite battleSprite,Dictionary<AnimationType,FrameSet> frameSets) {
             frameSets ??= new();

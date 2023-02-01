@@ -16,7 +16,6 @@ namespace Elves.Scenes.Test {
 
         private void DrawingFrameTest_OnUpdate() {
             UpdateFrameDestination();
-            UpdateInputDevices();
             ProcessMouseDrawing();
         }
 
