@@ -73,6 +73,14 @@
             height = rectangle.Height;
         }
 
+        public FloatRectangle(Viewport viewport) {
+            x = viewport.X;
+            y = viewport.Y;
+
+            width = viewport.Width;
+            height = viewport.Height;
+        }
+
         public float X { get => x; set => x = value; }
         public float Y { get => y; set => y = value; }
 

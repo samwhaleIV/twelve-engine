@@ -13,11 +13,11 @@ namespace Elves {
         public readonly Texture2D CursorAlt1 = Load("Cursor/alt-1");
         public readonly Texture2D CursorAlt2 = Load("Cursor/alt-2");
         public readonly Texture2D Drowning = Load("drowning");
-        public readonly Texture2D Carousel = Load("carousel");
+        public readonly Texture2D Lock = Load("lock");
         public readonly Texture2D Missing = Load("missing");
         public readonly Texture2D Mountains = Load("mountains");
         public readonly Texture2D SaveSelect = Load("save-select");
-        public readonly Texture2D  GiftPattern = Load("gift-pattern");
+        public readonly Texture2D GiftPattern = Load("gift-pattern");
         public readonly Texture2D QuadColor = Load("quad-color");
         public readonly Texture2D CircleBrush = Load("circle");
 

@@ -6,7 +6,7 @@ namespace Elves.Scenes.Carousel {
     public sealed class LockIcon:TextureEntity {
         private readonly CarouselItem owner;
 
-        public LockIcon(Texture2D texture,CarouselItem owner) : base(texture) {
+        public LockIcon(CarouselItem owner) : base(Program.Textures.Lock) {
             PixelSmoothing = false;
             this.owner = owner;
             owner.OnUpdate += LockIcon_OnUpdate;

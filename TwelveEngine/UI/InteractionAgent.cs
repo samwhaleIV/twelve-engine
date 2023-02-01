@@ -1,4 +1,6 @@
-﻿using TwelveEngine.Shell;
+﻿using Microsoft.Xna.Framework.Input;
+using TwelveEngine.Input.Routing;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.UI {
     public abstract class InteractionAgent<TElement> where TElement:InteractionElement<TElement> {
@@ -309,6 +311,33 @@ namespace TwelveEngine.UI {
             InputEventType.FocusButtonActivated => DirectionDown(Direction.Right,rollover: true),
             _ => InputEventResponse.UnsupportedEventType
         };
+
+        private void SendMouseReleased() => SendEvent(InputEvent.MouseReleased);
+        private void SendAcceptReleased() => SendEvent(InputEvent.AcceptReleased);
+        private void SendDirection(Direction direction) => SendEvent(InputEvent.CreateDirectionImpulse(direction));
+        private void SendMousePressed() => SendEvent(InputEvent.MousePressed);
+        private void SendBackButtonActivated() => SendEvent(InputEvent.BackButtonActivated);
+        private void SendAcceptPressed() => SendEvent(InputEvent.AcceptPressed);
+        private void SendFocusButtonActivated() => SendEvent(InputEvent.FocusButtonActivated);
+
+        /// <summary>
+        /// Bind generic routers to this interaction agent. Does not bind <see cref="InputEventType.MouseUpdate"/>.
+        /// </summary>
+        /// <param name="inputGameState">The state to obtain the input routers from.</param>
+        public void BindInputEvents(InputGameState inputGameState) {
+            MouseEventRouter mouseRouter = inputGameState.Mouse.Router;
+            ImpulseEventRouter impulseRouter = inputGameState.Impulse.Router;
+
+            mouseRouter.OnPress += SendMousePressed;
+            mouseRouter.OnRelease += SendMouseReleased;
+
+            impulseRouter.OnAcceptDown += SendAcceptPressed;
+            impulseRouter.OnAcceptUp += SendAcceptReleased;
+
+            impulseRouter.OnCancelDown += SendBackButtonActivated;
+            impulseRouter.OnDirectionDown += SendDirection;
+            impulseRouter.OnFocusDown += SendFocusButtonActivated;
+        }
 
         /// <summary>
         /// A visual indication of the UI interaction state.

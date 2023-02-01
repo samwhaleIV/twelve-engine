@@ -19,7 +19,7 @@ namespace Elves.Battle {
         private ScriptCompletionData? _scriptCompletionData = null;
 
         private void Initialize(BattleScript script) {
-            Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.BattleID})";
+            Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.ID})";
             script.SetSequencer(this);
             Script = script;
             OnLoad += RunScript;

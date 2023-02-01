@@ -7,5 +7,7 @@
 
         public const int DoIExist = 4;
         public const int PlayedIntro = 5;
+
+        public const int HighestCompletedBattle = 6;
     }
 }

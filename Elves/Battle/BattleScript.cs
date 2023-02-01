@@ -99,8 +99,12 @@ namespace Elves.Battle {
             return new(Constants.Battle.PlayerName);
         }
 
+        private static readonly Dictionary<AnimationType,FrameSet> FallbackFrameSets = new() {
+            { AnimationType.Static, AnimationFactory.CreateStatic(0,0,4,8) }
+        };
+
         private static BattleSprite GetFallbackSprite() {
-            return new(GetFallbackUserData(),Program.Textures.Missing,8,AnimationFactory.CreateStatic(0,0,4,8));
+            return new BattleSprite(GetFallbackUserData(),Program.Textures.Missing,8,FallbackFrameSets);
         }
 
         public BattleSprite ActorSprite {

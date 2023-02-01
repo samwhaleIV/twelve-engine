@@ -20,7 +20,7 @@ namespace Elves.Scenes.SplashMenu {
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
             Mouse.Router.OnPress += Mouse_OnPress;
-            Input.Router.OnAcceptDown += Input_OnAcceptDown;
+            Impulse.Router.OnAcceptDown += Input_OnAcceptDown;
         }
 
         private void Input_OnAcceptDown() {

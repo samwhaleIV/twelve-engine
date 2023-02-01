@@ -18,12 +18,12 @@ namespace Elves.Scenes.SaveSelect {
             Mouse.Router.OnPress += Mouse_OnPress;
             Mouse.Router.OnRelease += Mouse_OnRelease;
 
-            Input.Router.OnAcceptDown += Input_OnAcceptDown;
-            Input.Router.OnAcceptUp += Input_OnAcceptUp;
+            Impulse.Router.OnAcceptDown += Input_OnAcceptDown;
+            Impulse.Router.OnAcceptUp += Input_OnAcceptUp;
 
-            Input.Router.OnCancelDown += Input_OnCancelDown;
-            Input.Router.OnDirectionDown += Input_OnDirectionDown;
-            Input.Router.OnFocusDown += Input_OnFocusDown;
+            Impulse.Router.OnCancelDown += Input_OnCancelDown;
+            Impulse.Router.OnDirectionDown += Input_OnDirectionDown;
+            Impulse.Router.OnFocusDown += Input_OnFocusDown;
         }
 
         private void Input_OnFocusDown() {
@@ -41,7 +41,7 @@ namespace Elves.Scenes.SaveSelect {
             if(UI is null) {
                 return;
             }
-            FloatRectangle viewport = new(Viewport.Bounds);
+            FloatRectangle viewport = new(Viewport);
             UI.Update(Now,viewport);
             UpdateInputDevices();
             UI.SendEvent(InputEvent.CreateMouseUpdate(Mouse.Position));

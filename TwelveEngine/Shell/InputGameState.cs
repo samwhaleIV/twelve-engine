@@ -5,7 +5,7 @@ namespace TwelveEngine.Shell {
 
         private readonly TimeoutManager timeoutManager = new();
 
-        public ImpulseEventHandler Input { get; private set; } = new();
+        public ImpulseEventHandler Impulse { get; private set; } = new();
         public MouseEventHandler Mouse { get; private set; } = new();
 
         private static ImpulseEventHandler oldInputHandler;
@@ -17,13 +17,13 @@ namespace TwelveEngine.Shell {
         }
 
         private void InputGameState_OnUnload() {
-            oldInputHandler = Input;
+            oldInputHandler = Impulse;
             oldMouseHandler = Mouse;
         }
 
         private void InputGameState_OnLoad() {
             if(HasFlag(StateFlags.CarryKeyboardInput)) {
-                Input.Import(oldInputHandler);
+                Impulse.Import(oldInputHandler);
             }
             if(HasFlag(StateFlags.CarryMouseInput)) {
                 Mouse.Import(oldMouseHandler);
@@ -51,7 +51,7 @@ namespace TwelveEngine.Shell {
             if(!InputEnabled) {
                 return;
             }
-            Input.Update(InputStateCache.Keyboard,InputStateCache.GamePad);
+            Impulse.Update(InputStateCache.Keyboard,InputStateCache.GamePad);
             timeoutManager.Update(Now);
         }
     }
