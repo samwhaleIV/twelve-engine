@@ -16,6 +16,8 @@ namespace TwelveEngine {
         public const string UNKNOWN_TEXT = "<Unknown>";
         public const string NO_NAME_TEXT = "<No Name>";
 
+        public static bool HasStreamWriter => streamWriter != null;
+
         private static readonly Dictionary<LoggerLabel,string> labelNames = new() {
             { LoggerLabel.None, "None" },
             { LoggerLabel.KeyBinds, "Key Binds" },
@@ -41,14 +43,17 @@ namespace TwelveEngine {
 
         public static void CleanUp() {
             WriteLine($"[{DateTime.UtcNow} UTC] Game is exiting.");
-            _autoFlush = false;
             if(!HasStreamWriter) {
                 return;
             }
-            if(!TryFlush()) {
-                return;
+            try {
+                streamWriter.Flush();
+            } catch(Exception exception) {
+                Console.Write(GetLoggerLabel(LoggerLabel.Logger));
+                Console.WriteLine($"Failure flushing log stream. This will not be reflected in file. Exception: {exception}");
             }
-            ClearStreamWriter();
+            streamWriter?.Dispose();
+            streamWriter = null;
         }
 
         private static bool TryCreateStreamWriter(string path) {
@@ -97,23 +102,6 @@ namespace TwelveEngine {
             }
         }
 
-        private static bool _autoFlush = false;
-
-        public static bool HasStreamWriter => streamWriter != null;
-
-        public static bool AutoFlush {
-            get => _autoFlush;
-            set {
-                if(value == _autoFlush) {
-                    return;
-                }
-                if(HasStreamWriter && _autoFlush) {
-                    TryFlush();
-                }
-                _autoFlush = value;
-            }
-        }
-
         public static void WriteLine(string line,LoggerLabel label = LoggerLabel.None) {
             string loggerLabel = GetLoggerLabel(label);
             if(loggerLabel != null) {
@@ -127,9 +115,6 @@ namespace TwelveEngine {
                 streamWriter.Write(loggerLabel);
             }
             streamWriter.WriteLine(line);
-            if(_autoFlush) {
-                TryFlush();
-            }
         }
 
         public static void WriteLine(StringBuilder line,LoggerLabel label = LoggerLabel.None) {
@@ -145,12 +130,9 @@ namespace TwelveEngine {
                 streamWriter.Write(loggerLabel);
             }
             streamWriter.WriteLine(line);
-            if(_autoFlush) {
-                TryFlush();
-            }
         }
 
-        public static void Write(string text,LoggerLabel label = LoggerLabel.None,bool checkAutoFlush = false) {
+        public static void Write(string text,LoggerLabel label = LoggerLabel.None) {
             string loggerLabel = GetLoggerLabel(label);
             if(loggerLabel != null) {
                 Console.Write(loggerLabel);
@@ -163,12 +145,9 @@ namespace TwelveEngine {
                 streamWriter.Write(loggerLabel);
             }
             streamWriter.Write(text);
-            if(checkAutoFlush && _autoFlush) {
-                TryFlush();
-            }
         }
 
-        public static void Write(StringBuilder text,LoggerLabel label = LoggerLabel.None,bool checkAutoFlush = false) {
+        public static void Write(StringBuilder text,LoggerLabel label = LoggerLabel.None) {
             string loggerLabel = GetLoggerLabel(label);
             if(loggerLabel != null) {
                 Console.Write(loggerLabel);
@@ -181,9 +160,6 @@ namespace TwelveEngine {
                 streamWriter.Write(loggerLabel);
             }
             streamWriter.Write(text);
-            if(checkAutoFlush && _autoFlush) {
-                TryFlush();
-            }
         }
 
         public static void WriteBooleanSet(string text,string[] names,bool[] values,LoggerLabel label = LoggerLabel.None) {
@@ -205,38 +181,9 @@ namespace TwelveEngine {
                 stringBuilder.Append(values[i] ? "Yes" : "No");
                 stringBuilder.Append(" | ");
             }
-            stringBuilder.Remove(Logger.stringBuilder.Length - 3, 3);
+            stringBuilder.Remove(stringBuilder.Length - 3, 3);
             WriteLine(stringBuilder);
             stringBuilder.Clear();
-        }
-
-        private static void ClearStreamWriter() {
-            if(!HasStreamWriter) {
-                return;
-            }
-            Console.Write(GetLoggerLabel(LoggerLabel.Logger));
-            Console.WriteLine("Logging stream terminated. Logging is no longer reflected in file.");
-            streamWriter.Dispose();
-            streamWriter = null;
-        }
-
-        private static bool TryFlush() {
-            try {
-                streamWriter.Flush();
-                return true;
-            } catch(Exception exception) {
-                Console.Write(GetLoggerLabel(LoggerLabel.Logger));
-                Console.WriteLine($"Failure flushing log stream. This will not be reflected in file. Exception: {exception}");
-                ClearStreamWriter();
-                return false;
-            }
-        }
-
-        public static void Flush() {
-            if(!HasStreamWriter) {
-                return;
-            }
-            TryFlush();
         }
 
         public static void LogStateChange(GameState state) {

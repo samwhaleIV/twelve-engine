@@ -1,7 +1,6 @@
 ﻿using TwelveEngine.Shell;
 using TwelveEngine.Font;
 using TwelveEngine.Input.Binding;
-using Microsoft.Xna.Framework;
 
 namespace TwelveEngine {
 
@@ -11,21 +10,12 @@ namespace TwelveEngine {
         protected abstract void OnGameCrashed();
 
         private void Game_OnLoad(GameStateManager game) {
-
             game.Disposed += Game_Disposed;
-            game.Exiting += Game_Exiting;
-
-            Logger.AutoFlush = true;
-
             Fonts.Load(game);
             OnGameLoad(game,SaveDirectory);
         }
 
-        private void Game_Exiting(object sender,EventArgs e) {
-            Logger.AutoFlush = false;
-        }
-
-        private void Game_Disposed(object sender,EventArgs e) {
+        private void Game_Disposed(object sender,EventArgs args) {
             Logger.CleanUp();
         }
 

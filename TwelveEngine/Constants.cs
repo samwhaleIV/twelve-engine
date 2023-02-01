@@ -21,7 +21,7 @@ namespace TwelveEngine {
 
         public const string TimeSpanFormat = "{0:hh\\:mm\\:ss\\.f}";
 
-        public const long LogResetLimit = 2 * 1048576; // megabytes * bytesPerMegabyte
+        public const long LogResetLimit = (long)(0.25 * 1048576); // megabytes * bytesPerMegabyte
 
         public const string DebugFont = "Font/debug-font";
 
