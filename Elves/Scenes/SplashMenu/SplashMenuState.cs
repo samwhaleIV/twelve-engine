@@ -16,26 +16,41 @@ namespace Elves.Scenes.SplashMenu {
         private const float FOREGROUND_WATER_OPACITY = 0.592f;
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
+        private bool capturingPlayButton = false;
+
         public SplashMenuState():base(Program.Textures.Nothing,true) {
             Name = "Elves Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
-            Mouse.Router.OnPress += Mouse_OnPress;
+            Mouse.Router.OnRelease += Mouse_OnRelease;
+            Mouse.Router.OnPress += Router_OnPress;
             Impulse.Router.OnAcceptDown += Input_OnAcceptDown;
             OnUpdate += SplashMenuState_OnUpdate;
         }
 
+        private void Router_OnPress() {
+            capturingPlayButton = MouseOnPlayButton;
+        }
+
         private void SplashMenuState_OnUpdate() {
-            CustomCursor.State = MouseOnPlayButton && !IsTransitioning ? CursorState.Interact : CursorState.Default;
+            if(IsTransitioning) {
+                CustomCursor.State = CursorState.Default;
+                return;
+            }
+            CustomCursor.State = capturingPlayButton ? (MouseOnPlayButton ? CursorState.Pressed : CursorState.Default) : (MouseOnPlayButton ? CursorState.Interact : CursorState.Default);
         }
 
         private void Input_OnAcceptDown() {
+            if(Mouse.CapturingLeft) {
+                return;
+            }
             EndScene(ExitValue.None);
         }
 
         private bool MouseOnPlayButton => playButton.Area.Contains(Mouse.Position);
 
-        private void Mouse_OnPress() {
+        private void Mouse_OnRelease() {
+            capturingPlayButton = false;
             if(!MouseOnPlayButton) {
                 return;
             }
