@@ -34,18 +34,30 @@ namespace TwelveEngine.Input.Routing {
         public static InputMethod Method { get; private set; } = InputMethod.Unknown;
         public static GamePadType GamePadType { get; private set; } = GamePadType.Default;
 
+
+        public KeyboardState Keyboard { get; private set; }
+        public GamePadState GamePad { get; private set; }
+
+        public KeyboardState OldKeyboard { get; private set; }
+        public GamePadState OldGamePad { get; private set; }
+
         public void Import(ImpulseEventHandler oldHandler) {
-            impulseStates.Clear();
+            Keyboard = oldHandler.Keyboard;
+            OldKeyboard = oldHandler.OldKeyboard;
+
+            GamePad = oldHandler.GamePad;
+            OldGamePad = oldHandler.GamePad;
+
             foreach(var oldState in oldHandler.impulseStates) {
                 impulseStates[oldState.Key] = oldState.Value;
             }
         }
 
         private KeyState GetImpulseState(Impulse impulse) {
-            if(GetKeyboardBind(impulse).IsPressed(InputStateCache.Keyboard)) {
+            if(GetKeyboardBind(impulse).IsPressed(Keyboard)) {
                 return KeyState.Down;
             }
-            if(InputStateCache.GamePad.IsButtonDown(GetGamePadBind(impulse))) {
+            if(GamePad.IsButtonDown(GetGamePadBind(impulse))) {
                 return KeyState.Down;
             }
             return KeyState.Up;
@@ -62,15 +74,22 @@ namespace TwelveEngine.Input.Routing {
         }
 
         public void Update(bool eventsAreAllowed) {
+            OldKeyboard = Keyboard;
+            Keyboard = InputStateCache.Keyboard;
+
+            OldGamePad = GamePad;
+            GamePad = InputStateCache.GamePad;
+
             foreach(Impulse impulse in impulses) {
                 if(!UpdateKeyState(impulse,out KeyState keyState) || !eventsAreAllowed) {
                     continue;
                 }
                 SendEvent(ImpulseEvent.Create(impulse,keyState == KeyState.Down));
             }
-            if(InputStateCache.GamePad != InputStateCache.LastGamePad) {
+
+            if(GamePad != OldGamePad) {
                 Method = InputMethod.GamePad;
-            } else if(InputStateCache.Keyboard != InputStateCache.LastKeyboard) {
+            } else if(Keyboard != OldKeyboard) {
                 Method = InputMethod.Keyboard;
             }
         }
@@ -83,7 +102,7 @@ namespace TwelveEngine.Input.Routing {
                 value = Vector2.Zero;
                 return false;
             }
-            Vector2 leftThumbStick = InputStateCache.GamePad.ThumbSticks.Left;
+            Vector2 leftThumbStick = GamePad.ThumbSticks.Left;
             if(leftThumbStick == Vector2.Zero) {
                 value = Vector2.Zero;
                 return false;

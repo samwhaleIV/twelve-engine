@@ -57,7 +57,7 @@ namespace TwelveEngine.Shell {
                 OnInputActivated?.Invoke();
             }
             bool inputEnabled = InputEnabled && _inputActivated;
-            Mouse.Update(InputStateCache.Mouse,inputEnabled,GameIsActive);
+            Mouse.Update(inputEnabled,GameIsActive);
             Impulse.Update(inputEnabled);
             timeoutManager.Update(Now);
         }

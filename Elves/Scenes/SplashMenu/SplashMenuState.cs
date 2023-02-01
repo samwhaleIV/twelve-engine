@@ -19,7 +19,7 @@ namespace Elves.Scenes.SplashMenu {
         private bool capturingPlayButton = false;
 
         public SplashMenuState():base(Program.Textures.Nothing,true) {
-            Name = "Elves Splash Menu";
+            Name = "Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
             Mouse.Router.OnRelease += Mouse_OnRelease;

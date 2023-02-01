@@ -11,6 +11,8 @@ namespace TwelveEngine.Input.Routing {
         public Point Position { get; private set; }
         public Point Delta { get; private set; }
 
+        private bool _lastUpdateHadInactiveWindow = false;
+
         public bool Capturing {
             get {
                 return CapturingLeft || CapturingRight;
@@ -21,21 +23,14 @@ namespace TwelveEngine.Input.Routing {
             }
         }
 
-        public int X => Position.X;
-        public int Y => Position.Y;
-
-        public int XDelta => Delta.X;
-        public int YDelta => Delta.Y;
-
         public void Import(MouseEventHandler oldHandler) {
             Position = oldHandler.Position;
             Delta = oldHandler.Delta;
             CapturingLeft = oldHandler.CapturingLeft;
             CapturingRight = oldHandler.CapturingRight;
             lastState = oldHandler.lastState;
+            _lastUpdateHadInactiveWindow = oldHandler._lastUpdateHadInactiveWindow;
         }
-
-        private bool lastUpdateHadInactiveWindow = false;
 
         private void UpdateLeftClick(MouseState mouseState,MouseState lastState) {
             if(mouseState.LeftButton == lastState.LeftButton) {
@@ -63,7 +58,9 @@ namespace TwelveEngine.Input.Routing {
             }
         }
 
-        public void Update(MouseState mouseState,bool eventsAreAllowed,bool gameIsActive) {
+        public void Update(bool eventsAreAllowed,bool gameIsActive) {
+            MouseState mouseState = InputStateCache.Mouse;
+
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }
@@ -76,7 +73,7 @@ namespace TwelveEngine.Input.Routing {
                 Delta = Point.Zero;
                 Capturing = false;
                 /* Hint for the mouse button change processor to fire an extra OnPress event so we don't get a release event without a press event */
-                lastUpdateHadInactiveWindow = !gameIsActive;
+                _lastUpdateHadInactiveWindow = !gameIsActive;
                 return;
             }
 
@@ -86,7 +83,7 @@ namespace TwelveEngine.Input.Routing {
 
             bool leftClicking = mouseState.LeftButton == ButtonState.Pressed, rightClicking = mouseState.RightButton == ButtonState.Released;
 
-            if(gameIsActive && lastUpdateHadInactiveWindow && (leftClicking || rightClicking)) {
+            if(gameIsActive && _lastUpdateHadInactiveWindow && (leftClicking || rightClicking)) {
                 if(leftClicking) {
                     CapturingLeft = true;
                     SendEvent(MouseEvent.LeftClickPress(mouseState.Position));
@@ -99,7 +96,7 @@ namespace TwelveEngine.Input.Routing {
                 UpdateLeftClick(mouseState,lastState);
                 UpdateRightClick(mouseState,lastState);
             }
-            lastUpdateHadInactiveWindow = !gameIsActive;
+            _lastUpdateHadInactiveWindow = !gameIsActive;
 
             int scrollDelta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
 

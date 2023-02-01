@@ -6,6 +6,7 @@ namespace Elves.Scenes.Carousel {
         private readonly CarouselUI UI;
 
         public CarouselMenu() {
+            Name = "Carousel Menu";
             UI = new(this);
             UI.BindInputEvents(this);
             OnPreRender += PreRenderCarouselScene;

@@ -1,4 +1,5 @@
-﻿using TwelveEngine.Shell;
+﻿using TwelveEngine.Input;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.UI {
     public abstract class InteractionAgent<TElement> where TElement:InteractionElement<TElement> {

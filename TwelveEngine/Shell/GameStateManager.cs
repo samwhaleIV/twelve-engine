@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Shell.Automation;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Hotkeys;
+using TwelveEngine.Input;
 
 namespace TwelveEngine.Shell {
     public sealed class GameStateManager:Game {

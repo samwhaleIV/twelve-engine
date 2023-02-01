@@ -38,7 +38,6 @@ namespace Elves.Scenes.Carousel {
         };
 
         public CarouselScene3D() {
-            Name = "Carousel Menu";
             OnLoad += CarouselMenu_OnLoad;
             Camera.FieldOfView = FIELD_OF_VIEW;
             var position = Camera.Position;

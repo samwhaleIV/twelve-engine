@@ -39,7 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\MultiBindKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\ValidKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RuntimeTextures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\InputStateCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\InputStateCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\TimeWriters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\ButtonFocusNavState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\IEndpoint.cs" />
