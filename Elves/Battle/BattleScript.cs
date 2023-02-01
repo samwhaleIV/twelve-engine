@@ -10,6 +10,11 @@ namespace Elves.Battle {
     public abstract class BattleScript {
         public abstract Task<BattleResult> Main();
 
+        /// <summary>
+        /// For debug and logging purposes.
+        /// </summary>
+        public Elf ElfSource { get; set; }
+
         private BattleSequencer _sequencer;
 
         private readonly Random _random = Flags.Get(Constants.Flags.FixedBattleRandom) ? new Random(Constants.Battle.FixedSeed) : new Random();

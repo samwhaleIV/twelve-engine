@@ -71,7 +71,9 @@ namespace Elves {
         });
 
         private static GameState GetBattleScene(ElfID elfID) {
-            BattleScript battleScript = ElfManifest.Get(elfID).ScriptGenerator.Invoke();
+            Elf elf = ElfManifest.Get(elfID);
+            BattleScript battleScript = elf.ScriptGenerator.Invoke();
+            battleScript.ElfSource = elf;
             BattleSequencer battleSequencer = new(battleScript);
             battleSequencer.OnSceneEnd += BattleSequencer_OnSceneEnd;
             return battleSequencer;

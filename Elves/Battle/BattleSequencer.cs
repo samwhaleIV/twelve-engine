@@ -11,11 +11,31 @@ namespace Elves.Battle {
          
         public BattleScript Script { get; private set; }
 
+        private readonly struct ScriptCompletionData {
+            public readonly BattleResult BattleResult { get; init;  }
+            public readonly Exception Exception { get; init; }
+        } 
+
+        private ScriptCompletionData? _scriptCompletionData = null;
+
         private void Initialize(BattleScript script) {
+            Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.BattleID})";
             script.SetSequencer(this);
             Script = script;
-            OnLoad += BattleSequencer_OnLoad;
+            OnLoad += RunScript;
             OnTransitionInFinished += BattleSequencer_OnTransitionInFinished;
+            OnUpdate += CheckForScriptEnd;
+        }
+
+        private void CheckForScriptEnd() {
+            if(!_scriptCompletionData.HasValue) {
+                return;
+            }
+            ScriptCompletionData data = _scriptCompletionData.Value;
+            if(data.Exception is not null) {
+                throw data.Exception;
+            }
+            EndScene(ExitValue.Get(data.BattleResult));
         }
 
         public BattleSequencer(BattleScript script,string background):base(background) => Initialize(script);
@@ -26,9 +46,19 @@ namespace Elves.Battle {
             UI.TrySetDefaultElement();
         }
 
-        private async void BattleSequencer_OnLoad() {
-            BattleResult battleResult = await Script.Main();
-            EndScene(ExitValue.Get(battleResult));
+        private async void RunScript() {
+            try {
+                BattleResult battleResult = await Script.Main();
+                _scriptCompletionData = new() {
+                    BattleResult = battleResult,
+                    Exception = null
+                };
+            } catch(Exception expcetion) {
+                _scriptCompletionData = new() {
+                    BattleResult = BattleResult.Stalemate,
+                    Exception = expcetion
+                };
+            }
         }
 
         private TaskCompletionSource<int> buttonTask;
