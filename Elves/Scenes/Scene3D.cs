@@ -12,7 +12,7 @@ namespace Elves.Scenes {
 
         protected bool Debug { get; private set; } = Flags.Get(Constants.Flags.Debug);
 
-        public Scene3D():base(EntitySortMode.CameraFixed) {
+        public Scene3D() : base(EntitySortMode.CameraFixed) {
             Name = "3D Scene";
 
             OnRender += RenderEntities;
@@ -47,9 +47,11 @@ namespace Elves.Scenes {
         }
 
         private void Scene_OnLoad() {
-            if(Debug) {
-                Entities.Add(new GridLinesEntity());
+            if(!Debug) {
+                return;
             }
+            Entities.Add(new GridLinesEntity());
+            Camera.Orthographic = false;
         }
     }
 }

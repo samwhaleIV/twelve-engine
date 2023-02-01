@@ -32,5 +32,9 @@
         public static MouseEvent Move(Point position) {
             return new(MouseEventType.PositionChanged,position);
         }
+
+        public static MouseEvent Update(Point position) {
+            return new(MouseEventType.Update,position);
+        }
     }
 }

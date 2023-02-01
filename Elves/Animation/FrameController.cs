@@ -16,17 +16,16 @@ namespace Elves.Animation {
         public int Height => frameHeight;
 
         private readonly FrameSet defaultFrameSet;
-        private readonly Dictionary<int,FrameSet> frameSets = new();
+        private readonly Dictionary<AnimationType,FrameSet> frameSets;
 
-        public FrameController(BattleSprite battleSprite,FrameSet[] frameSets) {
-            frameSets ??= Array.Empty<FrameSet>();
+        public FrameController(BattleSprite battleSprite,Dictionary<AnimationType,FrameSet> frameSets) {
+            frameSets ??= new();
+            this.frameSets = frameSets;
+
             sprite = battleSprite;
-            foreach(FrameSet frameSet in frameSets) {
-                this.frameSets[frameSet.ID] = frameSet;
-            }
 
-            bool hasStaticFrameSet = this.frameSets.TryGetValue((int)AnimationType.Static,out FrameSet staticFrameSet);
-            bool hasIdleFrameSet = this.frameSets.TryGetValue((int)AnimationType.Idle,out FrameSet idleFrameSet);
+            bool hasStaticFrameSet = frameSets.TryGetValue(AnimationType.Static,out FrameSet staticFrameSet);
+            bool hasIdleFrameSet = frameSets.TryGetValue(AnimationType.Idle,out FrameSet idleFrameSet);
 
             Rectangle defaultFrameArea;
             if(!hasStaticFrameSet && !hasIdleFrameSet) {
@@ -99,7 +98,7 @@ namespace Elves.Animation {
         private bool HasPendingFrameSet => pendingFrameSet.HasValue;
 
         public void Update(TimeSpan now) {
-            if(pendingFrameSet.HasValue && pendingFrameSet.Value.ID == currentFrameSet.ID) {
+            if(pendingFrameSet.HasValue && pendingFrameSet.Value.AnimationType == currentFrameSet.AnimationType) {
                 pendingFrameSet = null;
             }
             float t = GetAnimationProgress(now);
@@ -151,10 +150,10 @@ namespace Elves.Animation {
             return false;
         }
 
-        public void SetAnimation(TimeSpan now,int animationTypeID) {
-            if(!frameSets.TryGetValue(animationTypeID,out FrameSet frameSet)){
+        public void SetAnimation(TimeSpan now,AnimationType animationType) {
+            if(!frameSets.TryGetValue(animationType,out FrameSet frameSet)){
                 frameSet = defaultFrameSet;
-                Logger.WriteLine($"Missing animation for animation type ID {animationTypeID}.");
+                Logger.WriteLine($"Missing animation for animation type ID {animationType}.");
             }
             pendingFrameSet = frameSet;
             Update(now);
@@ -163,10 +162,6 @@ namespace Elves.Animation {
         public void SetDefaultAnimation(TimeSpan now) {
             pendingFrameSet = defaultFrameSet;
             Update(now);
-        }
-
-        public void SetAnimation(TimeSpan now,AnimationType animationType) {
-            SetAnimation(now,(int)animationType);
         }
     }
 }

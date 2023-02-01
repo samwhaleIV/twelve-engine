@@ -47,7 +47,7 @@ namespace TwelveEngine.Shell {
 
         private TransitionData? _transitionOutData = null;
 
-        public event Action OnLoad, OnUnload, OnTransitionInFinished;
+        public event Action OnLoad, OnUnload;
 
         public event Action<DebugWriter> OnWriteDebug;
         public event Action OnUpdate, OnRender, OnPreRender;
@@ -151,7 +151,6 @@ namespace TwelveEngine.Shell {
             if(oldTransitionState != TransitionState.In) {
                 return;
             }
-            OnTransitionInFinished?.Invoke();
         }
 
         internal void Update() {
@@ -180,16 +179,25 @@ namespace TwelveEngine.Shell {
             IsPreRendering = false;
         }
 
+        /// <summary>
+        /// The <c>T</c> normal point at which the input system is activated for a game state when it's transitioning in.
+        /// </summary>
+        public float TransitionInputThreshold { get; set; } = Constants.UI.DefaultTransitionInputThreshold;
+
         private bool GetIsTransitioning() {
             if((!IsLoaded || IsLoading) && FadeInIsFlagged) {
                 return true;
-            } else {
-                return TransitionState != TransitionState.None;
+            } else if(TransitionState == TransitionState.None) {
+                return false;
+            } else if(TransitionState == TransitionState.Out) {
+                return true;
             }
+            float t = GetTransitionT();
+            return t < TransitionInputThreshold;
         }
 
         private float GetTransitionT() {
-            if(!IsTransitioning) {
+            if(TransitionState == TransitionState.None) {
                 return 0;
             }
             float t = (float)((LocalNow - _transitionStartTime) / _transitionDuration);

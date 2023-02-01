@@ -1,6 +1,4 @@
-﻿using TwelveEngine.Shell;
-
-namespace TwelveEngine.UI.Book {
+﻿namespace TwelveEngine.UI.Book {
     public class Book<TElement>:InteractionAgent<BookElement> where TElement:BookElement {
 
         public static readonly TimeSpan DefaultAnimationDuration = Constants.UI.DefaultAnimationDuration;
@@ -95,7 +93,7 @@ namespace TwelveEngine.UI.Book {
         public void Update(TimeSpan now,FloatRectangle viewport) {
             _currentTime = now;
             pageTransitionAnimator.Update(now);
-            if(_elementsAreLocked && pageTransitionAnimator.IsFinished) {
+            if(_elementsAreLocked && !IsTransitioning) {
                 UnlockPageControls();
             }
             Page?.SetTime(now);

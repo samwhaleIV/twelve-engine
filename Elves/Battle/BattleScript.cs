@@ -10,6 +10,11 @@ namespace Elves.Battle {
     public abstract class BattleScript {
         public abstract Task<BattleResult> Main();
 
+        /// <summary>
+        /// For debug and logging purposes.
+        /// </summary>
+        public Elf ElfSource { get; set; }
+
         private BattleSequencer _sequencer;
 
         private readonly Random _random = Flags.Get(Constants.Flags.FixedBattleRandom) ? new Random(Constants.Battle.FixedSeed) : new Random();
@@ -94,8 +99,12 @@ namespace Elves.Battle {
             return new(Constants.Battle.PlayerName);
         }
 
+        private static readonly Dictionary<AnimationType,FrameSet> FallbackFrameSets = new() {
+            { AnimationType.Static, AnimationFactory.CreateStatic(0,0,4,8) }
+        };
+
         private static BattleSprite GetFallbackSprite() {
-            return new(GetFallbackUserData(),Program.Textures.Missing,8,AnimationFactory.CreateStatic(0,0,4,8));
+            return new BattleSprite(GetFallbackUserData(),Program.Textures.Missing,8,FallbackFrameSets);
         }
 
         public BattleSprite ActorSprite {

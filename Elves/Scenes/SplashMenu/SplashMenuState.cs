@@ -4,6 +4,7 @@ using TwelveEngine;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.SplashMenu {
     public sealed class SplashMenuState:OrthoBackgroundScene {
@@ -20,15 +21,22 @@ namespace Elves.Scenes.SplashMenu {
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
             Mouse.Router.OnPress += Mouse_OnPress;
-            Input.Router.OnAcceptDown += Input_OnAcceptDown;
+            Impulse.Router.OnAcceptDown += Input_OnAcceptDown;
+            OnUpdate += SplashMenuState_OnUpdate;
+        }
+
+        private void SplashMenuState_OnUpdate() {
+            CustomCursor.State = MouseOnPlayButton && !IsTransitioning ? CursorState.Interact : CursorState.Default;
         }
 
         private void Input_OnAcceptDown() {
             EndScene(ExitValue.None);
         }
 
+        private bool MouseOnPlayButton => playButton.Area.Contains(Mouse.Position);
+
         private void Mouse_OnPress() {
-            if(!playButton.Area.Contains(Mouse.Position)) {
+            if(!MouseOnPlayButton) {
                 return;
             }
             EndScene(ExitValue.None);

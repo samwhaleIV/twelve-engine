@@ -3,6 +3,7 @@ using TwelveEngine.Game3D.Entity.Types;
 using Elves.Animation;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.ElfData;
+using System.Collections.Generic;
 
 namespace Elves.Battle {
     public class BattleSprite:TextureEntity {
@@ -19,10 +20,6 @@ namespace Elves.Battle {
         }
 
         public void SetAnimation(AnimationType animationType) {
-            frameController.SetAnimation(Now,animationType);
-        }
-
-        public void SetAnimation(int animationType) {
             frameController.SetAnimation(Now,animationType);
         }
 
@@ -45,7 +42,7 @@ namespace Elves.Battle {
             OnUpdate += BattleSprite_OnUpdate;
         }
 
-        public BattleSprite(string name,Color color,Texture2D texture,int baseHeight,params FrameSet[] frameSets):base(texture) {
+        public BattleSprite(string name,Color color,Texture2D texture,int baseHeight,Dictionary<AnimationType,FrameSet> frameSets):base(texture) {
             UserData = new(name,color);
             BaseHeight = baseHeight;
 
@@ -58,7 +55,7 @@ namespace Elves.Battle {
             OnUpdate += BattleSprite_OnUpdate;
         }
 
-        public BattleSprite(UserData userData,Texture2D texture,int baseHeight,params FrameSet[] frameSets):base(texture) {
+        public BattleSprite(UserData userData,Texture2D texture,int baseHeight,Dictionary<AnimationType,FrameSet> frameSets) :base(texture) {
             UserData = userData;
             BaseHeight = baseHeight;
 

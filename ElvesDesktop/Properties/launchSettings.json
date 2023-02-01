@@ -2,7 +2,7 @@
   "profiles": {
     "ElvesDesktop": {
       "commandName": "Project",
-      "commandLineArgs": "nobattlerandom nofailsafe drawdebug"
+      "commandLineArgs": "nobattlerandom drawdebug nofailsafe"
     }
   }
 }

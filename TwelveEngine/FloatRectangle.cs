@@ -73,6 +73,14 @@
             height = rectangle.Height;
         }
 
+        public FloatRectangle(Viewport viewport) {
+            x = viewport.X;
+            y = viewport.Y;
+
+            width = viewport.Width;
+            height = viewport.Height;
+        }
+
         public float X { get => x; set => x = value; }
         public float Y { get => y; set => y = value; }
 
@@ -141,8 +149,8 @@
             return HashCode.Combine(x,y,width,height);
         }
 
-        public override bool Equals(object obj) {
-            return obj is FloatRectangle other && Equals(other);
+        public override bool Equals(object self) {
+            return self is FloatRectangle other && Equals(other);
         }
 
         public bool Equals(FloatRectangle vectorRectangle) {

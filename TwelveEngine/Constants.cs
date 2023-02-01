@@ -21,7 +21,7 @@ namespace TwelveEngine {
 
         public const string TimeSpanFormat = "{0:hh\\:mm\\:ss\\.f}";
 
-        public const long LogResetLimit = 2 * 1048576; // megabytes * bytesPerMegabyte
+        public const long LogResetLimit = (long)(0.25 * 1048576); // megabytes * bytesPerMegabyte
 
         public const string DebugFont = "Font/debug-font";
 
@@ -57,7 +57,7 @@ namespace TwelveEngine {
         public static class UI {
             public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
             public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(300);
-
+            public const float DefaultTransitionInputThreshold = 0.1f;
         }
 
     }

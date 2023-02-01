@@ -25,8 +25,7 @@ namespace Elves.Scenes.Test {
 
             Name = "State Transition Test";
             ClearColor = GetSceneColor();
-            OnUpdate += UpdateInputDevices;
-            Input.Router.OnAcceptDown += Input_OnAcceptDown;
+            Impulse.Router.OnAcceptDown += Input_OnAcceptDown;
             OnLoad += StateTransitionTest_OnLoad;
         }
 

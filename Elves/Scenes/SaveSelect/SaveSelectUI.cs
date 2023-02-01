@@ -6,7 +6,7 @@ namespace Elves.Scenes.SaveSelect {
 
     public sealed class SaveSelectUI:SpriteBook {
 
-        public SaveSelectUI(SaveSelectScene scene) {
+        public SaveSelectUI(SaveSelectScene scene):base(scene) {
 
             BackButton = AddButton(0,123,ButtonImpulse.Back);
             PlayButton = AddButton(17,123,ButtonImpulse.Play);

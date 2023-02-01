@@ -37,7 +37,7 @@ namespace TwelveEngine.Input.Routing {
 
         private bool lastUpdateHadInactiveWindow = false;
 
-        private void UpdateLeftClick(in MouseState mouseState,in MouseState lastState) {
+        private void UpdateLeftClick(MouseState mouseState,MouseState lastState) {
             if(mouseState.LeftButton == lastState.LeftButton) {
                 return;
             }
@@ -50,7 +50,7 @@ namespace TwelveEngine.Input.Routing {
             }
         }
 
-        private void UpdateRightClick(in MouseState mouseState,in MouseState lastState) {
+        private void UpdateRightClick(MouseState mouseState,MouseState lastState) {
             if(mouseState.RightButton == lastState.RightButton) {
                 return;
             }
@@ -63,14 +63,14 @@ namespace TwelveEngine.Input.Routing {
             }
         }
 
-        public void Update(in MouseState mouseState,bool eventsAreAllowed,bool gameIsActive) {
+        public void Update(MouseState mouseState,bool eventsAreAllowed,bool gameIsActive) {
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }
             var lastState = this.lastState.Value;
             Position = mouseState.Position;
-            this.lastState = mouseState;
             Delta = lastState.Position - Position;
+            this.lastState = mouseState;
 
             if(!eventsAreAllowed) {
                 Delta = Point.Zero;
@@ -80,10 +80,11 @@ namespace TwelveEngine.Input.Routing {
                 return;
             }
 
+            SendEvent(MouseEvent.Update(Position));
+
             bool leftClicking = mouseState.LeftButton == ButtonState.Pressed, rightClicking = mouseState.RightButton == ButtonState.Released;
 
             if(gameIsActive && lastUpdateHadInactiveWindow && (leftClicking || rightClicking)) {
-                Capturing = true;
                 if(leftClicking) {
                     CapturingLeft = true;
                     SendEvent(MouseEvent.LeftClickPress(mouseState.Position));

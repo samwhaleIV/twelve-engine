@@ -33,9 +33,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)ElfData\ElfManifest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ElfGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselUI.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\MoveDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselScene3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />

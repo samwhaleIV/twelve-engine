@@ -5,6 +5,16 @@ namespace Elves.ElfData {
     /// Symmetric link between <see cref="BattleScript"/> and <see cref="ElfManifest"/>.
     /// </summary>
     public enum ElfID {
-        HarmlessElf
+        HarmlessElf,
+        RedGirlElf,
+        YellowElf,
+        MagicElf,
+        GreenGirlElf,
+        NinjaElf,
+        CaponeElf,
+        BusinessElf,
+        MechaElf,
+        GodElf,
+        SpaceElf
     }
 }
