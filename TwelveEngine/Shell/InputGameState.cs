@@ -14,7 +14,7 @@ namespace TwelveEngine.Shell {
         public InputGameState() {
             OnLoad += InputGameState_OnLoad;
             OnUnload += InputGameState_OnUnload;
-            OnUpdate += UpdateInputDevices;
+            OnUpdate += UpdateInputs;
         }
 
         private void InputGameState_OnUnload() {
@@ -51,17 +51,14 @@ namespace TwelveEngine.Shell {
 
         public event Action OnInputActivated;
 
-        private void UpdateInputDevices() {
+        private void UpdateInputs() {
             if(!IsTransitioning && !_inputActivated) {
                 _inputActivated = true;
                 OnInputActivated?.Invoke();
             }
             bool inputEnabled = InputEnabled && _inputActivated;
             Mouse.Update(InputStateCache.Mouse,inputEnabled,GameIsActive);
-            if(!inputEnabled) {
-                return;
-            }
-            Impulse.Update(InputStateCache.Keyboard,InputStateCache.GamePad);
+            Impulse.Update(inputEnabled);
             timeoutManager.Update(Now);
         }
     }

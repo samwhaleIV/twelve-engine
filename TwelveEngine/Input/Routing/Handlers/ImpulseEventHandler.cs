@@ -1,14 +1,15 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Input.Binding;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.Input.Routing {
 
     public sealed class ImpulseEventHandler:InputEventHandler<ImpulseEvent,ImpulseEventRouter> {
 
         private static readonly Impulse[] impulses = (Impulse[])Enum.GetValues(typeof(Impulse));
+        private static readonly Dictionary<Impulse,Buttons> gamePadBinds = KeyBinds.GetControllerBinds();
 
         private readonly Dictionary<Impulse,KeyState> impulseStates = new();
-        private static readonly Dictionary<Impulse,Buttons> gamePadBinds = KeyBinds.GetControllerBinds();
 
         internal ImpulseEventHandler() {
             foreach(var impulse in impulses) {
@@ -33,68 +34,45 @@ namespace TwelveEngine.Input.Routing {
         public static InputMethod Method { get; private set; } = InputMethod.Unknown;
         public static GamePadType GamePadType { get; private set; } = GamePadType.Default;
 
-        public GamePadState GamePadState { get; private set; }
-        public KeyboardState KeyboardState { get; private set; }
-
-        public KeyboardState LastKeyboardState { get; private set; } = new KeyboardState();
-        public GamePadState LastGamePadState { get; private set; } = new GamePadState();
-
-        private void ImportOldInputState(Dictionary<Impulse,KeyState> oldStates) {
-            impulseStates.Clear();
-            foreach(var oldState in oldStates) {
-                impulseStates.Add(oldState.Key,oldState.Value);
-            }
-        }
-
         public void Import(ImpulseEventHandler oldHandler) {
-            GamePadState = oldHandler.GamePadState;
-            KeyboardState = oldHandler.KeyboardState;
-            LastGamePadState = oldHandler.LastGamePadState;
-            LastKeyboardState = oldHandler.LastKeyboardState;
-            ImportOldInputState(oldHandler.impulseStates);
+            impulseStates.Clear();
+            foreach(var oldState in oldHandler.impulseStates) {
+                impulseStates[oldState.Key] = oldState.Value;
+            }
         }
 
         private KeyState GetImpulseState(Impulse impulse) {
-            if(GetKeyboardBind(impulse).IsPressed(KeyboardState)) {
+            if(GetKeyboardBind(impulse).IsPressed(InputStateCache.Keyboard)) {
                 return KeyState.Down;
             }
-            if(GamePadState.IsButtonDown(GetGamePadBind(impulse))) {
+            if(InputStateCache.GamePad.IsButtonDown(GetGamePadBind(impulse))) {
                 return KeyState.Down;
             }
             return KeyState.Up;
         }
 
-        private bool TryFireEvent(Impulse impulse) {
+        private bool UpdateKeyState(Impulse impulse,out KeyState keyState) {
             KeyState newState = GetImpulseState(impulse), oldState = impulseStates[impulse];
+            keyState = newState;
             if(newState == oldState) {
                 return false;
             }
             impulseStates[impulse] = newState;
-
-            if(newState == KeyState.Down) {
-                SendEvent(ImpulseEvent.CreatePressed(impulse));
-            } else {
-                SendEvent(ImpulseEvent.CreateReleased(impulse));
-            }
             return true;
         }
 
-        public void Update(KeyboardState keyboardState,GamePadState gamePadState) {
-            KeyboardState = keyboardState;
-            GamePadState = gamePadState;
-
+        public void Update(bool eventsAreAllowed) {
             foreach(Impulse impulse in impulses) {
-                TryFireEvent(impulse);
+                if(!UpdateKeyState(impulse,out KeyState keyState) || !eventsAreAllowed) {
+                    continue;
+                }
+                SendEvent(ImpulseEvent.Create(impulse,keyState == KeyState.Down));
             }
-
-            if(gamePadState != LastGamePadState) {
+            if(InputStateCache.GamePad != InputStateCache.LastGamePad) {
                 Method = InputMethod.GamePad;
-            } else if(keyboardState != LastKeyboardState) {
+            } else if(InputStateCache.Keyboard != InputStateCache.LastKeyboard) {
                 Method = InputMethod.Keyboard;
             }
-
-            LastKeyboardState = keyboardState;
-            LastGamePadState = gamePadState;
         }
 
         public bool IsImpulseDown(Impulse impulse) => impulseStates[impulse] == KeyState.Down;
@@ -105,7 +83,7 @@ namespace TwelveEngine.Input.Routing {
                 value = Vector2.Zero;
                 return false;
             }
-            Vector2 leftThumbStick = LastGamePadState.ThumbSticks.Left;
+            Vector2 leftThumbStick = InputStateCache.GamePad.ThumbSticks.Left;
             if(leftThumbStick == Vector2.Zero) {
                 value = Vector2.Zero;
                 return false;

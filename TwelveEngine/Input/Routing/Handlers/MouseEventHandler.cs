@@ -8,6 +8,9 @@ namespace TwelveEngine.Input.Routing {
         public bool CapturingLeft { get; private set; }
         public bool CapturingRight { get; private set; }
 
+        public Point Position { get; private set; }
+        public Point Delta { get; private set; }
+
         public bool Capturing {
             get {
                 return CapturingLeft || CapturingRight;
@@ -17,9 +20,6 @@ namespace TwelveEngine.Input.Routing {
                 CapturingRight = value;
             }
         }
-
-        public Point Position { get; private set; }
-        public Point Delta { get; private set; }
 
         public int X => Position.X;
         public int Y => Position.Y;
@@ -67,9 +67,9 @@ namespace TwelveEngine.Input.Routing {
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }
+
             var lastState = this.lastState.Value;
             Position = mouseState.Position;
-            Delta = lastState.Position - Position;
             this.lastState = mouseState;
 
             if(!eventsAreAllowed) {
@@ -79,6 +79,8 @@ namespace TwelveEngine.Input.Routing {
                 lastUpdateHadInactiveWindow = !gameIsActive;
                 return;
             }
+
+            Delta = lastState.Position - Position;
 
             SendEvent(MouseEvent.Update(Position));
 
