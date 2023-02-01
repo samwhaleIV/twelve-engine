@@ -16,16 +16,16 @@ namespace TwelveEngine {
             return _flags.Contains(flag);
         }
 
-        private static void WriteToLog(HashSet<string> flags) {
+        internal static void WriteToLog() {
             StringBuilder sb = new();
             sb.Append($"{{ ");
-            if(flags.Count <= 0) {
+            if(_flags.Count <= 0) {
                 sb.Append(Logger.NONE_TEXT);
                 sb.Append(" }");
                 Logger.WriteLine(sb);
                 return;
             }
-            foreach(var flag in flags) {
+            foreach(var flag in _flags) {
                 sb.Append(string.IsNullOrWhiteSpace(flag) ? Logger.EMPTY_TEXT : flag);
                 sb.Append(", ");
             }
@@ -46,7 +46,6 @@ namespace TwelveEngine {
             if(flagList is null) {
                 flagSet = new HashSet<string>(0);
                 SetFlags(flagSet);
-                WriteToLog(flagSet);
                 return;
             }
             flagSet = new HashSet<string>(flagList.Length);
@@ -57,7 +56,6 @@ namespace TwelveEngine {
                 flagSet.Add(flag);
             }
             SetFlags(flagSet);
-            WriteToLog(flagSet);
         }
     }
 }

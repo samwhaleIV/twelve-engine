@@ -71,6 +71,8 @@ namespace TwelveEngine {
 
             ProxyTime.Start();
 
+            Flags.Load(args);
+
             SaveDirectory = saveDirectory;
 
             string logFile = GetSaveDirectoryPath(Constants.LogFile);
@@ -79,12 +81,11 @@ namespace TwelveEngine {
             KeyBinds.Path = GetSaveDirectoryPath(Constants.KeyBindsFile);
 
             Logger.Initialize(logFile);
+            Flags.WriteToLog();
 
             ValidateSaveDirectory(saveDirectory);
 
             Config.TryLoad(configFile);
-            Flags.Load(args);
-
             Config.WriteToLog();
             KeyBinds.TryLoad();
 

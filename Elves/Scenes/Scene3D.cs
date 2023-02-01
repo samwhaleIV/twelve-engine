@@ -10,7 +10,7 @@ namespace Elves.Scenes {
         public event Action<Scene3D,ExitValue> OnSceneEnd;
         public void EndScene(ExitValue data) => OnSceneEnd?.Invoke(this,data);
 
-        protected bool Debug { get; private set; } = Flags.Get(Constants.Flags.Debug);
+        protected bool DebugOrtho { get; private set; } = Flags.Get(Constants.Flags.OrthoDebug);
 
         public Scene3D() : base(EntitySortMode.CameraFixed) {
             Name = "3D Scene";
@@ -40,14 +40,14 @@ namespace Elves.Scenes {
         }
 
         private void Scene_OnUpdate() {
-            if(!Debug || Camera is null) {
+            if(!DebugOrtho || Camera is null) {
                 return;
             }
             (Camera as AngleCamera).UpdateFreeCam(this,Constants.Debug3DLookSpeed,Constants.Debug3DMovementSpeed);
         }
 
         private void Scene_OnLoad() {
-            if(!Debug) {
+            if(!DebugOrtho) {
                 return;
             }
             Entities.Add(new GridLinesEntity());

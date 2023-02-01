@@ -11,7 +11,7 @@ namespace Elves {
         public const float Debug3DLookSpeed = 10f;
 
         public static class Flags {
-            public const string Debug = "debug";
+            public const string OrthoDebug = "orthodebug";
             public const string OSCursor = "oscursor";
             public const string FixedBattleRandom = "norandombattle";
         }
