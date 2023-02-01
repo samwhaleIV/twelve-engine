@@ -57,7 +57,7 @@ namespace TwelveEngine {
         public static class UI {
             public static readonly TimeSpan DefaultAnimationDuration = TimeSpan.FromMilliseconds(150);
             public static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(300);
-
+            public const float DefaultTransitionInputThreshold = 0.1f;
         }
 
     }

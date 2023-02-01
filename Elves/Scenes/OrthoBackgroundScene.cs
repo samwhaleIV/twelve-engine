@@ -6,20 +6,22 @@ using TwelveEngine.Game3D.Entity.Types;
 namespace Elves.Scenes {
     public abstract class OrthoBackgroundScene:Scene3D {
 
+        private void Initialize() {
+            OnLoad += OrthoBackgroundScene_OnLoad;
+            OnUpdate += OrthoBackgroundScene_OnUpdate;
+            Camera.Orthographic = true;
+        }
+
         public OrthoBackgroundScene(string backgroundImage,bool smoothBackground = true) {
             this.backgroundImage = backgroundImage;
             this.smoothBackground = smoothBackground;
-            OnLoad += OrthoBackgroundScene_OnLoad;
-            OnUpdate += OrthoBackgroundScene_OnUpdate;
-            Camera.Orthographic = !Debug;
+            Initialize();
         }
 
         public OrthoBackgroundScene(Texture2D backgroundImage,bool smoothBackground = true) {
             backgroundImageTexture = backgroundImage;
             this.smoothBackground = smoothBackground;
-            OnLoad += OrthoBackgroundScene_OnLoad;
-            OnUpdate += OrthoBackgroundScene_OnUpdate;
-            Camera.Orthographic = !Debug;
+            Initialize();
         }
 
         private const string BACKGROUND_ENTITY_NAME = "Background";

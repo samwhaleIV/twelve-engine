@@ -23,7 +23,6 @@ namespace Elves.Battle {
             script.SetSequencer(this);
             Script = script;
             OnLoad += RunScript;
-            OnTransitionInFinished += BattleSequencer_OnTransitionInFinished;
             OnUpdate += CheckForScriptEnd;
         }
 
@@ -41,10 +40,6 @@ namespace Elves.Battle {
         public BattleSequencer(BattleScript script,string background):base(background) => Initialize(script);
         public BattleSequencer(BattleScript script,Texture2D background):base(background) => Initialize(script);
         public BattleSequencer(BattleScript script):base() => Initialize(script);
-
-        private void BattleSequencer_OnTransitionInFinished() {
-            UI.TrySetDefaultElement();
-        }
 
         private async void RunScript() {
             try {

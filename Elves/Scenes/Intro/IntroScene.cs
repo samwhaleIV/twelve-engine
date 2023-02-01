@@ -4,6 +4,8 @@ using System;
 using TwelveEngine;
 using TwelveEngine.Font;
 
+using static Elves.Constants.AnimationTiming;
+
 namespace Elves.Scenes.Intro {
     public sealed class IntroScene:Scene {
 
@@ -26,9 +28,6 @@ namespace Elves.Scenes.Intro {
             OnUpdate += IntroScene_OnUpdate;
             OnRender += IntroScene_OnRender;
             Impulse.Router.OnCancelDown += Input_OnCancelDown;
-            if(Flags.Get(Constants.Flags.Debug)) {
-                Impulse.Router.OnAcceptDown += Debug_Reset;
-            }
             OnLoad += IntroScene_OnLoad;
             OnUnload += IntroScene_OnUnload;
         }
@@ -53,16 +52,16 @@ namespace Elves.Scenes.Intro {
 
         private void CreateTimeline() {
 
-            var duration = song.Duration + Constants.AnimationTiming.IntroSongDurationOffset;
+            var duration = song.Duration + IntroSongDurationOffset;
             var total = duration;
 
-            var startDelayLength = Constants.AnimationTiming.IntroStartDelay;
+            var startDelayLength = IntroStartDelay;
             total -= startDelayLength;
 
-            var exitDuration = Constants.AnimationTiming.IntroFadeOutDuration;
+            var exitDuration = IntroFadeOutDuration;
             total -= exitDuration;
 
-            var endDelayLength = Constants.AnimationTiming.IntroFadeOutDelay;
+            var endDelayLength = IntroFadeOutDelay;
             total -= endDelayLength;
 
             if(total <= TimeSpan.Zero) {
@@ -91,10 +90,6 @@ namespace Elves.Scenes.Intro {
             CreateTimeline();
         }
 
-        private void Debug_Reset() {
-            timeline.StartTimeOffset = -LocalRealTime;
-            exiting = false;
-        }
         private bool exiting = false;
 
         private void EndIntro(bool quickExit = false) {
@@ -129,7 +124,7 @@ namespace Elves.Scenes.Intro {
 
         private static Color GetTextColor(float t,float index) {
             float value = t * Text.Length - index;
-            value *= Constants.AnimationTiming.IntroTextFadeSpeed;
+            value *= IntroTextFadeSpeed;
 
             if(value < 0) {
                 value = 0;

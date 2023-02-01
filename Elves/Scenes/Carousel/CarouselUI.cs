@@ -5,9 +5,10 @@ namespace Elves.Scenes.Carousel {
 
         private readonly CarouselScene3D scene;
 
-        public CarouselUI(CarouselScene3D scene) {
+        public CarouselUI(CarouselScene3D scene):base(scene) {
             this.scene = scene;
             Initialize();
+            scene.Impulse.Router.OnAcceptDown += () => scene.StartBattle();
         }
 
         private void Initialize() {

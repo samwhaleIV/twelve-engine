@@ -69,10 +69,8 @@ namespace TwelveEngine.Input.Routing {
             }
             var lastState = this.lastState.Value;
             Position = mouseState.Position;
-            this.lastState = mouseState;
             Delta = lastState.Position - Position;
-
-            SendEvent(MouseEvent.Update(Position));
+            this.lastState = mouseState;
 
             if(!eventsAreAllowed) {
                 Delta = Point.Zero;
@@ -82,10 +80,11 @@ namespace TwelveEngine.Input.Routing {
                 return;
             }
 
+            SendEvent(MouseEvent.Update(Position));
+
             bool leftClicking = mouseState.LeftButton == ButtonState.Pressed, rightClicking = mouseState.RightButton == ButtonState.Released;
 
             if(gameIsActive && lastUpdateHadInactiveWindow && (leftClicking || rightClicking)) {
-                Capturing = true;
                 if(leftClicking) {
                     CapturingLeft = true;
                     SendEvent(MouseEvent.LeftClickPress(mouseState.Position));

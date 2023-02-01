@@ -11,7 +11,7 @@ namespace TwelveEngine.UI {
         /// <summary>
         /// See <see cref="GetContextTransitioning"/>
         /// </summary>
-        private bool IsTransitioning => GetContextTransitioning();
+        protected bool IsTransitioning => GetContextTransitioning();
 
         /// <summary>
         /// Indicate if the most recent event was from a mouse or keyboard/gamepad.
@@ -274,7 +274,6 @@ namespace TwelveEngine.UI {
                 TryActivateElement(PressedElement);
             }
             PressedElement = null;
-            _hiddenMouseHoverElement = null;
         }
 
         /// <summary>
@@ -287,14 +286,8 @@ namespace TwelveEngine.UI {
             BackButtonPressed();
         }
 
-        private void SendMouseUpdate(Point position) => UpdateHoveredElement(position);
-        private void SendMouseReleased() => MouseUp();
-        private void SendAcceptReleased() => AcceptUp();
-        private void SendDirection(Direction direction) => DirectionDown(direction,rollover: false);
-        private void SendMousePressed() => MouseDown();
-        private void SendBackButtonActivated() => CancelDown();
-        private void SendAcceptPressed() => AcceptDown();
-        private void SendFocusButtonActivated() => DirectionDown(Direction.Right,rollover: true);
+        private void DirectionDown(Direction direction) => DirectionDown(direction,rollover: false);
+        private void FocusDown() => DirectionDown(Direction.Right,rollover: true);
 
         /// <summary>
         /// Bind generic routers to this interaction agent.
@@ -304,32 +297,32 @@ namespace TwelveEngine.UI {
             var mouse = inputGameState.Mouse.Router;
             var impulse = inputGameState.Impulse.Router;
 
-            mouse.OnPress += SendMousePressed;
-            mouse.OnRelease += SendMouseReleased;
-            mouse.OnUpdate += SendMouseUpdate;
+            mouse.OnPress += MouseDown;
+            mouse.OnRelease += MouseUp;
+            mouse.OnUpdate += UpdateHoveredElement;
 
-            impulse.OnAcceptDown += SendAcceptPressed;
-            impulse.OnAcceptUp += SendAcceptReleased;
+            impulse.OnAcceptDown += AcceptDown;
+            impulse.OnAcceptUp += AcceptUp;
 
-            impulse.OnCancelDown += SendBackButtonActivated;
-            impulse.OnDirectionDown += SendDirection;
-            impulse.OnFocusDown += SendFocusButtonActivated;
+            impulse.OnCancelDown += CancelDown;
+            impulse.OnDirectionDown += DirectionDown;
+            impulse.OnFocusDown += FocusDown;
         }
 
         public void UnbindInputEvents(InputGameState inputGameState) {
             var mouse = inputGameState.Mouse.Router;
             var impulse = inputGameState.Impulse.Router;
 
-            mouse.OnPress -= SendMousePressed;
-            mouse.OnRelease -= SendMouseReleased;
-            mouse.OnUpdate -= SendMouseUpdate;
+            mouse.OnPress -= MouseDown;
+            mouse.OnRelease -= MouseUp;
+            mouse.OnUpdate -= UpdateHoveredElement;
 
-            impulse.OnAcceptDown -= SendAcceptPressed;
-            impulse.OnAcceptUp -= SendAcceptReleased;
+            impulse.OnAcceptDown -= AcceptDown;
+            impulse.OnAcceptUp -= AcceptUp;
 
-            impulse.OnCancelDown -= SendBackButtonActivated;
-            impulse.OnDirectionDown -= SendDirection;
-            impulse.OnFocusDown -= SendFocusButtonActivated;
+            impulse.OnCancelDown -= CancelDown;
+            impulse.OnDirectionDown -= DirectionDown;
+            impulse.OnFocusDown -= FocusDown;
         }
 
         /// <summary>
@@ -337,7 +330,7 @@ namespace TwelveEngine.UI {
         /// </summary>
         /// <returns>The cursor state. <c>CursorState.Default</c> if the last event was from a keyboard/gamepad.</returns>
         private CursorState GetCursorState() {
-            if(!LastEventWasFromMouse || _keyboardIsPressingElement) {
+            if(IsTransitioning || !LastEventWasFromMouse || _keyboardIsPressingElement) {
                 return CursorState.Default;
             } else if(PressedElement is not null) {
                 return PressedElement == _hiddenMouseHoverElement ? CursorState.Pressed : CursorState.Default;
