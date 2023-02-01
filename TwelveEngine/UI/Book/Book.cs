@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine.UI.Book {
-    public class Book<TElement>:InteractionAgent<BookElement> where TElement:BookElement {
+    public abstract class Book<TElement>:InteractionAgent<BookElement> where TElement:BookElement {
 
         public static readonly TimeSpan DefaultAnimationDuration = Constants.UI.DefaultAnimationDuration;
         public static readonly TimeSpan DefaultTransitionDuration = Constants.UI.DefaultTransitionDuration;
@@ -86,7 +86,7 @@
             if(DefaultFocusElement is null) {
                 Logger.WriteLine($"UI page has been opened without a default keyboard focus element!",LoggerLabel.UI);
             }
-            TrySetDefaultElement();
+            FocusDefault();
             _elementsAreLocked = false;
         }
 

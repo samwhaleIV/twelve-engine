@@ -47,9 +47,18 @@ namespace TwelveEngine.Shell {
             }
         }
 
+        private bool _inputActivated = false;
+
+        public event Action OnInputActivated;
+
         private void UpdateInputDevices() {
-            Mouse.Update(InputStateCache.Mouse,InputEnabled,GameIsActive);
-            if(!InputEnabled) {
+            if(!IsTransitioning && !_inputActivated) {
+                _inputActivated = true;
+                OnInputActivated?.Invoke();
+            }
+            bool inputEnabled = InputEnabled && _inputActivated;
+            Mouse.Update(InputStateCache.Mouse,inputEnabled,GameIsActive);
+            if(!inputEnabled) {
                 return;
             }
             Impulse.Update(InputStateCache.Keyboard,InputStateCache.GamePad);

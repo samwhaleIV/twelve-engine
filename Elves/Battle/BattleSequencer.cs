@@ -89,7 +89,7 @@ namespace Elves.Battle {
                 case 3: ConfigTripleButtons(); break;
                 case 4: ConfigQuadButtons(); break;
             }
-            UI.TrySetDefaultElement();
+            UI.FocusDefault();
 
             if(buttonTask != null) {
                 buttonTask.SetResult(-1);

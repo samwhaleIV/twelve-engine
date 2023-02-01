@@ -12,9 +12,9 @@ namespace Elves.Scenes.Battle.UI {
 
     public sealed class BattleUI:InteractionAgent<UIElement> {
 
-        private readonly GameState owner;
+        private readonly InputGameState owner;
 
-        public BattleUI(GameState owner) {
+        public BattleUI(InputGameState owner) {
             this.owner = owner;
 
             foreach(var button in actionButtons) {
@@ -28,6 +28,16 @@ namespace Elves.Scenes.Battle.UI {
             Button4 = actionButtons[3];
 
             DefaultFocusElement = Button1;
+
+            owner.OnInputActivated += FocusDefault;
+        }
+
+        protected override bool GetMouseIsCapturing() {
+            return owner.Mouse.Capturing;
+        }
+
+        protected override bool GetContextTransitioning() {
+            return owner.IsTransitioning;
         }
 
         private void Button_OnActivated(int ID) {
@@ -66,10 +76,6 @@ namespace Elves.Scenes.Battle.UI {
         private readonly List<Button> interactableElements = new();
 
         #region INTERACTION AGENT
-
-        protected override bool GetContextTransitioning() {
-            return owner.IsTransitioning;
-        }
 
         protected override TimeSpan GetCurrentTime() => owner.Now;
 

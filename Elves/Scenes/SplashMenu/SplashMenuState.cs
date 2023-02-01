@@ -37,11 +37,13 @@ namespace Elves.Scenes.SplashMenu {
                 CustomCursor.State = CursorState.Default;
                 return;
             }
-            CustomCursor.State = capturingPlayButton ? (MouseOnPlayButton ? CursorState.Pressed : CursorState.Default) : (MouseOnPlayButton ? CursorState.Interact : CursorState.Default);
+            CustomCursor.State = capturingPlayButton ?
+                (MouseOnPlayButton ? CursorState.Pressed : CursorState.Default):
+                (MouseOnPlayButton ? CursorState.Interact : CursorState.Default);
         }
 
         private void Input_OnAcceptDown() {
-            if(Mouse.CapturingLeft) {
+            if(Mouse.Capturing) {
                 return;
             }
             EndScene(ExitValue.None);

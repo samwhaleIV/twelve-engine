@@ -13,16 +13,20 @@ namespace TwelveEngine.UI.Book {
             spriteBatch.End();
         }
 
-        private readonly GameState owner;
+        private readonly InputGameState owner;
 
         /// <summary>
         /// SpriteBook base constructor.
         /// </summary>
         /// <param name="owner">Used to capture a reference to <see cref="GameState.IsTransitioning"/></param>
-        public SpriteBook(GameState owner) => this.owner = owner;
+        public SpriteBook(InputGameState owner) => this.owner = owner;
 
         protected override bool GetContextTransitioning() {
             return base.GetContextTransitioning() || (owner?.IsTransitioning ?? false);
+        }
+
+        protected override bool GetMouseIsCapturing() {
+            return owner?.Mouse.Capturing ?? false;
         }
     }
 }
