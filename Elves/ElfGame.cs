@@ -5,9 +5,9 @@ using Elves.Scenes.Intro;
 using Elves.Scenes.SaveSelect;
 using Elves.Scenes.SplashMenu;
 using Elves.Scenes;
-using static Elves.Constants;
 using Elves.Battle;
 using Elves.ElfData;
+using static Elves.Constants;
 
 namespace Elves {
     public static class ElfGame {
@@ -75,12 +75,18 @@ namespace Elves {
             BattleScript battleScript = elf.ScriptGenerator.Invoke();
             battleScript.ElfSource = elf;
             BattleSequencer battleSequencer = new(battleScript);
-            battleSequencer.OnSceneEnd += BattleSequencer_OnSceneEnd;
+            battleSequencer.OnSceneEnd += BattleSequencerExit;
             return battleSequencer;
         }
 
-        private static void BattleSequencer_OnSceneEnd(Scene3D scene,ExitValue data) {
-            throw new NotImplementedException();
+        private static void BattleSequencerExit(Scene3D scene,ExitValue data) {
+            BattleResult result = data.BattleResult;
+            //todo.. update save data
+            scene.TransitionOut(new() {
+                Generator = GetCarouselMenu,
+                Data = StateData.FadeIn(TransitionDuration),
+                Duration = TransitionDuration
+            });
         }
 
         private static void CarouselMenuExit(Scene3D scene,ExitValue data) {

@@ -32,7 +32,9 @@ namespace Elves.Scenes.Battle {
         private BattleUI battleUI;
         public BattleUI UI => battleUI;
 
-        private readonly ScrollingBackground background = ScrollingBackground.GetCheckered();
+        private readonly ScrollingBackground background = ScrollingBackground.GetCheckered(
+            scrollTime: Constants.AnimationTiming.ScrollingBackgroundDefault
+        );
 
         public ScrollingBackground Background => background;
 

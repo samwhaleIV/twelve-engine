@@ -11,8 +11,8 @@
         private readonly Queue<CallbackAndState> _messageQueue = new();
         private readonly object _messageQueueSyncLock = new();
 
-        public static TaskScheduler Scheduler { get; private set; }
-        public static GameLoopSyncContext Context { get; private set; }
+        internal static TaskScheduler Scheduler { get; private set; }
+        internal static GameLoopSyncContext Context { get; private set; }
 
         public event Action<Exception> OnTaskException;
 

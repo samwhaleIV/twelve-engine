@@ -46,26 +46,28 @@ namespace Elves {
         public static class AnimationTiming {
             public static readonly TimeSpan ScrollingBackgroundDefault = TimeSpan.FromSeconds(60);
             public static readonly TimeSpan ActionButtonMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan TaglineMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan TaglineTextMovement = TimeSpan.FromMilliseconds(150);
+            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TaglineMovement = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TaglineTextMovement = TimeSpan.FromMilliseconds(350);
 
-            public static readonly TimeSpan HealthDropDuration = TimeSpan.FromMilliseconds(100);
+            public static readonly TimeSpan HealthDropDuration = TimeSpan.FromMilliseconds(150);
 
             public static readonly TimeSpan CarouselRotationDuration = TimeSpan.FromMilliseconds(300);
             public static readonly TimeSpan CarouselBackgroundScroll = TimeSpan.FromSeconds(120);
 
             public static readonly TimeSpan IntroStartDelay = TimeSpan.FromSeconds(1);
             public static readonly TimeSpan IntroFadeOutDelay = TimeSpan.FromSeconds(1);
-            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(9);
-            public static readonly TimeSpan IntroSongDurationOffset = -TimeSpan.FromSeconds(0f);
+            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(4);
+            public static readonly TimeSpan IntroSongDurationOffset = -TimeSpan.FromSeconds(2f);
 
-            public const float IntroTextFadeSpeed = 2f;
+            public const float IntroTextFadeSpeed = 1f;
 
-            public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.1f);
+            public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.25f);
 
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
+
+            public static readonly TimeSpan BattleEndDelay = TimeSpan.FromSeconds(3f);
         }
 
         public static class Songs {

@@ -23,7 +23,7 @@ namespace Elves.Scenes.Battle.UI {
 
         protected override bool GetInputPaused() {
             /* Might need to ignore for turbo button pressing... */
-            return !interpolator.IsFinished;
+            return !interpolator.IsFinished || !currentState.OnScreen;
         }
 
         protected override void SetInputPaused(bool value) {
@@ -60,6 +60,11 @@ namespace Elves.Scenes.Battle.UI {
             oldState = currentState;
             currentState = currentState.GetOffscreen();
             interpolator.Reset(now);
+        }
+
+        public void FinishAnimation(TimeSpan now) {
+            interpolator.Update(now);
+            interpolator.Finish();
         }
 
         public void Show(TimeSpan now) {

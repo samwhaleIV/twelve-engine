@@ -5,8 +5,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
 using Elves.Scenes;
-using System.Threading;
 using TwelveEngine.Shell;
+using Elves.Scenes.SaveSelect;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererScene {
@@ -18,6 +18,39 @@ namespace Elves.Battle {
             script.SetSequencer(this);
             Script = script;
             OnLoad += AddScriptToScheduler;
+            OnTransitionIn += BattleSequencer_OnTransitionIn;
+            transitionTask = new TaskCompletionSource();
+            OnLoad += SetupDefaultUIState;
+        }
+
+        private void SetupDefaultUIState() {
+            TimeSpan now = Now;
+            UI.Button1.SetState(now,ButtonState.CenterBottom);
+            for(int i = 0;i<4;i++) {
+                var button = UI.GetActionButton(i);
+                button.ClearKeyFocus();
+                button.CanInteract = false;
+                button.Hide(now);
+                button.FinishAnimation(now);
+            }
+        }
+
+        private TaskCompletionSource transitionTask;
+
+        private void BattleSequencer_OnTransitionIn() {
+            if(transitionTask is null) {
+                return;
+            }
+            transitionTask.SetResult();
+            transitionTask = null;
+        }
+
+        public async Task TransitionIn() {
+            if(transitionTask is null) {
+                Logger.WriteLine("Tried to transition in, but the game state is already done transitioning.",LoggerLabel.Script);
+                return;
+            }
+            await transitionTask.Task;
         }
 
         public BattleSequencer(BattleScript script,string background):base(background) => Initialize(script);
@@ -27,7 +60,12 @@ namespace Elves.Battle {
         private void AddScriptToScheduler() => GameLoopSyncContext.RunTask(ExecuteScript);
 
         private async Task ExecuteScript() {
+            Script.Setup();
+            await TransitionIn();
             BattleResult battleResult = await Script.Main();
+            await Script.Exit(battleResult);
+            HideAllButtons();
+            await Task.Delay(Constants.AnimationTiming.BattleEndDelay);
             EndScene(ExitValue.Get(battleResult));
         }
 
@@ -119,6 +157,13 @@ namespace Elves.Battle {
             UI.Button2.Hide(Now); UI.Button3.Hide(Now); UI.Button4.Hide(Now);
 
             UI.DefaultFocusElement = UI.Button1;
+        }
+
+        private void HideAllButtons() {
+            UI.Button1.Hide(Now);
+            UI.Button2.Hide(Now);
+            UI.Button3.Hide(Now);
+            UI.Button4.Hide(Now);
         }
 
         private void ConfigDoubleButtons() {

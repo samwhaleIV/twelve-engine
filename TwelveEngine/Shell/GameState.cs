@@ -47,10 +47,9 @@ namespace TwelveEngine.Shell {
 
         private TransitionData? _transitionOutData = null;
 
-        public event Action OnLoad, OnUnload;
+        public event Action OnUpdate, OnRender, OnPreRender, OnLoad, OnUnload, OnTransitionIn;
 
         public event Action<DebugWriter> OnWriteDebug;
-        public event Action OnUpdate, OnRender, OnPreRender;
 
         public TransitionRenderer TransitionRenderer = TransitionRenderer.Default;
 
@@ -151,6 +150,7 @@ namespace TwelveEngine.Shell {
             if(oldTransitionState != TransitionState.In) {
                 return;
             }
+            OnTransitionIn?.Invoke();
         }
 
         internal void Update() {

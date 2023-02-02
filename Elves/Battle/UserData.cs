@@ -60,5 +60,9 @@ namespace Elves.Battle {
         public void Hurt(float amount) {
             Health = ValidateHealth(Health - amount);
         }
+
+        public void Kill() {
+            Health = 0;
+        }
     }
 }

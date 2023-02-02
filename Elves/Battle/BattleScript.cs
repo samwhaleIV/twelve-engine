@@ -8,7 +8,10 @@ using Elves.ElfData;
 
 namespace Elves.Battle {
     public abstract class BattleScript {
+        public abstract void Setup();
         public abstract Task<BattleResult> Main();
+
+        protected const int Button1 = 0, Button2 = 1, Button3 = 2, Button4 = 3;
 
         /// <summary>
         /// For debug and logging purposes.
@@ -70,6 +73,10 @@ namespace Elves.Battle {
             }
         }
 
+        protected async Task TransitionIn() {
+            await _sequencer.TransitionIn();
+        }
+
         protected void CreatePlayer(string name = null) {
             _playerData = new(string.IsNullOrEmpty(name) ? Constants.Battle.PlayerName : name);
         }
@@ -121,6 +128,10 @@ namespace Elves.Battle {
             _sequencer.ShowTag(tag);
             await _sequencer.ContinueButton();
             _sequencer.HideTag();
+        }
+
+        protected void SetTag(string tag) {
+            _sequencer.ShowTag(tag);
         }
 
         protected async Task Speech(string speech) {
@@ -222,6 +233,27 @@ namespace Elves.Battle {
 
         internal void SetSequencer(BattleSequencer sequencer) {
             _sequencer = sequencer;
+        }
+
+        public virtual async Task Exit(BattleResult battleResult) {
+            //todo: get randomly generated messages - or whatever
+            switch(battleResult) {
+                case BattleResult.PlayerWon:
+                    _sequencer.ShowTag("You survived...");
+                    await _sequencer.ContinueButton();
+                    _sequencer.ShowTag("Your journey continues.");
+                    break;
+                case BattleResult.PlayerLost:
+                    _sequencer.ShowTag("You died...");
+                    await _sequencer.ContinueButton();
+                    _sequencer.ShowTag("Better luck next time.");
+                    break;
+                default:
+                    _sequencer.ShowTag("Everybody is a loser...");
+                    await _sequencer.ContinueButton();
+                    _sequencer.ShowTag("Especially you.");
+                    break;
+            }
         }
     }
 }
