@@ -75,7 +75,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\UIScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\BookUIScene.cs" />
     <Compile Include="..\Elves\Textures.cs" />
   </ItemGroup>
   <ItemGroup>

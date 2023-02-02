@@ -2,7 +2,7 @@
 using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
-    public abstract class UIScene:Scene {
+    public abstract class BookUIScene:Scene {
 
         private SpriteBook _book;
         public SpriteBook UI {
@@ -17,7 +17,7 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        public UIScene() {
+        public BookUIScene() {
             Name = "UI Scene";
             OnRender += UIScene_OnRender;
             OnUpdate += UIScene_OnUpdate;

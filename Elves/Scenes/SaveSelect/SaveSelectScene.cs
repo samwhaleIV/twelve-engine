@@ -5,7 +5,7 @@ using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 
 namespace Elves.Scenes.SaveSelect {
-    public sealed class SaveSelectScene:UIScene {
+    public sealed class SaveSelectScene:BookUIScene {
 
         private ScrollingBackground background;
 
