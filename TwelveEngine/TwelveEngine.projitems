@@ -107,7 +107,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\Impulse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\KeyBindSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\Handlers\ImpulseEventHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shell\TimeoutManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\AutomationAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\AutomationIO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\Automation\InputFrame.cs" />

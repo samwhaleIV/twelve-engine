@@ -47,16 +47,16 @@ namespace TwelveEngine {
             }
         }
 
-        private void InitializeGameManager() {
-            game = new GameStateManager(
-                fullscreen: Flags.Get(Constants.Flags.Fullscreen),
-                hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
-                verticalSync: !Flags.Get(Constants.Flags.NoVsync),
-                drawDebug: Flags.Get(Constants.Flags.DrawDebug)
-            );
+        private static GameStateManager CreateGameStateManager() => new(
+            fullscreen: Flags.Get(Constants.Flags.Fullscreen),
+            hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
+            verticalSync: !Flags.Get(Constants.Flags.NoVsync),
+            drawDebug: Flags.Get(Constants.Flags.DrawDebug)
+        ) { SyncContext = new() };
 
-            game.SyncContext = new GameLoopSyncContext();
-            GameLoopSyncContext.Context.OnTaskException += HandleSyncContextException;
+        private void InitializeGameManager() {
+            game = CreateGameStateManager();
+            game.SyncContext.OnTaskException += HandleSyncContextException;
 
             game.Disposed += Game_Disposed;
             game.OnLoad += Game_OnLoad;
@@ -66,7 +66,7 @@ namespace TwelveEngine {
             } else {
                 RunGameWithExceptionHandling();
             }
-            GameLoopSyncContext.Context.Clear();
+            game.SyncContext.Clear();
 
             game.Dispose();
             game = null;

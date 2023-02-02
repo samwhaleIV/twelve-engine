@@ -40,7 +40,7 @@ namespace TwelveEngine.Shell {
 
         internal bool DrawDebug { get; private init; }
 
-        internal GameLoopSyncContext SyncContext { get; set; }
+        internal GameLoopSyncContext SyncContext { get; init; }
 
         internal Exception ReroutedException { get; set; }
 
@@ -327,7 +327,7 @@ namespace TwelveEngine.Shell {
             } else if(_framesToSkip > 0) {
                 FastForward();
             }
-            SyncContext.Update();
+            SyncContext?.Update();
             if(ReroutedException is not null) {
                 throw new Exception("Unhandled exception from game loop sync context.",ReroutedException);
             }
@@ -339,7 +339,7 @@ namespace TwelveEngine.Shell {
             if(pendingGenerator.Value is null) {
                 return;
             }
-            SyncContext.Clear();
+            SyncContext?.Clear();
             bool benchmark = Config.GetBool(Config.Keys.BenchmarkStateSwap);
             if(benchmark) {
                 Watch.Start();

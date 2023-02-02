@@ -213,9 +213,13 @@ namespace TwelveEngine.Shell {
             if(transitionData.Generator != null && transitionData.State != null) {
                 throw new InvalidOperationException("Transition out data cannot contain two game state values.");
             }
-            TransitionState = TransitionState.Out;
-            _transitionStartTime = LocalNow;
             _transitionDuration = transitionData.Duration;
+            if(TransitionState == TransitionState.In) {
+                _transitionStartTime = LocalNow - (1 - GetTransitionT()) * _transitionDuration;
+            } else {
+                _transitionStartTime = LocalNow;
+            }
+            TransitionState = TransitionState.Out;
             _transitionOutData = transitionData;
         }
 

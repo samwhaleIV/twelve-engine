@@ -217,7 +217,6 @@ namespace Elves.Battle {
         }
 
         protected async Task Continue() {
-            throw new Exception();
             await _sequencer.ContinueButton();
         }
 

@@ -33,7 +33,6 @@ namespace TwelveEngine.Shell.Automation {
         }
 
         internal static async Task StopRecording() {
-            throw new Exception();
             if(!recording) {
                 throw new InvalidOperationException("Cannot stop recording, we never started!");
             }

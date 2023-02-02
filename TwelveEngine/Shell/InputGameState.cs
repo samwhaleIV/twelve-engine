@@ -3,8 +3,6 @@
 namespace TwelveEngine.Shell {
     public class InputGameState:GameState {
 
-        private readonly TimeoutManager timeoutManager = new();
-
         public ImpulseEventHandler Impulse { get; private set; } = new();
         public MouseEventHandler Mouse { get; private set; } = new();
 
@@ -33,14 +31,6 @@ namespace TwelveEngine.Shell {
             oldMouseHandler = null;
         }
 
-        public bool ClearTimeout(int ID) {
-            return timeoutManager.Remove(ID);
-        }
-
-        public int SetTimeout(Action action,TimeSpan delay) {
-            return timeoutManager.Add(action,delay,Now);
-        }
-
         protected bool InputEnabled {
             get {
                 return GameIsActive && !IsTransitioning;
@@ -59,7 +49,6 @@ namespace TwelveEngine.Shell {
             bool inputEnabled = InputEnabled && _inputActivated;
             Mouse.Update(inputEnabled,GameIsActive);
             Impulse.Update(inputEnabled);
-            timeoutManager.Update(Now);
         }
     }
 }
