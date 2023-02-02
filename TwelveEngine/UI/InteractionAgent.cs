@@ -55,7 +55,9 @@ namespace TwelveEngine.UI {
         /// Activated when the back button is pressed. E.g., the escape button. Useful for pagination.
         /// </summary>
         /// <returns>A value indicating if the back button request was accepted.</returns>
-        protected abstract bool BackButtonPressed();
+        protected virtual bool BackButtonPressed() {
+            return false;
+        }
 
         private bool _keyboardIsPressingElement = false;
         private TElement _selectedElement = null, _pressedElement = null;

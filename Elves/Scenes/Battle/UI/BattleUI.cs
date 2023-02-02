@@ -84,7 +84,6 @@ namespace Elves.Scenes.Battle.UI {
         protected override TimeSpan GetCurrentTime() => owner.Now;
 
         protected override IEnumerable<UIElement> GetElements() => interactableElements;
-        protected override bool BackButtonPressed() => false;
 
         #endregion
         #region UPDATE, RENDER, & LAYOUT

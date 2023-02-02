@@ -15,15 +15,11 @@ namespace Elves.Scenes.SplashMenu {
             button.CanInteract = true;
             buttons.Add(button);
             DefaultFocusElement = button;
-            menu.OnUpdate +=Menu_OnUpdate;
+            menu.OnUpdate += Menu_OnUpdate;
         }
 
         private void Menu_OnUpdate() {
             CustomCursor.State = CursorState;
-        }
-
-        protected override bool BackButtonPressed() {
-            throw new NotImplementedException();
         }
 
         protected override bool GetContextTransitioning() {
