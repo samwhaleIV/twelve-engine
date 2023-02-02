@@ -16,7 +16,7 @@ namespace TwelveEngine.Shell {
         private GameState pendingState = null;
         private (Func<GameState> Value, StateData Data) pendingGenerator = (null, StateData.Empty);
 
-        internal event Action<GameStateManager> OnLoad;
+        internal event Action OnLoad;
 
         private bool _isInitialized = false, _gameIsPaused = false, _isUpdating = false, _isRendering = false, _didUpdateFirstFrame = false, _advanceFrameIsQueued = false;
 
@@ -41,6 +41,8 @@ namespace TwelveEngine.Shell {
         internal bool DrawDebug { get; private init; }
 
         internal GameLoopSyncContext SyncContext { get; set; }
+
+        internal Exception ReroutedException { get; set; }
 
         internal GameStateManager(
             bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool drawDebug = false
@@ -179,7 +181,7 @@ namespace TwelveEngine.Shell {
             DebugFont = Content.Load<SpriteFont>(Constants.DebugFont);
             VCRDisplay.Load();
             _isInitialized = true;
-            OnLoad?.Invoke(this);
+            OnLoad?.Invoke();
         }
 
         private void AddAutomationAgentEventHandlers() {
@@ -326,6 +328,9 @@ namespace TwelveEngine.Shell {
                 FastForward();
             }
             SyncContext.Update();
+            if(ReroutedException is not null) {
+                throw new Exception("Unhandled exception from game loop sync context.",ReroutedException);
+            }
             _updateDuration = ReadWatchAndReset();
             _isUpdating = false;
         }
@@ -334,6 +339,7 @@ namespace TwelveEngine.Shell {
             if(pendingGenerator.Value is null) {
                 return;
             }
+            SyncContext.Clear();
             bool benchmark = Config.GetBool(Config.Keys.BenchmarkStateSwap);
             if(benchmark) {
                 Watch.Start();

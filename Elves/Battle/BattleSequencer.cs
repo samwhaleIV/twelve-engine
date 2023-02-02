@@ -5,64 +5,41 @@ using Microsoft.Xna.Framework.Graphics;
 using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
 using Elves.Scenes;
+using System.Threading;
+using TwelveEngine.Shell;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererScene {
          
         public BattleScript Script { get; private set; }
 
-        private readonly struct ScriptCompletionData {
-            public readonly BattleResult BattleResult { get; init;  }
-            public readonly Exception Exception { get; init; }
-        } 
-
-        private ScriptCompletionData? _scriptCompletionData = null;
-
         private void Initialize(BattleScript script) {
             Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.ID})";
             script.SetSequencer(this);
             Script = script;
-            OnLoad += RunScript;
-            OnUpdate += CheckForScriptEnd;
-        }
-
-        private void CheckForScriptEnd() {
-            if(!_scriptCompletionData.HasValue) {
-                return;
-            }
-            ScriptCompletionData data = _scriptCompletionData.Value;
-            if(data.Exception is not null) {
-                throw data.Exception;
-            }
-            EndScene(ExitValue.Get(data.BattleResult));
+            OnLoad += AddScriptToScheduler;
         }
 
         public BattleSequencer(BattleScript script,string background):base(background) => Initialize(script);
         public BattleSequencer(BattleScript script,Texture2D background):base(background) => Initialize(script);
         public BattleSequencer(BattleScript script):base() => Initialize(script);
 
-        private async void RunScript() {
-            try {
-                BattleResult battleResult = await Script.Main();
-                _scriptCompletionData = new() {
-                    BattleResult = battleResult,
-                    Exception = null
-                };
-            } catch(Exception expcetion) {
-                _scriptCompletionData = new() {
-                    BattleResult = BattleResult.Stalemate,
-                    Exception = expcetion
-                };
-            }
+        private void AddScriptToScheduler() => GameLoopSyncContext.RunTask(ExecuteScript);
+
+        private async Task ExecuteScript() {
+            BattleResult battleResult = await Script.Main();
+            EndScene(ExitValue.Get(battleResult));
         }
 
         private TaskCompletionSource<int> buttonTask;
 
         private static readonly string[] DefaultOptions = new string[] { Constants.Battle.ContinueText };
 
-        public Task ContinueButton() => GetButton(true,DefaultOptions);
+        public async Task ContinueButton() {
+            await GetButton(true,DefaultOptions);
+        }
 
-        public Task<int> GetButton(bool isContinue,params string[] options) {
+        public async Task<int> GetButton(bool isContinue,params string[] options) {
             if(options.Length < 1) {
                 options = DefaultOptions;
             }
@@ -96,7 +73,7 @@ namespace Elves.Battle {
                 Logger.WriteLine("Fatal script error! Tried to get more than one button at a time...",LoggerLabel.Script);
             }
             buttonTask = new TaskCompletionSource<int>();
-            return buttonTask.Task;
+            return await buttonTask.Task;
         }
 
         protected override void ActionButtonClicked(int ID) {

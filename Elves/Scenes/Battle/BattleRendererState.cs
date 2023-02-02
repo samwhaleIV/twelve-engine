@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine;
 using Elves.Scenes.Battle.UI;
-using TwelveEngine.UI;
 using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 using Elves.Battle;
@@ -48,6 +46,7 @@ namespace Elves.Scenes.Battle {
             OnUpdate += UpdateUI;
             OnRender += BattleScene_OnRender;
             OnPreRender += BattleRendererState_OnPreRender;
+            Camera.Orthographic = true;
         }
 
         private void BattleScene_OnLoad() {

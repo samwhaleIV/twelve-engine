@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Elves.Battle;
 using Elves.ElfData;
 
@@ -8,6 +9,7 @@ namespace Elves.Battles {
             CreatePlayer();
             CreateActor(ElfManifest.Get(ElfID.HarmlessElf));
             while(EverybodyIsAlive) {
+                await Continue();
                 await GetButton("EAT","MY","ASS","PLEASE");
                 await Tag("THIS IS NOT VERY EFFECTIVE");
                 await Speech("The text rendering in this speech box is still a little fucked up... But you get the idea.".ToUpperInvariant());

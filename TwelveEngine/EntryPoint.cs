@@ -6,42 +6,70 @@ namespace TwelveEngine {
 
     public abstract class EntryPoint {
 
+        private GameStateManager game = null;
+
         protected abstract void OnGameLoad(GameStateManager game,string saveDirectory);
         protected abstract void OnGameCrashed();
 
-        private void Game_OnLoad(GameStateManager game) {
-            game.SyncContext = new GameLoopSyncContext();
-            game.Disposed += Game_Disposed;
+        private void Game_OnLoad() {
             Fonts.Load(game);
             OnGameLoad(game,SaveDirectory);
+        }
+
+        private static void LogFatalException(Exception exception) {
+            Logger.WriteLine($"Fatal game error: {exception}");
+        }
+
+        private void HandleSyncContextException(Exception exception) {
+            LogFatalException(exception);
+            OnGameCrashed();
+            if(Flags.Get(Constants.Flags.NoFailSafe)) {
+                game.ReroutedException = exception;
+                return;
+            }
+            game.Exit();
+        }
+
+        private void HandleGameLoopException(Exception exception) {
+            LogFatalException(exception);
+            OnGameCrashed();
         }
 
         private void Game_Disposed(object sender,EventArgs args) {
             Logger.CleanUp();
         }
 
-        private void RunGameWithExceptionHandling(GameStateManager game) {
+        private void RunGameWithExceptionHandling() {
             try {
                 game.Run();
             } catch(Exception exception) {
-                Logger.WriteLine($"An unexpected error has occurred: {exception}");
-                OnGameCrashed();
+                HandleGameLoopException(exception);
             }
         }
 
         private void InitializeGameManager() {
-            using GameStateManager game = new(
+            game = new GameStateManager(
                 fullscreen: Flags.Get(Constants.Flags.Fullscreen),
                 hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
                 verticalSync: !Flags.Get(Constants.Flags.NoVsync),
                 drawDebug: Flags.Get(Constants.Flags.DrawDebug)
             );
+
+            game.SyncContext = new GameLoopSyncContext();
+            GameLoopSyncContext.Context.OnTaskException += HandleSyncContextException;
+
+            game.Disposed += Game_Disposed;
             game.OnLoad += Game_OnLoad;
+
             if(Flags.Get(Constants.Flags.NoFailSafe)) {
                 game.Run();
             } else {
-                RunGameWithExceptionHandling(game);
+                RunGameWithExceptionHandling();
             }
+            GameLoopSyncContext.Context.Clear();
+
+            game.Dispose();
+            game = null;
         }
 
         private static bool ValidateSaveDirectory(string directory) {

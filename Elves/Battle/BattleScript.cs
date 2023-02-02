@@ -212,12 +212,13 @@ namespace Elves.Battle {
             _sequencer.HideSpeech(ActorSprite);
         }
 
-        protected Task<int> GetButton(params string[] options) {
-            return _sequencer.GetButton(false,options);
+        protected async Task<int> GetButton(params string[] options) {
+            return await _sequencer.GetButton(false,options);
         }
 
-        protected Task Continue() {
-            return _sequencer.ContinueButton();
+        protected async Task Continue() {
+            throw new Exception();
+            await _sequencer.ContinueButton();
         }
 
         internal void SetSequencer(BattleSequencer sequencer) {

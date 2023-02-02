@@ -52,6 +52,7 @@ namespace TwelveEngine {
             public const string NoVsync = "novsync";
             public const string Fullscreen = "fullscreen";
             public const string DrawDebug = "drawdebug";
+            public const string Console = "console";
         }
 
         public static class UI {

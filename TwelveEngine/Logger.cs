@@ -86,7 +86,17 @@ namespace TwelveEngine {
             return HasStreamWriter;
         }
 
+#if DEBUG
+        [DllImport("kernel32.dll",SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool AllocConsole();
+#endif
         public static void Initialize(string path) {
+#if DEBUG
+            if(Flags.Get(Constants.Flags.Console)) {
+                AllocConsole();
+            }
+#endif
             if(TryCreateStreamWriter(path)) {
                 WriteLine($"[{DateTime.UtcNow} UTC] Game started.");
             } else {
