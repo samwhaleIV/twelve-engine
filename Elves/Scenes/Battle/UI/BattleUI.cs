@@ -32,8 +32,12 @@ namespace Elves.Scenes.Battle.UI {
             owner.OnInputActivated += FocusDefault;
         }
 
-        protected override bool GetMouseIsCapturing() {
-            return owner.Mouse.Capturing;
+        protected override bool GetLeftMouseButtonIsCaptured() {
+            return owner.Mouse.CapturingLeft;
+        }
+
+        protected override bool GetRightMouseButtonIsCaptured() {
+            return owner.Mouse.CapturingRight;
         }
 
         protected override bool GetContextTransitioning() {

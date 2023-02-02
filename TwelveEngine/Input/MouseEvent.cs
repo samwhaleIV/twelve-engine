@@ -18,11 +18,11 @@
         }
 
         public static MouseEvent RightClickPress(Point position) {
-            return new(MouseEventType.LeftClickPressed,position);
+            return new(MouseEventType.RightClickPressed,position);
         }
 
         public static MouseEvent RightClickRelease(Point position) {
-            return new(MouseEventType.LeftClickReleased,position);
+            return new(MouseEventType.RightClickReleased,position);
         }
 
         public static MouseEvent Scroll(bool scrollingUp,Point position) {

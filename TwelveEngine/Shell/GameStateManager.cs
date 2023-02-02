@@ -40,6 +40,8 @@ namespace TwelveEngine.Shell {
 
         internal bool DrawDebug { get; private init; }
 
+        internal GameLoopSyncContext SyncContext { get; set; }
+
         internal GameStateManager(
             bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool drawDebug = false
         ) {
@@ -323,6 +325,7 @@ namespace TwelveEngine.Shell {
             } else if(_framesToSkip > 0) {
                 FastForward();
             }
+            SyncContext.Update();
             _updateDuration = ReadWatchAndReset();
             _isUpdating = false;
         }

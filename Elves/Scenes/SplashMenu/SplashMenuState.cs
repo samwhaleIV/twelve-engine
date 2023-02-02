@@ -22,13 +22,16 @@ namespace Elves.Scenes.SplashMenu {
             Name = "Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
-            Mouse.Router.OnRelease += Mouse_OnRelease;
-            Mouse.Router.OnPress += Router_OnPress;
+            Mouse.Router.OnRelease += LeftMouseButtonReleased;
+            Mouse.Router.OnPress += LeftMouseButtonPressed;
             Impulse.Router.OnAcceptDown += Input_OnAcceptDown;
             OnUpdate += SplashMenuState_OnUpdate;
         }
 
-        private void Router_OnPress() {
+        private void LeftMouseButtonPressed() {
+            if(Mouse.CapturingRight) {
+                return;
+            }
             capturingPlayButton = MouseOnPlayButton;
         }
 
@@ -37,7 +40,7 @@ namespace Elves.Scenes.SplashMenu {
                 CustomCursor.State = CursorState.Default;
                 return;
             }
-            CustomCursor.State = capturingPlayButton ?
+            CustomCursor.State = Mouse.CapturingRight ? CursorState.Default : capturingPlayButton ?
                 (MouseOnPlayButton ? CursorState.Pressed : CursorState.Default):
                 (MouseOnPlayButton ? CursorState.Interact : CursorState.Default);
         }
@@ -51,9 +54,10 @@ namespace Elves.Scenes.SplashMenu {
 
         private bool MouseOnPlayButton => playButton.Area.Contains(Mouse.Position);
 
-        private void Mouse_OnRelease() {
+        private void LeftMouseButtonReleased() {
+            bool canFulfil = MouseOnPlayButton && capturingPlayButton;
             capturingPlayButton = false;
-            if(!MouseOnPlayButton) {
+            if(!canFulfil) {
                 return;
             }
             EndScene(ExitValue.None);

@@ -38,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\MouseEventType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\MultiBindKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\ValidKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\GameLoopSyncContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RuntimeTextures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputStateCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\UI\TimeWriters.cs" />

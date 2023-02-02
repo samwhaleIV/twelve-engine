@@ -25,8 +25,12 @@ namespace TwelveEngine.UI.Book {
             return base.GetContextTransitioning() || (owner?.IsTransitioning ?? false);
         }
 
-        protected override bool GetMouseIsCapturing() {
-            return owner?.Mouse.Capturing ?? false;
+        protected override bool GetLeftMouseButtonIsCaptured() {
+            return owner?.Mouse.CapturingLeft ?? false;
+        }
+
+        protected override bool GetRightMouseButtonIsCaptured() {
+            return owner?.Mouse.CapturingRight ?? false;
         }
     }
 }

@@ -10,6 +10,7 @@ namespace TwelveEngine {
         protected abstract void OnGameCrashed();
 
         private void Game_OnLoad(GameStateManager game) {
+            game.SyncContext = new GameLoopSyncContext();
             game.Disposed += Game_Disposed;
             Fonts.Load(game);
             OnGameLoad(game,SaveDirectory);
