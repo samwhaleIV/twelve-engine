@@ -16,57 +16,19 @@ namespace Elves.Scenes.SplashMenu {
         private const float FOREGROUND_WATER_OPACITY = 0.592f;
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
-        private bool capturingPlayButton = false;
 
         public SplashMenuState():base(Program.Textures.Nothing,true) {
             Name = "Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad += SplashMenuState_OnLoad;
-            Mouse.Router.OnRelease += LeftMouseButtonReleased;
-            Mouse.Router.OnPress += LeftMouseButtonPressed;
-            Impulse.Router.OnAcceptDown += Input_OnAcceptDown;
-            OnUpdate += SplashMenuState_OnUpdate;
-        }
-
-        private void LeftMouseButtonPressed() {
-            if(Mouse.CapturingRight) {
-                return;
-            }
-            capturingPlayButton = MouseOnPlayButton;
-        }
-
-        private void SplashMenuState_OnUpdate() {
-            if(IsTransitioning) {
-                CustomCursor.State = CursorState.Default;
-                return;
-            }
-            CustomCursor.State = Mouse.CapturingRight ? CursorState.Default : capturingPlayButton ?
-                (MouseOnPlayButton ? CursorState.Pressed : CursorState.Default):
-                (MouseOnPlayButton ? CursorState.Interact : CursorState.Default);
-        }
-
-        private void Input_OnAcceptDown() {
-            if(Mouse.Capturing) {
-                return;
-            }
-            EndScene(ExitValue.None);
-        }
-
-        private bool MouseOnPlayButton => playButton.Area.Contains(Mouse.Position);
-
-        private void LeftMouseButtonReleased() {
-            bool canFulfil = MouseOnPlayButton && capturingPlayButton;
-            capturingPlayButton = false;
-            if(!canFulfil) {
-                return;
-            }
-            EndScene(ExitValue.None);
+            UI = new SplashMenuUI(this);
         }
 
         private Screenspace3DSprite fallingElf;
         private TextureEntity waterOverlay;
         private Screenspace3DSprite nameBadge;
-        private Screenspace3DSprite playButton;
+        public Screenspace3DSprite PlayButton;
+        public SplashMenuUI UI { get; private set; }
 
         private readonly List<Screenspace3DSprite> floatingItems = new(FloatingItem.TOTAL_ITEM_COUNT);
 
@@ -89,7 +51,7 @@ namespace Elves.Scenes.SplashMenu {
                 PixelSmoothing = false,
                 Depth = Constants.Depth.SuperForeground
             };
-            playButton = new Screenspace3DSprite(menuTexture) {
+            PlayButton = new Screenspace3DSprite(menuTexture) {
                 TextureSource = new Rectangle(0,78,38,20),
                 PixelSmoothing = false,
                 Depth = Constants.Depth.SuperForeground
@@ -98,21 +60,21 @@ namespace Elves.Scenes.SplashMenu {
             waterOverlay.SetUVArea(0,32,16,16);
             fallingElf.OnUpdate += FallingElf_OnUpdate;
             nameBadge.OnUpdate += NameBadge_OnUpdate;
-            playButton.OnUpdate += PlayButton_OnUpdate;
+            PlayButton.OnUpdate += PlayButton_OnUpdate;
 
             Entities.Add(fallingElf);
             Entities.Add(waterOverlay);
             Entities.Add(nameBadge);
-            Entities.Add(playButton);
+            Entities.Add(PlayButton);
             AddFloatingItems(menuTexture);
         }
 
         private void PlayButton_OnUpdate() {
             Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale() * PLAY_BUTTON_SCALE;
-            Vector2 size = playButton.TextureSource.Size.ToVector2() * scale;
+            Vector2 size = PlayButton.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
-            playButton.Area = new FloatRectangle(center,size);
+            PlayButton.Area = new FloatRectangle(center,size);
         }
 
         private void NameBadge_OnUpdate() {

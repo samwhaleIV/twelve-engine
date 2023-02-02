@@ -48,7 +48,6 @@ namespace Elves.Scenes.Battle {
             OnUpdate += UpdateUI;
             OnRender += BattleScene_OnRender;
             OnPreRender += BattleRendererState_OnPreRender;
-            Camera.Orthographic = !DebugOrtho;
         }
 
         private void BattleScene_OnLoad() {

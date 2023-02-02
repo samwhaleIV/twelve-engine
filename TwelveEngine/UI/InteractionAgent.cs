@@ -268,7 +268,7 @@ namespace TwelveEngine.UI {
             if(!ElementCanFulfilInteraction(element)) {
                 return false;
             }
-            element.EndPoint.Activate();
+            element.Endpoint.Activate();
             return true;
         }
 
@@ -348,7 +348,7 @@ namespace TwelveEngine.UI {
 
 
         private static bool ElementCanFulfilInteraction(TElement element) {
-            return element.CanInteract && !element.InputIsPaused && element.EndPoint is not null;
+            return element.CanInteract && !element.InputIsPaused && element.Endpoint is not null;
         }
 
         /// <summary>

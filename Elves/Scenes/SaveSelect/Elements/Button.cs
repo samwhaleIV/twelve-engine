@@ -22,7 +22,7 @@ namespace Elves.Scenes.SaveSelect {
             Position = new(0.5f);
             PositionMode = CoordinateMode.Relative;
 
-            EndPoint = new Endpoint<ButtonImpulse>(this);
+            Endpoint = new Endpoint<ButtonImpulse>(this);
         }
 
         public bool IsEven { get; set; } = false;

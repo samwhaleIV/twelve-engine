@@ -5,7 +5,7 @@
         /// End point for element activation routing.<br/> Supports variable return values.
         /// See <see cref="Endpoint{TReturnValue}"/>.
         /// </summary>
-        protected internal Endpoint EndPoint { get; protected set; }
+        protected internal Endpoint Endpoint { get; protected set; }
 
         private bool _inputPaused = false;
 

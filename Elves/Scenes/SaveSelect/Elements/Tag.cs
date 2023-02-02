@@ -52,7 +52,7 @@ namespace Elves.Scenes.SaveSelect {
 
             OnRender += Tag_OnRender;
 
-            EndPoint = new Endpoint<Tag>(this);
+            Endpoint = new Endpoint<Tag>(this);
         }
 
         private readonly Interpolator blipAnimator = new(TimeSpan.FromMilliseconds(175));

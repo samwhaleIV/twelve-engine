@@ -5,7 +5,6 @@ using System;
 using System.Text;
 using TwelveEngine;
 using TwelveEngine.UI;
-using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Battle.UI {
     public sealed class Button:UIElement,IEndpoint<int> {
@@ -16,7 +15,7 @@ namespace Elves.Scenes.Battle.UI {
 
         public Button() {
             Texture = Program.Textures.Panel;
-            EndPoint = new Endpoint<int>(this);
+            Endpoint = new Endpoint<int>(this);
         }
 
         public Rectangle TextureSource { get; set; }
