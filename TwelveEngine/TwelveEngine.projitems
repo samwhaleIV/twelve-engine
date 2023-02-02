@@ -47,6 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Endpoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\FocusElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\FocusSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\InputGameStateUIProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\InteractionAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />

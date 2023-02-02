@@ -7,10 +7,13 @@ namespace Elves.Scenes.SplashMenu {
 
         public SplashMenuButton(SplashMenuState menu) {
             this.menu = menu;
+            CanInteract = true;
             Endpoint = new(Click);
         }
 
-        private void Click() => menu.EndScene(ExitValue.None);
+        private void Click() {
+            menu.EndScene(ExitValue.None);
+        }
 
         public override FloatRectangle GetScreenArea() {
             return menu.PlayButton.Area;
