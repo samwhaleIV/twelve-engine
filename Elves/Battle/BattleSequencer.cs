@@ -79,7 +79,10 @@ namespace Elves.Battle {
 
         public async Task<int> GetButton(bool isContinue,params string[] options) {
             if(options.Length < 1) {
-                options = DefaultOptions;
+                HideAllButtons();
+                buttonTask = new TaskCompletionSource<int>();
+                buttonTask.SetResult(-1);
+                return await buttonTask.Task;
             }
 
             for(int i = 0;i<4;i++) {
