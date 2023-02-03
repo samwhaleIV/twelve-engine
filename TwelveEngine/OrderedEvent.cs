@@ -43,8 +43,10 @@
             if(action is null) {
                 throw new ArgumentNullException(nameof(action));
             }
+            int ID = _IDCounter;
+            _IDCounter += 1;
             PriorityAction<TAction> priorityAction = new() {
-                ID = _IDCounter += 1,
+                ID = ID,
                 Action = action,
                 Priority = priority
             };
@@ -54,9 +56,6 @@
         }
 
         public void Remove(int ID) {
-            if(!sortedSet.Contains(ID)) {
-                throw new ArgumentOutOfRangeException($"Action for ID '{ID}' does is not in the event table.");
-            }
             sortedSet.Remove(ID);
             _bufferNeedsRefresh = true;
         }
@@ -65,6 +64,7 @@
             if(!_bufferNeedsRefresh) {
                 return;
             }
+            _actionBuffer.Clear();
             for(int i = 0;i< sortedSet.Count;i++) {
                 _actionBuffer.Enqueue(sortedSet.List[i]);
             }

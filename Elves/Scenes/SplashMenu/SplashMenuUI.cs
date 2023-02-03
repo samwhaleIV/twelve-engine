@@ -7,7 +7,9 @@ namespace Elves.Scenes.SplashMenu {
         private readonly List<SplashMenuButton> buttonList;
 
         public SplashMenuUI(SplashMenuState state) : base(state) {
-            buttonList = new List<SplashMenuButton>() { new SplashMenuButton(State) };
+            var button = new SplashMenuButton(State);
+            buttonList = new List<SplashMenuButton>() { button };
+            DefaultFocusElement = button;
         }
 
         protected override IEnumerable<SplashMenuButton> GetElements() {

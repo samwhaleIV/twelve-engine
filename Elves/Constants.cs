@@ -67,7 +67,7 @@ namespace Elves {
 
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
 
-            public static readonly TimeSpan BattleEndDelay = TimeSpan.FromSeconds(3f);
+            public static readonly TimeSpan BattleEndDelay = TimeSpan.FromSeconds(2f);
         }
 
         public static class Songs {

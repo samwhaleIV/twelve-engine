@@ -10,6 +10,8 @@ using Elves.Scenes.SaveSelect;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererScene {
+
+        private const int BUTTON_COUNT = 4;
          
         public BattleScript Script { get; private set; }
 
@@ -26,7 +28,7 @@ namespace Elves.Battle {
         private void SetupDefaultUIState() {
             TimeSpan now = Now;
             UI.Button1.SetState(now,ButtonState.CenterBottom);
-            for(int i = 0;i<4;i++) {
+            for(int i = 0;i<BUTTON_COUNT;i++) {
                 var button = UI.GetActionButton(i);
                 button.ClearKeyFocus();
                 button.CanInteract = false;
@@ -59,39 +61,49 @@ namespace Elves.Battle {
 
         private void AddScriptToScheduler() => GameLoopSyncContext.RunTask(ExecuteScript);
 
+        private TimeSpan exitStart;
+        private ExitValue exitValue;
+
+        private int endSceneHandle;
+
+        private void EndSceneDelay() {
+            if(Now - exitStart < Constants.AnimationTiming.BattleEndDelay) {
+                return;
+            }
+            OnUpdate.Remove(endSceneHandle);
+            EndScene(exitValue);
+        }
+
         private async Task ExecuteScript() {
             Script.Setup();
             await TransitionIn();
             BattleResult battleResult = await Script.Main();
             await Script.Exit(battleResult);
             HideAllButtons();
-            await Task.Delay(Constants.AnimationTiming.BattleEndDelay);
-            EndScene(ExitValue.Get(battleResult));
+            exitValue = ExitValue.Get(battleResult);
+            exitStart = Now;
+            endSceneHandle = OnUpdate.Add(EndSceneDelay);
         }
 
         private TaskCompletionSource<int> buttonTask;
 
         private static readonly string[] DefaultOptions = new string[] { Constants.Battle.ContinueText };
 
-        public async Task ContinueButton() {
-            await GetButton(true,DefaultOptions);
-        }
+        public async Task ContinueButton() => await GetButton(true,DefaultOptions);
 
         public async Task<int> GetButton(bool isContinue,params string[] options) {
             if(options.Length < 1) {
-                HideAllButtons();
-                buttonTask = new TaskCompletionSource<int>();
-                buttonTask.SetResult(-1);
-                return await buttonTask.Task;
+                /* Might want to handle this better if we ever create a opened battle API */
+                options = DefaultOptions;
             }
 
-            for(int i = 0;i<4;i++) {
+            for(int i = 0;i<BUTTON_COUNT;i++) {
                 var button = UI.GetActionButton(i);
                 button.ClearKeyFocus();
                 button.CanInteract = false;
             }
 
-            int end = Math.Min(options.Length,4);
+            int end = Math.Min(options.Length,BUTTON_COUNT);
             for(int i = 0;i<end;i++) {
                 var button = UI.GetActionButton(i);
                 button.CanInteract = true;
@@ -139,7 +151,7 @@ namespace Elves.Battle {
             UI.SpeechBox.Hide(Now);
         }
 
-        public void ShowTag(string text) {
+        public void SetTag(string text) {
             if(UI.Tagline.IsShown) {
                 UI.Tagline.CycleText(Now);
             }
@@ -148,9 +160,7 @@ namespace Elves.Battle {
             UI.Tagline.Show(Now);
         }
 
-        public void HideTag() {
-            UI.Tagline.Hide(Now);
-        }
+        public void HideTag() => UI.Tagline.Hide(Now);
 
         protected override UserData GetPlayerData() => Script.Player;
         protected override UserData GetTargetData() => Script.Actor;
