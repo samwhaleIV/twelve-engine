@@ -11,15 +11,14 @@ namespace Elves.Scenes.Intro {
 
         public static readonly string[] Text = new string[] {
             "It's been four years since the revolt.",
-            "... How easily that history repeats itself.",
+            "How easily that history repeats itself.",
             "A new generation is doomed to forget.",
             "A painful past falls on deaf ears.",
-            "Tinsels and stockings, shackles and shockings.",
-            "Oh, it's the happiest time of the year!",
-            "But per a peace to protect comes a price to collect.",
+            "It's the happiest time of the year.",
+            "... And it comes at a cost.",
             "The world needs a hero, but not today.",
-            "Face it, you're kissing under the wrong mistletoe.",
-            "Oh, but how right that wrong can feel."
+            "You're fighting for the wrong side.",
+            "But it's not like you have a choice."
         };
 
         public IntroScene() {

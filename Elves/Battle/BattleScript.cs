@@ -105,11 +105,18 @@ namespace Elves.Battle {
             return SetActor(sprite);
         }
 
+        protected virtual void BindActorAnimations(BattleSprite sprite) {
+            sprite.UserData.OnHurt += () => sprite.SetAnimation(AnimationType.Hurt);
+            sprite.UserData.OnDied += () => sprite.SetAnimation(AnimationType.Dead);
+        }
+
         private UserData SetActor(BattleSprite sprite) {
             _sequencer.Background.Color = sprite.UserData.Color;
-            _actorData = sprite.UserData;
+            var userData = sprite.UserData;
+            _actorData = userData;
             _actorSprite = sprite;
-            return sprite.UserData;
+            BindActorAnimations(sprite);
+            return userData;
         }
 
         private static UserData GetFallbackUserData() => new(Constants.Battle.NoName);
@@ -147,17 +154,17 @@ namespace Elves.Battle {
         protected async Task Tag(params string[] tags) {
             foreach(var tag in tags) {
                 SetTag(tag);
-                await _sequencer.ContinueButton();
+                await Continue();
             }
             HideTag();
         }
 
         protected async Task Speech(params string[] speeches) {
             foreach(var speech in speeches) {
-                _sequencer.ShowSpeech(speech,ActorSprite);
-                await _sequencer.ContinueButton();
+                ShowSpeech(speech);
+                await Continue();
             }
-            _sequencer.HideSpeech(ActorSprite);
+            HideSpeech();
         }
 
         public virtual async Task Exit(BattleResult battleResult) {

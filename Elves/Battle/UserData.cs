@@ -1,5 +1,6 @@
 ﻿using Elves.ElfData;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace Elves.Battle {
     public sealed class UserData {
@@ -30,7 +31,21 @@ namespace Elves.Battle {
 
         public float HealthFraction => _maxHealth <= 0 ? 0 : _health / _maxHealth;
 
-        private float ValidateHealth(float value) {
+        private void FireHealthChangeEvents(float health,float oldHealth) {
+            if(health == oldHealth) {
+                return;
+            }
+            if(health < oldHealth) {
+                OnHurt?.Invoke();
+            } else {
+                OnHeal?.Invoke();
+            }
+            if(health <= 0) {
+                OnDied?.Invoke();
+            }
+        }
+
+        private float UpdateHealth(float value) {
             if(value > _maxHealth) {
                 value = _maxHealth;
             }
@@ -42,27 +57,27 @@ namespace Elves.Battle {
 
         public float Health {
             get => _health;
-            set => _health = ValidateHealth(value);
+            set {
+                float oldValue = _health;
+                _health = UpdateHealth(value);
+                FireHealthChangeEvents(_health,oldValue);
+            }
         }
 
         public float MaxHealth {
             get => _maxHealth;
             set {
+                float oldValue = _health;
                 _maxHealth = value;
-                _health = ValidateHealth(Health);
+                _health = UpdateHealth(value);
+                FireHealthChangeEvents(_health,oldValue);
             }
         }
 
-        public void Heal(float amount) {
-            Health = ValidateHealth(Health + amount);
-        }
+        public void Heal(float amount) => Health += amount;
+        public void Hurt(float amount) => Health -= amount;
+        public void Kill() => Health = 0;
 
-        public void Hurt(float amount) {
-            Health = ValidateHealth(Health - amount);
-        }
-
-        public void Kill() {
-            Health = 0;
-        }
+        public event Action OnHeal, OnHurt, OnDied;
     }
 }
