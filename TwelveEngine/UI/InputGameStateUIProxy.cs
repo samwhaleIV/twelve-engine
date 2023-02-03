@@ -7,7 +7,7 @@ namespace TwelveEngine.UI {
         public InputGameStateUIProxy(TState state) {
             State = state;
             BindInputEvents(State);
-            state.OnUpdate += SetCustomCursor;
+            state.OnUpdate.Add(SetCustomCursor);
         }
 
         private void SetCustomCursor() => CustomCursor.State = CursorState;

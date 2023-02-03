@@ -20,7 +20,7 @@ namespace Elves.Scenes.SplashMenu {
         public SplashMenuState():base(Program.Textures.Nothing,true) {
             Name = "Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
-            OnLoad += SplashMenuState_OnLoad;
+            OnLoad.Add(Load);
             UI = new SplashMenuUI(this);
         }
 
@@ -34,7 +34,7 @@ namespace Elves.Scenes.SplashMenu {
 
         private readonly Random random = new();
 
-        private void SplashMenuState_OnLoad() {
+        private void Load() {
             var menuTexture = Program.Textures.Drowning;
             fallingElf = new Screenspace3DSprite(menuTexture) {
                 TextureSource = new Rectangle(0,0,41,29),
@@ -58,9 +58,9 @@ namespace Elves.Scenes.SplashMenu {
             };
             waterOverlay.Position = new Vector3(waterOverlay.Position.X,waterOverlay.Position.Y,Constants.Depth.Foreground);
             waterOverlay.SetUVArea(0,32,16,16);
-            fallingElf.OnUpdate += FallingElf_OnUpdate;
-            nameBadge.OnUpdate += NameBadge_OnUpdate;
-            PlayButton.OnUpdate += PlayButton_OnUpdate;
+            fallingElf.OnUpdate += UpdateFallingElfArea;
+            nameBadge.OnUpdate += UpdateNameBadgeArea;
+            PlayButton.OnUpdate += UpdatePlayButtonArea;
 
             Entities.Add(fallingElf);
             Entities.Add(waterOverlay);
@@ -69,7 +69,7 @@ namespace Elves.Scenes.SplashMenu {
             AddFloatingItems(menuTexture);
         }
 
-        private void PlayButton_OnUpdate() {
+        private void UpdatePlayButtonArea() {
             Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale() * PLAY_BUTTON_SCALE;
             Vector2 size = PlayButton.TextureSource.Size.ToVector2() * scale;
@@ -77,7 +77,7 @@ namespace Elves.Scenes.SplashMenu {
             PlayButton.Area = new FloatRectangle(center,size);
         }
 
-        private void NameBadge_OnUpdate() {
+        private void UpdateNameBadgeArea() {
             Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = nameBadge.TextureSource.Size.ToVector2() * scale;
@@ -94,7 +94,7 @@ namespace Elves.Scenes.SplashMenu {
             }
         }
 
-        private void FallingElf_OnUpdate() {
+        private void UpdateFallingElfArea() {
             Rectangle bounds = Viewport.Bounds;
             float scale = GetUIScale();
             Vector2 size = fallingElf.TextureSource.Size.ToVector2() * scale;

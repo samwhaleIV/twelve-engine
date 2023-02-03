@@ -7,8 +7,8 @@ namespace Elves.Scenes {
     public abstract class OrthoBackgroundScene:Scene3D {
 
         private void Initialize() {
-            OnLoad += OrthoBackgroundScene_OnLoad;
-            OnUpdate += OrthoBackgroundScene_OnUpdate;
+            OnLoad.Add(LoadBackground);
+            OnUpdate.Add(UpdateBackground);
             Camera.Orthographic = true;
         }
 
@@ -58,7 +58,7 @@ namespace Elves.Scenes {
         private readonly bool smoothBackground;
         private readonly Texture2D backgroundImageTexture;
 
-        private void OrthoBackgroundScene_OnLoad() {
+        private void LoadBackground() {
             if(backgroundImageTexture != null) {
                 background = new TextureEntity(backgroundImageTexture);
             } else {
@@ -71,7 +71,7 @@ namespace Elves.Scenes {
             Entities.Add(background);
         }
 
-        private void OrthoBackgroundScene_OnUpdate() {
+        private void UpdateBackground() {
             background.SetColors(backgroundColors);
             if(ScrollingBackground) {
                 double scrollT = Now / ScrollingBackgroundPeriod % 1d;

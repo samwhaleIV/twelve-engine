@@ -9,24 +9,22 @@
         public FloatRectangle Area { get; set; } = FloatRectangle.Zero; /* Space in pixels */
         public Rectangle TextureSource { get; set; }
 
-        private void Initialize() {
-            OnPreRender += Screenspace3DSprite_OnPreRender;
-        }
+        private void Initialize() => OnPreRender += UpdateVerticesArea;
 
         public Vector2 RotationOrigin { get; set; } = new Vector2(0.5f,0.5f);
 
-        private void Screenspace3DSprite_OnPreRender() {
+        private void UpdateVerticesArea() {
             /* This took 5 hours. I suck at math, apparently */
             SetUVArea(TextureSource);
 
             var orthoArea = Owner.Camera.OrthographicArea;
             var viewportSize = Owner.Viewport.Bounds.Size.ToVector2();
 
-            float left = (Area.Left / viewportSize.X) * orthoArea.Width + orthoArea.Left;
-            float right = (Area.Right / viewportSize.X) * orthoArea.Width + orthoArea.Left;
+            float left = Area.Left / viewportSize.X * orthoArea.Width + orthoArea.Left;
+            float right = Area.Right / viewportSize.X * orthoArea.Width + orthoArea.Left;
 
-            float top = (Area.Top / viewportSize.Y) * orthoArea.Height + orthoArea.Top;
-            float bottom = (Area.Bottom / viewportSize.Y) * orthoArea.Height + orthoArea.Top;
+            float top = Area.Top / viewportSize.Y * orthoArea.Height + orthoArea.Top;
+            float bottom = Area.Bottom / viewportSize.Y * orthoArea.Height + orthoArea.Top;
 
             float centerX = left + (right - left) * RotationOrigin.X;
             float centerY = top + (bottom - top) * RotationOrigin.Y;

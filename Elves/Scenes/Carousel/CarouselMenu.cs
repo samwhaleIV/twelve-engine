@@ -9,18 +9,18 @@ namespace Elves.Scenes.Carousel {
             Name = "Carousel Menu";
             UI = new(this);
             UI.BindInputEvents(this);
-            OnPreRender += PreRenderCarouselScene;
-            OnRender += CarouselMenu_OnRender;
-            OnUpdate += CarouselMenu_OnUpdate;
+            OnPreRender.Add(PreRenderCarouselScene);
+            OnRender.Add(Render);
+            OnUpdate.Add(Update);
         }
 
-        private void CarouselMenu_OnUpdate() {
+        private void Update() {
             UI.Update(Now,new(Viewport));
             CustomCursor.State = UI.CursorState;
             UpdateCarouselItems();
         }
 
-        private void CarouselMenu_OnRender() {
+        private void Render() {
             RenderCarouselScene();
             UI.Render(SpriteBatch);
         }

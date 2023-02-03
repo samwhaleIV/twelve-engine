@@ -8,24 +8,31 @@ namespace TwelveEngine.Game3D {
 
         private readonly EntitySortMode entitySortMode;
 
-        public GameState3D(EntitySortMode entitySortMode) {
+        public GameState3D(EntitySortMode entitySortMode,bool updateCameraAfterEntities = true) {
             this.entitySortMode = entitySortMode;
 
-            OnLoad += GameState3D_OnLoad;
-            OnWriteDebug += GameState3D_OnWriteDebug;
-            OnPreRender += GameState3D_OnPreRender;
-            OnRender += GameState3D_OnRender;
+            OnLoad.Add(LoadEntities);
+            OnWriteDebug.Add(Write3DInfo);
 
-            OnUpdate += UpdateCameraScreenSize;
+            OnUpdate.Add(UpdateCameraScreenSize,EventPriority.First);
+            OnPreRender.Add(TryUpdateLocalMatrices,EventPriority.First);
+            OnRender.Add(ClearLocalMatrixUpdateFlags,EventPriority.First);
+
+            if(updateCameraAfterEntities) {
+                OnUpdate.Add(UpdateEntities);
+                OnUpdate.Add(UpdateCamera);
+            } else {
+                OnUpdate.Add(UpdateCamera);
+                OnUpdate.Add(UpdateEntities);
+            }
         }
-
 
         public Matrix ViewMatrix, ProjectionMatrix;
 
         public bool ProjectionMatrixUpdated { get; private set; } = true;
         public bool ViewMatrixUpdated { get; private set; } = true;
 
-        private void GameState3D_OnPreRender() {
+        private void TryUpdateLocalMatrices() {
             if(ProjectionMatrixUpdated) {
                 ProjectionMatrix = _camera?.ProjectionMatrix ?? Matrix.Identity;
             }
@@ -33,12 +40,13 @@ namespace TwelveEngine.Game3D {
                 ViewMatrix = _camera?.ViewMatrix ?? Matrix.Identity;
             }
         }
-        private void GameState3D_OnRender() {
+
+        private void ClearLocalMatrixUpdateFlags() {
             ProjectionMatrixUpdated = false;
             ViewMatrixUpdated = false;
         }
 
-        private void GameState3D_OnWriteDebug(DebugWriter writer) {
+        private void Write3DInfo(DebugWriter writer) {
             writer.ToTopLeft();
             writer.Write(Camera.Position);
             if(Camera is not AngleCamera angleCamera) {
@@ -49,22 +57,8 @@ namespace TwelveEngine.Game3D {
 
         public EntityManager<Entity3D,GameState3D> Entities { get; private set; }
 
-        private void GameState3D_OnLoad() {
+        private void LoadEntities() {
             Entities = new EntityManager<Entity3D,GameState3D>(this);
-            OnUpdate += FinalizeUpdate;
-        }
-
-        public bool UpdateCameraAfterEntities { get; set; } = true;
-
-        /* Hopefully calling this in the load constructor allows this to invoke after the derived class updates (usually bound in the constructor) */
-        private void FinalizeUpdate() {
-            if(UpdateCameraAfterEntities) {
-                UpdateEntities();
-                UpdateCamera();
-            } else {
-                UpdateCamera();
-                UpdateEntities();
-            }
         }
 
         private void UpdateCameraScreenSize() {

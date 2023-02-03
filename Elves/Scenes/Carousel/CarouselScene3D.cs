@@ -38,7 +38,7 @@ namespace Elves.Scenes.Carousel {
         };
 
         public CarouselScene3D() {
-            OnLoad += CarouselMenu_OnLoad;
+            OnLoad.Add(Load);
             Camera.FieldOfView = FIELD_OF_VIEW;
             var position = Camera.Position;
             position.Z = CAMERA_Z;
@@ -60,7 +60,7 @@ namespace Elves.Scenes.Carousel {
             background.Render(SpriteBatch,Viewport);
         }
 
-        private void CarouselMenu_OnLoad() {
+        private void Load() {
             CreateItems();
             UpdateIndex(GetStartIndex(),MoveDirection.None);
             ApplyDefaultRotations();

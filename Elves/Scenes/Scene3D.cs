@@ -15,10 +15,10 @@ namespace Elves.Scenes {
         public Scene3D() : base(EntitySortMode.CameraFixed) {
             Name = "3D Scene";
 
-            OnRender += RenderEntities;
-            OnPreRender += PreRenderEntities;
-            OnUpdate += Scene_OnUpdate;
-            OnLoad += Scene_OnLoad;
+            OnRender.Add(RenderEntities);
+            OnPreRender.Add(PreRenderEntities);
+            OnUpdate.Add(Update);
+            OnLoad.Add(Load);
 
             SetCamera();
         }
@@ -39,14 +39,14 @@ namespace Elves.Scenes {
             return Viewport.Height / VERTICAL_SCALE_DIVISOR;
         }
 
-        private void Scene_OnUpdate() {
+        private void Update() {
             if(!DebugOrtho || Camera is null) {
                 return;
             }
             (Camera as AngleCamera).UpdateFreeCam(this,Constants.Debug3DLookSpeed,Constants.Debug3DMovementSpeed);
         }
 
-        private void Scene_OnLoad() {
+        private void Load() {
             if(!DebugOrtho) {
                 return;
             }

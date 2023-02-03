@@ -20,8 +20,8 @@
 
         public TextureRectangle() {
             OnRender += RenderVertices;
-            OnLoad += TextureRectangle_OnLoad;
-            OnUnload += TextureRectangle_OnUnload;
+            OnLoad += LoadEffect;
+            OnUnload += UnloadEffect;
         }
 
         private BufferSet bufferSet;
@@ -101,7 +101,7 @@
             vertices[5] = vertices[2];
         }
 
-        private void TextureRectangle_OnLoad() {
+        private void LoadEffect() {
             bufferSet = Owner.CreateBufferSet(vertices);
             
             effect = new BasicEffect(GraphicsDevice) {
@@ -111,7 +111,7 @@
             };
         }
 
-        private void TextureRectangle_OnUnload() {
+        private void UnloadEffect() {
             bufferSet?.Dispose();
             bufferSet = null;
 

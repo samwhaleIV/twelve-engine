@@ -11,9 +11,11 @@ namespace Elves.Scenes.SaveSelect {
         private Tag tag;
         private Button button;
 
+        private int updateID;
+
         public override void Close() {
-            UI.OnButtonPresed -= UI_OnButtonPresed;
-            Scene.OnUpdate -= Scene_OnUpdate;
+            UI.OnButtonPresed -= ButtonPressed;
+            Scene.OnUpdate.Remove(updateID);
             Scene.CreateSave(UI.SelectedTag.ID);
         }
 
@@ -29,8 +31,9 @@ namespace Elves.Scenes.SaveSelect {
             button.Depth = Depth.Button;
             this.button = button;
 
-            UI.OnButtonPresed += UI_OnButtonPresed;
-            Scene.OnUpdate += Scene_OnUpdate;
+            UI.OnButtonPresed += ButtonPressed;
+
+            updateID = Scene.OnUpdate.Add(UpdateTagDrawing);
 
             return button;
         }
@@ -49,7 +52,7 @@ namespace Elves.Scenes.SaveSelect {
             button.Position = new(0.5f,4/5f);
         }
 
-        private void Scene_OnUpdate() {
+        private void UpdateTagDrawing() {
             MouseEventHandler mouse = Scene.Mouse;
             DrawingFrame drawingFrame = tag.DrawingFrame;
             if(!mouse.Capturing) {
@@ -61,7 +64,7 @@ namespace Elves.Scenes.SaveSelect {
             drawingFrame.Draw(Scene,relativePosition);
         }
 
-        private void UI_OnButtonPresed(ButtonImpulse impulse) {
+        private void ButtonPressed(ButtonImpulse impulse) {
             if(impulse != ButtonImpulse.Accept) {
                 throw new InvalidOperationException("Unexpected button impulse on tag draw page.");
             }

@@ -7,14 +7,14 @@ namespace Elves.Scenes.Test {
 
     public sealed class DrawingFrameTest:Scene {
         public DrawingFrameTest() {
-            OnLoad += DrawingFrameTest_OnLoad;
-            OnUnload += DrawingFrameTest_OnUnload;
-            OnRender += DrawingFrameTest_OnRender;
-            OnUpdate += DrawingFrameTest_OnUpdate;
+            OnLoad.Add(Load);
+            OnUnload.Add(Unload);
+            OnRender.Add(Render);
+            OnUpdate.Add(Update);
             ClearColor = Color.DarkGray;
         }
 
-        private void DrawingFrameTest_OnUpdate() {
+        private void Update() {
             UpdateFrameDestination();
             ProcessMouseDrawing();
         }
@@ -38,20 +38,20 @@ namespace Elves.Scenes.Test {
             drawingFrame.Draw(this,relativePosition);
         }
 
-        private void DrawingFrameTest_OnRender() {
+        private void Render() {
             SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
             SpriteBatch.Draw(drawingFrame.RenderTarget,frameDestination,Color.White);
             SpriteBatch.End();
         }
 
-        private void DrawingFrameTest_OnUnload() {
+        private void Unload() {
             drawingFrame?.Unload();
             drawingFrame = null;
         }
 
         private DrawingFrame drawingFrame = new(256,128) { BrushTexture = Program.Textures.CircleBrush, BrushSize = 5 };
 
-        private void DrawingFrameTest_OnLoad() {
+        private void Load() {
             drawingFrame.Load(GraphicsDevice);
             var byteCount = drawingFrame.PixelCount / 8;
             var array = new byte[byteCount];

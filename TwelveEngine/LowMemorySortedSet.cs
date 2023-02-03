@@ -1,4 +1,4 @@
-﻿namespace TwelveEngine.EntitySystem {
+﻿namespace TwelveEngine {
 
     internal sealed class LowMemorySortedSet<T> {
 
@@ -97,9 +97,13 @@
             lookupTable[ID] = new IndexWrapper(index,value);
         }
 
+        public bool Contains(int ID) {
+            return lookupTable.ContainsKey(ID);
+        }
+
         public void Remove(int ID) {
             if(!lookupTable.ContainsKey(ID)) {
-                return;
+                throw new ArgumentOutOfRangeException($"ID '{ID}' does not exist in sorted set.");
             }
             int removalIndex = lookupTable[ID].Index;
 

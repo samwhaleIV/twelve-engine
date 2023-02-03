@@ -13,8 +13,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Effects\DrawingFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\IEntitySorter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\LowMemorySortedSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LowMemorySortedSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Flags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OrderedEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\CustomCursor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\Fonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\Glyph.cs" />
@@ -38,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Input\MouseEventType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\MultiBindKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\ValidKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shell\DebugWriterEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\GameLoopSyncContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\RuntimeTextures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\InputStateCache.cs" />

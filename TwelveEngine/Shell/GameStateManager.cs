@@ -391,7 +391,6 @@ namespace TwelveEngine.Shell {
             _renderDuration = ReadWatchAndReset();
 
             _isRendering = false;
-            gameState?.UpdateTransition();
             TryApplyPendingStateGenerator();
         }
     }

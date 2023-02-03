@@ -11,17 +11,17 @@ namespace Elves.Scenes.Test {
         };
 
         public DVDCornerTest() {
-            OnUpdate += DVDCornerTest_OnUpdate;
-            OnRender += DVDCornerTest_OnRender;
+            OnUpdate.Add(Update);
+            OnRender.Add(Render);
         }
 
-        private void DVDCornerTest_OnRender() {
+        private void Render() {
             SpriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
             bouncingSimulator.Render(SpriteBatch,Program.Textures.Warning,Viewport.Height * 0.025f,Viewport.Bounds);
             SpriteBatch.End();
         }
 
-        private void DVDCornerTest_OnUpdate() {
+        private void Update() {
             bouncingSimulator.Update(Now);
         }
     }

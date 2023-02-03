@@ -5,10 +5,10 @@ namespace Elves.Scenes.Test {
     public sealed class SongTest:GameState {
         public SongTest() {
             Name = "Song Test Player";
-            OnLoad += SongTest_OnLoad;
+            OnLoad.Add(Load);
         }
 
-        private void SongTest_OnLoad() {
+        private void Load() {
             var song = Content.Load<Song>(Constants.Songs.UV2T3);
             MediaPlayer.Play(song);
             MediaPlayer.IsRepeating = true;

@@ -54,7 +54,7 @@ namespace Elves.Scenes.SaveSelect {
             tag = UI.SelectedTag;
             tag.Flags = ElementFlags.Update;
 
-            UI.OnButtonPresed += UI_OnButtonPresed;
+            UI.OnButtonPresed += ButtonPressed;
 
             tag.Depth = Depth.FocusedTag;
 
@@ -80,7 +80,7 @@ namespace Elves.Scenes.SaveSelect {
             UI.ResetInteractionState(UI.BackButton);
         }
 
-        private void UI_OnButtonPresed(ButtonImpulse impulse) {
+        private void ButtonPressed(ButtonImpulse impulse) {
             switch(tag.Display) {
                 case TagDisplay.Custom:
                     switch(impulse) {
@@ -139,7 +139,7 @@ namespace Elves.Scenes.SaveSelect {
 
         public override void Close() {
             tag.Depth = Depth.Tag;
-            UI.OnButtonPresed -= UI_OnButtonPresed;
+            UI.OnButtonPresed -= ButtonPressed;
             if(tag.Display == TagDisplay.Create) {
                 tag.Display = TagDisplay.Empty;
             }

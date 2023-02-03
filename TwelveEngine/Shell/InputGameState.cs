@@ -10,17 +10,17 @@ namespace TwelveEngine.Shell {
         private static MouseEventHandler oldMouseHandler;
 
         public InputGameState() {
-            OnLoad += InputGameState_OnLoad;
-            OnUnload += InputGameState_OnUnload;
-            OnUpdate += UpdateInputs;
+            OnLoad.Add(ImportOldHandlers,EventPriority.First);
+            OnUpdate.Add(UpdateInputs,EventPriority.First);
+            OnUnload.Add(SetOldHandlers);
         }
 
-        private void InputGameState_OnUnload() {
+        private void SetOldHandlers() {
             oldInputHandler = Impulse;
             oldMouseHandler = Mouse;
         }
 
-        private void InputGameState_OnLoad() {
+        private void ImportOldHandlers() {
             if(HasFlag(StateFlags.CarryKeyboardInput)) {
                 Impulse.Import(oldInputHandler);
             }

@@ -45,11 +45,10 @@ namespace TwelveEngine.Shell {
         /// </summary>
         public Color ClearColor { get; set; } = Color.Black;
 
-        private TransitionData? _transitionOutData = null;
+        private Shell.TransitionData? _transitionOutData = null;
 
-        public event Action OnUpdate, OnRender, OnPreRender, OnLoad, OnUnload, OnTransitionIn;
-
-        public event Action<DebugWriter> OnWriteDebug;
+        public OrderedEvent OnUpdate = new(), OnRender = new(), OnPreRender = new(), OnLoad = new(), OnUnload = new(), OnTransitionIn = new();
+        public DebugWriterEvent OnWriteDebug = new();
 
         public TransitionRenderer TransitionRenderer = TransitionRenderer.Default;
 
@@ -124,10 +123,11 @@ namespace TwelveEngine.Shell {
         }
 
         internal void WriteDebug(DebugWriter writer) {
-            OnWriteDebug?.Invoke(writer);
+            OnWriteDebug.Writer = writer;
+            OnWriteDebug.Invoke();
         }
 
-        private void HandleTransitionOut(TransitionData data) {
+        private void HandleTransitionOut(Shell.TransitionData data) {
             if(data.Generator != null) {
                 _game.SetState(data.Generator,data.Data);
             } else {
@@ -137,7 +137,7 @@ namespace TwelveEngine.Shell {
 
         /* This method of transitioning (with how its ordered in the game loop) lends itself to creatin a frame of latency against the input system.
          * Not expected to impact user experience, with 1 frame of loss (generally) over a total of 1000 (1 second long transition). */
-        internal void UpdateTransition() {
+        private void UpdateTransition() {
             if(TransitionState == TransitionState.None || TransitionT < 1) {
                 return;
             }
@@ -153,29 +153,46 @@ namespace TwelveEngine.Shell {
             OnTransitionIn?.Invoke();
         }
 
+        private readonly struct TransitionData {
+            public readonly TransitionState State { get; init; }
+            public readonly float T { get; init; }
+            public static readonly TransitionData None = new() { State = TransitionState.None,T = 0 };
+        }
+
+        private TransitionData _oldTransitionData = TransitionData.None;
+
         internal void Update() {
             if(!_hasStartTime) {
                 SetStartTime();
             }
             IsUpdating = true;
-            OnUpdate?.Invoke();
+
+            /* Set before updating the transition so the renderer is behind one frame (so the last visible frame of the scene is transitionT == 1*/
+            _oldTransitionData = new TransitionData { State = TransitionState, T = GetTransitionT() };
+            UpdateTransition();
+
+            OnUpdate.Invoke();
             IsUpdating = false;
         }
 
         internal void Render() {
             IsRendering = true;
-            OnRender?.Invoke();
-            if(TransitionState == TransitionState.Out) {
-                TransitionRenderer.DrawOut(SpriteBatch,Viewport.Bounds,TransitionT);
-            } else if(TransitionState == TransitionState.In) {
-                TransitionRenderer.DrawIn(SpriteBatch,Viewport.Bounds,TransitionT);
+            OnRender.Invoke();
+
+            TransitionState oldState = _oldTransitionData.State;
+            float oldT = _oldTransitionData.T;
+
+            if(oldState == TransitionState.Out) {
+                TransitionRenderer.DrawOut(SpriteBatch,Viewport.Bounds,oldT);
+            } else if(oldState == TransitionState.In) {
+                TransitionRenderer.DrawIn(SpriteBatch,Viewport.Bounds,oldT);
             }
             IsRendering = false;
         }
 
         internal void PreRender() {
             IsPreRendering = true;
-            OnPreRender?.Invoke();
+            OnPreRender.Invoke();
             IsPreRendering = false;
         }
 
@@ -209,7 +226,7 @@ namespace TwelveEngine.Shell {
             return t;
         }
 
-        public void TransitionOut(TransitionData transitionData) {
+        public void TransitionOut(Shell.TransitionData transitionData) {
             if(transitionData.Generator != null && transitionData.State != null) {
                 throw new InvalidOperationException("Transition out data cannot contain two game state values.");
             }

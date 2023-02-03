@@ -46,18 +46,18 @@ namespace Elves.Scenes.SaveSelect {
 
             Offset = new(-0.5f,-0.5f);
 
-            OnUpdate += Tag_OnUpdate;
+            OnUpdate += Update;
 
             PositionMode = CoordinateMode.Relative;
 
-            OnRender += Tag_OnRender;
+            OnRender += Draw;
 
             Endpoint = new Endpoint<Tag>(this);
         }
 
         private readonly Interpolator blipAnimator = new(TimeSpan.FromMilliseconds(175));
 
-        private void Tag_OnUpdate(TimeSpan now) {
+        private void Update(TimeSpan now) {
             blipAnimator.Update(now);
             float newScale = 1f;
             newScale += MathF.Sin(blipAnimator.Value * MathF.PI) * 0.05f;
@@ -80,7 +80,7 @@ namespace Elves.Scenes.SaveSelect {
             blipAnimator.Reset(now);
         }
 
-        public void Tag_OnRender(SpriteBatch spriteBatch) {
+        public void Draw(SpriteBatch spriteBatch) {
             if(Display != TagDisplay.Custom || DrawingFrame is null) {
                 return;
             }

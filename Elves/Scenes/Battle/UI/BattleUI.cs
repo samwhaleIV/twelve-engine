@@ -19,7 +19,7 @@ namespace Elves.Scenes.Battle.UI {
 
             foreach(var button in actionButtons) {
                 interactableElements.Add(button);
-                button.OnActivated += Button_OnActivated;
+                button.OnActivated += ButtonClicked;
             }
 
             Button1 = actionButtons[0];
@@ -44,7 +44,7 @@ namespace Elves.Scenes.Battle.UI {
             return owner.IsTransitioning;
         }
 
-        private void Button_OnActivated(int ID) {
+        private void ButtonClicked(int ID) {
             OnActionButtonClick?.Invoke(ID);
         }
 

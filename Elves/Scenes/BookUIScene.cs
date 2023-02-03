@@ -19,11 +19,11 @@ namespace Elves.Scenes.SaveSelect {
 
         public BookUIScene() {
             Name = "UI Scene";
-            OnRender += UIScene_OnRender;
-            OnUpdate += UIScene_OnUpdate;
+            OnRender.Add(RenderUI);
+            OnUpdate.Add(UpdateUI);
         }
 
-        private void UIScene_OnUpdate() {
+        private void UpdateUI() {
             if(UI is null) {
                 return;
             }
@@ -31,6 +31,6 @@ namespace Elves.Scenes.SaveSelect {
             CustomCursor.State = UI.CursorState;
         }
 
-        private void UIScene_OnRender() => UI?.Render(SpriteBatch);
+        private void RenderUI() => UI?.Render(SpriteBatch);
     }
 }

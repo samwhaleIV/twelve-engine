@@ -25,20 +25,18 @@ namespace Elves.Scenes.Intro {
         public IntroScene() {
             Name = "Intro Text Screen";
             ClearColor = Color.Black;
-            OnUpdate += IntroScene_OnUpdate;
-            OnRender += IntroScene_OnRender;
-            Impulse.Router.OnCancelDown += Input_OnCancelDown;
-            OnLoad += IntroScene_OnLoad;
-            OnUnload += IntroScene_OnUnload;
+            OnUpdate.Add(Update);
+            OnRender.Add(Render);
+            Impulse.Router.OnCancelDown += CancelDown;
+            OnLoad.Add(Load);
+            OnUnload.Add(Unload);
         }
 
-        private void Input_OnCancelDown() {
-            EndIntro(quickExit: true);
-        }
+        private void CancelDown() => EndIntro(quickExit: true);
 
         private Song song;
 
-        private void IntroScene_OnUnload() {
+        private void Unload() {
             song?.Dispose();
             song = null;
         }
@@ -71,7 +69,7 @@ namespace Elves.Scenes.Intro {
             var textLength = total;
 
             timeline = new Timeline();
-            OnWriteDebug += timeline.WriteDebug;
+            OnWriteDebug.Add(timeline.WriteDebug);
 
             timeline.CreateFixedDuration(duration,
                 (STAGE_START_DELAY, startDelayLength),
@@ -81,7 +79,7 @@ namespace Elves.Scenes.Intro {
             );
         }
 
-        private void IntroScene_OnLoad() {
+        private void Load() {
             song = Content.Load<Song>(Constants.Songs.Intro);
             MediaPlayer.Play(song);
             MediaPlayer.IsRepeating = false;
@@ -103,7 +101,7 @@ namespace Elves.Scenes.Intro {
             EndScene(ExitValue.Get(quickExit));
         }
 
-        private void IntroScene_OnUpdate() {
+        private void Update() {
             timeline.Update(LocalRealTime);
             if(exiting) {
                 return;
@@ -136,7 +134,7 @@ namespace Elves.Scenes.Intro {
             return Color.FromNonPremultiplied(new Vector4(value,value,value,1));
         }
 
-        private void IntroScene_OnRender() {
+        private void Render() {
             if(timeline.Stage < STAGE_TEXT) {
                 return;
             }

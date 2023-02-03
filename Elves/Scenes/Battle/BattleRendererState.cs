@@ -15,7 +15,7 @@ namespace Elves.Scenes.Battle {
 
         public BattleRendererScene(string background) {
             backgroundTexture = background;
-            OnLoad += LoadBackgroundTexture;
+            OnLoad.Add(LoadBackgroundTexture);
             Initialize();
         }
 
@@ -38,20 +38,20 @@ namespace Elves.Scenes.Battle {
 
         public ScrollingBackground Background => background;
 
-        private void BattleRendererState_OnPreRender() {
+        private void PreRender() {
             background.Update(Now);
             background.Render(SpriteBatch,Viewport);
         }
 
         private void Initialize() {
-            OnLoad += BattleScene_OnLoad;
-            OnUpdate += UpdateUI;
-            OnRender += BattleScene_OnRender;
-            OnPreRender += BattleRendererState_OnPreRender;
+            OnLoad.Add(Load);
+            OnUpdate.Add(UpdateUI);
+            OnRender.Add(Render);
+            OnPreRender.Add(PreRender);
             Camera.Orthographic = true;
         }
 
-        private void BattleScene_OnLoad() {
+        private void Load() {
             InitializeBattleUI();
             background.Load(Content);
         }
@@ -72,7 +72,7 @@ namespace Elves.Scenes.Battle {
             battleUI.BindInputEvents(this);
         }
 
-        private void BattleScene_OnRender() {
+        private void Render() {
             battleUI.Render(SpriteBatch,GetPlayerData(),GetTargetData());
         }
     }

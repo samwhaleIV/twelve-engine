@@ -11,7 +11,7 @@ namespace TwelveEngine {
         protected abstract void OnGameLoad(GameStateManager game,string saveDirectory);
         protected abstract void OnGameCrashed();
 
-        private void Game_OnLoad() {
+        private void GameLoaded() {
             Fonts.Load(game);
             OnGameLoad(game,SaveDirectory);
         }
@@ -35,7 +35,7 @@ namespace TwelveEngine {
             OnGameCrashed();
         }
 
-        private void Game_Disposed(object sender,EventArgs args) {
+        private void GameDisposed(object sender,EventArgs args) {
             Logger.CleanUp();
         }
 
@@ -58,8 +58,8 @@ namespace TwelveEngine {
             game = CreateGameStateManager();
             game.SyncContext.OnTaskException += HandleSyncContextException;
 
-            game.Disposed += Game_Disposed;
-            game.OnLoad += Game_OnLoad;
+            game.Disposed += GameDisposed;
+            game.OnLoad += GameLoaded;
 
             if(Flags.Get(Constants.Flags.NoFailSafe)) {
                 game.Run();
