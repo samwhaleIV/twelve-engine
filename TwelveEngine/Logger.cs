@@ -28,7 +28,8 @@ namespace TwelveEngine {
             { LoggerLabel.GameManager, "Game Manager" },
             { LoggerLabel.Flags, "Flags" },
             { LoggerLabel.UI, "UI" },
-            { LoggerLabel.Script, "Script" }
+            { LoggerLabel.Script, "Script" },
+            { LoggerLabel.Audio, "Audio" }
         };
 
         private static string GetLoggerLabel(LoggerLabel label) {

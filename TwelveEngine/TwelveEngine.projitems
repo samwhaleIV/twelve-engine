@@ -9,6 +9,13 @@
     <Import_RootNamespace>TwelveEngine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\AudioSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\BankWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\EventInstanceController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\EventWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\ParameterDescription.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\StringDescription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Effects\DrawingFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />

@@ -35,4 +35,18 @@
   <ItemGroup>
     <ProjectReference Include="..\TwelveEngineLibrary\TwelveEngineLibrary.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Music\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\Music\Master.bank">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Music\Master.strings.bank">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Music\Music.bank">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

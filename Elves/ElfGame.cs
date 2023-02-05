@@ -8,6 +8,7 @@ using Elves.Scenes;
 using Elves.Battle;
 using Elves.ElfData;
 using static Elves.Constants;
+using Elves.Scenes.Test;
 
 namespace Elves {
     public static class ElfGame {
@@ -18,7 +19,7 @@ namespace Elves {
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
         /// </summary>
         /// <returns>The start state for the game.</returns>
-        public static GameState Start() => GetSplashMenu();
+        public static GameState Start() => new SongTest(); //GetSplashMenu();
 
         /* Christ almighty... */
         private static TBase GetScene<TBase, TSuper>(Action<TBase,ExitValue> onSceneEnd) where TBase : GameState, IScene<TBase> where TSuper : TBase, new() {

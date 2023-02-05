@@ -375,11 +375,8 @@ Content/*.mgcb
 #Game Music Files
 Content/Elves/Music/*
 
-fmod_studio.cs
 fmod.dll
-fmod.cs
+fmodstudio.dll
+fmod*.cs
 
-Music/*.bank
-/ElvesDesktop/Content/Music/Music.bank
-/ElvesDesktop/Content/Music/Master.strings.bank
-/ElvesDesktop/Content/Music/Master.bank
+*.bank
