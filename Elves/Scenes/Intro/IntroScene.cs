@@ -47,9 +47,9 @@ namespace Elves.Scenes.Intro {
 
         private Timeline timeline;
 
-        private void CreateTimeline() {
+        private void CreateTimeline(TimeSpan duration) {
 
-            var duration = song.Duration + IntroSongDurationOffset;
+            duration += IntroSongDurationOffset;
             var total = duration;
 
             var startDelayLength = IntroStartDelay;
@@ -79,12 +79,8 @@ namespace Elves.Scenes.Intro {
         }
 
         private void Load() {
-            song = Content.Load<Song>(Constants.Songs.Intro);
-            MediaPlayer.Play(song);
-            MediaPlayer.IsRepeating = false;
-            MediaPlayer.Volume = 1f;
-
-            CreateTimeline();
+            //TODO
+            CreateTimeline(TimeSpan.FromSeconds(40));
         }
 
         private bool exiting = false;
@@ -112,7 +108,7 @@ namespace Elves.Scenes.Intro {
 
         private int GetTextSize() {
             float height = Viewport.Bounds.Size.Y;
-            int lineHeight = Fonts.RetroFont.LineHeight;
+            int lineHeight = (int)Fonts.RetroFont.LineHeight;
             int totalHeight = lineHeight * lineHeight;
             float size = height / totalHeight * 0.5f;
             int textSize = (int)size;
@@ -148,7 +144,7 @@ namespace Elves.Scenes.Intro {
             Fonts.RetroFont.Begin(SpriteBatch);
             for(int i = 0;i<end;i++) {
                 Color color = GetTextColor(t,i);
-                Point destination = new(centerX,(int)(rowSize*(i+1)));
+                Vector2 destination = new(centerX,(int)(rowSize*(i+1)));
                 Fonts.RetroFont.DrawCentered(Text[i],destination,textSize,color);
             }
             Fonts.RetroFont.End();

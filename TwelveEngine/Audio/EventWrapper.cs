@@ -28,6 +28,13 @@ namespace TwelveEngine.Audio {
             Parameters = new ReadOnlyDictionary<string,ParameterDescription>(parameterDictionary);
         }
 
-        public EventInstanceController Create() => new(this);
+        public ManagedEventInstance Create() => new(this);
+
+        public void Play(float volume = 1) {
+            Description.createInstance(out EventInstance instance);
+            instance.setVolume(volume);
+            instance.start();
+            instance.release();
+        }
     }
 }

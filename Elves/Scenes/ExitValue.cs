@@ -13,6 +13,7 @@ namespace Elves.Scenes {
 
         public static readonly ExitValue None = new(integer: DEFAULT_VALUE);
         public static readonly ExitValue Flagged = new(integer: FLAGGED_VALUE);
+        public static readonly ExitValue Back = new(integer: -1);
 
         public static ExitValue Get(int integer) => new(integer);
         public static ExitValue Get(bool flag) => new(flag ? FLAGGED_VALUE : DEFAULT_VALUE);
@@ -35,5 +36,14 @@ namespace Elves.Scenes {
 
         public readonly BattleResult BattleResult => (BattleResult)_value;
         public readonly ElfID BattleID => (ElfID)_value;
+
+        public override bool Equals(object obj) => obj is ExitValue b && _value == b._value;
+
+        public bool Equals(ExitValue b) => _value == b._value;
+
+        public override int GetHashCode() => _value;
+
+        public static bool operator ==(ExitValue a,ExitValue b) => a._value == b._value;
+        public static bool operator !=(ExitValue a,ExitValue b) => a._value != b._value;
     }
 }

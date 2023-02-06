@@ -108,7 +108,7 @@
             int removalIndex = lookupTable[ID].Index;
 
             int remainingItems = Count - removalIndex;
-            int endIndex = removalIndex + remainingItems;
+            int endIndex = removalIndex + remainingItems - 1;
 
             for(int i = removalIndex;i<endIndex;i++) {
                 UpdateIndexWrapper(i+1,i);

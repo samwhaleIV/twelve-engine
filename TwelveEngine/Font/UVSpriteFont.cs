@@ -6,16 +6,16 @@ namespace TwelveEngine.Font {
         private const int CHARACTER_QUEUE_SIZE = 16;
         private const int CHARACTER_QUEUE_COUNT = 64;
 
-        private readonly int lineHeight, letterSpacing, wordSpacing;
+        private readonly float lineHeight, letterSpacing, wordSpacing;
         private readonly Texture2D texture;
 
         private readonly Dictionary<char,Glyph> glyphs;
 
         private readonly int characterQueueStartSize;
 
-        public int LineHeight => lineHeight;
-        public int LeterSpacing => letterSpacing;
-        public int WordSpacing => wordSpacing;
+        public float LineHeight => lineHeight;
+        public float LeterSpacing => letterSpacing;
+        public float WordSpacing => wordSpacing;
 
         private const char SPACE_CHARACTER = ' ';
 
@@ -31,9 +31,9 @@ namespace TwelveEngine.Font {
 
         public UVSpriteFont(
             Texture2D texture,
-            int lineHeight,
-            int letterSpacing,
-            int wordSpacing,
+            float lineHeight,
+            float letterSpacing,
+            float wordSpacing,
             Dictionary<char,Glyph> glyphs,
             int? wordQueueSize = null,
             int? wordQueuePoolSize = null
@@ -98,8 +98,8 @@ namespace TwelveEngine.Font {
             characterQueuePool.Enqueue(characterQueue);
         }
 
-        private int MeasureWordWidth(Queue<char> word,int scale,int letterSpacing) {
-            int width = 0;
+        private float MeasureWordWidth(Queue<char> word,float scale,float letterSpacing) {
+            float width = 0;
             foreach(var character in word) {
                 Glyph glyph = GlyphOrDefault(character);
                 width += glyph.Source.Width * scale + letterSpacing;
@@ -151,30 +151,30 @@ namespace TwelveEngine.Font {
             words.Clear();
         }
 
-        private int DrawGlyph(char character,int x,int y,int scale,Color color) {
+        private float DrawGlyph(char character,float x,float y,float scale,Color color) {
             Glyph glyph = GlyphOrDefault(character);
             if(glyph.Source.Width <= 0) {
                 return 0;
             }
             Rectangle glyphArea = glyph.Source;
-            Rectangle destination = new(x,y+glyph.YOffset*scale,glyphArea.Width*scale,glyphArea.Height*scale);
-            spriteBatch.Draw(texture,destination,glyphArea,color);
+            FloatRectangle destination = new(x,y+glyph.YOffset*scale,glyphArea.Width*scale,glyphArea.Height*scale);
+            spriteBatch.Draw(texture,destination.ToRectangle(),glyphArea,color);
             return destination.Width;
         }
 
-        private void DrawLineBreaking(Point destination,int scale,Color color,int maxWidth) {
+        private void DrawLineBreaking(Vector2 destination,float scale,Color color,float maxWidth) {
             if(scale < 1) {
                 scale = 1;
             }
 
-            int x = destination.X, y = destination.Y;
+            float x = destination.X, y = destination.Y;
 
-            int lineHeight = (int)(LineSpace * this.lineHeight * scale);
+            float lineHeight = LineSpace * this.lineHeight * scale;
 
-            int wordSpacing = this.wordSpacing * scale;
-            int letterSpacing = this.letterSpacing * scale;
+            float wordSpacing = this.wordSpacing * scale;
+            float letterSpacing = this.letterSpacing * scale;
 
-            int maxX = destination.X + maxWidth;
+            float maxX = destination.X + maxWidth;
 
             if(maxWidth <= 0) {
                 foreach(var word in words) {
@@ -197,23 +197,23 @@ namespace TwelveEngine.Font {
             }
         }
 
-        private void DrawRight(Point destination,int scale,Color color) {
+        private void DrawRight(Vector2 destination,float scale,Color color) {
             if(scale < 1) {
                 scale = 1;
             }
 
-            int wordSpacing = this.wordSpacing * scale;
-            int letterSpacing = this.letterSpacing * scale;
+            float wordSpacing = this.wordSpacing * scale;
+            float letterSpacing = this.letterSpacing * scale;
 
-            int totalWidth = 0;
+            float totalWidth = 0;
             foreach(var word in words) {
-                int width = MeasureWordWidth(word,scale,letterSpacing);
+                float width = MeasureWordWidth(word,scale,letterSpacing);
                 totalWidth += width + wordSpacing;
             }
             totalWidth -= wordSpacing;
 
-            int x = destination.X - totalWidth;
-            int y = destination.Y;
+            float x = destination.X - totalWidth;
+            float y = destination.Y;
 
             foreach(var word in words) {
                 foreach(var character in word) {
@@ -223,23 +223,23 @@ namespace TwelveEngine.Font {
             }
         }
 
-        private void DrawCentered(Point center,int scale,Color color) {
+        private void DrawCentered(Vector2 center,float scale,Color color) {
             if(scale < 1) {
                 scale = 1;
             }
 
-            int wordSpacing = this.wordSpacing * scale;
-            int letterSpacing = this.letterSpacing * scale;
+            float wordSpacing = this.wordSpacing * scale;
+            float letterSpacing = this.letterSpacing * scale;
 
-            int totalWidth = 0;
+            float totalWidth = 0;
             foreach(var word in words) {
-                int width = MeasureWordWidth(word,scale,letterSpacing);
+                float width = MeasureWordWidth(word,scale,letterSpacing);
                 totalWidth += width + wordSpacing;
             }
             totalWidth -= wordSpacing;
 
-            int x = center.X - totalWidth / 2;
-            int y = center.Y - lineHeight * scale / 2;
+            float x = center.X - totalWidth / 2;
+            float y = center.Y - lineHeight * scale / 2;
 
             foreach(var word in words) {
                 foreach(var character in word) {
@@ -249,42 +249,42 @@ namespace TwelveEngine.Font {
             }
         }
 
-        public void Draw(StringBuilder stringBuilder,Point destination,int scale,Color? color = null,int maxWidth = 0) {
+        public void Draw(StringBuilder stringBuilder,Vector2 destination,float scale,Color? color = null,float maxWidth = 0) {
             AssertSpriteBatch();
             FillWordsQueue(stringBuilder);
             DrawLineBreaking(destination,scale,color ?? DefaultColor,maxWidth);
             EmptyWordsQueue();
         }
 
-        public void Draw(string text,Point destination,int scale,Color? color = null,int maxWidth = 0) {
+        public void Draw(string text,Vector2 destination,float scale,Color? color = null,float maxWidth = 0) {
             AssertSpriteBatch();
             FillWordsQueue(text);
             DrawLineBreaking(destination,scale,color ?? DefaultColor,maxWidth);
             EmptyWordsQueue();
         }
 
-        public void DrawRight(StringBuilder stringBuilder,Point destination,int scale,Color? color = null) {
+        public void DrawRight(StringBuilder stringBuilder,Vector2 destination,float scale,Color? color = null) {
             AssertSpriteBatch();
             FillWordsQueue(stringBuilder);
             DrawRight(destination,scale,color ?? DefaultColor);
             EmptyWordsQueue();
         }
 
-        public void DrawRight(string text,Point destination,int scale,Color? color = null) {
+        public void DrawRight(string text,Vector2 destination,float scale,Color? color = null) {
             AssertSpriteBatch();
             FillWordsQueue(text);
             DrawRight(destination,scale,color ?? DefaultColor);
             EmptyWordsQueue();
         }
 
-        public void DrawCentered(StringBuilder stringBuilder,Point center,int scale,Color? color = null) {
+        public void DrawCentered(StringBuilder stringBuilder,Vector2 center,float scale,Color? color = null) {
             AssertSpriteBatch();
             FillWordsQueue(stringBuilder);
             DrawCentered(center,scale,color ?? DefaultColor);
             EmptyWordsQueue();
         }
 
-        public void DrawCentered(string text,Point center,int scale,Color? color = null) {
+        public void DrawCentered(string text,Vector2 center,float scale,Color? color = null) {
             AssertSpriteBatch();
             FillWordsQueue(text);
             DrawCentered(center,scale,color ?? DefaultColor);

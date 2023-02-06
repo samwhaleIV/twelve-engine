@@ -166,5 +166,7 @@
         public static bool operator !=(FloatRectangle a,FloatRectangle b) {
             return !a.Equals(b);
         }
+
+        public float AspectRatio => width / height;
     }
 }

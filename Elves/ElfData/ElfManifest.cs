@@ -22,32 +22,31 @@ namespace Elves.ElfData {
                 texture: "Elves/harmless-elf",
                 color: Color.Red,
                 baseHeight: 47,
-                frameSets: new FrameSet[] {
-                    CreateStatic(0,0,17,47),
-                    CreateIdleBlink(0,0,17,47,17,0,17,47),
-                    CreateSlideshowAndBack(AnimationType.Hurt,AnimationMode.Once,new Rectangle(0,47,17,47),3,TimeSpan.FromMilliseconds(50)),
-                    CreateDead(34,0,17,47)
-                }
+                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.RedGirlElf,
-                name: "Red Girl Elf",
-                texture: "Elves/red-girl-elf",
+                ID: ElfID.NinjaElf,
+                name: "Harmless Elf",
+                texture: "Elves/harmless-elf",
                 color: Color.Red,
-                baseHeight: 44,
-                frameSets: new FrameSet[] {
-                    CreateStatic(0,0,17,44)
-                }
+                baseHeight: 47,
+                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.YellowElf,
-                name: "Yellow Elf",
-                texture: "Elves/yellow-elf",
-                color: Color.FromNonPremultiplied(242,228,38,byte.MaxValue),
-                baseHeight: 50,
-                frameSets: new FrameSet[] {
-                    CreateStatic(0,0,19,50)
-                }
+                ID: ElfID.GodElf,
+                name: "Harmless Elf",
+                texture: "Elves/harmless-elf",
+                color: Color.Red,
+                baseHeight: 47,
+                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
+            ));
+            Add(Elf.Create<DebugBattle>(
+                ID: ElfID.BusinessElf,
+                name: "Harmless Elf",
+                texture: "Elves/harmless-elf",
+                color: Color.Red,
+                baseHeight: 47,
+                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
         }
     }

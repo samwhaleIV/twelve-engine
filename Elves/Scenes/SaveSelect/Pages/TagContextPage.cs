@@ -63,11 +63,11 @@ namespace Elves.Scenes.SaveSelect {
             switch(tag.Display) {
                 case TagDisplay.Custom:
                     SetButtons(Now,UI.BackButton,UI.PlayButton,UI.DeleteButton);
-                    return UI.BackButton;
+                    return UI.PlayButton;
                 case TagDisplay.Empty:
                     tag.Display = TagDisplay.Create;
                     SetButtons(Now,UI.BackButton,UI.AcceptButton);
-                    return UI.BackButton;
+                    return UI.AcceptButton;
                 default:
                     throw new InvalidOperationException($"Invalid tag opening state \"{tag.Display}\".");
             }

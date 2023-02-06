@@ -34,7 +34,6 @@ namespace Elves.Scenes {
 
         private const float VERTICAL_SCALE_DIVISOR = 70f;
 
-
         public float GetUIScale() {
             return Viewport.Height / VERTICAL_SCALE_DIVISOR;
         }

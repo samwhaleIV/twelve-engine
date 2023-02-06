@@ -165,14 +165,14 @@ namespace Elves.Scenes.Battle.UI {
             if(playerData != null && playerData.Name != null) {
                 Fonts.RetroFont.Draw(
                     playerData.Name,
-                    new Point((int)playerHealthBar.ScreenArea.X,(int)(playerHealthBar.ScreenArea.Bottom + playerHealthBar.ScreenArea.Top)),
+                    new Vector2((int)playerHealthBar.ScreenArea.X,(int)(playerHealthBar.ScreenArea.Bottom + playerHealthBar.ScreenArea.Top)),
                     usernameScale,usernameColor
                 );
             }
             if(targetData != null && targetData.Name != null) {
                 Fonts.RetroFont.DrawRight(
                     targetData.Name,
-                    new Point((int)targetHealthBar.ScreenArea.Right,(int)(targetHealthBar.ScreenArea.Bottom + targetHealthBar.ScreenArea.Top)),
+                    new Vector2((int)targetHealthBar.ScreenArea.Right,(int)(targetHealthBar.ScreenArea.Bottom + targetHealthBar.ScreenArea.Top)),
                     usernameScale,usernameColor
                 );
             }

@@ -57,6 +57,9 @@
             } else {
                 /* This means this is the very first page, we do no want to animate a transition to it. */
                 pageTransitionAnimator.Finish();
+                foreach(var element in Elements) {
+                    element.SkipAnimation();
+                }
             }
 
             newPage.SetTime(_currentTime);

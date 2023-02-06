@@ -92,7 +92,7 @@ namespace Elves.Scenes.Battle.UI {
             if(Pressed) {
                 center.Y += ScreenArea.Height / 16;
             }
-            spriteFont.DrawCentered(Label,center.ToPoint(),scale,color);
+            spriteFont.DrawCentered(Label,Vector2.Floor(center),scale,color);
         }
 
         private Rectangle GetTextureSource() {

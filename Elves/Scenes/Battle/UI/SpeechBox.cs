@@ -80,7 +80,7 @@ namespace Elves.Scenes.Battle.UI {
             float margin = ScreenArea.Width * 0.075F;
             Vector2 location = ScreenArea.Position + new Vector2(margin);
             location.X += ScreenArea.Width * (1/8F);
-            font.Draw(Text,location.ToPoint(),textScale,Color.Black,(int)(ScreenArea.Right - location.X - margin));
+            font.Draw(Text,Vector2.Floor(location),textScale,Color.Black,(int)(ScreenArea.Right - location.X - margin));
         }
     }
 }

@@ -45,9 +45,6 @@ namespace Elves.Scenes.SaveSelect {
             TagDrawPage = new TagDrawPage() { Scene = scene, UI = this };
 
             SetPage(TagSelectPage);
-            foreach(var element in Elements) {
-                element.SkipAnimation();
-            }
         }
 
         public readonly SaveSelectPage TagSelectPage, TagContextPage, TagDrawPage;

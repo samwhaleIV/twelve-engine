@@ -93,9 +93,9 @@ namespace Elves.Scenes.Battle.UI {
             }
             int textScale = (int)(ScreenArea.Height / font.LineHeight / 2);
             if(!TextAnimationIsFinished) {
-                font.DrawCentered(_oldText,oldTextPosition.ToPoint(),textScale,Color.White);
+                font.DrawCentered(_oldText,Vector2.Floor(oldTextPosition),textScale,Color.White);
             }
-            font.DrawCentered(_currentText,currentTextPosition.ToPoint(),textScale,Color.White);
+            font.DrawCentered(_currentText,Vector2.Floor(currentTextPosition),textScale,Color.White);
         }
     }
 }

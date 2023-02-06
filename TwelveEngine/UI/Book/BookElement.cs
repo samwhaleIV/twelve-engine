@@ -72,6 +72,8 @@
         /// </summary>
         public float Scale { get => layout.Scale; set => layout.Scale = value; }
 
+        public float ComputedScale => ComputedArea.Destination.Height / Size.Y;
+
         /// <summary>
         /// Rotation attribute. Uses a renderer specific implementation, but assume a center, relative origin. Not realted to <c>Offset</c>.
         /// </summary>

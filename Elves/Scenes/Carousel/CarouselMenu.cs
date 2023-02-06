@@ -1,4 +1,5 @@
 ﻿using TwelveEngine.Shell;
+using Elves.Scenes.Carousel.UI;
 
 namespace Elves.Scenes.Carousel {
     public sealed class CarouselMenu:CarouselScene3D {

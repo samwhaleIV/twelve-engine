@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Audio\AudioSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\BankWrapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Audio\EventInstanceController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Audio\ManagedEventInstance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\EventWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Audio\ParameterDescription.cs" />

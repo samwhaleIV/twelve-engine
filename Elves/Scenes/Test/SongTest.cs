@@ -58,7 +58,7 @@ namespace Elves.Scenes.Test {
             }
         }
 
-        private EventInstanceController song = null;
+        private ManagedEventInstance song = null;
 
         private void Load() {
             background.Load(Content);

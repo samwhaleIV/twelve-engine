@@ -8,7 +8,7 @@ using Elves.Scenes;
 using Elves.Battle;
 using Elves.ElfData;
 using static Elves.Constants;
-using Elves.Scenes.Test;
+using TwelveEngine;
 
 namespace Elves {
     public static class ElfGame {
@@ -19,7 +19,7 @@ namespace Elves {
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
         /// </summary>
         /// <returns>The start state for the game.</returns>
-        public static GameState Start() => new SongTest(); //GetSplashMenu();
+        public static GameState Start() => GetSplashMenu();
 
         /* Christ almighty... */
         private static TBase GetScene<TBase, TSuper>(Action<TBase,ExitValue> onSceneEnd) where TBase : GameState, IScene<TBase> where TSuper : TBase, new() {
@@ -82,6 +82,14 @@ namespace Elves {
 
         private static void BattleSequencerExit(Scene3D scene,ExitValue data) {
             BattleResult result = data.BattleResult;
+            if(result == BattleResult.PlayerWon) {
+                if(Program.Save is null) {
+                    Logger.WriteLine("Cannot save battle win because a save file is not referenced at this time.",LoggerLabel.Save);
+                } else {
+                    Program.Save.SetValue(SaveKeys.HighestCompletedBattle,(int)data.BattleID);
+                    Program.Save.TrySave();
+                }
+            }
             //todo.. update save data
             scene.TransitionOut(new() {
                 Generator = GetCarouselMenu,
@@ -91,6 +99,14 @@ namespace Elves {
         }
 
         private static void CarouselMenuExit(Scene3D scene,ExitValue data) {
+            if(data == ExitValue.Back) {
+                scene.TransitionOut(new TransitionData() {
+                    Generator = GetSaveSelectScene,
+                    Data = StateData.FadeIn(TransitionDuration),
+                    Duration = TransitionDuration
+                });
+                return;
+            }
             ElfID elfID = data.BattleID;
             scene.TransitionOut(new TransitionData() {
                 Generator = () => GetBattleScene(elfID),
