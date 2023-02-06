@@ -3,7 +3,8 @@
 namespace TwelveEngine.Audio {
     public static class AudioSystem {
 
-        public const int DEFAULT_SAMPLE_RATE = 48000;
+        private const int DEFAULT_SAMPLE_RATE = 48000;
+        private const int MAX_STUDIO_CHANNELS = 32;
 
         private static bool _initialized = false, _disposed = false;
 
@@ -14,6 +15,8 @@ namespace TwelveEngine.Audio {
         private static readonly Dictionary<string,int> BankIDs = new();
         private static readonly Dictionary<int,BankWrapper> Banks = new();
 
+        public static IEnumerable<BankWrapper> GetBanks() => Banks.Values;
+
         private static void ValidateInitializationState() {
             if(_initialized) {
                 return;
@@ -21,22 +24,31 @@ namespace TwelveEngine.Audio {
             throw new InvalidOperationException("Audio controller has not been initialized.");
         }
 
-        public static void Load(int sampleRate = DEFAULT_SAMPLE_RATE) {
+        private static FMOD.INITFLAGS GetSystemInitFlags() {
+            var flags = FMOD.INITFLAGS.NORMAL;
+            if(Flags.Get(Constants.Flags.FMODProfile)) {
+                flags |= FMOD.INITFLAGS.PROFILE_ENABLE;
+            }
+            return flags;
+        }
+
+        internal static void Load() {
             /* Initialization guard */
             if(_initialized) {
                 throw new InvalidOperationException("Audio controller has already been initialized.");
             }
             _initialized = true;
-
             /* FMOD System initialization */
             FMOD.Studio.System.create(out StudioSystem);
             StudioSystem.getCoreSystem(out CoreSystem);
 
+            int sampleRate = Config.GetIntNullable(Config.Keys.SampleRate) ?? DEFAULT_SAMPLE_RATE;
             CoreSystem.setSoftwareFormat(sampleRate,FMOD.SPEAKERMODE.STEREO,2);
-            StudioSystem.initialize(2,FMOD.Studio.INITFLAGS.NORMAL,FMOD.INITFLAGS.NORMAL,IntPtr.Zero);
+
+            StudioSystem.initialize(MAX_STUDIO_CHANNELS,INITFLAGS.SYNCHRONOUS_UPDATE,GetSystemInitFlags(),IntPtr.Zero);
         }
 
-        public static void Update() {
+        internal static void Update() {
             ValidateInitializationState();
             StudioSystem.update();
         }
@@ -84,7 +96,7 @@ namespace TwelveEngine.Audio {
         /// Cleanup includes previously loaded audio banks contained in <see cref="Banks"/>.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
-        public static void Unload() {
+        internal static void Unload() {
             ValidateInitializationState();
             if(_disposed) {
                 throw new InvalidOperationException("Audio controller has already been disposed.");

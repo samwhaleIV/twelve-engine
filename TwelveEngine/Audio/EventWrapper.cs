@@ -6,7 +6,7 @@ namespace TwelveEngine.Audio {
 
         public ReadOnlyDictionary<string,ParameterDescription> Parameters { get; private init; }
         public string Name { get; private init; }
-        public EventDescription EventDescription { get; private init; }
+        public EventDescription Description { get; private init; }
         public int Length { get; private init; }
 
         private static Dictionary<string,ParameterDescription> GetParameterDictionary(PARAMETER_DESCRIPTION[] descriptions) {
@@ -18,7 +18,7 @@ namespace TwelveEngine.Audio {
         }
 
         public EventWrapper(EventDescription eventDescription) {
-            EventDescription = eventDescription;
+            Description = eventDescription;
 
             Name = eventDescription.GetPath();
             eventDescription.getLength(out int length);
@@ -28,9 +28,6 @@ namespace TwelveEngine.Audio {
             Parameters = new ReadOnlyDictionary<string,ParameterDescription>(parameterDictionary);
         }
 
-        public EventInstanceController Create() {
-            EventDescription.createInstance(out EventInstance instance);
-            return new EventInstanceController(instance);
-        }
+        public EventInstanceController Create() => new(this);
     }
 }

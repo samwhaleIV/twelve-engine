@@ -161,6 +161,9 @@ namespace TwelveEngine.Effects {
         }
 
         public void Render(SpriteBatch spriteBatch,Viewport viewport) {
+            if(Texture is null) {
+                throw new NullReferenceException(nameof(Texture));
+            }
             AspectRatio = viewport.AspectRatio;
             spriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointWrap,null,null,effect);
             spriteBatch.Draw(Texture,viewport.Bounds,Texture.Bounds,Color);

@@ -10,7 +10,7 @@
     },
     "Dev": {
       "commandName": "Project",
-      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console"
+      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console fmodprofile"
     },
     "No Flags": {
       "commandName": "Project"

@@ -1,6 +1,8 @@
 ﻿using TwelveEngine.Shell;
 using TwelveEngine.Font;
 using TwelveEngine.Input.Binding;
+using static System.Net.Mime.MediaTypeNames;
+using TwelveEngine.Audio;
 
 namespace TwelveEngine {
 
@@ -37,6 +39,11 @@ namespace TwelveEngine {
 
         private void GameDisposed(object sender,EventArgs args) {
             Logger.CleanUp();
+            AudioSystem.Unload();
+        }
+
+        private void UnhandledException(object sender,UnhandledExceptionEventArgs exceptionEventArgs) {
+            LogFatalException(new Exception($"Fatal, unhandled exception. This one is really bad. Time of death, {DateTime.UtcNow}."));
         }
 
         private void RunGameWithExceptionHandling() {
@@ -64,6 +71,7 @@ namespace TwelveEngine {
             if(Flags.Get(Constants.Flags.NoFailSafe)) {
                 game.Run();
             } else {
+                AppDomain.CurrentDomain.UnhandledException += UnhandledException;
                 RunGameWithExceptionHandling();
             }
             game.SyncContext.Clear();
@@ -117,6 +125,8 @@ namespace TwelveEngine {
             Config.TryLoad(configFile);
             Config.WriteToLog();
             KeyBinds.TryLoad();
+
+            AudioSystem.Load();
 
             GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
             InitializeGameManager();

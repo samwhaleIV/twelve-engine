@@ -4,6 +4,7 @@ using TwelveEngine.Shell.Automation;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Hotkeys;
 using TwelveEngine.Input;
+using TwelveEngine.Audio;
 
 namespace TwelveEngine.Shell {
     public sealed class GameStateManager:Game {
@@ -303,13 +304,12 @@ namespace TwelveEngine.Shell {
             _isUpdating = true;
             Watch.Start();
             if(GameState is null) {
-                if(pendingState is not null) {
-                    HotSwapPendingState();
-                } else {
+                if(pendingState is null) {
                     _updateDuration = ReadWatchAndReset();
                     _isUpdating = false;
                     return;
                 }
+                HotSwapPendingState();
             }
 
             KeyboardState vanillaKeyboardState = Keyboard.GetState();
@@ -327,7 +327,11 @@ namespace TwelveEngine.Shell {
             } else if(_framesToSkip > 0) {
                 FastForward();
             }
+
+            /* Internal systems updates, after basic event processing. */
+            AudioSystem.Update();
             SyncContext?.Update();
+
             if(ReroutedException is not null) {
                 throw new Exception("Unhandled exception from game loop sync context.",ReroutedException);
             }

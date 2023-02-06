@@ -20,7 +20,7 @@ namespace TwelveEngine.Audio {
 
         private static string EventStringFilter(string eventString) {
             if(eventString.StartsWith(EVENT_PREFIX)) {
-                return eventString.Substring(EVENT_PREFIX.Length);
+                return eventString[EVENT_PREFIX.Length..];
             }
             return eventString;
         }

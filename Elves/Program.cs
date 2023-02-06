@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.IO;
+using TwelveEngine.Audio;
 
 namespace Elves {
     public static class Program {
@@ -48,7 +49,6 @@ namespace Elves {
             Textures.ContentManager = Game.Content;
             Textures = new Textures();
 
-
             if(!Flags.Get(Constants.Flags.OSCursor)) {
                 AddCustomCursors();
                 CustomCursor.UseCustomCursor = true;
@@ -58,6 +58,8 @@ namespace Elves {
             LoadSaveFiles();
 
             LoadGlobalSaveFile();
+
+            LoadAudioBanks();
 
             game.SetState(ElfGame.Start());
         }
@@ -70,6 +72,14 @@ namespace Elves {
             CursorState cursorState,Texture2D texture,int? originX = null,int? originY = null
         ) {
             CustomCursor.Sources.Add(cursorState,MouseCursor.FromTexture2D(texture,originX ?? 0,originY ?? 0));
+        }
+
+        public static BankWrapper MusicBank { get; private set; }
+
+        private static void LoadAudioBanks() {
+            AudioSystem.LoadBank("Content/Music/Master.strings.bank");
+            AudioSystem.LoadBank("Content/Music/Master.bank");
+            MusicBank = AudioSystem.LoadBank("Content/Music/Music.bank");
         }
 
         private static void AddCustomCursors() {
