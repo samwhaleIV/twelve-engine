@@ -129,6 +129,7 @@ namespace Elves.Scenes.Battle.UI {
 
 
         public void UpdateLayout(float scale) {
+            //todo... verify that scale is being properly applied through the battle renderer
             Rectangle viewport = Viewport;
             TimeSpan now = Now;
 

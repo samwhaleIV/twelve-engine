@@ -8,7 +8,6 @@ using TwelveEngine.Shell;
 
 namespace Elves.Scenes.SplashMenu {
     public sealed class SplashMenuState:OrthoBackgroundScene {
-        private const float PLAY_BUTTON_SCALE = 0.75f;
 
         private static readonly Color BACKGROUND_TOP_COLOR = Color.FromNonPremultiplied(0,225,89,255);
         private static readonly Color BACKGROUND_BOTTOM_COLOR = Color.Black;
@@ -16,11 +15,11 @@ namespace Elves.Scenes.SplashMenu {
         private const float FOREGROUND_WATER_OPACITY = 0.592f;
         private static Color FOREGROUND_WATER_COLOR => Color.FromNonPremultiplied(109,228,255,255);
 
-
         public SplashMenuState():base(Program.Textures.Nothing,true) {
             Name = "Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad.Add(Load);
+            PixelScaleModifier = Constants.UI.SplashMenuScaleModifier;
             UI = new SplashMenuUI(this);
         }
 
@@ -71,17 +70,14 @@ namespace Elves.Scenes.SplashMenu {
 
         private void UpdatePlayButtonArea() {
             Rectangle bounds = Viewport.Bounds;
-            float scale = GetUIScale() * PLAY_BUTTON_SCALE;
-            Vector2 size = PlayButton.TextureSource.Size.ToVector2() * scale;
+            Vector2 size = PlayButton.TextureSource.Size.ToVector2() * PixelScale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             PlayButton.Area = new FloatRectangle(center,size);
         }
 
         private void UpdateNameBadgeArea() {
             Rectangle bounds = Viewport.Bounds;
-            float scale = GetUIScale();
-            Vector2 size = nameBadge.TextureSource.Size.ToVector2() * scale;
-
+            Vector2 size = nameBadge.TextureSource.Size.ToVector2() * PixelScale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (1/3f) - size.Y * 0.5f);
             nameBadge.Area = new FloatRectangle(center,size);
         }
@@ -96,15 +92,15 @@ namespace Elves.Scenes.SplashMenu {
 
         private void UpdateFallingElfArea() {
             Rectangle bounds = Viewport.Bounds;
-            float scale = GetUIScale();
+            float scale = PixelScale;
             Vector2 size = fallingElf.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             var t = (float)(Now / TimeSpan.FromSeconds(8) % 1);
             var t2 = (float)(Now / TimeSpan.FromSeconds(16) % 1);
             var offset = MathF.Sin(MathF.PI * 2 * t);
             var offset2 = MathF.Cos(MathF.PI * 2 * t2);
-            center.X += (offset * 8f) / FloatingItem.WIGGLE_BASE_SCALE * scale;
-            center.Y += (offset2 * 4f) / FloatingItem.WIGGLE_BASE_SCALE * scale;
+            center.X += offset * 8f / FloatingItem.WIGGLE_BASE_SCALE * scale;
+            center.Y += offset2 * 4f / FloatingItem.WIGGLE_BASE_SCALE * scale;
             fallingElf.Area = new FloatRectangle(center,size);
         }
     }

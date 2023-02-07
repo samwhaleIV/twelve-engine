@@ -67,7 +67,7 @@ namespace Elves.Scenes.Carousel.UI.Pages {
         }
 
         public override void Update(FloatRectangle viewport) {
-            float pixelSize = viewport.Height * 0.008f;
+            float pixelSize = Scene.PixelScale;
             float topY = 1/8f, bottomY = 7/8f;
 
             float centerOffset = 1 / 4f / viewport.AspectRatio;

@@ -90,7 +90,6 @@ namespace Elves {
                     Program.Save.TrySave();
                 }
             }
-            //todo.. update save data
             scene.TransitionOut(new() {
                 Generator = GetCarouselMenu,
                 Data = StateData.FadeIn(TransitionDuration),

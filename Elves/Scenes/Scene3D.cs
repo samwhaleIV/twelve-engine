@@ -3,6 +3,7 @@ using TwelveEngine.Game3D.Entity.Types;
 using TwelveEngine.Game3D;
 using TwelveEngine;
 using System;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Elves.Scenes {
     public abstract class Scene3D:GameState3D, IScene<Scene3D> {
@@ -30,13 +31,10 @@ namespace Elves.Scenes {
             Orthographic = false,
             Angle = new Vector2(0f,180f),
             Position = new Vector3(0f,0f,Constants.Depth.Cam)
-        };   
+        };
 
-        private const float VERTICAL_SCALE_DIVISOR = 70f;
-
-        public float GetUIScale() {
-            return Viewport.Height / VERTICAL_SCALE_DIVISOR;
-        }
+        public float PixelScaleModifier { get; set; } = 1;
+        public float PixelScale => Viewport.Height * Constants.UI.PixelScaleDivisor * PixelScaleModifier;
 
         private void Update() {
             if(!DebugOrtho || Camera is null) {

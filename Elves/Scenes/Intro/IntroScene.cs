@@ -79,7 +79,7 @@ namespace Elves.Scenes.Intro {
         }
 
         private void Load() {
-            //TODO
+            //TODO - load song, get its duration
             CreateTimeline(TimeSpan.FromSeconds(40));
         }
 

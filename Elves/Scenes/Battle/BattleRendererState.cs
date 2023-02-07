@@ -57,7 +57,7 @@ namespace Elves.Scenes.Battle {
         }
 
         private void UpdateUI() {
-            battleUI.UpdateLayout((int)GetUIScale());
+            battleUI.UpdateLayout(PixelScale);
             CustomCursor.State = battleUI.CursorState;
         }
 

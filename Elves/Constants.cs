@@ -26,6 +26,8 @@ namespace Elves {
         }
 
         public static class UI {
+            public const float SplashMenuScaleModifier = 1.5f;
+            public const float PixelScaleDivisor = 0.008f;
             public static readonly Color PressedColor = Color.Lerp(Color.White,Color.Black,0.1f);
             public static readonly Color SelectColor = Color.Lerp(Color.White,Color.Black,0.05f);
         }
@@ -71,8 +73,7 @@ namespace Elves {
         }
 
         public static class Songs {
-            public const string Intro = "Music/A_hero";
-            public const string UV2T3 = "Music/UV2T3";
+
         }
     }
 }
