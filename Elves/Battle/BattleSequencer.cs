@@ -19,10 +19,18 @@ namespace Elves.Battle {
             Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.ID})";
             script.SetSequencer(this);
             Script = script;
-            OnLoad.Add(AddScriptToScheduler);
-            OnTransitionIn.Add(StateTransitionIn);
             transitionTask = new TaskCompletionSource();
-            OnLoad.Add(SetupDefaultUIState);
+            OnLoad.Add(LoadSequencer);
+        }
+
+        private void LoadSequencer() {
+            AddScriptToScheduler();
+            SetupDefaultUIState();
+            if(FadeInIsFlagged) {
+                OnTransitionIn.Add(StateTransitionIn);
+                return;
+            }
+            StateTransitionIn();
         }
 
         private void SetupDefaultUIState() {

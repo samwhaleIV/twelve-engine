@@ -18,7 +18,7 @@ namespace Elves.Scenes.Battle.UI {
             Endpoint = new Endpoint<int>(this);
         }
 
-        public Rectangle TextureSource { get; set; }
+        public Rectangle TextureSource { get; private set; } = DefaultTextureSource;
         public int ID { get; set; }
 
         protected override bool GetInputPaused() {
@@ -30,7 +30,7 @@ namespace Elves.Scenes.Battle.UI {
             throw new InvalidOperationException("Input pause property is readonly for button elements.");
         }
 
-        private readonly Interpolator interpolator = new(Constants.AnimationTiming.ActionButtonMovement);
+        private readonly Interpolator interpolator = new(Constants.BattleUI.ButtonMovement);
 
         private static readonly Rectangle DefaultTextureSource = new(0,16,32,16);
         private static readonly Rectangle SelectedTextureSource = new(0,32,32,16);
@@ -84,7 +84,7 @@ namespace Elves.Scenes.Battle.UI {
             ScreenArea = interpolator.Interpolate(startPosition,endPosition);
         }
 
-        public void DrawText(UVSpriteFont spriteFont,int scale,Color color) {
+        public void DrawText(UVSpriteFont spriteFont,float scale,Color color) {
             if(IsOffscreen) {
                 return;
             }
@@ -109,7 +109,8 @@ namespace Elves.Scenes.Battle.UI {
             if(IsOffscreen) {
                 return;
             }
-            spriteBatch.Draw(Texture,(Rectangle)ScreenArea,GetTextureSource(),color ?? Color.White);
+            TextureSource = GetTextureSource();
+            spriteBatch.Draw(Texture,(Rectangle)ScreenArea,TextureSource,color ?? Color.White);
         }
     }
 }

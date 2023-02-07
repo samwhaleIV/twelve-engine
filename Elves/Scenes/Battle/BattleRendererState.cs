@@ -44,6 +44,7 @@ namespace Elves.Scenes.Battle {
         }
 
         private void Initialize() {
+            PixelScaleModifier = Constants.UI.BattleSceneScaleModifier;
             OnLoad.Add(Load);
             OnUpdate.Add(UpdateUI);
             OnRender.Add(Render);

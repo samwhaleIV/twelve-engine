@@ -21,6 +21,10 @@
             Start = now;
         }
 
+        public void Reset() {
+            Start = Now;
+        }
+
         public void ResetCarryOver(TimeSpan now) {
             if(!IsFinished) {
                 var progress = GetValue();

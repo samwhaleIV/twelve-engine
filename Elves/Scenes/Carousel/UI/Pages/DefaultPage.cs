@@ -70,22 +70,28 @@ namespace Elves.Scenes.Carousel.UI.Pages {
             float pixelSize = Scene.PixelScale;
             float topY = 1/8f, bottomY = 7/8f;
 
-            float centerOffset = 1 / 4f / viewport.AspectRatio;
-
-            float leftX = 0.5f - centerOffset;
-            float rightX = 0.5f + centerOffset;
-
             float buttonEdgeMargin = pixelSize * 2;
 
-            elfNameScale = pixelSize;
+            elfNameScale = pixelSize * Constants.UI.CarouselElfNameScale;
             elfNameCenter = new Vector2(0.5f,topY) * viewport.Size;
 
             foreach(Button button in UI.Buttons) {
                 button.SizeByPixels(pixelSize);
             }
 
-            UI.LeftButton.Position = new(leftX,bottomY);
-            UI.RightButton.Position = new(rightX,bottomY);
+            float directionButtonOffset = pixelSize * 22;
+
+            var leftButton = UI.LeftButton;
+                leftButton.PositionModeX = CoordinateMode.Absolute;
+                leftButton.PositionModeY = CoordinateMode.Relative;
+                leftButton.Offset = new(-1,-0.5f);
+                leftButton.Position = new(viewport.Center.X - directionButtonOffset,bottomY);
+
+            var rightButton = UI.RightButton;
+                rightButton.PositionModeX = CoordinateMode.Absolute;
+                rightButton.PositionModeY = CoordinateMode.Relative;
+                rightButton.Offset = new(0,-0.5f);
+                rightButton.Position = new(viewport.Center.X + directionButtonOffset,bottomY);
 
             UI.PlayButton.Position = new(0.5f,bottomY);
 

@@ -25,9 +25,38 @@ namespace Elves {
             public static readonly Color DefaultUserColor = Color.White;
         }
 
+        public static class BattleUI {
+            public const float TagBackgroundScale = 2.25f;
+            public const float HealthImpactScale = 2;
+            public const float ButtonScale = 1.25f;
+
+            public const float NameTextScale = 1 / 3f;
+            public const float TagTextScale = 1 / 3f;
+            public const float ButtonTextScale = 1 / 3f;
+
+            public const float MarginScale = 1;
+
+            public static readonly TimeSpan ButtonMovement = TimeSpan.FromMilliseconds(150);
+            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TagMovement = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TagTextMovement = TimeSpan.FromMilliseconds(350);
+
+            public static readonly TimeSpan HealthImpact = TimeSpan.FromMilliseconds(80);
+
+        }
+
         public static class UI {
+
+            public const float CarouselElfNameScale = 0.75f;
+
+            public const float MinScaleModifier = 0.5f;
+            public const float MaxScaleModifier = 2f;
+
             public const float SplashMenuScaleModifier = 1.5f;
+            public const float BattleSceneScaleModifier = 1.25f;
             public const float PixelScaleDivisor = 0.008f;
+
             public static readonly Color PressedColor = Color.Lerp(Color.White,Color.Black,0.1f);
             public static readonly Color SelectColor = Color.Lerp(Color.White,Color.Black,0.05f);
         }
@@ -47,13 +76,6 @@ namespace Elves {
 
         public static class AnimationTiming {
             public static readonly TimeSpan ScrollingBackgroundDefault = TimeSpan.FromSeconds(60);
-            public static readonly TimeSpan ActionButtonMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(250);
-            public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(250);
-            public static readonly TimeSpan TaglineMovement = TimeSpan.FromMilliseconds(250);
-            public static readonly TimeSpan TaglineTextMovement = TimeSpan.FromMilliseconds(350);
-
-            public static readonly TimeSpan HealthDropDuration = TimeSpan.FromMilliseconds(150);
 
             public static readonly TimeSpan CarouselRotationDuration = TimeSpan.FromMilliseconds(300);
             public static readonly TimeSpan CarouselBackgroundScroll = TimeSpan.FromSeconds(120);
@@ -62,7 +84,6 @@ namespace Elves {
             public static readonly TimeSpan IntroFadeOutDelay = TimeSpan.FromSeconds(0.5f);
             public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(4);
             public static readonly TimeSpan IntroSongDurationOffset = -TimeSpan.FromSeconds(3);
-
             public const float IntroTextFadeSpeed = 2f;
 
             public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.25f);

@@ -10,8 +10,8 @@ namespace Elves.Scenes.Battle.UI {
 
         private const int DEFAULT_BUFFER_SIZE = 128;
 
-        private readonly Interpolator textPositionInterpolator = new(Constants.AnimationTiming.TaglineTextMovement);
-        private readonly Interpolator elementDisplayInterpolator = new(Constants.AnimationTiming.TaglineMovement);
+        private readonly Interpolator textPositionInterpolator = new(Constants.BattleUI.TagTextMovement);
+        private readonly Interpolator elementDisplayInterpolator = new(Constants.BattleUI.TagMovement);
 
         private StringBuilder _oldText = new(DEFAULT_BUFFER_SIZE);
         private StringBuilder _currentText = new(DEFAULT_BUFFER_SIZE);
@@ -57,27 +57,25 @@ namespace Elves.Scenes.Battle.UI {
 
         private Vector2 oldTextPosition, currentTextPosition;
 
-        public void Update(TimeSpan now,Rectangle viewport,float margin) {
+        public void Update(TimeSpan now,FloatRectangle viewport,float scale) {
+            //todo use scale
             textPositionInterpolator.Update(now);
             elementDisplayInterpolator.Update(now);
 
-            float width = viewport.Width;
-            float height = margin * 8;
+            float height = Fonts.RetroFont.LineHeight * MathF.Round(scale * Constants.BattleUI.TagTextScale) * Constants.BattleUI.TagBackgroundScale;
 
-            float centerX = viewport.X + viewport.Width * 0.5f;
-            float centerY = viewport.Y + viewport.Height * 0.5f;
+            Vector2 center = viewport.Center;
 
             float halfHeight = height * 0.5f;
 
-            float x = 0;
-            float y = IsShown ? elementDisplayInterpolator.Interpolate(viewport.Bottom,centerY-halfHeight) : elementDisplayInterpolator.Interpolate(centerY-halfHeight,viewport.Bottom);
+            float y = IsShown ? elementDisplayInterpolator.Interpolate(viewport.Bottom,center.Y-halfHeight) : elementDisplayInterpolator.Interpolate(center.Y-halfHeight,viewport.Bottom);
 
-            ScreenArea = new FloatRectangle(x,y,width,height);
+            ScreenArea = new FloatRectangle(0,y,viewport.Width,height);
 
             float textY = y + halfHeight;
 
-            oldTextPosition = new Vector2(textPositionInterpolator.Interpolate(centerX,centerX-viewport.Width),textY);
-            currentTextPosition = new Vector2(textPositionInterpolator.Interpolate(centerX+viewport.Width,centerX),textY);
+            oldTextPosition = new Vector2(textPositionInterpolator.Interpolate(center.X,center.X-viewport.Width),textY);
+            currentTextPosition = new Vector2(textPositionInterpolator.Interpolate(center.X+viewport.Width,center.X),textY);
         }
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {
@@ -87,15 +85,14 @@ namespace Elves.Scenes.Battle.UI {
             base.Draw(spriteBatch,Color.Black);
         }
 
-        public void DrawText(UVSpriteFont font) {
+        public void DrawText(UVSpriteFont font,float scale) {
             if(IsOffscreen) {
                 return;
             }
-            int textScale = (int)(ScreenArea.Height / font.LineHeight / 2);
             if(!TextAnimationIsFinished) {
-                font.DrawCentered(_oldText,Vector2.Floor(oldTextPosition),textScale,Color.White);
+                font.DrawCentered(_oldText,Vector2.Floor(oldTextPosition),scale,Color.White);
             }
-            font.DrawCentered(_currentText,Vector2.Floor(currentTextPosition),textScale,Color.White);
+            font.DrawCentered(_currentText,Vector2.Floor(currentTextPosition),scale,Color.White);
         }
     }
 }

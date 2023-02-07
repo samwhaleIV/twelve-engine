@@ -14,6 +14,11 @@ namespace Elves.Scenes.Battle.UI {
 
         private readonly InputGameState owner;
 
+        private Effect healthBarEffect;
+        private EffectParameter healthBarColorStartParameter, healthBarColorEndParameter;
+
+        private static readonly Color HealthBarOffColor = new(25,25,25,255);
+
         public BattleUI(InputGameState owner) {
             this.owner = owner;
 
@@ -29,7 +34,16 @@ namespace Elves.Scenes.Battle.UI {
 
             DefaultFocusElement = Button1;
 
+            LoadHealthBarEffect();
+
             owner.OnInputActivated += FocusDefault;
+        }
+
+        private void LoadHealthBarEffect() {
+            healthBarEffect = owner.Content.Load<Effect>("Shaders/HealthBarEffect");
+            healthBarEffect.Parameters["OffColor"].SetValue(HealthBarOffColor.ToVector4());
+            healthBarColorStartParameter = healthBarEffect.Parameters["OffColorStart"];
+            healthBarColorEndParameter = healthBarEffect.Parameters["OffColorEnd"];
         }
 
         protected override bool GetLeftMouseButtonIsCaptured() {
@@ -68,8 +82,16 @@ namespace Elves.Scenes.Battle.UI {
 
         private Rectangle Viewport => owner.Viewport.Bounds;
 
-        private readonly HealthBar playerHealthBar = new() { Alignment = HealthBarAlignment.Left };
-        private readonly HealthBar targetHealthBar = new() { Alignment = HealthBarAlignment.Right };
+        private static readonly Rectangle HealthBarSource = new(16,0,16,16);
+
+        private readonly HealthBar playerHealthBar = new() {
+            Alignment = HealthBarAlignment.Left,
+            TextureSource = HealthBarSource
+        };
+        private readonly HealthBar targetHealthBar = new() {
+            Alignment = HealthBarAlignment.Right,
+            TextureSource = HealthBarSource
+        };
 
         private readonly Tagline tagline = new();
         private readonly SpeechBox speechBox = new();
@@ -88,9 +110,27 @@ namespace Elves.Scenes.Battle.UI {
         #endregion
         #region UPDATE, RENDER, & LAYOUT
 
-        public void UpdateActionButtons(Rectangle viewport,TimeSpan now,float margin,float halfMargin) {
-            float buttonHeight = viewport.Height * 0.25f;
-            float buttonWidth = buttonHeight * 2;
+        private float _scale;
+
+        public void UpdateLayout(float scale) {
+            _scale = scale;
+            //todo... verify that scale is being properly applied through the battle renderer
+            FloatRectangle viewport = new(Viewport);
+            TimeSpan now = Now;
+
+            float margin = scale * Constants.BattleUI.MarginScale;
+            float halfMargin = scale;
+
+            UpdateActionButtons(viewport,now,scale,margin,halfMargin);
+            UpdateHealthBars(viewport,scale,margin);
+            speechBox.Update(now,viewport);
+            tagline.Update(now,viewport,scale);
+        }
+
+        public void UpdateActionButtons(FloatRectangle viewport,TimeSpan now,float scale,float margin,float halfMargin) {
+            Rectangle textureSource = Button1.TextureSource;
+            float buttonHeight = textureSource.Height * scale * Constants.BattleUI.ButtonScale;
+            float buttonWidth = (float)textureSource.Width / textureSource.Height * buttonHeight;
 
             float buttonCenterY = viewport.Bottom - margin - buttonHeight - halfMargin;
 
@@ -103,71 +143,68 @@ namespace Elves.Scenes.Battle.UI {
             }
         }
 
-        public void UpdateHealthBars(Rectangle viewport,float scale,float margin,float halfMargin) {
-            float healthBarY = margin;
-
-            float centerX = viewport.Center.X;
-
-            float playerHealthBarLeft = margin;
-            float playerHealthBarRight = centerX - halfMargin;
-
-            float targetHealthBarLeft = centerX + halfMargin;
-            float targetHealthBarRight = viewport.Right - margin;
-
-            float healthBarHeight = viewport.Height * 0.125f; /* Equal to half of action button height */
-
-            playerHealthBar.ScreenArea = new FloatRectangle(
-                playerHealthBarLeft,healthBarY,playerHealthBarRight-playerHealthBarLeft,healthBarHeight
+        public void UpdateHealthBars(FloatRectangle viewport,float scale,float margin) {
+            float width = viewport.Width * 0.5f - margin * 2;
+            float YOffset = scale * Constants.BattleUI.HealthImpactScale;
+            playerHealthBar.ScreenArea = new(
+                viewport.Left + margin,YOffset * playerHealthBar.GetYOffset() + viewport.Top + margin,width,playerHealthBar.TextureSource.Height * scale
             );
-            targetHealthBar.ScreenArea = new FloatRectangle(
-                targetHealthBarLeft,healthBarY,targetHealthBarRight-targetHealthBarLeft,healthBarHeight
+            targetHealthBar.ScreenArea = new(
+                viewport.Right - width - margin,YOffset * targetHealthBar.GetYOffset() + viewport.Top + margin,width,targetHealthBar.TextureSource.Height * scale
             );
-
-            playerHealthBar.Update(scale,Now);
-            targetHealthBar.Update(scale,Now);
+            var now = Now;
+            playerHealthBar.Update(now);
+            targetHealthBar.Update(now);
         }
 
+        private void SetHealthBarEffectRange(HealthBar healthBar) {
 
-        public void UpdateLayout(float scale) {
-            //todo... verify that scale is being properly applied through the battle renderer
-            Rectangle viewport = Viewport;
-            TimeSpan now = Now;
+            (float start,float end) = healthBar.GetOffColorRange();
 
-            float margin = scale;
-            float halfMargin = margin * 0.5f;
+            FloatRectangle uvArea = healthBar.UVArea;
 
-            UpdateActionButtons(viewport,now,margin,halfMargin);
-            UpdateHealthBars(viewport,scale,margin,halfMargin);
-            speechBox.Update(now,viewport);
-            tagline.Update(now,viewport,margin);
-        }
+            start = uvArea.Left + uvArea.Width * start;
+            end = uvArea.Left + uvArea.Width * end;
 
-        private void RenderActionButtons(SpriteBatch spriteBatch) {
-            foreach(var button in actionButtons) {
-                button.Draw(spriteBatch);
-            }
+            healthBarColorStartParameter.SetValue(start);
+            healthBarColorEndParameter.SetValue(end);
         }
 
         private void RenderHealthBars(SpriteBatch spriteBatch,UserData playerData,UserData targetData) {
+            spriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp,null,null,healthBarEffect);
             if(playerData != null) {
                 playerHealthBar.Value = playerData.HealthFraction;
+                SetHealthBarEffectRange(playerHealthBar);
                 playerHealthBar.Draw(spriteBatch,playerData.Color);
-
             }
             if(targetData != null) {
                 targetHealthBar.Value = targetData.HealthFraction;
+                SetHealthBarEffectRange(targetHealthBar);
                 targetHealthBar.Draw(spriteBatch,targetData.Color);
             }
+            spriteBatch.End();
         }
 
-        private void RenderUsernames(UserData playerData,UserData targetData) {
-            int usernameScale = (int)(playerHealthBar.ScreenArea.Height * 0.5f / Fonts.RetroFont.LineHeight);
+        private float GetNameTextScale() {
+            return _scale * Constants.BattleUI.NameTextScale;
+        }
+
+        private float GetButtonTextScale() {
+            return _scale * Constants.BattleUI.ButtonTextScale;
+        }
+
+        private float GetTaglineTextScale() {
+            return _scale * Constants.BattleUI.TagTextScale;
+        }
+
+        private void RenderNames(UserData playerData,UserData targetData) {
+            float usernameScale = GetNameTextScale();
             Color usernameColor = Color.White;
             if(playerData != null && playerData.Name != null) {
                 Fonts.RetroFont.Draw(
                     playerData.Name,
                     new Vector2((int)playerHealthBar.ScreenArea.X,(int)(playerHealthBar.ScreenArea.Bottom + playerHealthBar.ScreenArea.Top)),
-                    usernameScale,usernameColor
+                    GetNameTextScale(),usernameColor
                 );
             }
             if(targetData != null && targetData.Name != null) {
@@ -180,7 +217,7 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         private void RenderActionButtonText() {
-            int buttonTextScale = (int)(Button1.ScreenArea.Height / 50f);
+            float buttonTextScale = GetButtonTextScale();
             foreach(var button in actionButtons) {
                 button.DrawText(Fonts.RetroFont,buttonTextScale,Color.White);
             }
@@ -191,14 +228,14 @@ namespace Elves.Scenes.Battle.UI {
             tagline.Draw(spriteBatch);
             spriteBatch.End();
             Fonts.RetroFont.Begin(spriteBatch);
-            tagline.DrawText(Fonts.RetroFont);
+            tagline.DrawText(Fonts.RetroFont,GetTaglineTextScale());
             Fonts.RetroFont.End();
         }
 
         public void Render(SpriteBatch spriteBatch,UserData playerData,UserData targetData) {
 
             Fonts.RetroFont.Begin(spriteBatch);
-            RenderUsernames(playerData,targetData);
+            RenderNames(playerData,targetData);
             Fonts.RetroFont.End();
 
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
@@ -210,9 +247,11 @@ namespace Elves.Scenes.Battle.UI {
             Fonts.RetroFont.End();
 
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-            RenderActionButtons(spriteBatch);
-            RenderHealthBars(spriteBatch,playerData,targetData);
+            foreach(var button in actionButtons) {
+                button.Draw(spriteBatch);
+            }
             spriteBatch.End();
+            RenderHealthBars(spriteBatch,playerData,targetData);
 
             Fonts.RetroFont.Begin(spriteBatch);
             RenderActionButtonText();

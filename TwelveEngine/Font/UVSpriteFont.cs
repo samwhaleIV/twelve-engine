@@ -163,10 +163,6 @@ namespace TwelveEngine.Font {
         }
 
         private void DrawLineBreaking(Vector2 destination,float scale,Color color,float maxWidth) {
-            if(scale < 1) {
-                scale = 1;
-            }
-
             float x = destination.X, y = destination.Y;
 
             float lineHeight = LineSpace * this.lineHeight * scale;
@@ -198,10 +194,6 @@ namespace TwelveEngine.Font {
         }
 
         private void DrawRight(Vector2 destination,float scale,Color color) {
-            if(scale < 1) {
-                scale = 1;
-            }
-
             float wordSpacing = this.wordSpacing * scale;
             float letterSpacing = this.letterSpacing * scale;
 
@@ -224,10 +216,6 @@ namespace TwelveEngine.Font {
         }
 
         private void DrawCentered(Vector2 center,float scale,Color color) {
-            if(scale < 1) {
-                scale = 1;
-            }
-
             float wordSpacing = this.wordSpacing * scale;
             float letterSpacing = this.letterSpacing * scale;
 
@@ -249,7 +237,10 @@ namespace TwelveEngine.Font {
             }
         }
 
+        private static float ValidateScale(ref float scale) => scale = MathF.Round(scale);
+
         public void Draw(StringBuilder stringBuilder,Vector2 destination,float scale,Color? color = null,float maxWidth = 0) {
+            ValidateScale(ref scale);
             AssertSpriteBatch();
             FillWordsQueue(stringBuilder);
             DrawLineBreaking(destination,scale,color ?? DefaultColor,maxWidth);
@@ -257,6 +248,7 @@ namespace TwelveEngine.Font {
         }
 
         public void Draw(string text,Vector2 destination,float scale,Color? color = null,float maxWidth = 0) {
+            ValidateScale(ref scale);
             AssertSpriteBatch();
             FillWordsQueue(text);
             DrawLineBreaking(destination,scale,color ?? DefaultColor,maxWidth);
@@ -264,6 +256,7 @@ namespace TwelveEngine.Font {
         }
 
         public void DrawRight(StringBuilder stringBuilder,Vector2 destination,float scale,Color? color = null) {
+            ValidateScale(ref scale);
             AssertSpriteBatch();
             FillWordsQueue(stringBuilder);
             DrawRight(destination,scale,color ?? DefaultColor);
@@ -271,6 +264,7 @@ namespace TwelveEngine.Font {
         }
 
         public void DrawRight(string text,Vector2 destination,float scale,Color? color = null) {
+            ValidateScale(ref scale);
             AssertSpriteBatch();
             FillWordsQueue(text);
             DrawRight(destination,scale,color ?? DefaultColor);
@@ -278,6 +272,7 @@ namespace TwelveEngine.Font {
         }
 
         public void DrawCentered(StringBuilder stringBuilder,Vector2 center,float scale,Color? color = null) {
+            ValidateScale(ref scale);
             AssertSpriteBatch();
             FillWordsQueue(stringBuilder);
             DrawCentered(center,scale,color ?? DefaultColor);
@@ -285,6 +280,7 @@ namespace TwelveEngine.Font {
         }
 
         public void DrawCentered(string text,Vector2 center,float scale,Color? color = null) {
+            ValidateScale(ref scale);
             AssertSpriteBatch();
             FillWordsQueue(text);
             DrawCentered(center,scale,color ?? DefaultColor);
