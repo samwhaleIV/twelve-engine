@@ -6,17 +6,23 @@ namespace Elves.Scenes.Carousel {
 
         private readonly CarouselUI UI;
 
-        public CarouselMenu() {
+        public CarouselMenu(bool animateLastBattleProgress) : base(animateLastBattleProgress) {
             Name = "Carousel Menu";
             UI = new(this);
             UI.BindInputEvents(this);
             OnPreRender.Add(PreRenderCarouselScene);
             OnRender.Add(Render);
             OnUpdate.Add(Update);
+            OnLoad.Add(LoadUI);
+            OnInputActivated += UI.FocusDefault;
+        }
+
+        private void LoadUI() {
+            UI.SetFirstPage(UI.DefaultPage,new(Viewport));
         }
 
         private void Update() {
-            UI.Update(Now,new(Viewport));
+            UI.Update(new(Viewport));
             CustomCursor.State = UI.CursorState;
             UpdateCarouselItems();
         }

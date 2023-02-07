@@ -16,13 +16,17 @@
         public TimeSpan Start { get; private set; } = TimeSpan.Zero;
         public TimeSpan Now { get; private set; } = TimeSpan.Zero;
 
+        public event Action OnEnd;
+
         public void Reset(TimeSpan now) {
             Now = now;
             Start = now;
+            firedEndEvent = false;
         }
 
         public void Reset() {
             Start = Now;
+            firedEndEvent = false;
         }
 
         public void ResetCarryOver(TimeSpan now) {
@@ -33,6 +37,7 @@
             } else {
                 Start = now;
             }
+            firedEndEvent = false;
             Now = now;
         }
 
@@ -43,10 +48,16 @@
 
         public float Value { get; private set; }
 
+        private bool firedEndEvent = false;
+
        private float GetValue() {
             float value = (float)((Now - Start) / Duration);
-            if(value > 1) {
+            if(value >= 1) {
                 value = 1;
+                if(!firedEndEvent) {
+                    OnEnd?.Invoke();
+                    firedEndEvent = true;
+                }
             } else if(value < 0) {
                 value = 0;
             }
@@ -57,6 +68,8 @@
 
         public void Finish() {
             Start = Now - Duration;
+            firedEndEvent = true;
+            OnEnd?.Invoke();
         }
 
         public Point Interpolate(Point start,Point end) {

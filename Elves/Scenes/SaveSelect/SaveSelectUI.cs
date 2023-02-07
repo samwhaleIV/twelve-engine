@@ -6,7 +6,10 @@ namespace Elves.Scenes.SaveSelect {
 
     public sealed class SaveSelectUI:SpriteBook {
 
+        private readonly SaveSelectScene scene;
+
         public SaveSelectUI(SaveSelectScene scene):base(scene) {
+            this.scene = scene;
 
             BackButton = AddButton(0,123,ButtonImpulse.Back);
             PlayButton = AddButton(17,123,ButtonImpulse.Play);
@@ -44,7 +47,8 @@ namespace Elves.Scenes.SaveSelect {
             TagContextPage = new TagContextPage() { Scene = scene, UI = this };
             TagDrawPage = new TagDrawPage() { Scene = scene, UI = this };
 
-            SetPage(TagSelectPage);
+            SetFirstPage(TagSelectPage,new(scene.Viewport));
+            scene.OnInputActivated += FocusDefault;
         }
 
         public readonly SaveSelectPage TagSelectPage, TagContextPage, TagDrawPage;
@@ -87,5 +91,9 @@ namespace Elves.Scenes.SaveSelect {
         public event Action<ButtonImpulse> OnButtonPresed;
 
         private void ButtonPressed(ButtonImpulse impulse) => OnButtonPresed?.Invoke(impulse);
+
+        protected override TimeSpan GetCurrentTime() {
+            return scene.Now;
+        }
     }
 }

@@ -2,7 +2,7 @@
 using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
-    public abstract class BookUIScene:Scene {
+    public abstract class BookUIScene:InputGameState {
 
         private SpriteBook _book;
         public SpriteBook UI {
@@ -27,7 +27,7 @@ namespace Elves.Scenes.SaveSelect {
             if(UI is null) {
                 return;
             }
-            UI.Update(Now,new(Viewport));
+            UI.Update(new(Viewport));
             CustomCursor.State = UI.CursorState;
         }
 

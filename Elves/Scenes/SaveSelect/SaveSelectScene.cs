@@ -14,8 +14,14 @@ namespace Elves.Scenes.SaveSelect {
         private readonly DrawingFrame[] drawingFrames = new DrawingFrame[3];
         public DrawingFrame[] DrawingFrames => drawingFrames;
 
+        public event Action<GameState,int> OnSceneEnd;
+
         public void OpenSaveFile(int saveFileID) {
-            EndScene(ExitValue.Get(saveFileID));
+            OnSceneEnd?.Invoke(this,saveFileID);
+        }
+
+        public void BackToSplashScreen() {
+            OnSceneEnd?.Invoke(this,-1);
         }
 
         public SaveSelectScene() {

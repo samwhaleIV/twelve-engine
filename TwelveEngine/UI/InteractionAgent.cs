@@ -303,7 +303,7 @@ namespace TwelveEngine.UI {
         /// A way to implement a keyboard/gamepad back button. Not all pages need to have a back method.
         /// </summary>
         private void CancelDown() {
-            if(PressedElement is not null || AnyMouseButtonCaptured) {
+            if(PressedElement is not null || AnyMouseButtonCaptured || IsTransitioning) {
                 return;
             }
             BackButtonPressed();

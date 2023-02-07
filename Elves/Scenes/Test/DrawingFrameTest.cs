@@ -2,10 +2,11 @@
 using Microsoft.Xna.Framework;
 using TwelveEngine;
 using TwelveEngine.Effects;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Test {
 
-    public sealed class DrawingFrameTest:Scene {
+    public sealed class DrawingFrameTest:InputGameState {
         public DrawingFrameTest() {
             OnLoad.Add(Load);
             OnUnload.Add(Unload);

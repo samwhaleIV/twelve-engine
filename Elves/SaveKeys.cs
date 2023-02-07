@@ -9,5 +9,9 @@
         public const int PlayedIntro = 5;
 
         public const int HighestCompletedBattle = 6;
+        public const int LastCompletedBattle = 7;
+
+        public const int WinCount = 8;
+        public const int LoseCount = 9;
     }
 }

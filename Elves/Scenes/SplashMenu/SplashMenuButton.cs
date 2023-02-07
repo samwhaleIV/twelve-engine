@@ -12,7 +12,7 @@ namespace Elves.Scenes.SplashMenu {
         }
 
         private void Click() {
-            menu.EndScene(ExitValue.None);
+            menu.EndScene();
         }
 
         public override FloatRectangle GetScreenArea() {

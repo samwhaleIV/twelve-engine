@@ -26,11 +26,11 @@ namespace Elves {
         }
 
         public static class BattleUI {
-            public const float TagBackgroundScale = 2.25f;
+            public const float TagBackgroundScale = 2.4f;
             public const float HealthImpactScale = 2;
             public const float ButtonScale = 1.25f;
 
-            public const float NameTextScale = 1 / 3f;
+            public const float NameTextScale = 1 / 2f;
             public const float TagTextScale = 1 / 3f;
             public const float ButtonTextScale = 1 / 3f;
 
@@ -47,15 +47,15 @@ namespace Elves {
         }
 
         public static class UI {
-
+            public const float CarouselDirectionButtonOffset = 22;
             public const float CarouselElfNameScale = 0.75f;
 
-            public const float MinScaleModifier = 0.5f;
-            public const float MaxScaleModifier = 2f;
+            public const float MinUIScale = 0.5f;
+            public const float MaxUIScale = 2f;
 
             public const float SplashMenuScaleModifier = 1.5f;
             public const float BattleSceneScaleModifier = 1.25f;
-            public const float PixelScaleDivisor = 0.008f;
+            public const float UIScaleBaseDivisor = 0.008f;
 
             public static readonly Color PressedColor = Color.Lerp(Color.White,Color.Black,0.1f);
             public static readonly Color SelectColor = Color.Lerp(Color.White,Color.Black,0.05f);
@@ -91,6 +91,8 @@ namespace Elves {
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
 
             public static readonly TimeSpan BattleEndDelay = TimeSpan.FromSeconds(2f);
+
+            public static readonly TimeSpan CarouselRotationDurationSlow = TimeSpan.FromSeconds(0.75f);
         }
 
         public static class Songs {

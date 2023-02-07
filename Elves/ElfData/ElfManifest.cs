@@ -14,10 +14,20 @@ namespace Elves.ElfData {
 
         public static IEnumerable<Elf> GetAll() => manifest.Values;
 
+        private static int _IDCounter = 0;
+
+        private static ElfID AutoID {
+            get {
+                int ID = _IDCounter;
+                _IDCounter++;
+                return (ElfID)ID;
+            }
+        }
+
         /* This should probably be information loaded from a data file, but C# is so expressive... I can't help myself. */
         static ElfManifest() {
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.HarmlessElf,
+                ID: AutoID,
                 name: "Harmless Elf",
                 texture: "Elves/harmless-elf",
                 color: Color.Red,
@@ -25,7 +35,7 @@ namespace Elves.ElfData {
                 frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.NinjaElf,
+                ID: AutoID,
                 name: "Harmless Elf",
                 texture: "Elves/harmless-elf",
                 color: Color.Red,
@@ -33,7 +43,7 @@ namespace Elves.ElfData {
                 frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.GodElf,
+                ID: AutoID,
                 name: "Harmless Elf",
                 texture: "Elves/harmless-elf",
                 color: Color.Red,
@@ -41,7 +51,7 @@ namespace Elves.ElfData {
                 frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.BusinessElf,
+                ID: AutoID,
                 name: "Harmless Elf",
                 texture: "Elves/harmless-elf",
                 color: Color.Red,

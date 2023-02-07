@@ -19,9 +19,13 @@ namespace Elves.Scenes.SplashMenu {
             Name = "Splash Menu";
             SetBackgroundColor(BACKGROUND_TOP_COLOR,BACKGROUND_TOP_COLOR,BACKGROUND_BOTTOM_COLOR,BACKGROUND_BOTTOM_COLOR);
             OnLoad.Add(Load);
-            PixelScaleModifier = Constants.UI.SplashMenuScaleModifier;
+            UIScaleModifier = Constants.UI.SplashMenuScaleModifier;
             UI = new SplashMenuUI(this);
         }
+
+        public event Action<GameState> OnSceneEnd;
+
+        public void EndScene() => OnSceneEnd?.Invoke(this);
 
         private Screenspace3DSprite fallingElf;
         private TextureEntity waterOverlay;
@@ -70,14 +74,14 @@ namespace Elves.Scenes.SplashMenu {
 
         private void UpdatePlayButtonArea() {
             Rectangle bounds = Viewport.Bounds;
-            Vector2 size = PlayButton.TextureSource.Size.ToVector2() * PixelScale;
+            Vector2 size = PlayButton.TextureSource.Size.ToVector2() * UIScale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             PlayButton.Area = new FloatRectangle(center,size);
         }
 
         private void UpdateNameBadgeArea() {
             Rectangle bounds = Viewport.Bounds;
-            Vector2 size = nameBadge.TextureSource.Size.ToVector2() * PixelScale;
+            Vector2 size = nameBadge.TextureSource.Size.ToVector2() * UIScale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (1/3f) - size.Y * 0.5f);
             nameBadge.Area = new FloatRectangle(center,size);
         }
@@ -92,7 +96,7 @@ namespace Elves.Scenes.SplashMenu {
 
         private void UpdateFallingElfArea() {
             Rectangle bounds = Viewport.Bounds;
-            float scale = PixelScale;
+            float scale = UIScale;
             Vector2 size = fallingElf.TextureSource.Size.ToVector2() * scale;
             Vector2 center = new(bounds.Width * 0.5f - size.X * 0.5f,bounds.Height * (2/3f) - size.Y * 0.5f);
             var t = (float)(Now / TimeSpan.FromSeconds(8) % 1);

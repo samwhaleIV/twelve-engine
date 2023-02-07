@@ -3,11 +3,11 @@ using Microsoft.Xna.Framework.Media;
 using System;
 using TwelveEngine;
 using TwelveEngine.Font;
-
+using TwelveEngine.Shell;
 using static Elves.Constants.AnimationTiming;
 
 namespace Elves.Scenes.Intro {
-    public sealed class IntroScene:Scene {
+    public sealed class IntroScene:InputGameState {
 
         public static readonly string[] Text = new string[] {
             "It's been four years since the revolt.",
@@ -85,6 +85,8 @@ namespace Elves.Scenes.Intro {
 
         private bool exiting = false;
 
+        public event Action<GameState,bool> OnSceneEnd;
+
         private void EndIntro(bool quickExit = false) {
             if(exiting) {
                 return;
@@ -93,7 +95,7 @@ namespace Elves.Scenes.Intro {
             if(quickExit) {
                 MediaPlayer.Stop();
             }
-            EndScene(ExitValue.Get(quickExit));
+            OnSceneEnd?.Invoke(this,quickExit);
         }
 
         private void Update() {

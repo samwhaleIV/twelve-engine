@@ -67,7 +67,7 @@ namespace Elves.Scenes.Carousel.UI.Pages {
         }
 
         public override void Update(FloatRectangle viewport) {
-            float pixelSize = Scene.PixelScale;
+            float pixelSize = Scene.UIScale;
             float topY = 1/8f, bottomY = 7/8f;
 
             float buttonEdgeMargin = pixelSize * 2;
@@ -79,7 +79,7 @@ namespace Elves.Scenes.Carousel.UI.Pages {
                 button.SizeByPixels(pixelSize);
             }
 
-            float directionButtonOffset = pixelSize * 22;
+            float directionButtonOffset = pixelSize * Constants.UI.CarouselDirectionButtonOffset;
 
             var leftButton = UI.LeftButton;
                 leftButton.PositionModeX = CoordinateMode.Absolute;

@@ -48,13 +48,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\LockIcon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\RotationPosition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Intro\IntroScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\IScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Depth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\SaveSelectUI.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Scene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\ExitValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DVDCornerTest.cs" />

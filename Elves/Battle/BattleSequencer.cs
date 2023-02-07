@@ -4,9 +4,8 @@ using TwelveEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
-using Elves.Scenes;
 using TwelveEngine.Shell;
-using Elves.Scenes.SaveSelect;
+using Elves.ElfData;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererScene {
@@ -15,12 +14,17 @@ namespace Elves.Battle {
          
         public BattleScript Script { get; private set; }
 
+        public event Action<GameState,BattleResult,ElfID> OnBattleEnd;
+
         private void Initialize(BattleScript script) {
             Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.ID})";
             script.SetSequencer(this);
             Script = script;
             transitionTask = new TaskCompletionSource();
             OnLoad.Add(LoadSequencer);
+#if DEBUG
+            Mouse.Router.OnAltPress += () => OnBattleEnd?.Invoke(this,BattleResult.PlayerWon,Script.ElfSource.ID);
+#endif
         }
 
         private void LoadSequencer() {
@@ -70,25 +74,25 @@ namespace Elves.Battle {
         private void AddScriptToScheduler() => GameLoopSyncContext.RunTask(ExecuteScript);
 
         private TimeSpan exitStart;
-        private ExitValue exitValue;
 
         private int endSceneHandle;
+
+        private BattleResult battleResult;
 
         private void EndSceneDelay() {
             if(Now - exitStart < Constants.AnimationTiming.BattleEndDelay) {
                 return;
             }
             OnUpdate.Remove(endSceneHandle);
-            EndScene(exitValue);
+            OnBattleEnd?.Invoke(this,battleResult,Script.ElfSource.ID);
         }
 
         private async Task ExecuteScript() {
             Script.Setup();
             await TransitionIn();
-            BattleResult battleResult = await Script.Main();
+            battleResult = await Script.Main();
             await Script.Exit(battleResult);
             HideAllButtons();
-            exitValue = ExitValue.Get(battleResult);
             exitStart = Now;
             endSceneHandle = OnUpdate.Add(EndSceneDelay);
         }

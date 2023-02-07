@@ -83,12 +83,12 @@ namespace Elves.Scenes.Carousel.UI {
             };
 
             Buttons = ImmutableList.Create(BackButton,SettingsButton,LeftButton,RightButton,PlayButton);
-
-            SetPage(DefaultPage);
         }
 
         public event Action<ButtonAction> OnButtonActivated;
 
         private void ButtonActivated(ButtonAction action) => OnButtonActivated?.Invoke(action);
+
+        protected override TimeSpan GetCurrentTime() => scene.Now;
     }
 }

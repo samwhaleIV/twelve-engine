@@ -80,7 +80,7 @@ namespace Elves.Scenes.SplashMenu {
                 Reset();
                 needsReset = false;
             }
-            float scale = menu.PixelScale;
+            float scale = menu.UIScale;
             float t = (float)((Now - StartTime) / Duration);
             if(t < 0) {
                 t = 0;

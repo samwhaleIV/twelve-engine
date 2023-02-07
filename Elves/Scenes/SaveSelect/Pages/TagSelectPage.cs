@@ -1,6 +1,7 @@
 ﻿using TwelveEngine;
 using Microsoft.Xna.Framework;
 using TwelveEngine.UI.Book;
+using System;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagSelectPage:SaveSelectPage {
@@ -17,6 +18,11 @@ namespace Elves.Scenes.SaveSelect {
             var newPos = finger.Position;
             newPos.X = 0;
             finger.Position = newPos;
+        }
+
+        public override bool Back() {
+            Scene.BackToSplashScreen();
+            return true;
         }
 
         public override BookElement Open() {

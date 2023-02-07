@@ -44,7 +44,7 @@ namespace Elves.Scenes.Battle {
         }
 
         private void Initialize() {
-            PixelScaleModifier = Constants.UI.BattleSceneScaleModifier;
+            UIScaleModifier = Constants.UI.BattleSceneScaleModifier;
             OnLoad.Add(Load);
             OnUpdate.Add(UpdateUI);
             OnRender.Add(Render);
@@ -58,7 +58,7 @@ namespace Elves.Scenes.Battle {
         }
 
         private void UpdateUI() {
-            battleUI.UpdateLayout(PixelScale);
+            battleUI.UpdateLayout(UIScale);
             CustomCursor.State = battleUI.CursorState;
         }
 

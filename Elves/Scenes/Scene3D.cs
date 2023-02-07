@@ -8,11 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Shell.UI;
 
 namespace Elves.Scenes {
-    public abstract class Scene3D:GameState3D, IScene<Scene3D> {
-
-        public event Action<Scene3D,ExitValue> OnSceneEnd;
-        public void EndScene(ExitValue data) => OnSceneEnd?.Invoke(this,data);
-
+    public abstract class Scene3D:GameState3D {
         protected bool DebugOrtho { get; private set; } = Flags.Get(Constants.Flags.OrthoDebug);
 
         public Scene3D() : base(EntitySortMode.CameraFixed) {
@@ -25,20 +21,20 @@ namespace Elves.Scenes {
 
             SetCamera();
 
-            OnWriteDebug.Add(WritePixelScaleModifier);
+            OnWriteDebug.Add(WriteUIScale);
 
             Mouse.Router.OnScroll += MouseScroll;
         }
 
-        private void WritePixelScaleModifier(DebugWriter writer) {
-            writer.Write(PixelScaleModifier,"Pixel Scale");
+        private void WriteUIScale(DebugWriter writer) {
+            writer.Write(UIScaleModifier,"UI Scale");
         }
 
         private void MouseScroll(Direction direction) {
             if(!Impulse.Keyboard.IsKeyDown(Keys.LeftControl)) {
                 return;
             }
-            PixelScaleModifier += (direction == Direction.Down ? -1 : 1) * 0.1f;
+            UIScaleModifier += (direction == Direction.Down ? -1 : 1) * 0.1f;
         }
 
         private void SetCamera() => Camera = new AngleCamera() {
@@ -50,21 +46,21 @@ namespace Elves.Scenes {
             Position = new Vector3(0f,0f,Constants.Depth.Cam)
         };
 
-        private float _pixelScaleModifier = 1;
+        private float _uiScaleModifier = 1;
 
-        public float PixelScaleModifier {
-            get => _pixelScaleModifier;
+        public float UIScaleModifier {
+            get => _uiScaleModifier;
             set {
-                if(_pixelScaleModifier == value) {
+                if(_uiScaleModifier == value) {
                     return;
                 }
-                value = MathF.Min(value,Constants.UI.MaxScaleModifier);
-                value = MathF.Max(value,Constants.UI.MinScaleModifier);
-                _pixelScaleModifier = value;
+                value = MathF.Min(value,Constants.UI.MaxUIScale);
+                value = MathF.Max(value,Constants.UI.MinUIScale);
+                _uiScaleModifier = value;
             }
         }
 
-        public float PixelScale => Viewport.Height * Constants.UI.PixelScaleDivisor * PixelScaleModifier;
+        public float UIScale => Viewport.Height * Constants.UI.UIScaleBaseDivisor * UIScaleModifier;
 
         private void Update() {
             if(!DebugOrtho || Camera is null) {
