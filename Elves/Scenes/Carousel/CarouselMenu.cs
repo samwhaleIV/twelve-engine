@@ -22,7 +22,6 @@ namespace Elves.Scenes.Carousel {
         }
 
         private void Render() {
-            RenderCarouselScene();
             UI.Render(SpriteBatch);
         }
     }

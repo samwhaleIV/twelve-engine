@@ -71,24 +71,7 @@ namespace Elves.Scenes.Carousel {
             CreateBackground();
         }
 
-        private const float MARGIN_SCALE = 16;
-
-        protected float GetNameScale() => MathF.Max(GetUIScale()*0.5f,1f);
-
-        public float GetMarginCenter() {
-            float scale = GetNameScale();
-            return MARGIN_SCALE * scale;
-        }
-
-        protected void RenderCarouselScene() {
-            var font = Fonts.RetroFontOutlined;
-            font.Begin(SpriteBatch);
-            Vector2 center = Viewport.Bounds.Center.ToVector2();
-            float scale = GetNameScale();
-            center.Y = MARGIN_SCALE * scale;
-            font.DrawCentered(centerItem.IsLocked ? LOCKED_TEXT : centerItem.DisplayName,center,scale,Color.White);
-            font.End();
-        }
+        public string CenterItemName => (centerItem is null || centerItem.IsLocked) ? LOCKED_TEXT : centerItem.DisplayName;
 
         protected void UpdateCarouselItems() {
             carouselRotation.Update(Now);

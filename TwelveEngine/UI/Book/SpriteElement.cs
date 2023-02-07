@@ -34,6 +34,11 @@
         public float GetWidth(float height) => height * HeightToWidth;
         public float GetHeight(float width) => width * WidthToHeight;
 
+        public void SizeByPixels(float pixelSize) {
+            SizeMode = CoordinateMode.Absolute;
+            Size = SourceSize * pixelSize;
+        }
+
         public float SourceWidth => TextureSource.Width;
         public float SourceHeight => TextureSource.Height;
 

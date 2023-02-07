@@ -23,5 +23,7 @@ namespace Elves {
 
         public readonly Texture2D Static = Load("static");
         public readonly Texture2D Warning = Load("warning");
+
+        public readonly Texture2D Carousel = Load("carousel");
     }
 }
