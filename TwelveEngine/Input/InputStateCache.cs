@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Shell.Automation;
 
-namespace TwelveEngine.Shell {
+namespace TwelveEngine.Input {
     public static class InputStateCache {
 
         public static KeyboardState Keyboard { get; private set; }
@@ -26,6 +26,10 @@ namespace TwelveEngine.Shell {
             return Microsoft.Xna.Framework.Input.GamePad.GetState(Config.GetInt(Config.Keys.GamePadIndex),GamePadDeadZone.Circular);
         }
 
+        public static bool MouseChanged { get; private set; }
+        public static bool KeyboardChanged { get; private set; }
+        public static bool GamePadChanged { get; private set; }
+
         /* A little bit expensive... but powerful. */
         public static void Update(bool gameIsActive) {
             /* States are filtered by the automation agent. State cannot be changed while the game is paused or waiting. */
@@ -33,14 +37,16 @@ namespace TwelveEngine.Shell {
             MouseState mouseState = GetMouseState();
             GamePadState gamePadState = GetGamepadState();
 
+            MouseChanged = mouseState != LastMouse;
+            KeyboardChanged = keyboardState != LastKeyboard;
+            GamePadChanged = gamePadState != LastGamePad;
+
             /* Priority for keyboard or gamepad events, even if the mouse data changed in the same frame. */
-            if(gameIsActive && mouseState != LastMouse) {
+            if(gameIsActive && MouseChanged) {
                 LastInputEventWasFromMouse = true;
-                //Console.WriteLine("MOUSE ACTIVE");
             }
-            if(gameIsActive && keyboardState != LastKeyboard || gamePadState != LastGamePad) {
+            if(gameIsActive && (KeyboardChanged || GamePadChanged)) {
                 LastInputEventWasFromMouse = false;
-                //Console.WriteLine("KEYBOARD ACTIVE");
             }
 
             LastMouse = mouseState;

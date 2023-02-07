@@ -4,76 +4,118 @@ using TwelveEngine;
 using Microsoft.Xna.Framework.Graphics;
 using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
-using Elves.Scenes;
+using TwelveEngine.Shell;
+using Elves.ElfData;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererScene {
+
+        private const int BUTTON_COUNT = 4;
          
         public BattleScript Script { get; private set; }
 
-        private readonly struct ScriptCompletionData {
-            public readonly BattleResult BattleResult { get; init;  }
-            public readonly Exception Exception { get; init; }
-        } 
-
-        private ScriptCompletionData? _scriptCompletionData = null;
+        public event Action<GameState,BattleResult,ElfID> OnBattleEnd;
 
         private void Initialize(BattleScript script) {
             Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.ID})";
             script.SetSequencer(this);
             Script = script;
-            OnLoad += RunScript;
-            OnUpdate += CheckForScriptEnd;
+            transitionTask = new TaskCompletionSource();
+            OnLoad.Add(LoadSequencer);
+#if DEBUG
+            Mouse.Router.OnAltPress += () => OnBattleEnd?.Invoke(this,BattleResult.PlayerWon,Script.ElfSource.ID);
+#endif
         }
 
-        private void CheckForScriptEnd() {
-            if(!_scriptCompletionData.HasValue) {
+        private void LoadSequencer() {
+            AddScriptToScheduler();
+            SetupDefaultUIState();
+            if(FadeInIsFlagged) {
+                OnTransitionIn.Add(StateTransitionIn);
                 return;
             }
-            ScriptCompletionData data = _scriptCompletionData.Value;
-            if(data.Exception is not null) {
-                throw data.Exception;
+            StateTransitionIn();
+        }
+
+        private void SetupDefaultUIState() {
+            TimeSpan now = Now;
+            UI.Button1.SetState(now,ButtonState.CenterBottom);
+            for(int i = 0;i<BUTTON_COUNT;i++) {
+                var button = UI.GetActionButton(i);
+                button.ClearKeyFocus();
+                button.CanInteract = false;
+                button.Hide(now);
+                button.FinishAnimation(now);
             }
-            EndScene(ExitValue.Get(data.BattleResult));
+        }
+
+        private TaskCompletionSource transitionTask;
+
+        private void StateTransitionIn() {
+            if(transitionTask is null) {
+                return;
+            }
+            transitionTask.SetResult();
+            transitionTask = null;
+        }
+
+        public async Task TransitionIn() {
+            if(transitionTask is null) {
+                Logger.WriteLine("Tried to transition in, but the game state is already done transitioning.",LoggerLabel.Script);
+                return;
+            }
+            await transitionTask.Task;
         }
 
         public BattleSequencer(BattleScript script,string background):base(background) => Initialize(script);
         public BattleSequencer(BattleScript script,Texture2D background):base(background) => Initialize(script);
         public BattleSequencer(BattleScript script):base() => Initialize(script);
 
-        private async void RunScript() {
-            try {
-                BattleResult battleResult = await Script.Main();
-                _scriptCompletionData = new() {
-                    BattleResult = battleResult,
-                    Exception = null
-                };
-            } catch(Exception expcetion) {
-                _scriptCompletionData = new() {
-                    BattleResult = BattleResult.Stalemate,
-                    Exception = expcetion
-                };
+        private void AddScriptToScheduler() => GameLoopSyncContext.RunTask(ExecuteScript);
+
+        private TimeSpan exitStart;
+
+        private int endSceneHandle;
+
+        private BattleResult battleResult;
+
+        private void EndSceneDelay() {
+            if(Now - exitStart < Constants.AnimationTiming.BattleEndDelay) {
+                return;
             }
+            OnUpdate.Remove(endSceneHandle);
+            OnBattleEnd?.Invoke(this,battleResult,Script.ElfSource.ID);
+        }
+
+        private async Task ExecuteScript() {
+            Script.Setup();
+            await TransitionIn();
+            battleResult = await Script.Main();
+            await Script.Exit(battleResult);
+            HideAllButtons();
+            exitStart = Now;
+            endSceneHandle = OnUpdate.Add(EndSceneDelay);
         }
 
         private TaskCompletionSource<int> buttonTask;
 
         private static readonly string[] DefaultOptions = new string[] { Constants.Battle.ContinueText };
 
-        public Task ContinueButton() => GetButton(true,DefaultOptions);
+        public async Task ContinueButton() => await GetButton(true,DefaultOptions);
 
-        public Task<int> GetButton(bool isContinue,params string[] options) {
+        public async Task<int> GetButton(bool isContinue,params string[] options) {
             if(options.Length < 1) {
+                /* Might want to handle this better if we ever create a opened battle API */
                 options = DefaultOptions;
             }
 
-            for(int i = 0;i<4;i++) {
+            for(int i = 0;i<BUTTON_COUNT;i++) {
                 var button = UI.GetActionButton(i);
                 button.ClearKeyFocus();
                 button.CanInteract = false;
             }
 
-            int end = Math.Min(options.Length,4);
+            int end = Math.Min(options.Length,BUTTON_COUNT);
             for(int i = 0;i<end;i++) {
                 var button = UI.GetActionButton(i);
                 button.CanInteract = true;
@@ -89,14 +131,14 @@ namespace Elves.Battle {
                 case 3: ConfigTripleButtons(); break;
                 case 4: ConfigQuadButtons(); break;
             }
-            UI.TrySetDefaultElement();
+            UI.FocusDefault();
 
             if(buttonTask != null) {
                 buttonTask.SetResult(-1);
                 Logger.WriteLine("Fatal script error! Tried to get more than one button at a time...",LoggerLabel.Script);
             }
             buttonTask = new TaskCompletionSource<int>();
-            return buttonTask.Task;
+            return await buttonTask.Task;
         }
 
         protected override void ActionButtonClicked(int ID) {
@@ -121,7 +163,7 @@ namespace Elves.Battle {
             UI.SpeechBox.Hide(Now);
         }
 
-        public void ShowTag(string text) {
+        public void SetTag(string text) {
             if(UI.Tagline.IsShown) {
                 UI.Tagline.CycleText(Now);
             }
@@ -130,9 +172,7 @@ namespace Elves.Battle {
             UI.Tagline.Show(Now);
         }
 
-        public void HideTag() {
-            UI.Tagline.Hide(Now);
-        }
+        public void HideTag() => UI.Tagline.Hide(Now);
 
         protected override UserData GetPlayerData() => Script.Player;
         protected override UserData GetTargetData() => Script.Actor;
@@ -142,6 +182,13 @@ namespace Elves.Battle {
             UI.Button2.Hide(Now); UI.Button3.Hide(Now); UI.Button4.Hide(Now);
 
             UI.DefaultFocusElement = UI.Button1;
+        }
+
+        private void HideAllButtons() {
+            UI.Button1.Hide(Now);
+            UI.Button2.Hide(Now);
+            UI.Button3.Hide(Now);
+            UI.Button4.Hide(Now);
         }
 
         private void ConfigDoubleButtons() {

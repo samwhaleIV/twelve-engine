@@ -201,6 +201,12 @@ namespace TwelveEngine {
             _isDirty = true;
         }
 
+        public void IncrementCounter(int key,int amount = 1) {
+            TryGetInt(key,out var value);
+            value += amount;
+            SetValue(key,value);
+        }
+
         public void SetValue(int key,int value) {
             dataTable[key] = new SaveValue(SaveValueType.Int,value);
             _isDirty = true;

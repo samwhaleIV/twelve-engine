@@ -2,7 +2,10 @@
 
     public class BookElement:InteractionElement<BookElement> {
 
-        private readonly Interpolator animator = new(Book<BookElement>.DefaultAnimationDuration);
+        private readonly Interpolator animator;
+        public BookElement() {
+            animator = new(Book<BookElement>.DefaultAnimationDuration);
+        }
 
         /// <summary>
         /// The computed area to be supplied to a renderer or mouse input system. Coordinates in floating point pixels.
@@ -72,6 +75,8 @@
         /// </summary>
         public float Scale { get => layout.Scale; set => layout.Scale = value; }
 
+        public float ComputedScale => ComputedArea.Destination.Height / Size.Y;
+
         /// <summary>
         /// Rotation attribute. Uses a renderer specific implementation, but assume a center, relative origin. Not realted to <c>Offset</c>.
         /// </summary>
@@ -100,7 +105,7 @@
             ComputedArea = new(new(position,size),layout.Rotation);
         }
 
-        public TimeSpan DefaultAnimationDuration { get; set; } = TimeSpan.FromSeconds(0.1f);
+        public TimeSpan DefaultAnimationDuration { get; set; } = Book<BookElement>.DefaultAnimationDuration;
 
         /// <summary>
         /// Call before changing element layout data to animate the changes.

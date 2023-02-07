@@ -18,16 +18,16 @@ namespace Elves.Scenes.SaveSelect {
         public Button(int textureX,int textureY) {
             TextureSource = new(textureX,textureY,16,16);
             Offset = new(-0.5f,-0.5f);
-            OnUpdate += Button_OnUpdate;
+            OnUpdate += Update;
             Position = new(0.5f);
             PositionMode = CoordinateMode.Relative;
 
-            EndPoint = new Endpoint<ButtonImpulse>(this);
+            Endpoint = new Endpoint<ButtonImpulse>(this);
         }
 
         public bool IsEven { get; set; } = false;
 
-        private void Button_OnUpdate(TimeSpan now) {
+        private void Update(TimeSpan now) {
             float newScale = 1f;
             float newRotation = 0f;
             

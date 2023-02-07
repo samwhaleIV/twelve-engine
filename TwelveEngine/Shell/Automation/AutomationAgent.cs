@@ -80,7 +80,7 @@ namespace TwelveEngine.Shell.Automation {
             PlaybackStopped?.Invoke();
         }
 
-        internal static async void TogglePlayback() {
+        internal static void TogglePlayback() {
             if(!recording) {
                 if(playbackLoading) {
                     return;
@@ -88,15 +88,15 @@ namespace TwelveEngine.Shell.Automation {
                 if(playbackActive) {
                     StopPlayback();
                 } else {
-                    await StartPlayback();
+                    GameLoopSyncContext.RunTask(StartPlayback);
                 }
             }
         }
 
-        internal static async void ToggleRecording() {
+        internal static void ToggleRecording() {
             if(!playbackActive) {
                 if(recording) {
-                    await StopRecording();
+                    GameLoopSyncContext.RunTask(StopRecording);
                 } else {
                     StartRecording();
                 }

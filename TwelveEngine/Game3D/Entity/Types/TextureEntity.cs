@@ -1,9 +1,7 @@
 ﻿namespace TwelveEngine.Game3D.Entity.Types {
     public class TextureEntity:TextureRectangle {
 
-        private void BindEvents() {
-            OnLoad += TextureEntity_OnLoad;
-        }
+        private void BindEvents() => OnLoad += LoadTexture;
 
         private Texture2D pendingTexture = null;
 
@@ -54,7 +52,7 @@
             }
         }
 
-        private void TextureEntity_OnLoad() {
+        private void LoadTexture() {
             if(_textureName != null) {
                 Texture = Content.Load<Texture2D>(TextureName);
             } else if(pendingTexture != null) {

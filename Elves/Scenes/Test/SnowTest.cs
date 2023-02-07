@@ -90,10 +90,10 @@ namespace Elves.Scenes.Test {
 
         public SnowTest() {
             Camera.Orthographic = true; /* Snow pops in because of the projection angle, i.e. the bounding frustrum is square on the Y axis */
-            OnLoad += SnowTest_OnLoad;
+            OnLoad.Add(Load);
         }
 
-        private void SnowTest_OnLoad() {
+        private void Load() {
             var particleSystem = new FallingSnowParticleSystem() {
                 Position = new Vector3(0,0,Constants.Depth.Middle)
             };

@@ -3,42 +3,39 @@ using Microsoft.Xna.Framework.Media;
 using System;
 using TwelveEngine;
 using TwelveEngine.Font;
-
+using TwelveEngine.Shell;
 using static Elves.Constants.AnimationTiming;
 
 namespace Elves.Scenes.Intro {
-    public sealed class IntroScene:Scene {
+    public sealed class IntroScene:InputGameState {
 
         public static readonly string[] Text = new string[] {
             "It's been four years since the revolt.",
-            "... How easily that history repeats itself.",
+            "How easily that history repeats itself.",
             "A new generation is doomed to forget.",
             "A painful past falls on deaf ears.",
-            "Tinsels and stockings, shackles and shockings.",
-            "Oh, it's the happiest time of the year!",
-            "But per a peace to protect comes a price to collect.",
+            "It's the happiest time of the year.",
+            "... And it comes at a cost.",
             "The world needs a hero, but not today.",
-            "Face it, you're kissing under the wrong mistletoe.",
-            "Oh, but how right that wrong can feel."
+            "You're fighting for the wrong side.",
+            "But it's not like you have a choice."
         };
 
         public IntroScene() {
             Name = "Intro Text Screen";
             ClearColor = Color.Black;
-            OnUpdate += IntroScene_OnUpdate;
-            OnRender += IntroScene_OnRender;
-            Impulse.Router.OnCancelDown += Input_OnCancelDown;
-            OnLoad += IntroScene_OnLoad;
-            OnUnload += IntroScene_OnUnload;
+            OnUpdate.Add(Update);
+            OnRender.Add(Render);
+            Impulse.Router.OnCancelDown += CancelDown;
+            OnLoad.Add(Load);
+            OnUnload.Add(Unload);
         }
 
-        private void Input_OnCancelDown() {
-            EndIntro(quickExit: true);
-        }
+        private void CancelDown() => EndIntro(quickExit: true);
 
         private Song song;
 
-        private void IntroScene_OnUnload() {
+        private void Unload() {
             song?.Dispose();
             song = null;
         }
@@ -50,9 +47,9 @@ namespace Elves.Scenes.Intro {
 
         private Timeline timeline;
 
-        private void CreateTimeline() {
+        private void CreateTimeline(TimeSpan duration) {
 
-            var duration = song.Duration + IntroSongDurationOffset;
+            duration += IntroSongDurationOffset;
             var total = duration;
 
             var startDelayLength = IntroStartDelay;
@@ -71,7 +68,7 @@ namespace Elves.Scenes.Intro {
             var textLength = total;
 
             timeline = new Timeline();
-            OnWriteDebug += timeline.WriteDebug;
+            OnWriteDebug.Add(timeline.WriteDebug);
 
             timeline.CreateFixedDuration(duration,
                 (STAGE_START_DELAY, startDelayLength),
@@ -81,16 +78,14 @@ namespace Elves.Scenes.Intro {
             );
         }
 
-        private void IntroScene_OnLoad() {
-            song = Content.Load<Song>(Constants.Songs.Intro);
-            MediaPlayer.Play(song);
-            MediaPlayer.IsRepeating = false;
-            MediaPlayer.Volume = 1f;
-
-            CreateTimeline();
+        private void Load() {
+            //TODO - load song, get its duration
+            CreateTimeline(TimeSpan.FromSeconds(40));
         }
 
         private bool exiting = false;
+
+        public event Action<GameState,bool> OnSceneEnd;
 
         private void EndIntro(bool quickExit = false) {
             if(exiting) {
@@ -100,10 +95,10 @@ namespace Elves.Scenes.Intro {
             if(quickExit) {
                 MediaPlayer.Stop();
             }
-            EndScene(ExitValue.Get(quickExit));
+            OnSceneEnd?.Invoke(this,quickExit);
         }
 
-        private void IntroScene_OnUpdate() {
+        private void Update() {
             timeline.Update(LocalRealTime);
             if(exiting) {
                 return;
@@ -115,7 +110,7 @@ namespace Elves.Scenes.Intro {
 
         private int GetTextSize() {
             float height = Viewport.Bounds.Size.Y;
-            int lineHeight = Fonts.RetroFont.LineHeight;
+            int lineHeight = (int)Fonts.RetroFont.LineHeight;
             int totalHeight = lineHeight * lineHeight;
             float size = height / totalHeight * 0.5f;
             int textSize = (int)size;
@@ -136,7 +131,7 @@ namespace Elves.Scenes.Intro {
             return Color.FromNonPremultiplied(new Vector4(value,value,value,1));
         }
 
-        private void IntroScene_OnRender() {
+        private void Render() {
             if(timeline.Stage < STAGE_TEXT) {
                 return;
             }
@@ -151,7 +146,7 @@ namespace Elves.Scenes.Intro {
             Fonts.RetroFont.Begin(SpriteBatch);
             for(int i = 0;i<end;i++) {
                 Color color = GetTextColor(t,i);
-                Point destination = new(centerX,(int)(rowSize*(i+1)));
+                Vector2 destination = new(centerX,(int)(rowSize*(i+1)));
                 Fonts.RetroFont.DrawCentered(Text[i],destination,textSize,color);
             }
             Fonts.RetroFont.End();

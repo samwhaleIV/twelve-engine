@@ -373,4 +373,10 @@ FodyWeavers.xsd
 Content/*.mgcb
 
 #Game Music Files
-Content/Elves/Music/*.ogg
+Content/Elves/Music/*
+
+fmod.dll
+fmodstudio.dll
+fmod*.cs
+
+*.bank

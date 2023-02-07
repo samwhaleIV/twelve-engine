@@ -1,15 +1,16 @@
 ﻿using TwelveEngine;
 using Microsoft.Xna.Framework;
 using TwelveEngine.UI.Book;
+using System;
 
 namespace Elves.Scenes.SaveSelect {
     public sealed class TagSelectPage:SaveSelectPage {
 
         public override void Close() {
 
-            UI.Tag1.OnActivated -= Tag_OnActivated;
-            UI.Tag2.OnActivated -= Tag_OnActivated;
-            UI.Tag3.OnActivated -= Tag_OnActivated;
+            UI.Tag1.OnActivated -= TagPressed;
+            UI.Tag2.OnActivated -= TagPressed;
+            UI.Tag3.OnActivated -= TagPressed;
 
             var finger = UI.Finger;
             finger.Offset = (new(-1,-0.1f));
@@ -17,6 +18,11 @@ namespace Elves.Scenes.SaveSelect {
             var newPos = finger.Position;
             newPos.X = 0;
             finger.Position = newPos;
+        }
+
+        public override bool Back() {
+            Scene.BackToSplashScreen();
+            return true;
         }
 
         public override BookElement Open() {
@@ -32,9 +38,9 @@ namespace Elves.Scenes.SaveSelect {
             tag2.SetKeyFocus(tag1,tag3);
             tag3.SetKeyFocus(tag2,null);
 
-            UI.Tag1.OnActivated += Tag_OnActivated;
-            UI.Tag2.OnActivated += Tag_OnActivated;
-            UI.Tag3.OnActivated += Tag_OnActivated;
+            UI.Tag1.OnActivated += TagPressed;
+            UI.Tag2.OnActivated += TagPressed;
+            UI.Tag3.OnActivated += TagPressed;
 
             float tagRotation = -5f;
             foreach(var tag in UI.Tags) {
@@ -43,7 +49,7 @@ namespace Elves.Scenes.SaveSelect {
             return UI.SelectedTag ?? tag1;
         }
 
-        private void Tag_OnActivated(Tag tag) {
+        private void TagPressed(Tag tag) {
             UI.SelectedTag = tag;
             UI.SetPage(UI.TagContextPage);
         }

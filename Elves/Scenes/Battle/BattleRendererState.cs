@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine;
 using Elves.Scenes.Battle.UI;
-using TwelveEngine.UI;
 using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 using Elves.Battle;
@@ -17,7 +15,7 @@ namespace Elves.Scenes.Battle {
 
         public BattleRendererScene(string background) {
             backgroundTexture = background;
-            OnLoad += LoadBackgroundTexture;
+            OnLoad.Add(LoadBackgroundTexture);
             Initialize();
         }
 
@@ -34,30 +32,33 @@ namespace Elves.Scenes.Battle {
         private BattleUI battleUI;
         public BattleUI UI => battleUI;
 
-        private readonly ScrollingBackground background = ScrollingBackground.GetCheckered();
+        private readonly ScrollingBackground background = ScrollingBackground.GetCheckered(
+            scrollTime: Constants.AnimationTiming.ScrollingBackgroundDefault
+        );
 
         public ScrollingBackground Background => background;
 
-        private void BattleRendererState_OnPreRender() {
+        private void PreRender() {
             background.Update(Now);
             background.Render(SpriteBatch,Viewport);
         }
 
         private void Initialize() {
-            OnLoad += BattleScene_OnLoad;
-            OnUpdate += UpdateUI;
-            OnRender += BattleScene_OnRender;
-            OnPreRender += BattleRendererState_OnPreRender;
-            Camera.Orthographic = !Debug;
+            UIScaleModifier = Constants.UI.BattleSceneScaleModifier;
+            OnLoad.Add(Load);
+            OnUpdate.Add(UpdateUI);
+            OnRender.Add(Render);
+            OnPreRender.Add(PreRender);
+            Camera.Orthographic = true;
         }
 
-        private void BattleScene_OnLoad() {
+        private void Load() {
             InitializeBattleUI();
             background.Load(Content);
         }
 
         private void UpdateUI() {
-            battleUI.UpdateLayout((int)GetUIScale());
+            battleUI.UpdateLayout(UIScale);
             CustomCursor.State = battleUI.CursorState;
         }
 
@@ -72,7 +73,7 @@ namespace Elves.Scenes.Battle {
             battleUI.BindInputEvents(this);
         }
 
-        private void BattleScene_OnRender() {
+        private void Render() {
             battleUI.Render(SpriteBatch,GetPlayerData(),GetTargetData());
         }
     }

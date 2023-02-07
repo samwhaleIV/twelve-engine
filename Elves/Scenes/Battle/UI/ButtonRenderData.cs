@@ -4,7 +4,7 @@ using TwelveEngine;
 namespace Elves.Scenes.Battle.UI {
     public readonly struct ButtonRenderData {
 
-        public ButtonRenderData(Rectangle viewport,float width,float height,float centerX,float centerY,float halfMargin) {
+        public ButtonRenderData(FloatRectangle viewport,float width,float height,float centerX,float centerY,float halfMargin) {
             Viewport = viewport;
             Width = width;
             Height = height;
@@ -13,7 +13,7 @@ namespace Elves.Scenes.Battle.UI {
             HalfMargin = halfMargin;
         }
 
-        public readonly Rectangle Viewport;
+        public readonly FloatRectangle Viewport;
 
         public readonly float Width;
         public readonly float Height;

@@ -13,7 +13,8 @@ namespace TwelveEngine {
             BenchmarkStateSwap,
             StateCleanUpGC,
             GamePadIndex,
-            LimitFrameDelta
+            LimitFrameDelta,
+            SampleRate
         }
 
         public enum ConfigValueType { Int, IntNullable, Bool, StringArray }
@@ -25,7 +26,8 @@ namespace TwelveEngine {
             { GetKey(Keys.BenchmarkStateSwap), (ConfigValueType.Bool, false) },
             { GetKey(Keys.StateCleanUpGC), (ConfigValueType.Bool, false) },
             { GetKey(Keys.GamePadIndex), (ConfigValueType.Int, 0) },
-            { GetKey(Keys.LimitFrameDelta), (ConfigValueType.Bool, false) }
+            { GetKey(Keys.LimitFrameDelta), (ConfigValueType.Bool, false) },
+            { GetKey(Keys.SampleRate), (ConfigValueType.IntNullable, null) },
         };
 
         private static readonly Dictionary<string,(ConfigValueType Type, object Value)> configValues;

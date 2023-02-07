@@ -1,46 +1,83 @@
 ﻿using TwelveEngine.Shell;
 using TwelveEngine.Font;
 using TwelveEngine.Input.Binding;
+using static System.Net.Mime.MediaTypeNames;
+using TwelveEngine.Audio;
 
 namespace TwelveEngine {
 
     public abstract class EntryPoint {
 
+        private GameStateManager game = null;
+
         protected abstract void OnGameLoad(GameStateManager game,string saveDirectory);
         protected abstract void OnGameCrashed();
 
-        private void Game_OnLoad(GameStateManager game) {
-            game.Disposed += Game_Disposed;
+        private void GameLoaded() {
             Fonts.Load(game);
             OnGameLoad(game,SaveDirectory);
         }
 
-        private void Game_Disposed(object sender,EventArgs args) {
-            Logger.CleanUp();
+        private static void LogFatalException(Exception exception) {
+            Logger.WriteLine($"Fatal game error: {exception}");
         }
 
-        private void RunGameWithExceptionHandling(GameStateManager game) {
+        private void HandleSyncContextException(Exception exception) {
+            LogFatalException(exception);
+            OnGameCrashed();
+            if(Flags.Get(Constants.Flags.NoFailSafe)) {
+                game.ReroutedException = exception;
+                return;
+            }
+            game.Exit();
+        }
+
+        private void HandleGameLoopException(Exception exception) {
+            LogFatalException(exception);
+            OnGameCrashed();
+        }
+
+        private void GameDisposed(object sender,EventArgs args) {
+            Logger.CleanUp();
+            AudioSystem.Unload();
+        }
+
+        private void UnhandledException(object sender,UnhandledExceptionEventArgs exceptionEventArgs) {
+            LogFatalException(new Exception($"Fatal, unhandled exception. This one is really bad. Time of death, {DateTime.UtcNow}."));
+        }
+
+        private void RunGameWithExceptionHandling() {
             try {
                 game.Run();
             } catch(Exception exception) {
-                Logger.WriteLine($"An unexpected error has occurred: {exception}");
-                OnGameCrashed();
+                HandleGameLoopException(exception);
             }
         }
 
+        private static GameStateManager CreateGameStateManager() => new(
+            fullscreen: Flags.Get(Constants.Flags.Fullscreen),
+            hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
+            verticalSync: !Flags.Get(Constants.Flags.NoVsync),
+            drawDebug: Flags.Get(Constants.Flags.DrawDebug)
+        ) { SyncContext = new() };
+
         private void InitializeGameManager() {
-            using GameStateManager game = new(
-                fullscreen: Flags.Get(Constants.Flags.Fullscreen),
-                hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
-                verticalSync: !Flags.Get(Constants.Flags.NoVsync),
-                drawDebug: Flags.Get(Constants.Flags.DrawDebug)
-            );
-            game.OnLoad += Game_OnLoad;
+            game = CreateGameStateManager();
+            game.SyncContext.OnTaskException += HandleSyncContextException;
+
+            game.Disposed += GameDisposed;
+            game.OnLoad += GameLoaded;
+
             if(Flags.Get(Constants.Flags.NoFailSafe)) {
                 game.Run();
             } else {
-                RunGameWithExceptionHandling(game);
+                AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+                RunGameWithExceptionHandling();
             }
+            game.SyncContext.Clear();
+
+            game.Dispose();
+            game = null;
         }
 
         private static bool ValidateSaveDirectory(string directory) {
@@ -71,6 +108,8 @@ namespace TwelveEngine {
 
             ProxyTime.Start();
 
+            Flags.Load(args);
+
             SaveDirectory = saveDirectory;
 
             string logFile = GetSaveDirectoryPath(Constants.LogFile);
@@ -79,14 +118,15 @@ namespace TwelveEngine {
             KeyBinds.Path = GetSaveDirectoryPath(Constants.KeyBindsFile);
 
             Logger.Initialize(logFile);
+            Flags.WriteToLog();
 
             ValidateSaveDirectory(saveDirectory);
 
             Config.TryLoad(configFile);
-            Flags.Load(args);
-
             Config.WriteToLog();
             KeyBinds.TryLoad();
+
+            AudioSystem.Load();
 
             GC.Collect(GC.MaxGeneration,GCCollectionMode.Forced,true);
             InitializeGameManager();

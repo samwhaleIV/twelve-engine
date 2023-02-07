@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using TwelveEngine;
 
 namespace Elves.Scenes.Battle.UI {
     public enum HealthBarAlignment { Left, Right };
@@ -8,6 +9,17 @@ namespace Elves.Scenes.Battle.UI {
     public sealed class HealthBar:UIElement {
 
         public HealthBar() => Texture = Program.Textures.Panel;
+
+        public Rectangle TextureSource { get; set; }
+
+        public FloatRectangle UVArea {
+            get {
+                Vector2 textureSize = new(Texture.Width,Texture.Height);
+                return new FloatRectangle(TextureSource.X / textureSize.X,TextureSource.Y / textureSize.Y,TextureSource.Size.ToVector2() / textureSize);
+            }
+        }
+
+        private readonly Interpolator impactAnimator = new(Constants.BattleUI.HealthImpact);
 
         public HealthBarAlignment Alignment { get; set; } = HealthBarAlignment.Left;
 
@@ -17,122 +29,39 @@ namespace Elves.Scenes.Battle.UI {
             get => _value;
             set {
                 if(value < _value) {
-                    DropHealthAnimate(Now);
+                    AnimateHealthDrop();
                 }
                 _value = value;
             }
         }
 
-        private TimeSpan Now;
-        private float Scale;
+        public bool IsDead => Value <= 0f;
 
-        public void Update(float scale,TimeSpan now) {
-            Scale = scale;
-            Now = now;
+        public float GetYOffset() {
+            var t = 1 - impactAnimator.Value;
+            return MathF.Sin(MathF.PI * t);
         }
 
-        private TimeSpan dropHealthAnimateStart = TimeSpan.Zero - Constants.AnimationTiming.HealthDropDuration;
+        public void Update(TimeSpan now) => impactAnimator.Update(now);
 
-        public void DropHealthAnimate(TimeSpan now) {
-            dropHealthAnimateStart = now;
+        private void AnimateHealthDrop() {
+            impactAnimator.Reset();
         }
 
-        private float GetDropHealthNormal() {
-            var difference = Now - dropHealthAnimateStart;
-            var t = (float)(difference / Constants.AnimationTiming.HealthDropDuration);
-            if(t > 1) {
-                t = IsDead ? t : 1;
-            } else if(t < 0) {
-                t = 0;
-            }
-            return t;
-        }
-
-        public float WaveSpeed { get; set; } = 1f;
-        public float WaveStrength { get; set; } = 8;
-
-        private bool IsDead => Value <= 0f;
-
-        private const float PI2 = MathF.PI * 2;
-
-        private int GetStripYOffset(float xNormal,float t) {
-            float time = PI2 * t;
-            float distance = xNormal * PI2;
-            float offset = MathF.Sin((time + distance) * WaveSpeed) * WaveStrength / 19 * Scale;
-            return (int)MathF.Round(offset);
-        }
-
-        private (Color Color,int YOffset,Point textureOffset) GetStripeData(float xNormal,float healthNormal,Color healthColor) {
-            Color color;
-            int stripYOffset;
-            Point textureOffset = Point.Zero;
+        public (float Start,float End) GetOffColorRange() {
             if(Alignment == HealthBarAlignment.Left) {
-                if(xNormal < Value) {
-                    color = healthColor;
-                } else {
-                    color = Color.White;
-                    textureOffset = new Point(32,0);
-                }
-                stripYOffset = GetStripYOffset(xNormal,healthNormal);
+                return (Value,1);
             } else {
-                if(xNormal < 1 - Value) {
-                    color = Color.White;
-                    textureOffset = new Point(32,0);
-                } else {
-                    color = healthColor;
-                }
-                stripYOffset = GetStripYOffset(1-xNormal,healthNormal);
+                return (0,1-Value);
             }
-            return (color, stripYOffset, textureOffset);
         }
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {
             if(Texture == null) {
                 return;
             }
-            Rectangle area = (Rectangle)ScreenArea;
-            Color healthColor = color ?? Color.White;
 
-            int pixelSize = (int)(ScreenArea.Height * 0.0625f);
-            pixelSize += 1;
-
-            (Color Color, int YOffset, Point textureOffset) stripeData;
-
-            int pixelCount = (int)MathF.Ceiling((ScreenArea.Width - pixelSize * 2) / pixelSize);
-            float halfPixelSize = pixelSize / 2;
-
-            float healthNormal = GetDropHealthNormal();
-
-            stripeData = GetStripeData(halfPixelSize / area.Width,healthNormal,healthColor);
-            spriteBatch.Draw(
-                Texture,
-                new Rectangle(area.X,area.Y + stripeData.YOffset,pixelSize,area.Height),
-                new Rectangle(16+stripeData.textureOffset.X,stripeData.textureOffset.Y,1,16),
-            stripeData.Color);
-            for(int i = 1;i<pixelCount;i++) {
-                stripeData = GetStripeData((pixelSize + i * pixelSize + halfPixelSize) / area.Width,healthNormal,healthColor);
-                spriteBatch.Draw(
-                    Texture,
-                    new Rectangle(area.X + i * pixelSize,area.Y + stripeData.YOffset,pixelSize,area.Height),
-                    new Rectangle(17+stripeData.textureOffset.X,stripeData.textureOffset.Y,1,16),
-                stripeData.Color);
-            }
-            int overshoot = (pixelCount * pixelSize) - (area.Width - pixelSize * 2);
-
-            int offsetStripeX = area.X + pixelCount * pixelSize - overshoot;
-            stripeData = GetStripeData((area.Width - halfPixelSize - pixelSize) / area.Width,healthNormal,healthColor);
-            spriteBatch.Draw(
-                Texture,
-                new Rectangle(offsetStripeX,area.Y+stripeData.YOffset,pixelSize,area.Height),
-                new Rectangle(17+stripeData.textureOffset.X,stripeData.textureOffset.Y,1,16),
-            stripeData.Color);
-
-            stripeData = GetStripeData((area.Width - halfPixelSize) / area.Width,healthNormal,healthColor);
-            spriteBatch.Draw(
-                Texture,
-                new Rectangle(area.Right - pixelSize,area.Y + stripeData.YOffset,pixelSize,area.Height),
-                new Rectangle(16+stripeData.textureOffset.X,stripeData.textureOffset.Y,1,16),
-            stripeData.Color);
+            spriteBatch.Draw(Texture,ScreenArea.ToRectangle(),TextureSource,color ?? Color.White);
         }
     }
 }

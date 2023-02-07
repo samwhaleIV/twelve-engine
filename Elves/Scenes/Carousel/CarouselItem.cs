@@ -26,15 +26,15 @@ namespace Elves.Scenes.Carousel {
             Position = new Vector3(0f,0f,Constants.Depth.Middle);
             Scale = new Vector3(width,1f,1f);
             PixelSmoothing = false;
-            OnUpdate += CarouselItem_OnUpdate;
-            OnLoad += CarouselItem_OnLoad;
+            OnUpdate += UpdateColor;
+            OnLoad += CreateLockItem;
         }
 
-        private void CarouselItem_OnLoad() {
+        private void CreateLockItem() {
             Owner.Entities.Add(new LockIcon(this));
         }
 
-        private void CarouselItem_OnUpdate() {
+        private void UpdateColor() {
             Color = IsLocked ? Color.Black : Color.White;
         }
     }

@@ -1,10 +1,8 @@
-﻿using TwelveEngine;
-using TwelveEngine.Shell;
-using TwelveEngine.UI;
+﻿using TwelveEngine.Shell;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
-    public abstract class UIScene:Scene {
+    public abstract class BookUIScene:InputGameState {
 
         private SpriteBook _book;
         public SpriteBook UI {
@@ -19,20 +17,20 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        public UIScene() {
+        public BookUIScene() {
             Name = "UI Scene";
-            OnRender += UIScene_OnRender;
-            OnUpdate += UIScene_OnUpdate;
+            OnRender.Add(RenderUI);
+            OnUpdate.Add(UpdateUI);
         }
 
-        private void UIScene_OnUpdate() {
+        private void UpdateUI() {
             if(UI is null) {
                 return;
             }
-            UI.Update(Now,new(Viewport));
+            UI.Update(new(Viewport));
             CustomCursor.State = UI.CursorState;
         }
 
-        private void UIScene_OnRender() => UI?.Render(SpriteBatch);
+        private void RenderUI() => UI?.Render(SpriteBatch);
     }
 }

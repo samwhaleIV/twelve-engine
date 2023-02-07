@@ -11,7 +11,7 @@ namespace Elves {
         public const float Debug3DLookSpeed = 10f;
 
         public static class Flags {
-            public const string Debug = "debug";
+            public const string OrthoDebug = "orthodebug";
             public const string OSCursor = "oscursor";
             public const string FixedBattleRandom = "norandombattle";
         }
@@ -25,7 +25,38 @@ namespace Elves {
             public static readonly Color DefaultUserColor = Color.White;
         }
 
+        public static class BattleUI {
+            public const float TagBackgroundScale = 2.4f;
+            public const float HealthImpactScale = 2;
+            public const float ButtonScale = 1.25f;
+
+            public const float NameTextScale = 1 / 2f;
+            public const float TagTextScale = 1 / 3f;
+            public const float ButtonTextScale = 1 / 3f;
+
+            public const float MarginScale = 1;
+
+            public static readonly TimeSpan ButtonMovement = TimeSpan.FromMilliseconds(150);
+            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TagMovement = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan TagTextMovement = TimeSpan.FromMilliseconds(350);
+
+            public static readonly TimeSpan HealthImpact = TimeSpan.FromMilliseconds(80);
+
+        }
+
         public static class UI {
+            public const float CarouselDirectionButtonOffset = 22;
+            public const float CarouselElfNameScale = 0.75f;
+
+            public const float MinUIScale = 0.5f;
+            public const float MaxUIScale = 2f;
+
+            public const float SplashMenuScaleModifier = 1.5f;
+            public const float BattleSceneScaleModifier = 1.25f;
+            public const float UIScaleBaseDivisor = 0.008f;
+
             public static readonly Color PressedColor = Color.Lerp(Color.White,Color.Black,0.1f);
             public static readonly Color SelectColor = Color.Lerp(Color.White,Color.Black,0.05f);
         }
@@ -45,32 +76,27 @@ namespace Elves {
 
         public static class AnimationTiming {
             public static readonly TimeSpan ScrollingBackgroundDefault = TimeSpan.FromSeconds(60);
-            public static readonly TimeSpan ActionButtonMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan TaglineMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan TaglineTextMovement = TimeSpan.FromMilliseconds(150);
-
-            public static readonly TimeSpan HealthDropDuration = TimeSpan.FromMilliseconds(100);
 
             public static readonly TimeSpan CarouselRotationDuration = TimeSpan.FromMilliseconds(300);
             public static readonly TimeSpan CarouselBackgroundScroll = TimeSpan.FromSeconds(120);
 
-            public static readonly TimeSpan IntroStartDelay = TimeSpan.FromSeconds(1);
-            public static readonly TimeSpan IntroFadeOutDelay = TimeSpan.FromSeconds(1);
-            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(9);
-            public static readonly TimeSpan IntroSongDurationOffset = -TimeSpan.FromSeconds(0f);
-
+            public static readonly TimeSpan IntroStartDelay = TimeSpan.FromSeconds(0.25f);
+            public static readonly TimeSpan IntroFadeOutDelay = TimeSpan.FromSeconds(0.5f);
+            public static readonly TimeSpan IntroFadeOutDuration = TimeSpan.FromSeconds(4);
+            public static readonly TimeSpan IntroSongDurationOffset = -TimeSpan.FromSeconds(3);
             public const float IntroTextFadeSpeed = 2f;
 
-            public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.1f);
+            public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.25f);
 
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
+
+            public static readonly TimeSpan BattleEndDelay = TimeSpan.FromSeconds(2f);
+
+            public static readonly TimeSpan CarouselRotationDurationSlow = TimeSpan.FromSeconds(0.75f);
         }
 
         public static class Songs {
-            public const string Intro = "Music/A_hero";
-            public const string UV2T3 = "Music/UV2T3";
+
         }
     }
 }

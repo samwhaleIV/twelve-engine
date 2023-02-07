@@ -14,40 +14,49 @@ namespace Elves.ElfData {
 
         public static IEnumerable<Elf> GetAll() => manifest.Values;
 
+        private static int _IDCounter = 0;
+
+        private static ElfID AutoID {
+            get {
+                int ID = _IDCounter;
+                _IDCounter++;
+                return (ElfID)ID;
+            }
+        }
+
         /* This should probably be information loaded from a data file, but C# is so expressive... I can't help myself. */
         static ElfManifest() {
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.HarmlessElf,
+                ID: AutoID,
                 name: "Harmless Elf",
                 texture: "Elves/harmless-elf",
                 color: Color.Red,
                 baseHeight: 47,
-                frameSets: new FrameSet[] {
-                    CreateStatic(0,0,17,47),
-                    CreateIdleBlink(0,0,17,47,17,0,17,47),
-                    CreateSlideshowAndBack(AnimationType.Hurt,AnimationMode.Once,new Rectangle(0,47,17,47),3,TimeSpan.FromMilliseconds(50)),
-                    CreateDead(34,0,17,47)
-                }
+                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.RedGirlElf,
-                name: "Red Girl Elf",
-                texture: "Elves/red-girl-elf",
+                ID: AutoID,
+                name: "Harmless Elf",
+                texture: "Elves/harmless-elf",
                 color: Color.Red,
-                baseHeight: 44,
-                frameSets: new FrameSet[] {
-                    CreateStatic(0,0,17,44)
-                }
+                baseHeight: 47,
+                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
             Add(Elf.Create<DebugBattle>(
-                ID: ElfID.YellowElf,
-                name: "Yellow Elf",
-                texture: "Elves/yellow-elf",
-                color: Color.FromNonPremultiplied(242,228,38,byte.MaxValue),
-                baseHeight: 50,
-                frameSets: new FrameSet[] {
-                    CreateStatic(0,0,19,50)
-                }
+                ID: AutoID,
+                name: "Harmless Elf",
+                texture: "Elves/harmless-elf",
+                color: Color.Red,
+                baseHeight: 47,
+                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
+            ));
+            Add(Elf.Create<DebugBattle>(
+                ID: AutoID,
+                name: "Harmless Elf",
+                texture: "Elves/harmless-elf",
+                color: Color.Red,
+                baseHeight: 47,
+                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
         }
     }

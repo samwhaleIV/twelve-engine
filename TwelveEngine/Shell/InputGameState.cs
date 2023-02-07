@@ -3,8 +3,6 @@
 namespace TwelveEngine.Shell {
     public class InputGameState:GameState {
 
-        private readonly TimeoutManager timeoutManager = new();
-
         public ImpulseEventHandler Impulse { get; private set; } = new();
         public MouseEventHandler Mouse { get; private set; } = new();
 
@@ -12,17 +10,17 @@ namespace TwelveEngine.Shell {
         private static MouseEventHandler oldMouseHandler;
 
         public InputGameState() {
-            OnLoad += InputGameState_OnLoad;
-            OnUnload += InputGameState_OnUnload;
-            OnUpdate += UpdateInputDevices;
+            OnLoad.Add(ImportOldHandlers,EventPriority.First);
+            OnUpdate.Add(UpdateInputs,EventPriority.First);
+            OnUnload.Add(SetOldHandlers);
         }
 
-        private void InputGameState_OnUnload() {
+        private void SetOldHandlers() {
             oldInputHandler = Impulse;
             oldMouseHandler = Mouse;
         }
 
-        private void InputGameState_OnLoad() {
+        private void ImportOldHandlers() {
             if(HasFlag(StateFlags.CarryKeyboardInput)) {
                 Impulse.Import(oldInputHandler);
             }
@@ -33,27 +31,24 @@ namespace TwelveEngine.Shell {
             oldMouseHandler = null;
         }
 
-        public bool ClearTimeout(int ID) {
-            return timeoutManager.Remove(ID);
-        }
-
-        public int SetTimeout(Action action,TimeSpan delay) {
-            return timeoutManager.Add(action,delay,Now);
-        }
-
         protected bool InputEnabled {
             get {
                 return GameIsActive && !IsTransitioning;
             }
         }
 
-        private void UpdateInputDevices() {
-            Mouse.Update(InputStateCache.Mouse,InputEnabled,GameIsActive);
-            if(!InputEnabled) {
-                return;
+        private bool _inputActivated = false;
+
+        public event Action OnInputActivated;
+
+        private void UpdateInputs() {
+            if(!IsTransitioning && !_inputActivated) {
+                _inputActivated = true;
+                OnInputActivated?.Invoke();
             }
-            Impulse.Update(InputStateCache.Keyboard,InputStateCache.GamePad);
-            timeoutManager.Update(Now);
+            bool inputEnabled = InputEnabled && _inputActivated;
+            Mouse.Update(inputEnabled,GameIsActive);
+            Impulse.Update(inputEnabled);
         }
     }
 }

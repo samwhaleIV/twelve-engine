@@ -5,6 +5,7 @@ using TwelveEngine;
 using TwelveEngine.Font;
 using TwelveEngine.Effects;
 using Elves.ElfData;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Carousel {
 
@@ -19,12 +20,16 @@ namespace Elves.Scenes.Carousel {
         private const float MIDDLE_DEPTH = Constants.Depth.Middle;
         private const float CLOSE_DEPTH = Constants.Depth.MiddleClose;
 
+        private const string LOCKED_TEXT = "? ? ?";
+
         private readonly int highestCompletedBattle = GetHighestCompletedBattle();
 
         private CarouselItem centerItem, leftItem, rightItem;
 
         private Color currentColor, oldColor;
-        public Color GetTintColor() => carouselRotation.Interpolate(oldColor,currentColor);
+        public Color GetTintColor() {
+            return carouselRotation.Interpolate(oldColor,currentColor);
+        }
 
         private readonly Interpolator carouselRotation = new(Constants.AnimationTiming.CarouselRotationDuration);
 
@@ -37,13 +42,16 @@ namespace Elves.Scenes.Carousel {
             {RotationPosition.Right, new Vector3(CENTER_OFFSET,0f,MIDDLE_DEPTH) }
         };
 
-        public CarouselScene3D() {
-            Name = "Carousel Menu";
-            OnLoad += CarouselMenu_OnLoad;
+        private readonly bool _animateLastBattleProgress;
+
+        public CarouselScene3D(bool animateLastBattleProgress) {
+            _animateLastBattleProgress = animateLastBattleProgress;
+            OnLoad.Add(Load);
             Camera.FieldOfView = FIELD_OF_VIEW;
             var position = Camera.Position;
             position.Z = CAMERA_Z;
             Camera.Position = position;
+            highestCompletedBattle = GetHighestCompletedBattle();
         }
 
         private readonly ScrollingBackground background = new() {
@@ -61,22 +69,27 @@ namespace Elves.Scenes.Carousel {
             background.Render(SpriteBatch,Viewport);
         }
 
-        private void CarouselMenu_OnLoad() {
+        private void Load() {
             CreateItems();
-            UpdateIndex(GetStartIndex(),MoveDirection.None);
+            UpdateIndex(_animateLastBattleProgress ? highestCompletedBattle : highestCompletedBattle + 1,MoveDirection.None);
             ApplyDefaultRotations();
             CreateBackground();
+
+            if(!_animateLastBattleProgress) {
+                return;
+            }
+            carouselRotation.Duration = Constants.AnimationTiming.CarouselRotationDurationSlow;
+            carouselRotation.Finish();
+            carouselRotation.OnEnd += RestoreDefaultCarouselAnimationTiming;
+            RotateCarousel(MoveDirection.Right);
         }
 
-        protected void RenderCarouselScene() {
-            var font = Fonts.RetroFontOutlined;
-            font.Begin(SpriteBatch);
-            Point center = Viewport.Bounds.Center;
-            int scale = Math.Max((int)(GetUIScale()*0.5f),1);
-            center.Y = 16 * scale;
-            font.DrawCentered(centerItem.DisplayName,center,scale,Color.White);
-            font.End();
+        private void RestoreDefaultCarouselAnimationTiming() {
+            carouselRotation.Duration = Constants.AnimationTiming.CarouselRotationDuration;
+            carouselRotation.OnEnd -= RestoreDefaultCarouselAnimationTiming;
         }
+
+        public string CenterItemName => (centerItem is null || centerItem.IsLocked) ? LOCKED_TEXT : centerItem.DisplayName;
 
         protected void UpdateCarouselItems() {
             carouselRotation.Update(Now);
@@ -120,26 +133,38 @@ namespace Elves.Scenes.Carousel {
                     break;
                 case MoveDirection.Right:
                     int? nextIndex = GetRightIndex(index);
-                    if(!nextIndex.HasValue || items[nextIndex.Value].IsLocked) {
+                    if(!nextIndex.HasValue) { // || items[nextIndex.Value].IsLocked
                         return;
                     }
                     break;
             }
             carouselRotation.Reset(Now);
             UpdateIndex(index+(int)direction,direction);
-            oldColor = currentColor;
-            currentColor = centerItem.TintColor;
         }
 
+        public event Action<GameState,bool,ElfID> OnSceneEnd;
+
         public void StartBattle() {
+            if(!carouselRotation.IsFinished || centerItem.IsLocked) {
+                return;
+            }
+            OnSceneEnd?.Invoke(this,false,centerItem.ElfID);
+        }
+
+        public void BackToMenu() {
             if(!carouselRotation.IsFinished) {
                 return;
             }
-            EndScene(ExitValue.Get(centerItem.ElfID));
+            OnSceneEnd?.Invoke(this,true,ElfID.None);
         }
 
         private static int GetHighestCompletedBattle() {
-            Program.Save.TryGetInt(SaveKeys.HighestCompletedBattle,out int value,defaultValue: -1);
+            int value;
+            if(Program.Save is null) {
+                value = -1;
+            } else {
+                Program.Save.TryGetInt(SaveKeys.HighestCompletedBattle,out value,defaultValue: -1);
+            }
             return value;
         }
 
@@ -156,10 +181,6 @@ namespace Elves.Scenes.Carousel {
                 items.Add(item);
                 Entities.Add(item);
             }
-        }
-
-        private int GetStartIndex() {
-            return highestCompletedBattle + 1;
         }
 
         private int? GetRightIndex(int index) {
@@ -192,6 +213,8 @@ namespace Elves.Scenes.Carousel {
             }
 
             centerItem = items[index];
+            oldColor = currentColor;
+            currentColor = centerItem.TintColor;
 
             int? leftIndex = GetLeftIndex(index), rightIndex = GetRightIndex(index);
 

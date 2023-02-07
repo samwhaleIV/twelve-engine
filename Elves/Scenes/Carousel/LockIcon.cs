@@ -9,12 +9,12 @@ namespace Elves.Scenes.Carousel {
         public LockIcon(CarouselItem owner) : base(Program.Textures.Lock) {
             PixelSmoothing = false;
             this.owner = owner;
-            owner.OnUpdate += LockIcon_OnUpdate;
+            owner.OnUpdate += UpdatePosition;
             SetUVArea(0,0,16,16);
             Scale = new Vector3(0.25f,0.25f,1f);
         }
 
-        private void LockIcon_OnUpdate() {
+        private void UpdatePosition() {
             IsVisible = owner.IsLocked && owner.IsVisible;
             if(!IsVisible) {
                 return;

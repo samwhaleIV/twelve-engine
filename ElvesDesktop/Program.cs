@@ -6,6 +6,7 @@ using TwelveEngine;
 namespace ElvesDesktop {
     public sealed class Program:EntryPoint {
 
+        [STAThread]
         public static void Main(string[] args) {
             var program = new Program();
             program.StartEngine(args);

@@ -16,12 +16,12 @@ namespace TwelveEngine.EntitySystem {
         private readonly TOwner Owner;
         private readonly EntityContainer<TEntity,TOwner> Container = new();
 
-        private bool IsIterating = false, IsUnloaded = false, IsIteratingSorted = false;
+        private bool IsIterating = false, EntityListIsLocked = false, IsUnloaded = false;
 
         private readonly struct RegisteredEntity {
 
-            public readonly TEntity Value;
-            public readonly int RegisteredID;
+            public readonly TEntity Value { get; init; }
+            public readonly int RegisteredID { get; init; }
 
             public RegisteredEntity(TEntity entity) {
                 Value = entity;
@@ -36,7 +36,7 @@ namespace TwelveEngine.EntitySystem {
                 throw new ArgumentNullException(nameof(owner));
             }
             Entities = new(EntityManager.STARTING_CAPACITY,owner.GetEntitySorter());
-            owner.OnUnload += Owner_Unload;
+            owner.OnUnload.Add(Owner_Unload);
             Owner = owner;
         }
 
@@ -47,7 +47,7 @@ namespace TwelveEngine.EntitySystem {
 
         private readonly Queue<RegisteredEntity> EntitiesBuffer = new(EntityManager.STARTING_CAPACITY);
 
-        private void Entity_OnDepthChanged(Entity<TOwner> entity) {
+        private void EntityDepthChanged(Entity<TOwner> entity) {
             Entities.Remove(entity.ID);
             Entities.Add(entity.ID,(TEntity)entity);
         }
@@ -55,17 +55,17 @@ namespace TwelveEngine.EntitySystem {
         private int IDCounter = EntityManager.START_ID;
         private int GetNextID() => IDCounter++;
 
-        private bool bufferNeedsUpdate = false;
+        private bool _bufferNeedsUpdate = false;
 
         private void TryUpdateBuffer() {
-            if(!bufferNeedsUpdate) {
+            if(!_bufferNeedsUpdate) {
                 return;
             }
             EntitiesBuffer.Clear();
             for(int i = 0;i<Entities.Count;i++) {
                 EntitiesBuffer.Enqueue(new RegisteredEntity(Entities.List[i]));
             }
-            bufferNeedsUpdate = false;
+            _bufferNeedsUpdate = false;
         }
 
         private readonly Queue<RegisteredEntity> AdditionQueue = new();
@@ -74,7 +74,7 @@ namespace TwelveEngine.EntitySystem {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
-            if(IsIterating || IsIteratingSorted) {
+            if(IsIterating || EntityListIsLocked) {
                 /* This should prevent shitty programming practices and impossible to fix bugs.
                  * This class is logically threaded around the trust in this assertion */
                 throw new EntityManagerException(ILLEGAL_ITERATION);
@@ -108,15 +108,15 @@ namespace TwelveEngine.EntitySystem {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
-            if(IsIterating || IsIteratingSorted) {
+            if(IsIterating || EntityListIsLocked) {
                 throw new EntityManagerException(ILLEGAL_ITERATION);
             }
-            IsIteratingSorted = true;
+            EntityListIsLocked = true;
             IsIterating = true;
             for(int i = 0;i<Entities.Count;i++) {
                 Entities.List[i].Render();
             }
-            IsIteratingSorted = false;
+            EntityListIsLocked = false;
             IsIterating = false;
         }
 
@@ -124,15 +124,15 @@ namespace TwelveEngine.EntitySystem {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_ITERATION_UNLOADED);
             }
-            if(IsIterating || IsIteratingSorted) {
+            if(IsIterating || EntityListIsLocked) {
                 throw new EntityManagerException(ILLEGAL_ITERATION);
             }
-            IsIteratingSorted = true;
+            EntityListIsLocked = true;
             IsIterating = true;
             for(int i = 0;i<Entities.Count;i++) {
                 Entities.List[i].PreRender();
             }
-            IsIteratingSorted = false;
+            EntityListIsLocked = false;
             IsIterating = false;
         }
 
@@ -140,7 +140,7 @@ namespace TwelveEngine.EntitySystem {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_MODIFICATION_UNLOADED);
             }
-            if(IsIteratingSorted) {
+            if(EntityListIsLocked) {
                 throw new EntityManagerException("Cannot add an entity during sorted iteration!");
             }
             if(entity == null) {
@@ -153,8 +153,8 @@ namespace TwelveEngine.EntitySystem {
             Container.Writer.AddEntity(entity);
             entity.Load();
             Entities.Add(entity.ID,entity);
-            entity.OnSortedOrderChange += Entity_OnDepthChanged;
-            bufferNeedsUpdate = true;
+            entity.OnSortedOrderChange += EntityDepthChanged;
+            _bufferNeedsUpdate = true;
             if(IsIterating) {
                 AdditionQueue.Enqueue(new RegisteredEntity(entity));
             }
@@ -165,7 +165,7 @@ namespace TwelveEngine.EntitySystem {
             if(IsUnloaded) {
                 throw new EntityManagerException(ILLEGAL_MODIFICATION_UNLOADED);
             }
-            if(IsIteratingSorted) {
+            if(EntityListIsLocked) {
                 throw new EntityManagerException("Cannot remove an entity during sorted iteration!");
             }
             if(entity == null) {
@@ -179,9 +179,9 @@ namespace TwelveEngine.EntitySystem {
             }
             Container.Writer.RemoveEntity(entity);
             entity.Unload();
-            entity.OnSortedOrderChange -= Entity_OnDepthChanged;
+            entity.OnSortedOrderChange -= EntityDepthChanged;
             Entities.Remove(entity.ID);
-            bufferNeedsUpdate = true;
+            _bufferNeedsUpdate = true;
         }
 
         public void Add(params TEntity[] entities) {
@@ -211,7 +211,7 @@ namespace TwelveEngine.EntitySystem {
                 return;
             }
 
-            bufferNeedsUpdate = false;
+            _bufferNeedsUpdate = false;
 
             Queue<TEntity> entitiesCopy = new(Entities.Count);
 
@@ -221,7 +221,7 @@ namespace TwelveEngine.EntitySystem {
 
             while(entitiesCopy.TryDequeue(out var entity)) {
                 Container.Writer.RemoveEntity(entity);
-                entity.OnSortedOrderChange -= Entity_OnDepthChanged;
+                entity.OnSortedOrderChange -= EntityDepthChanged;
                 entity.Unload();
             }
 

@@ -28,7 +28,8 @@ namespace TwelveEngine {
             { LoggerLabel.GameManager, "Game Manager" },
             { LoggerLabel.Flags, "Flags" },
             { LoggerLabel.UI, "UI" },
-            { LoggerLabel.Script, "Script" }
+            { LoggerLabel.Script, "Script" },
+            { LoggerLabel.Audio, "Audio" }
         };
 
         private static string GetLoggerLabel(LoggerLabel label) {
@@ -93,7 +94,9 @@ namespace TwelveEngine {
 #endif
         public static void Initialize(string path) {
 #if DEBUG
-            AllocConsole();
+            if(Flags.Get(Constants.Flags.Console)) {
+                AllocConsole();
+            }
 #endif
             if(TryCreateStreamWriter(path)) {
                 WriteLine($"[{DateTime.UtcNow} UTC] Game started.");

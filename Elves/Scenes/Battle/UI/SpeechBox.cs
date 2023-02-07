@@ -8,7 +8,7 @@ using TwelveEngine;
 namespace Elves.Scenes.Battle.UI {
     public sealed class SpeechBox:UIElement {
 
-        private readonly Interpolator interpolator = new(Constants.AnimationTiming.SpeechBoxMovement);
+        private readonly Interpolator interpolator = new(Constants.BattleUI.SpeechBoxMovement);
 
         public SpeechBox() {
             Texture = Program.Textures.Panel;
@@ -46,7 +46,7 @@ namespace Elves.Scenes.Battle.UI {
 
         public readonly StringBuilder Text = new();
 
-        public void Update(TimeSpan now,Rectangle viewport) {
+        public void Update(TimeSpan now,FloatRectangle viewport) {
             interpolator.Update(now);
 
             float height = viewport.Height * (2f/3f);
@@ -80,7 +80,7 @@ namespace Elves.Scenes.Battle.UI {
             float margin = ScreenArea.Width * 0.075F;
             Vector2 location = ScreenArea.Position + new Vector2(margin);
             location.X += ScreenArea.Width * (1/8F);
-            font.Draw(Text,location.ToPoint(),textScale,Color.Black,(int)(ScreenArea.Right - location.X - margin));
+            font.Draw(Text,Vector2.Floor(location),textScale,Color.Black,(int)(ScreenArea.Right - location.X - margin));
         }
     }
 }

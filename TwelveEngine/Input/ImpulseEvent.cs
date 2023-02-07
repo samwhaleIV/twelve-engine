@@ -10,7 +10,6 @@
             Pressed = pressed;
         }
 
-        public static ImpulseEvent CreatePressed(Impulse impulse) => new(impulse,true);
-        public static ImpulseEvent CreateReleased(Impulse impulse) => new(impulse,false);
+        public static ImpulseEvent Create(Impulse impulse,bool isPressed) => new(impulse,isPressed);
     }
 }

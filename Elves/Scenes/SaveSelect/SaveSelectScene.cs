@@ -5,7 +5,7 @@ using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 
 namespace Elves.Scenes.SaveSelect {
-    public sealed class SaveSelectScene:UIScene {
+    public sealed class SaveSelectScene:BookUIScene {
 
         private ScrollingBackground background;
 
@@ -14,21 +14,27 @@ namespace Elves.Scenes.SaveSelect {
         private readonly DrawingFrame[] drawingFrames = new DrawingFrame[3];
         public DrawingFrame[] DrawingFrames => drawingFrames;
 
+        public event Action<GameState,int> OnSceneEnd;
+
         public void OpenSaveFile(int saveFileID) {
-            EndScene(ExitValue.Get(saveFileID));
+            OnSceneEnd?.Invoke(this,saveFileID);
+        }
+
+        public void BackToSplashScreen() {
+            OnSceneEnd?.Invoke(this,-1);
         }
 
         public SaveSelectScene() {
             Name = "Save Selection";
-            OnLoad += SaveSelectScene_OnLoad;
-            OnRender += SaveSelectScene_OnRender;
-            OnUpdate += SaveSelectScene_OnUpdate;
-            OnUnload += SaveSelectScene_OnUnload;
+            OnLoad.Add(Load);
+            OnRender.Add(Render);
+            OnUpdate.Add(Update);
+            OnUnload.Add(Unload);
         }
 
         private readonly bool[] modifiedSaves = new bool[3] { false, false, false };
 
-        private void SaveSelectScene_OnUnload() {
+        private void Unload() {
 
             bool hasModifiedSave = false;
 
@@ -48,7 +54,7 @@ namespace Elves.Scenes.SaveSelect {
             Program.GlobalSave.TrySave();
         }
 
-        private void SaveSelectScene_OnUpdate() {
+        private void Update() {
             background.Update(Now);
             UpdateBackgroundScale();
         }
@@ -58,7 +64,7 @@ namespace Elves.Scenes.SaveSelect {
             background.Scale = 1 + BACKGROUND_SCALE_AMOUNT * GetBackgroundScaleT();
         }
 
-        private void SaveSelectScene_OnRender() {
+        private void Render() {
             background.Render(SpriteBatch,Viewport);
             UI.Render(SpriteBatch);
         }
@@ -108,7 +114,7 @@ namespace Elves.Scenes.SaveSelect {
             return Program.Saves[ID].HasFlag(SaveKeys.DoIExist);
         }
 
-        private void SaveSelectScene_OnLoad() {
+        private void Load() {
             LoadDrawingFrames();
             UI = new SaveSelectUI(this);
             background = new ScrollingBackground() {

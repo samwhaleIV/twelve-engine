@@ -45,7 +45,7 @@ namespace Elves.Scenes.SplashMenu {
         public FloatingItem(SplashMenuState menu,Random random,Texture2D texture) : base(texture) {
             this.menu = menu;
             this.random = random;
-            OnUpdate += FloatingItem_OnUpdate;
+            OnUpdate += UpdateArea;
             PixelSmoothing = false;
             Depth = (Constants.Depth.MiddleClose - Constants.Depth.MiddleFar) * random.NextSingle() + Constants.Depth.MiddleFar;
         }
@@ -75,12 +75,12 @@ namespace Elves.Scenes.SplashMenu {
 
         private bool needsReset = true;
 
-        private void FloatingItem_OnUpdate() {
+        private void UpdateArea() {
             if(needsReset) {
                 Reset();
                 needsReset = false;
             }
-            float scale = menu.GetUIScale();
+            float scale = menu.UIScale;
             float t = (float)((Now - StartTime) / Duration);
             if(t < 0) {
                 t = 0;

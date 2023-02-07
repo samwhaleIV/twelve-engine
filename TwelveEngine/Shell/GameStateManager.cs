@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Input;
 using TwelveEngine.Shell.Automation;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Hotkeys;
+using TwelveEngine.Input;
+using TwelveEngine.Audio;
 
 namespace TwelveEngine.Shell {
     public sealed class GameStateManager:Game {
@@ -15,7 +17,7 @@ namespace TwelveEngine.Shell {
         private GameState pendingState = null;
         private (Func<GameState> Value, StateData Data) pendingGenerator = (null, StateData.Empty);
 
-        internal event Action<GameStateManager> OnLoad;
+        internal event Action OnLoad;
 
         private bool _isInitialized = false, _gameIsPaused = false, _isUpdating = false, _isRendering = false, _didUpdateFirstFrame = false, _advanceFrameIsQueued = false;
 
@@ -38,6 +40,10 @@ namespace TwelveEngine.Shell {
         private TimeSpan _updateDuration, _renderDuration;
 
         internal bool DrawDebug { get; private init; }
+
+        internal GameLoopSyncContext SyncContext { get; init; }
+
+        internal Exception ReroutedException { get; set; }
 
         internal GameStateManager(
             bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool drawDebug = false
@@ -176,7 +182,7 @@ namespace TwelveEngine.Shell {
             DebugFont = Content.Load<SpriteFont>(Constants.DebugFont);
             VCRDisplay.Load();
             _isInitialized = true;
-            OnLoad?.Invoke(this);
+            OnLoad?.Invoke();
         }
 
         private void AddAutomationAgentEventHandlers() {
@@ -298,13 +304,12 @@ namespace TwelveEngine.Shell {
             _isUpdating = true;
             Watch.Start();
             if(GameState is null) {
-                if(pendingState is not null) {
-                    HotSwapPendingState();
-                } else {
+                if(pendingState is null) {
                     _updateDuration = ReadWatchAndReset();
                     _isUpdating = false;
                     return;
                 }
+                HotSwapPendingState();
             }
 
             KeyboardState vanillaKeyboardState = Keyboard.GetState();
@@ -322,6 +327,14 @@ namespace TwelveEngine.Shell {
             } else if(_framesToSkip > 0) {
                 FastForward();
             }
+
+            /* Internal systems updates, after basic event processing. */
+            AudioSystem.Update();
+            SyncContext?.Update();
+
+            if(ReroutedException is not null) {
+                throw new Exception("Unhandled exception from game loop sync context.",ReroutedException);
+            }
             _updateDuration = ReadWatchAndReset();
             _isUpdating = false;
         }
@@ -330,6 +343,7 @@ namespace TwelveEngine.Shell {
             if(pendingGenerator.Value is null) {
                 return;
             }
+            SyncContext?.Clear();
             bool benchmark = Config.GetBool(Config.Keys.BenchmarkStateSwap);
             if(benchmark) {
                 Watch.Start();
@@ -381,7 +395,6 @@ namespace TwelveEngine.Shell {
             _renderDuration = ReadWatchAndReset();
 
             _isRendering = false;
-            gameState?.UpdateTransition();
             TryApplyPendingStateGenerator();
         }
     }

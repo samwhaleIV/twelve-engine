@@ -25,17 +25,18 @@ namespace Elves.Scenes.Test {
 
             Name = "State Transition Test";
             ClearColor = GetSceneColor();
-            Impulse.Router.OnAcceptDown += Input_OnAcceptDown;
-            OnLoad += StateTransitionTest_OnLoad;
+            Impulse.Router.OnAcceptDown += AcceptDown;
+            OnLoad.Add(Load);
         }
 
-        private void StateTransitionTest_OnLoad() {
-            if(testLoadSleep) {
-                OnLoad += () => Thread.Sleep(1000);
+        private void Load() {
+            if(!testLoadSleep) {
+                return;
             }
+            OnLoad.Add(() => Thread.Sleep(1000));
         }
 
-        private void Input_OnAcceptDown() {
+        private void AcceptDown() {
             TransitionOut(new TransitionData() {
                 Generator = () => new StateTransitionTest(),
                 Duration = TimeSpan.FromSeconds(0.125f),

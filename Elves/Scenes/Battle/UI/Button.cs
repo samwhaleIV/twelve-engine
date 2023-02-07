@@ -5,7 +5,6 @@ using System;
 using System.Text;
 using TwelveEngine;
 using TwelveEngine.UI;
-using TwelveEngine.Shell;
 
 namespace Elves.Scenes.Battle.UI {
     public sealed class Button:UIElement,IEndpoint<int> {
@@ -16,22 +15,22 @@ namespace Elves.Scenes.Battle.UI {
 
         public Button() {
             Texture = Program.Textures.Panel;
-            EndPoint = new Endpoint<int>(this);
+            Endpoint = new Endpoint<int>(this);
         }
 
-        public Rectangle TextureSource { get; set; }
+        public Rectangle TextureSource { get; private set; } = DefaultTextureSource;
         public int ID { get; set; }
 
         protected override bool GetInputPaused() {
             /* Might need to ignore for turbo button pressing... */
-            return !interpolator.IsFinished;
+            return !interpolator.IsFinished || !currentState.OnScreen;
         }
 
         protected override void SetInputPaused(bool value) {
             throw new InvalidOperationException("Input pause property is readonly for button elements.");
         }
 
-        private readonly Interpolator interpolator = new(Constants.AnimationTiming.ActionButtonMovement);
+        private readonly Interpolator interpolator = new(Constants.BattleUI.ButtonMovement);
 
         private static readonly Rectangle DefaultTextureSource = new(0,16,32,16);
         private static readonly Rectangle SelectedTextureSource = new(0,32,32,16);
@@ -63,6 +62,11 @@ namespace Elves.Scenes.Battle.UI {
             interpolator.Reset(now);
         }
 
+        public void FinishAnimation(TimeSpan now) {
+            interpolator.Update(now);
+            interpolator.Finish();
+        }
+
         public void Show(TimeSpan now) {
             oldState = currentState;
             currentState = currentState.GetOnScreen();
@@ -80,7 +84,7 @@ namespace Elves.Scenes.Battle.UI {
             ScreenArea = interpolator.Interpolate(startPosition,endPosition);
         }
 
-        public void DrawText(UVSpriteFont spriteFont,int scale,Color color) {
+        public void DrawText(UVSpriteFont spriteFont,float scale,Color color) {
             if(IsOffscreen) {
                 return;
             }
@@ -88,7 +92,7 @@ namespace Elves.Scenes.Battle.UI {
             if(Pressed) {
                 center.Y += ScreenArea.Height / 16;
             }
-            spriteFont.DrawCentered(Label,center.ToPoint(),scale,color);
+            spriteFont.DrawCentered(Label,Vector2.Floor(center),scale,color);
         }
 
         private Rectangle GetTextureSource() {
@@ -105,7 +109,8 @@ namespace Elves.Scenes.Battle.UI {
             if(IsOffscreen) {
                 return;
             }
-            spriteBatch.Draw(Texture,(Rectangle)ScreenArea,GetTextureSource(),color ?? Color.White);
+            TextureSource = GetTextureSource();
+            spriteBatch.Draw(Texture,(Rectangle)ScreenArea,TextureSource,color ?? Color.White);
         }
     }
 }

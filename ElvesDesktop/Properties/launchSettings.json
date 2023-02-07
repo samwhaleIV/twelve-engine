@@ -1,8 +1,19 @@
 {
   "profiles": {
-    "ElvesDesktop": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "Debug Ortho": {
       "commandName": "Project",
-      "commandLineArgs": "nobattlerandom drawdebug nofailsafe"
+      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console debugortho"
+    },
+    "Dev": {
+      "commandName": "Project",
+      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console fmodprofile"
+    },
+    "No Flags": {
+      "commandName": "Project"
     }
   }
 }

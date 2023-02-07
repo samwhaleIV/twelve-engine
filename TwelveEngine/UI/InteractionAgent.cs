@@ -1,7 +1,8 @@
-﻿using TwelveEngine.Shell;
+﻿using TwelveEngine.Input;
+using TwelveEngine.Shell;
 
 namespace TwelveEngine.UI {
-    public abstract class InteractionAgent<TElement> where TElement:InteractionElement<TElement> {
+    public abstract class InteractionAgent<TElement> where TElement : InteractionElement<TElement> {
 
         /// <summary>
         /// See <see cref="GetLastEventWasFromMouse"/>
@@ -25,7 +26,24 @@ namespace TwelveEngine.UI {
         /// </summary>
         /// <returns>True if transitioning, false if not transitioning.</returns>
         protected abstract bool GetContextTransitioning();
-     
+
+        /// <summary>
+        /// If left click is currently pressed.
+        /// </summary>
+        /// <returns>True if a left mouse button is down, false if released.</returns>
+        protected abstract bool GetLeftMouseButtonIsCaptured();
+
+        /// <summary>
+        /// If right click is currently pressed.
+        /// </summary>
+        /// <returns>True if a right mouse button is down, false if released.</returns>
+        protected abstract bool GetRightMouseButtonIsCaptured();
+
+        private bool AnyMouseButtonCaptured => LeftMouseButtonIsCaptured || RightMouseButtonIsCaptured;
+
+        private bool LeftMouseButtonIsCaptured => GetLeftMouseButtonIsCaptured();
+        private bool RightMouseButtonIsCaptured => GetRightMouseButtonIsCaptured();
+
         /// <summary>
         /// Allow elements and super classes to reference current, total elapsed time.
         /// </summary>
@@ -37,7 +55,9 @@ namespace TwelveEngine.UI {
         /// Activated when the back button is pressed. E.g., the escape button. Useful for pagination.
         /// </summary>
         /// <returns>A value indicating if the back button request was accepted.</returns>
-        protected abstract bool BackButtonPressed();
+        protected virtual bool BackButtonPressed() {
+            return false;
+        }
 
         private bool _keyboardIsPressingElement = false;
         private TElement _selectedElement = null, _pressedElement = null;
@@ -63,7 +83,7 @@ namespace TwelveEngine.UI {
         /// The default focus element for focus, impulse-based interaction. <br/>
         /// Activated internally, but also call <see cref="TrySetDefaultElement"/> when appropriate.
         /// </summary>
-        public TElement DefaultFocusElement { get; set; } 
+        public TElement DefaultFocusElement { get; set; }
 
         private TElement GetLastSelectedOrDefault() {
             return _lastSelectedElement ?? DefaultFocusElement;
@@ -75,7 +95,7 @@ namespace TwelveEngine.UI {
         public TElement SelectedElement {
             get => _selectedElement;
             private set {
-                if(IsTransitioning || _selectedElement == value) {
+                if(IsTransitioning || _selectedElement == value || AnyMouseButtonCaptured) {
                     return;
                 }
                 _selectedElement?.UpdateInteractionState(InteractionStateChange.ClearSelected);
@@ -89,12 +109,12 @@ namespace TwelveEngine.UI {
             }
         }
 
-        public bool TrySetDefaultElement() {
-            if(DefaultFocusElement is null || LastEventWasFromMouse) {
-                return false;
+        public void FocusDefault() {
+            if(DefaultFocusElement is null || LastEventWasFromMouse || AnyMouseButtonCaptured) {
+                return;
             }
             SelectedElement = GetLastSelectedOrDefault();
-            return true;
+            return;
         }
 
         /// <summary>
@@ -104,7 +124,7 @@ namespace TwelveEngine.UI {
         public TElement PressedElement {
             get => _pressedElement;
             private set {
-                if(_pressedElement == value || IsTransitioning || value is not null && value.InputIsPaused) {
+                if(_pressedElement == value || IsTransitioning || value is not null && !ElementCanFulfilInteraction(value)) {
                     /* Do not set a new pressed element if it is waiting for an animation during a page */
                     return;
                 }
@@ -157,7 +177,7 @@ namespace TwelveEngine.UI {
         }
 
         private void MouseDown() {
-            if(PressedElement is not null || SelectedElement is null) {
+            if(PressedElement is not null || SelectedElement is null || RightMouseButtonIsCaptured) {
                 return;
             }
             if(_hiddenMouseHoverElement == null) {
@@ -174,7 +194,7 @@ namespace TwelveEngine.UI {
         /// A button, such as the enter button, has been pressed. Fire once per keystroke.
         /// </summary>
         private void AcceptDown() {
-            if(PressedElement is not null) {
+            if(PressedElement is not null || AnyMouseButtonCaptured) {
                 return;
             }
             SelectedElement ??= GetLastSelectedOrDefault();
@@ -211,7 +231,7 @@ namespace TwelveEngine.UI {
         /// </summary>
         /// <param name="direction">The direction representing the button that was pressed.</param>
         private void DirectionDown(Direction direction,bool rollover = false) {
-            if(PressedElement is not null || direction == Direction.None) {
+            if(direction == Direction.None || PressedElement is not null || AnyMouseButtonCaptured) {
                 return;
             }
 
@@ -244,10 +264,13 @@ namespace TwelveEngine.UI {
         }
 
         private static bool TryActivateElement(TElement element) {
-            if(!element.CanInteract || element.InputIsPaused  || element.EndPoint is null) {
+            /* Interaction fulfilment is checked twice.
+             * Once, when the pressed element is set, and twice, before end point activation.
+             * This is a fail safe for when the evaluation changes *during* the press start and press end. */
+            if(!ElementCanFulfilInteraction(element)) {
                 return false;
             }
-            element.EndPoint.Activate();
+            element.Endpoint.Activate();
             return true;
         }
 
@@ -255,7 +278,7 @@ namespace TwelveEngine.UI {
         /// A button, such as enter, has been released. Fire after <c>AcceptDown</c>.
         /// </summary>
         private void AcceptUp() {
-            if(PressedElement is null) {
+            if(PressedElement is null || AnyMouseButtonCaptured) {
                 return;
             }
             TryActivateElement(PressedElement);
@@ -280,7 +303,7 @@ namespace TwelveEngine.UI {
         /// A way to implement a keyboard/gamepad back button. Not all pages need to have a back method.
         /// </summary>
         private void CancelDown() {
-            if(PressedElement is not null) {
+            if(PressedElement is not null || AnyMouseButtonCaptured || IsTransitioning) {
                 return;
             }
             BackButtonPressed();
@@ -325,21 +348,45 @@ namespace TwelveEngine.UI {
             impulse.OnFocusDown -= FocusDown;
         }
 
+
+        private static bool ElementCanFulfilInteraction(TElement element) {
+            return element.CanInteract && !element.InputIsPaused && element.Endpoint is not null;
+        }
+
         /// <summary>
         /// A visual indication of the UI interaction state.
         /// </summary>
         /// <returns>The cursor state. <c>CursorState.Default</c> if the last event was from a keyboard/gamepad.</returns>
         private CursorState GetCursorState() {
-            if(IsTransitioning || !LastEventWasFromMouse || _keyboardIsPressingElement) {
+            if(
+                IsTransitioning
+            ) {
                 return CursorState.Default;
-            } else if(PressedElement is not null) {
-                return PressedElement == _hiddenMouseHoverElement ? CursorState.Pressed : CursorState.Default;
-            } else if(SelectedElement is not null) {
-                /* Don't show interaction cursor state if the element is waiting for its animation to finish. */
-                return SelectedElement == _hiddenMouseHoverElement && !SelectedElement.InputIsPaused ? CursorState.Interact : CursorState.Default;
-            } else {
-                return _hiddenMouseHoverElement is not null ? CursorState.Interact : CursorState.Default;
             }
+
+            if(PressedElement is null && RightMouseButtonIsCaptured) {
+                return CursorState.Default;
+            }
+
+            if(
+                !_keyboardIsPressingElement && PressedElement is not null &&
+                _hiddenMouseHoverElement == PressedElement &&
+                LeftMouseButtonIsCaptured
+            ) {
+                return CursorState.Pressed;
+            }
+
+            if(
+                LastEventWasFromMouse &&
+                PressedElement is null &&
+                _hiddenMouseHoverElement is not null &&
+                SelectedElement == _hiddenMouseHoverElement &&
+                ElementCanFulfilInteraction(SelectedElement)
+            ) {
+                return CursorState.Interact;
+            }
+
+            return CursorState.Default;
         }
 
         public CursorState CursorState => GetCursorState();

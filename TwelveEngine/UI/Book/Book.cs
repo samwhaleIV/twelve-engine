@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine.UI.Book {
-    public class Book<TElement>:InteractionAgent<BookElement> where TElement:BookElement {
+    public abstract class Book<TElement>:InteractionAgent<BookElement> where TElement:BookElement {
 
         public static readonly TimeSpan DefaultAnimationDuration = Constants.UI.DefaultAnimationDuration;
         public static readonly TimeSpan DefaultTransitionDuration = Constants.UI.DefaultTransitionDuration;
@@ -18,23 +18,16 @@
         /// The transition duration when changing the active page. By default, <c>DefaultTransitionDuration</c>.
         /// </summary>
         public TimeSpan TransitionDuration { get; set; } = DefaultTransitionDuration;
-        private readonly Interpolator pageTransitionAnimator = new(DefaultAnimationDuration);
+        private readonly Interpolator pageTransitionAnimator = new(DefaultTransitionDuration);
 
         /// <summary>
         /// Flag controlled by <c>UnlockPageControls</c> and <c>LockElementsForTransition</c>. Checked in <c>Update</c>.
         /// </summary>
-        private bool _elementsAreLocked = true;
-
-        /// <summary>
-        /// The time that <c>Update()</c> was last invoked with.
-        /// </summary>
-        private TimeSpan _currentTime = TimeSpan.FromHours(-1); /* Hopefully your users aren't time travelers. */
+        private bool _elementsAreLocked = false;
 
         protected override bool GetContextTransitioning() {
             return !pageTransitionAnimator.IsFinished;
         }
-
-        protected override TimeSpan GetCurrentTime() => _currentTime;
 
         protected override IEnumerable<BookElement> GetElements() => Elements;
 
@@ -43,27 +36,57 @@
                 throw new ArgumentNullException(nameof(newPage));
             }
 
+            BookPage<TElement> oldPage = Page;
+            if(oldPage is null) {
+                throw new InvalidOperationException("Cannot set page when a first page has not ben set with SetFirstPage().");
+            }
+            if(!pageTransitionAnimator.IsFinished) {
+                throw new InvalidOperationException("Cannot set a page during a transition.");
+            }
             pageTransitionAnimator.Duration = TransitionDuration;
 
-            BookPage<TElement> oldPage = Page;
+            var now = Now;
+            LockElementsForTransition(now);
+            pageTransitionAnimator.Reset(now);
 
-            if(oldPage is not null) {
-                LockElementsForTransition(_currentTime);
-                pageTransitionAnimator.Reset(_currentTime);
+            oldPage.SetTime(now);
+            oldPage.SetTransitionDuration(TransitionDuration);
+            oldPage.Close();
 
-                oldPage.SetTime(_currentTime);
-                oldPage.SetTransitionDuration(TransitionDuration);
-                oldPage.Close();
-            } else {
-                /* This means this is the very first page, we do no want to animate a transition to it. */
-                pageTransitionAnimator.Finish();
-            }
-
-            newPage.SetTime(_currentTime);
+            newPage.SetTime(now);
             newPage.SetTransitionDuration(TransitionDuration);
 
             DefaultFocusElement = newPage.Open();
             Page = newPage;
+        }
+
+        public void SetFirstPage(BookPage<TElement> newPage,FloatRectangle viewport) {
+            if(newPage is null) {
+                throw new ArgumentNullException(nameof(newPage));
+            }
+            if(Page is not null) {
+                throw new InvalidOperationException("Cannot set first page when a page is already active.");
+            }
+
+            var now = Now;
+
+            newPage.SetTime(now);
+            newPage.SetTransitionDuration(TransitionDuration);
+
+            DefaultFocusElement = newPage.Open();
+            newPage.Update(viewport);
+
+            foreach(var element in Elements) {
+                element.KeyAnimation(now);
+                Update(viewport);
+                element.SkipAnimation();
+            }
+
+            pageTransitionAnimator.Duration = TransitionDuration;
+            pageTransitionAnimator.Finish();
+
+            Page = newPage;
+            FocusDefault();
         }
 
         /// <summary>
@@ -86,12 +109,12 @@
             if(DefaultFocusElement is null) {
                 Logger.WriteLine($"UI page has been opened without a default keyboard focus element!",LoggerLabel.UI);
             }
-            TrySetDefaultElement();
+            FocusDefault();
             _elementsAreLocked = false;
         }
 
-        public void Update(TimeSpan now,FloatRectangle viewport) {
-            _currentTime = now;
+        public void Update(FloatRectangle viewport) {
+            var now = Now;
             pageTransitionAnimator.Update(now);
             if(_elementsAreLocked && !IsTransitioning) {
                 UnlockPageControls();
