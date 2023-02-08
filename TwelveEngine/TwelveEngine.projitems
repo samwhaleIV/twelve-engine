@@ -79,7 +79,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\Book.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ComputedArea.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ComputedPropertySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\CoordinateMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\BookElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ElementFlags.cs" />

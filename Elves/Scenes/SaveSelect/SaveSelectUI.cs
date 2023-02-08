@@ -32,7 +32,7 @@ namespace Elves.Scenes.SaveSelect {
                 PositionMode = CoordinateMode.Relative,
                 Position = new(0,-1),
                 Depth = Depth.Finger,
-                SmoothStep = true,
+                SmoothStepAnimation = true,
                 DefaultAnimationDuration = TimeSpan.FromMilliseconds(300)
             });
 

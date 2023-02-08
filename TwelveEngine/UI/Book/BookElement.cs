@@ -5,7 +5,7 @@
         private readonly Interpolator animator;
         public BookElement() => animator = new(Book<BookElement>.DefaultAnimationDuration);
 
-        public ComputedArea ComputedArea { get; private set; } = ComputedArea.Empty;
+        private ComputedPropertySet ComputedPropertySet { get; set; } = ComputedPropertySet.Empty;
 
         private ElementLayoutData? oldLayout = null;
         private ElementLayoutData layout = new();
@@ -27,6 +27,24 @@
         /// Offset is multiplied by the computed layout size then added to the computed position.
         /// </summary>
         public Vector2 Offset { get => layout.Offset; set => layout.Offset = value; }
+
+        public Color Color { get => layout.Color; set => layout.Color = value; }
+
+        public Color ComputedColor => ComputedPropertySet.Color;
+        public FloatRectangle ComputedArea => ComputedPropertySet.Destination;
+        public float ComputedRotation => ComputedPropertySet.Rotation;
+
+        /// <summary>
+        /// Element scale, multipled by the computed size.
+        /// </summary>
+        public float Scale { get => layout.Scale; set => layout.Scale = value; }
+
+        /// <summary>
+        /// Rotation attribute. Uses a renderer specific implementation, but assume a center, relative origin. Not realted to <c>Offset</c>.
+        /// </summary>
+        public float Rotation { get => layout.Rotation; set => layout.Rotation = value; }
+
+        public bool SmoothStepAnimation { get; set; } = false;
 
         public void SetSize(Vector2 size) {
             if(SizeModeX == CoordinateMode.Absolute) size.X /= Viewport.Width;
@@ -54,23 +72,10 @@
             return position;
         }
 
-        /// <summary>
-        /// Element scale, multipled by the computed size.
-        /// </summary>
-        public float Scale { get => layout.Scale; set => layout.Scale = value; }
-
-        /// <summary>
-        /// Rotation attribute. Uses a renderer specific implementation, but assume a center, relative origin. Not realted to <c>Offset</c>.
-        /// </summary>
-        public float Rotation { get => layout.Rotation; set => layout.Rotation = value; }
-
-        public bool SmoothStep { get; set; } = false;
-
-        public ComputedArea GetStaticComputedArea() => GetComputedArea(layout);
+        public ComputedPropertySet GetStaticComputedArea() => GetComputedArea(layout);
         public TimeSpan DefaultAnimationDuration { get; set; } = Book<BookElement>.DefaultAnimationDuration;
 
-
-        private ComputedArea GetComputedArea(ElementLayoutData layout) {
+        private ComputedPropertySet GetComputedArea(ElementLayoutData layout) {
             Vector2 size = layout.Size * Viewport.Size;
 
             size *= layout.Scale;
@@ -80,7 +85,7 @@
             /* If viewport is fullscreen, viewport.Position should be (0,0) */
             position += size * layout.Offset + Viewport.Position;
 
-            return new(new(position,size),layout.Rotation);
+            return new(new(position,size),layout.Rotation,layout.Color);
         }
 
         /// <summary>
@@ -92,7 +97,7 @@
                 return;
             }
             if(oldLayout is not null) {
-                oldLayout = ElementLayoutData.Interpolate(oldLayout.Value,layout,animator.Value,SmoothStep);
+                oldLayout = ElementLayoutData.Interpolate(oldLayout.Value,layout,animator.Value,SmoothStepAnimation);
             } else {
                 oldLayout = layout;
             }
@@ -126,30 +131,33 @@
             Viewport = viewport;
         }
 
-        /// <summary>
-        /// Update animation interpolation and calculate <see cref="ComputedArea"/>.
-        /// </summary>
-        /// <param name="now">Current, total elapsed time.</param>
-        public void Update(TimeSpan now) {
-            animator.Update(now);
-            if(InputIsPaused && animator.IsFinished) {
-                InputIsPaused = false;
-                KeyAnimation(now);
-            }
+        private void UpdateComputedArea(TimeSpan now) {
             ElementLayoutData layout;
             if(oldLayout is not null) {
-                layout = ElementLayoutData.Interpolate(oldLayout.Value,this.layout,animator.Value,SmoothStep);
+                layout = ElementLayoutData.Interpolate(oldLayout.Value,this.layout,animator.Value,SmoothStepAnimation);
             } else {
                 layout = this.layout;
             }
             if(CanUpdate && !InputIsPaused) {
                 OnUpdate?.Invoke(now);
             }
-            ComputedArea = GetComputedArea(layout);
+            ComputedPropertySet = GetComputedArea(layout);
+        }
+
+        /// <summary>
+        /// Update animation interpolation and calculate <see cref="ComputedPropertySet"/>.
+        /// </summary>
+        /// <param name="now">Current, total elapsed time.</param>
+        public void Update(TimeSpan now) {
+            animator.Update(now);
+            if(InputIsPaused && animator.IsFinished) {
+                InputIsPaused = false;
+            }
+            UpdateComputedArea(now);
         }
 
         public void PauseInputForAnimation() => InputIsPaused = true;
-        public override FloatRectangle GetScreenArea() => ComputedArea.Destination;
+        public override FloatRectangle GetScreenArea() => ComputedPropertySet.Destination;
 
         public bool CanUpdate { get; set; } = false;
         protected internal event Action<TimeSpan> OnUpdate;

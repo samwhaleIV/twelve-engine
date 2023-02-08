@@ -59,7 +59,7 @@ namespace Elves.Scenes.SaveSelect {
                 drawingFrame.ReleaseDraw();
                 return;
             }
-            FloatRectangle frameDestination = tag.ComputedArea.Destination;
+            FloatRectangle frameDestination = tag.ComputedArea;
             Vector2 relativePosition = (mouse.Position.ToVector2() - frameDestination.Position) / frameDestination.Size;
             drawingFrame.Draw(Scene,relativePosition);
         }
