@@ -29,11 +29,13 @@ namespace Elves.Scenes.Carousel.UI {
         private Rectangle GetTextureSource() => textureSources[Direction];
 
         private BookElement oldParent;
+        private float oldParentScale;
 
         public void Update(BookElement parent,float pixelSize,TimeSpan now,FloatRectangle viewport) {
-            if(parent != oldParent) {
+            if(parent != oldParent || (parent is not null && parent.Scale != oldParentScale)) {
                 KeyAnimation(now);
             }
+            oldParentScale = parent?.Scale ?? float.NaN;
             oldParent = parent;
 
             if(parent is null || Direction == Direction.None) {
