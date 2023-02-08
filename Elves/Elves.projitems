@@ -42,6 +42,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\CarouselPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\Pages\DefaultPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\Pages\SettingsPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\SelectionArrow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselScene3D.cs" />

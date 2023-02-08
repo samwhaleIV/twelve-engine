@@ -4,6 +4,8 @@
         public static readonly TimeSpan DefaultAnimationDuration = Constants.UI.DefaultAnimationDuration;
         public static readonly TimeSpan DefaultTransitionDuration = Constants.UI.DefaultTransitionDuration;
 
+        protected abstract FloatRectangle GetViewport();
+
         /// <summary>
         /// Must be iterated by a parent class in order to, for example, create a rendering method. See <c>SpriteBook</c> for an example.
         /// </summary>
@@ -60,7 +62,7 @@
             Page = newPage;
         }
 
-        public void SetFirstPage(BookPage<TElement> newPage,FloatRectangle viewport) {
+        public void SetFirstPage(BookPage<TElement> newPage) {
             if(newPage is null) {
                 throw new ArgumentNullException(nameof(newPage));
             }
@@ -74,6 +76,8 @@
             newPage.SetTransitionDuration(TransitionDuration);
 
             DefaultFocusElement = newPage.Open();
+
+            var viewport = GetViewport();
             newPage.Update(viewport);
 
             foreach(var element in Elements) {
@@ -99,6 +103,12 @@
             return element;
         }
 
+        public virtual TSuper AddElement<TSuper>() where TSuper : TElement, new() {
+            var element = new TSuper();
+            Elements.Add(element);
+            return element;
+        }
+
         /// <summary>
         /// Ends the page transition period and allows interactable elements to be pressed and selected.
         /// </summary>
@@ -113,7 +123,7 @@
             _elementsAreLocked = false;
         }
 
-        public void Update(FloatRectangle viewport) {
+        private void Update(FloatRectangle viewport) {
             var now = Now;
             pageTransitionAnimator.Update(now);
             if(_elementsAreLocked && !IsTransitioning) {
@@ -125,6 +135,8 @@
                 element.Update(now,viewport);
             }
         }
+
+        public void Update() => Update(GetViewport());
 
         /// <summary>
         /// Called on every element when a page is closed. <c>TElement</c> is provided in a key locked state (<c>Element.LockKeyAnimation</c>) and with <c>null</c> focus directives (<c>Element.ClearKeyFocus</c>).

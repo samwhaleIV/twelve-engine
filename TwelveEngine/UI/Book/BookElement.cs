@@ -1,4 +1,6 @@
-﻿namespace TwelveEngine.UI.Book {
+﻿using Microsoft.Xna.Framework.Graphics;
+
+namespace TwelveEngine.UI.Book {
 
     public class BookElement:InteractionElement<BookElement> {
 
@@ -90,10 +92,9 @@
             _ => value
         };
 
-        private void UpdateComputedArea(ElementLayoutData layout,FloatRectangle viewport) {
+        private ComputedArea GetComputedArea(ElementLayoutData layout,FloatRectangle viewport) {
             Vector2 size = new(GetCoordinate(layout.Size.X,viewport.Width,SizeModeX),
-                               GetCoordinate(layout.Size.Y,viewport.Height,SizeModeY));
-
+                   GetCoordinate(layout.Size.Y,viewport.Height,SizeModeY));
             size *= layout.Scale;
 
             Vector2 position = new(GetCoordinate(layout.Position.X,viewport.Width,PositionModeX),
@@ -102,7 +103,11 @@
             /* If viewport is fullscreen, viewport.Position should be (0,0) */
             position += size * layout.Offset + viewport.Position;
 
-            ComputedArea = new(new(position,size),layout.Rotation);
+            return new(new(position,size),layout.Rotation);
+        }
+
+        public ComputedArea GetStaticComputedArea(FloatRectangle viewport) {
+            return GetComputedArea(layout,viewport);
         }
 
         public TimeSpan DefaultAnimationDuration { get; set; } = Book<BookElement>.DefaultAnimationDuration;
@@ -169,7 +174,7 @@
             if(CanUpdate && !InputIsPaused) {
                 OnUpdate?.Invoke(now);
             }
-            UpdateComputedArea(layout,viewport);
+            ComputedArea = GetComputedArea(layout,viewport);
         }
 
 

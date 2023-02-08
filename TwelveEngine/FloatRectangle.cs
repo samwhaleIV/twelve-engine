@@ -104,6 +104,8 @@
         }
 
         public Vector2 Center => new(x + width * 0.5f,y + height * 0.5f);
+        public float CenterX => x + width * 0.5f;
+        public float CenterY => y + height * 0.5f;
 
         public float Top => y;
         public float Bottom => y + height;

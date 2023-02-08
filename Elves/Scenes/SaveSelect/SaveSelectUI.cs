@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TwelveEngine;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
@@ -47,7 +48,7 @@ namespace Elves.Scenes.SaveSelect {
             TagContextPage = new TagContextPage() { Scene = scene, UI = this };
             TagDrawPage = new TagDrawPage() { Scene = scene, UI = this };
 
-            SetFirstPage(TagSelectPage,new(scene.Viewport));
+            SetFirstPage(TagSelectPage);
             scene.OnInputActivated += FocusDefault;
         }
 
@@ -94,6 +95,10 @@ namespace Elves.Scenes.SaveSelect {
 
         protected override TimeSpan GetCurrentTime() {
             return scene.Now;
+        }
+
+        protected override FloatRectangle GetViewport() {
+            return new(scene.Viewport);
         }
     }
 }

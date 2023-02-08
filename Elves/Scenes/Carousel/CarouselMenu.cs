@@ -18,11 +18,11 @@ namespace Elves.Scenes.Carousel {
         }
 
         private void LoadUI() {
-            UI.SetFirstPage(UI.DefaultPage,new(Viewport));
+            UI.SetFirstPage(UI.DefaultPage);
         }
 
         private void Update() {
-            UI.Update(new(Viewport));
+            UI.Update();
             CustomCursor.State = UI.CursorState;
             UpdateCarouselItems();
         }

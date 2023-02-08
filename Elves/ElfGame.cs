@@ -4,7 +4,6 @@ using Elves.Scenes.Carousel;
 using Elves.Scenes.Intro;
 using Elves.Scenes.SaveSelect;
 using Elves.Scenes.SplashMenu;
-using Elves.Scenes;
 using Elves.Battle;
 using Elves.ElfData;
 using static Elves.Constants;
@@ -19,7 +18,7 @@ namespace Elves {
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
         /// </summary>
         /// <returns>The start state for the game.</returns>
-        public static GameState Start() => GetSaveSelectScene();
+        public static GameState Start() => GetSplashMenu();
 
         private static GameState GetCarouselMenuAnimatedProgress() {
             var state = new CarouselMenu(animateLastBattleProgress: true);
@@ -65,7 +64,7 @@ namespace Elves {
                 Program.Save = Program.Saves[saveID];
             }
             scene.TransitionOut(new() {
-                Generator = saveID < 0 ? GetSplashMenu : GetCarouselMenu,
+                Generator = saveID < 0 ? GetSplashMenu : GetStartSceneForSave,
                 Data = new() {
                     Flags = StateFlags.ForceGC | StateFlags.FadeIn,
                     TransitionDuration = TransitionDuration

@@ -27,7 +27,7 @@ namespace Elves.Scenes.SaveSelect {
             if(UI is null) {
                 return;
             }
-            UI.Update(new(Viewport));
+            UI.Update();
             CustomCursor.State = UI.CursorState;
         }
 

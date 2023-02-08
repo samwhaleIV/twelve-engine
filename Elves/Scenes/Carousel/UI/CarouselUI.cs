@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Immutable;
+using TwelveEngine;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.Carousel.UI {
@@ -30,6 +31,8 @@ namespace Elves.Scenes.Carousel.UI {
         public Button LeftButton { get; private set; }
         public Button RightButton { get; private set; }
         public Button PlayButton { get; private set; }
+
+        public SelectionArrow SelectionArrow { get; private set; }
 
         public ImmutableList<Button> Buttons { get; private set; }
 
@@ -82,6 +85,8 @@ namespace Elves.Scenes.Carousel.UI {
                 Right = RightButton
             };
 
+            SelectionArrow = AddElement<SelectionArrow>();
+
             Buttons = ImmutableList.Create(BackButton,SettingsButton,LeftButton,RightButton,PlayButton);
         }
 
@@ -90,5 +95,6 @@ namespace Elves.Scenes.Carousel.UI {
         private void ButtonActivated(ButtonAction action) => OnButtonActivated?.Invoke(action);
 
         protected override TimeSpan GetCurrentTime() => scene.Now;
+        protected override FloatRectangle GetViewport() => new(scene.Viewport);
     }
 }
