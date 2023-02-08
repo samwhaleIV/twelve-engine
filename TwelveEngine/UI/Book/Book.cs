@@ -78,6 +78,9 @@
             DefaultFocusElement = newPage.Open();
 
             var viewport = GetViewport();
+            foreach(var element in Elements) {
+                element.SetViewport(viewport);
+            }
             newPage.Update(viewport);
 
             foreach(var element in Elements) {
@@ -114,10 +117,10 @@
         /// </summary>
         private void UnlockPageControls() {
             foreach(var element in Elements) {
-                element.UnlockKeyAnimation();
+                element.EnableKeying();
             }
             if(DefaultFocusElement is null) {
-                Logger.WriteLine($"UI page has been opened without a default keyboard focus element!",LoggerLabel.UI);
+                Logger.WriteLine($"UI page has been opened without a default keyboard focus element!",LoggerLabel.UI); 
             }
             FocusDefault();
             _elementsAreLocked = false;
@@ -130,9 +133,12 @@
                 UnlockPageControls();
             }
             Page?.SetTime(now);
+            foreach(var element in Elements) {
+                element.SetViewport(viewport);
+            }
             Page?.Update(viewport);
             foreach(var element in Elements) {
-                element.Update(now,viewport);
+                element.Update(now);
             }
         }
 
@@ -149,7 +155,7 @@
 
         private void LockAndResetElement(TimeSpan now,TElement element) {
             element.KeyAnimation(now,TransitionDuration);
-            element.LockKeyAnimation();
+            element.DisableKeying();
             element.ClearKeyFocus();
             ResetElement(element);
         }

@@ -60,11 +60,11 @@ namespace Elves.Scenes.Carousel.UI.Pages {
             font.End();
         }
 
-        private void UpdateSelectionArrow(float pixelSize,FloatRectangle viewport) {
+        private void UpdateSelectionArrow(float pixelSize) {
             var selectedElement = UI.SelectedElement;
             var selectionArrow = UI.SelectionArrow;
             if(selectedElement is null) {
-                selectionArrow.Update(selectedElement,pixelSize,Now,viewport);
+                selectionArrow.Update(selectedElement,pixelSize,Now);
                 return;
             }
             Direction direction = Direction.None;
@@ -84,7 +84,7 @@ namespace Elves.Scenes.Carousel.UI.Pages {
                 direction = Direction.Right;
             }
             selectionArrow.Direction = direction;
-            selectionArrow.Update(selectedElement,pixelSize,Now,viewport);
+            selectionArrow.Update(selectedElement,pixelSize,Now);
         }
 
         public override void Update(FloatRectangle viewport) {
@@ -128,7 +128,7 @@ namespace Elves.Scenes.Carousel.UI.Pages {
                 settingsButton.Offset = new(-1,-0.5f);
                 settingsButton.Position = new(viewport.Width-buttonEdgeMargin,0.5f);
 
-            UpdateSelectionArrow(pixelSize,viewport);
+            UpdateSelectionArrow(pixelSize);
         }
     }
 }

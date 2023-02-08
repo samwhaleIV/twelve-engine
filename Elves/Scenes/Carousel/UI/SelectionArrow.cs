@@ -31,7 +31,7 @@ namespace Elves.Scenes.Carousel.UI {
         private BookElement oldParent;
         private float oldParentScale;
 
-        public void Update(BookElement parent,float pixelSize,TimeSpan now,FloatRectangle viewport) {
+        public void Update(BookElement parent,float pixelSize,TimeSpan now) {
             if(parent != oldParent || (parent is not null && parent.Scale != oldParentScale)) {
                 KeyAnimation(now);
             }
@@ -43,7 +43,7 @@ namespace Elves.Scenes.Carousel.UI {
                 return;
             }
 
-            FloatRectangle computedParentArea = parent.GetStaticComputedArea(viewport).Destination;
+            FloatRectangle computedParentArea = parent.GetStaticComputedArea().Destination;
 
             TextureSource = GetTextureSource();
             SizeMode = CoordinateMode.Absolute;
@@ -53,6 +53,7 @@ namespace Elves.Scenes.Carousel.UI {
 
             float gapOffset = pixelSize * 6;
 
+            PositionMode = CoordinateMode.Absolute;
             Position = Direction switch {
                 Direction.Left => new(computedParentArea.Right + gapOffset,computedParentArea.CenterY),
                 Direction.Right => new(computedParentArea.Left - gapOffset,computedParentArea.CenterY),
@@ -60,7 +61,7 @@ namespace Elves.Scenes.Carousel.UI {
                 Direction.Down => new(computedParentArea.CenterX,computedParentArea.Top - gapOffset),
                 Direction.None => Vector2.Zero,
                 _ => Vector2.Zero
-            } / viewport.Size;
+            };
         }
     }
 }
