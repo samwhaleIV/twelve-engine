@@ -63,9 +63,8 @@ namespace Elves.Scenes.Carousel.UI.Pages {
         private void UpdateSelectionArrow(float pixelSize,FloatRectangle viewport) {
             var selectedElement = UI.SelectedElement;
             var selectionArrow = UI.SelectionArrow;
-            selectionArrow.SelectedElement = selectedElement;
             if(selectedElement is null) {
-                selectionArrow.Update(pixelSize,Now,viewport);
+                selectionArrow.Update(selectedElement,pixelSize,Now,viewport);
                 return;
             }
             Direction direction = Direction.None;
@@ -85,7 +84,7 @@ namespace Elves.Scenes.Carousel.UI.Pages {
                 direction = Direction.Right;
             }
             selectionArrow.Direction = direction;
-            selectionArrow.Update(pixelSize,Now,viewport);
+            selectionArrow.Update(selectedElement,pixelSize,Now,viewport);
         }
 
         public override void Update(FloatRectangle viewport) {

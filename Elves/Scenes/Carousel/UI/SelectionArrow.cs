@@ -16,7 +16,6 @@ namespace Elves.Scenes.Carousel.UI {
             PositionMode = CoordinateMode.Relative;
         }
 
-        public BookElement SelectedElement { get; set; } = null;
         public Direction Direction { get; set; } = Direction.Left;
 
         private readonly Dictionary<Direction,Rectangle> textureSources = new() {
@@ -29,13 +28,15 @@ namespace Elves.Scenes.Carousel.UI {
 
         private Rectangle GetTextureSource() => textureSources[Direction];
 
-        public void Update(float pixelSize,TimeSpan now,FloatRectangle viewport) {
-            var parent = SelectedElement;
+        private BookElement oldParent;
+
+        public void Update(BookElement parent,float pixelSize,TimeSpan now,FloatRectangle viewport) {
+            if(parent != oldParent) {
+                KeyAnimation(now);
+            }
+            oldParent = parent;
 
             if(parent is null || Direction == Direction.None) {
-                if(Scale != 0) {
-                    KeyAnimation(now);
-                }
                 Scale = 0;
                 return;
             }
@@ -45,17 +46,12 @@ namespace Elves.Scenes.Carousel.UI {
             TextureSource = GetTextureSource();
             SizeMode = CoordinateMode.Absolute;
 
-            float newScale = 1;
-            if(Scale != newScale) {
-                KeyAnimation(now);
-            }
-            Scale = newScale;
-
+            Scale = 1;
             Size = TextureSource.Size.ToVector2() * pixelSize;
 
             float gapOffset = pixelSize * 6;
-            var oldPosition = Position;
-            var newPosition = Direction switch {
+
+            Position = Direction switch {
                 Direction.Left => new(computedParentArea.Right + gapOffset,computedParentArea.CenterY),
                 Direction.Right => new(computedParentArea.Left - gapOffset,computedParentArea.CenterY),
                 Direction.Up => new(computedParentArea.CenterX,computedParentArea.Bottom + gapOffset),
@@ -63,10 +59,6 @@ namespace Elves.Scenes.Carousel.UI {
                 Direction.None => Vector2.Zero,
                 _ => Vector2.Zero
             } / viewport.Size;
-            if(oldPosition != newPosition) {
-                KeyAnimation(now);
-            }
-            Position = newPosition;
         }
     }
 }
