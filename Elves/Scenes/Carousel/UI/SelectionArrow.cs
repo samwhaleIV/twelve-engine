@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using TwelveEngine;
 using TwelveEngine.UI.Book;
 
@@ -12,8 +10,8 @@ namespace Elves.Scenes.Carousel.UI {
         public SelectionArrow() {
             Texture = Program.Textures.Carousel;
             Offset = new Vector2(-0.5f);
-            Position = new(0.5f,0.5f);
             PositionMode = CoordinateMode.Relative;
+            Position = new(0.5f,0.5f);
         }
 
         public Direction Direction { get; set; } = Direction.Left;
@@ -43,7 +41,7 @@ namespace Elves.Scenes.Carousel.UI {
                 return;
             }
 
-            FloatRectangle computedParentArea = parent.GetStaticComputedArea().Destination;
+            FloatRectangle parentArea = parent.GetStaticComputedArea();
 
             TextureSource = GetTextureSource();
             SizeMode = CoordinateMode.Absolute;
@@ -55,10 +53,10 @@ namespace Elves.Scenes.Carousel.UI {
 
             PositionMode = CoordinateMode.Absolute;
             Position = Direction switch {
-                Direction.Left => new(computedParentArea.Right + gapOffset,computedParentArea.CenterY),
-                Direction.Right => new(computedParentArea.Left - gapOffset,computedParentArea.CenterY),
-                Direction.Up => new(computedParentArea.CenterX,computedParentArea.Bottom + gapOffset),
-                Direction.Down => new(computedParentArea.CenterX,computedParentArea.Top - gapOffset),
+                Direction.Left => new(parentArea.Right + gapOffset,parentArea.CenterY),
+                Direction.Right => new(parentArea.Left - gapOffset,parentArea.CenterY),
+                Direction.Up => new(parentArea.CenterX,parentArea.Bottom + gapOffset),
+                Direction.Down => new(parentArea.CenterX,parentArea.Top - gapOffset),
                 Direction.None => Vector2.Zero,
                 _ => Vector2.Zero
             };

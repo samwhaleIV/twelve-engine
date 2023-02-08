@@ -1,20 +1,23 @@
 ﻿namespace TwelveEngine.UI.Book {
     public struct ElementLayoutData {
 
-        public Vector2 Position, Size, Offset;
+        public Vector2 Position { get; set; }
+        public Vector2 Size { get; set; }
+        public Vector2 Offset { get; set; }
 
-        public float Scale, Rotation;
+        public float Scale { get; set; }
+        public float Rotation { get; set; }
 
-        public Color Color;
+        public Color Color { get; set; }
 
-        public ElementLayoutData() {
-            Offset = Vector2.Zero;
-            Position = Vector2.Zero;
-            Size = Vector2.Zero;
-            Rotation = 0f;
-            Scale = 0f;
-            Color = Color.White;
-        }
+        public static ElementLayoutData Default => new() {
+            Position = Vector2.Zero,
+            Size = Vector2.Zero,
+            Offset = Vector2.Zero,
+            Scale = 0f,
+            Rotation = 0f,
+            Color = Color.White
+        };
 
         public static ElementLayoutData Lerp(ElementLayoutData a,ElementLayoutData b,float amount) {
             return new ElementLayoutData() {

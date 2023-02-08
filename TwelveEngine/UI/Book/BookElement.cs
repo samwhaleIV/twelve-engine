@@ -7,17 +7,16 @@
 
         private ComputedPropertySet ComputedPropertySet { get; set; } = ComputedPropertySet.Empty;
 
-        private ElementLayoutData? oldLayout = null;
-        private ElementLayoutData layout = new();
+        private ElementLayoutData oldLayout = ElementLayoutData.Default;
+        private ElementLayoutData layout = ElementLayoutData.Default;
 
-        public CoordinateMode SizeModeX { get; set; }
-        public CoordinateMode SizeModeY { get; set; }
+        public CoordinateMode SizeModeX { get; set; } = CoordinateMode.Absolute;
+        public CoordinateMode SizeModeY { get; set; } = CoordinateMode.Absolute;
 
-        public CoordinateMode PositionModeX { get; set; }
-        public CoordinateMode PositionModeY { get; set; }
+        public CoordinateMode PositionModeX { get; set; } = CoordinateMode.Absolute;
+        public CoordinateMode PositionModeY { get; set; } = CoordinateMode.Absolute;
 
         public CoordinateMode SizeMode { set { SizeModeX = value; SizeModeY = value; } }
-
         public CoordinateMode PositionMode { set { PositionModeX = value; PositionModeY = value; } }
 
         public Vector2 Size { get => GetSize(); set => SetSize(value); }
@@ -47,32 +46,48 @@
         public bool SmoothStepAnimation { get; set; } = false;
 
         public void SetSize(Vector2 size) {
-            if(SizeModeX == CoordinateMode.Absolute) size.X /= Viewport.Width;
-            if(SizeModeY == CoordinateMode.Absolute) size.Y /= Viewport.Height;
+            if(SizeModeX == CoordinateMode.Absolute) {
+                size.X = Viewport.Width == 0 ? 0 : size.X / Viewport.Width;
+            }
+            if(SizeModeY == CoordinateMode.Absolute) {
+                size.Y = Viewport.Height == 0 ? 0 : size.Y / Viewport.Height;
+            }
             layout.Size = size;
         }
 
         public void SetPosition(Vector2 position) {
-            if(PositionModeX == CoordinateMode.Absolute) position.X /= Viewport.Width;
-            if(PositionModeY == CoordinateMode.Absolute) position.Y /= Viewport.Height;
+            if(PositionModeX == CoordinateMode.Absolute) {
+                position.X = Viewport.Width == 0 ? 0 : position.X / Viewport.Width;
+            }
+            if(PositionModeY == CoordinateMode.Absolute) {
+                position.Y = Viewport.Height == 0 ? 0 : position.Y / Viewport.Height;
+            }
             layout.Position = position;
         }
 
         public Vector2 GetSize() {
             var size = layout.Size;
-            if(SizeModeX == CoordinateMode.Absolute) size.X *= Viewport.Width;
-            if(SizeModeY == CoordinateMode.Absolute) size.Y *= Viewport.Height;
+            if(SizeModeX == CoordinateMode.Absolute) {
+                size.X *= Viewport.Width;
+            }
+            if(SizeModeY == CoordinateMode.Absolute) {
+                size.Y *= Viewport.Height;
+            }
             return size;
         }
 
         public Vector2 GetPosition() {
             var position = layout.Position;
-            if(PositionModeX == CoordinateMode.Absolute) position.X *= Viewport.Width;
-            if(PositionModeY == CoordinateMode.Absolute) position.Y *= Viewport.Height;
+            if(PositionModeX == CoordinateMode.Absolute) {
+                position.X *= Viewport.Width;
+            }
+            if(PositionModeY == CoordinateMode.Absolute) {
+                position.Y *= Viewport.Height;
+            }
             return position;
         }
 
-        public ComputedPropertySet GetStaticComputedArea() => GetComputedArea(layout);
+        public FloatRectangle GetStaticComputedArea() => GetComputedArea(layout).Destination;
         public TimeSpan DefaultAnimationDuration { get; set; } = Book<BookElement>.DefaultAnimationDuration;
 
         private ComputedPropertySet GetComputedArea(ElementLayoutData layout) {
@@ -96,11 +111,7 @@
             if(!AnimationKeyingEnabled) {
                 return;
             }
-            if(oldLayout is not null) {
-                oldLayout = ElementLayoutData.Interpolate(oldLayout.Value,layout,animator.Value,SmoothStepAnimation);
-            } else {
-                oldLayout = layout;
-            }
+            oldLayout = ElementLayoutData.Interpolate(oldLayout,layout,animator.Value,SmoothStepAnimation);
             TimeSpan duration;
             if(overrideAnimationDuration.HasValue) {
                 duration = overrideAnimationDuration.Value;
@@ -123,21 +134,15 @@
         /// </summary>
         public void SkipAnimation() {
             animator.Finish();
+            oldLayout = layout;
         }
 
         protected FloatRectangle Viewport { get; private set; }
 
-        internal void SetViewport(FloatRectangle viewport) {
-            Viewport = viewport;
-        }
+        internal void SetViewport(FloatRectangle viewport) => Viewport = viewport;
 
         private void UpdateComputedArea(TimeSpan now) {
-            ElementLayoutData layout;
-            if(oldLayout is not null) {
-                layout = ElementLayoutData.Interpolate(oldLayout.Value,this.layout,animator.Value,SmoothStepAnimation);
-            } else {
-                layout = this.layout;
-            }
+            ElementLayoutData layout = ElementLayoutData.Interpolate(oldLayout,this.layout,animator.Value,SmoothStepAnimation);
             if(CanUpdate && !InputIsPaused) {
                 OnUpdate?.Invoke(now);
             }
@@ -148,7 +153,7 @@
         /// Update animation interpolation and calculate <see cref="ComputedPropertySet"/>.
         /// </summary>
         /// <param name="now">Current, total elapsed time.</param>
-        public void Update(TimeSpan now) {
+        internal void UpdateAnimatedComputedArea(TimeSpan now) {
             animator.Update(now);
             if(InputIsPaused && animator.IsFinished) {
                 InputIsPaused = false;

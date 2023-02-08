@@ -75,17 +75,16 @@
             newPage.SetTime(now);
             newPage.SetTransitionDuration(TransitionDuration);
 
-            DefaultFocusElement = newPage.Open();
-
             var viewport = GetViewport();
             foreach(var element in Elements) {
                 element.SetViewport(viewport);
             }
-            newPage.Update(viewport);
 
+            DefaultFocusElement = newPage.Open();
+
+            newPage.Update(viewport);
             foreach(var element in Elements) {
-                element.KeyAnimation(now);
-                Update(viewport);
+                element.UpdateAnimatedComputedArea(now);
                 element.SkipAnimation();
             }
 
@@ -138,7 +137,7 @@
             }
             Page?.Update(viewport);
             foreach(var element in Elements) {
-                element.Update(now);
+                element.UpdateAnimatedComputedArea(now);
             }
         }
 
