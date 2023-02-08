@@ -19,7 +19,7 @@ namespace Elves.Scenes.Carousel.UI {
         public BookElement SelectedElement { get; set; } = null;
         public Direction Direction { get; set; } = Direction.Left;
 
-        private Dictionary<Direction,Rectangle> sources = new Dictionary<Direction,Rectangle>() {
+        private readonly Dictionary<Direction,Rectangle> textureSources = new() {
             {Direction.None, Rectangle.Empty},
             {Direction.Left, new(34,55,10,8)},
             {Direction.Right, new(23,55,10,8)},
@@ -27,7 +27,7 @@ namespace Elves.Scenes.Carousel.UI {
             {Direction.Down, new(5,54,8,10)} 
         };
 
-        private Rectangle GetSource() => sources[Direction];
+        private Rectangle GetTextureSource() => textureSources[Direction];
 
         public void Update(float pixelSize,TimeSpan now,FloatRectangle viewport) {
             var parent = SelectedElement;
@@ -42,7 +42,7 @@ namespace Elves.Scenes.Carousel.UI {
 
             FloatRectangle computedParentArea = parent.GetStaticComputedArea(viewport).Destination;
 
-            TextureSource = GetSource();
+            TextureSource = GetTextureSource();
             SizeMode = CoordinateMode.Absolute;
 
             float newScale = 1;

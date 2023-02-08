@@ -109,14 +109,17 @@ namespace Elves {
             } else {
                 save.SetValue(SaveKeys.LastCompletedBattle,(int)ID);
                 if(result == BattleResult.PlayerWon) {
+                    animateProgress = true;
                     save.TryGetInt(SaveKeys.HighestCompletedBattle,out int oldValue,-1);
                     if((int)ID > oldValue) {
-                        animateProgress = true;
                         save.SetValue(SaveKeys.HighestCompletedBattle,(int)ID);
                     }
                 }
                 save.IncrementCounter(result == BattleResult.PlayerWon ? SaveKeys.WinCount : SaveKeys.LoseCount);
                 Program.Save.TrySave();
+            }
+            if((int)ID == ElfManifest.Count - 1) {
+                throw new NotImplementedException();
             }
             scene.TransitionOut(new() {
                 Generator = animateProgress ? GetCarouselMenuAnimatedProgress : GetCarouselMenu,
