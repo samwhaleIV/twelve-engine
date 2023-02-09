@@ -1,4 +1,4 @@
-﻿using Elves.Scenes.Carousel.UI.Pages;
+﻿using Elves.Settings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -9,13 +9,17 @@ using TwelveEngine.UI.Book;
 namespace Elves.Scenes.Carousel.UI {
     public sealed class CarouselUI:SpriteBook {
 
+        protected override void ResetElement(SpriteElement element) {
+            element.Flags = ElementFlags.None;
+        }
+
         private static readonly Rectangle LeftButtonSource = new(65,5,20,20);
         private static readonly Rectangle RightButtonSource = new(88,5,20,20);
 
         private static readonly Rectangle PlayButtonSource = new(59,28,36,20);
-        private static readonly Rectangle BackButtonSource = new(5,29,46,20);
+        private static readonly Rectangle BackButtonSource = new(5,29,47,20);
 
-        private static readonly Rectangle SettingsButtonSource = new(4,5,58,20);
+        private static readonly Rectangle SettingsButtonSource = new(4,5,55,20);
 
         private readonly CarouselScene3D scene;
 
@@ -47,8 +51,8 @@ namespace Elves.Scenes.Carousel.UI {
             return button;
         }
 
-        public CarouselPage DefaultPage { get; private set; }
-        public CarouselPage SettingsPage { get; private set; }
+        public DefaultPage DefaultPage { get; private set; }
+        public SettingsPage SettingsPage { get; private set; }
 
         private void Initialize() {
 
@@ -60,7 +64,11 @@ namespace Elves.Scenes.Carousel.UI {
             PlayButton = CreateButton(PlayButtonSource,ButtonAction.Play);
 
             DefaultPage = new DefaultPage() { Scene = scene, UI = this };
-            SettingsPage = new SettingsPage() { Scene = scene, UI = this };
+
+            SettingsPage = new SettingsPage();
+            foreach(var element in SettingsPage.GetElements()) {
+                AddElement(element);
+            }
 
             BackButton.FocusSet = new() {
                 Right = SettingsButton,

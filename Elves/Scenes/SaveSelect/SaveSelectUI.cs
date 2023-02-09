@@ -37,7 +37,7 @@ namespace Elves.Scenes.SaveSelect {
             });
 
             SignHereLabel = AddElement(new SpriteElement() {
-                TextureSource = new(141,50,83,20),
+                TextureSource = new(141,50,81,20),
                 Offset = (new(-0.5f,-0.5f)),
                 PositionMode = CoordinateMode.Relative,
                 Position = new(0.5f,1/5f),

@@ -13,15 +13,10 @@ namespace Elves.Scenes.Battle.UI {
         private readonly Interpolator textPositionInterpolator = new(Constants.BattleUI.TagTextMovement);
         private readonly Interpolator elementDisplayInterpolator = new(Constants.BattleUI.TagMovement);
 
-        private StringBuilder _oldText = new(DEFAULT_BUFFER_SIZE);
-        private StringBuilder _currentText = new(DEFAULT_BUFFER_SIZE);
+        public StringBuilder OldText { get; private set; } = new(DEFAULT_BUFFER_SIZE);
+        public StringBuilder CurrentText { get; private set; } = new(DEFAULT_BUFFER_SIZE);
 
-        public StringBuilder OldText => _oldText;
-        public StringBuilder CurrentText => _currentText;
-
-        private void SwapTexts() {
-            (_currentText, _oldText) = (_oldText, _currentText);
-        }
+        private void SwapTexts() => (CurrentText, OldText) = (OldText, CurrentText);
 
         public void Show(TimeSpan now) {
             if(IsShown) {
@@ -90,9 +85,9 @@ namespace Elves.Scenes.Battle.UI {
                 return;
             }
             if(!TextAnimationIsFinished) {
-                font.DrawCentered(_oldText,Vector2.Floor(oldTextPosition),scale,Color.White);
+                font.DrawCentered(OldText,Vector2.Floor(oldTextPosition),scale,Color.White);
             }
-            font.DrawCentered(_currentText,Vector2.Floor(currentTextPosition),scale,Color.White);
+            font.DrawCentered(CurrentText,Vector2.Floor(currentTextPosition),scale,Color.White);
         }
     }
 }

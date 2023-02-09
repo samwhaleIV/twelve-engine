@@ -3,8 +3,11 @@ using TwelveEngine;
 using TwelveEngine.Font;
 using TwelveEngine.UI.Book;
 
-namespace Elves.Scenes.Carousel.UI.Pages {
-    public sealed class DefaultPage:CarouselPage {
+namespace Elves.Scenes.Carousel.UI {
+    public sealed class DefaultPage:BookPage<SpriteElement> {
+
+        public CarouselUI UI { get; set; }
+        public CarouselScene3D Scene { get; set; }
 
         public override void Close() {
             UI.OnButtonActivated -= UI_OnButtonActivated;

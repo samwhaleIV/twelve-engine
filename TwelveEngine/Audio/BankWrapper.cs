@@ -49,7 +49,7 @@ namespace TwelveEngine.Audio {
 
         public void LogEvents() {
             ValidateLoadState();
-            StringBuilder sb = new();
+           var lease = Pools.StringBuilder.Lease(out StringBuilder sb);
 
             sb.Append($"Loaded bank '{File}'.");
 
@@ -75,6 +75,8 @@ namespace TwelveEngine.Audio {
             }
 
             Logger.WriteLine(sb.ToString(),LoggerLabel.Audio);
+
+            Pools.StringBuilder.Return(lease);
         }
     }
 }

@@ -39,9 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\CarouselUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\MoveDirection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\CarouselPage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\Pages\DefaultPage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\Pages\SettingsPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\DefaultPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\SelectionArrow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselItem.cs" />
@@ -56,6 +54,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DVDCornerTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsPage.cs" />
     <Compile Include="..\Elves\Scenes\SaveSelect\SaveSelectPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\Tag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\TagDrawPage.cs" />
@@ -87,5 +86,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\Battle\" />
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\" />
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Settings\" />
   </ItemGroup>
 </Project>
