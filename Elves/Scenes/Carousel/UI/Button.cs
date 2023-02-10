@@ -34,7 +34,7 @@ namespace Elves.Scenes.Carousel.UI {
             if(Scale == newScale && Rotation == newRotation) {
                 return;
             }
-            KeyAnimation(now);
+            KeyFrame(now);
             Scale = newScale;
             Rotation = newRotation;
         }

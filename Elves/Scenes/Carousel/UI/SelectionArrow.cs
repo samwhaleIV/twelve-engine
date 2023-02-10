@@ -10,8 +10,7 @@ namespace Elves.Scenes.Carousel.UI {
         public SelectionArrow() {
             Texture = Program.Textures.Carousel;
             Offset = new Vector2(-0.5f);
-            PositionMode = CoordinateMode.Relative;
-            Position = new(0.5f,0.5f);
+            Depth = Constants.Depth.Middle;
         }
 
         public Direction Direction { get; set; } = Direction.Left;
@@ -31,7 +30,7 @@ namespace Elves.Scenes.Carousel.UI {
 
         public void Update(BookElement parent,float pixelSize,TimeSpan now) {
             if(parent != oldParent || (parent is not null && parent.Scale != oldParentScale)) {
-                KeyAnimation(now);
+                KeyFrame(now);
             }
             oldParentScale = parent?.Scale ?? float.NaN;
             oldParent = parent;

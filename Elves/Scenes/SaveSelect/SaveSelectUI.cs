@@ -12,13 +12,18 @@ namespace Elves.Scenes.SaveSelect {
         public SaveSelectUI(SaveSelectScene scene):base(scene) {
             this.scene = scene;
 
+            OnPageTransitionEnd += SaveSelectUI_OnPageTransitionEnd;
+            OnPageTransitionStart += SaveSelectUI_OnPageTransitionStart;
+
             BackButton = AddButton(0,123,ButtonImpulse.Back);
             PlayButton = AddButton(17,123,ButtonImpulse.Play);
+
             AcceptButton = AddButton(0,140,ButtonImpulse.Accept);
             DeleteButton = AddButton(17,140,ButtonImpulse.Delete);
 
             BackButton.OnActivated += ButtonPressed;
             PlayButton.OnActivated += ButtonPressed;
+
             AcceptButton.OnActivated += ButtonPressed;
             DeleteButton.OnActivated += ButtonPressed;
 
@@ -50,6 +55,22 @@ namespace Elves.Scenes.SaveSelect {
 
             SetFirstPage(TagSelectPage);
             scene.OnInputActivated += FocusDefault;
+        }
+
+        private void SaveSelectUI_OnPageTransitionStart() {
+            foreach(var element in Elements) {
+                element.KeyFrame(Now,TransitionDuration);
+                element.Flags = ElementFlags.None;
+                element.Scale = 0;
+                element.ClearKeyFocus();
+                element.DisableKeyFrames();
+            }
+        }
+
+        private void SaveSelectUI_OnPageTransitionEnd() {
+            foreach(var element in Elements) {
+                element.EnableKeyFrames();
+            }
         }
 
         public readonly SaveSelectPage TagSelectPage, TagContextPage, TagDrawPage;

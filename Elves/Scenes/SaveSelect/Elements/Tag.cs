@@ -71,7 +71,7 @@ namespace Elves.Scenes.SaveSelect {
                 return;
             }
             if(blipAnimator.IsFinished) {
-                KeyAnimation(now);
+                KeyFrame(now);
             }
             Scale = newScale;
         }

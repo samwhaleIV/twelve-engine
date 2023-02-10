@@ -22,16 +22,15 @@
         public TimeSpan TransitionDuration { get; set; } = DefaultTransitionDuration;
         private readonly Interpolator pageTransitionAnimator = new(DefaultTransitionDuration);
 
-        /// <summary>
-        /// Flag controlled by <c>UnlockPageControls</c> and <c>LockElementsForTransition</c>. Checked in <c>Update</c>.
-        /// </summary>
-        private bool _elementsAreLocked = false;
+        private bool _transitionEnded = true;
 
         protected override bool GetContextTransitioning() {
             return !pageTransitionAnimator.IsFinished;
         }
 
         protected override IEnumerable<BookElement> GetElements() => Elements;
+
+        protected event Action OnPageTransitionStart, OnPageTransitionEnd;
 
         public void SetPage(BookPage<TElement> newPage) {
             if(newPage is null) {
@@ -46,20 +45,27 @@
                 throw new InvalidOperationException("Cannot set a page during a transition.");
             }
             pageTransitionAnimator.Duration = TransitionDuration;
+            
+            OnPageTransitionStart?.Invoke();
 
             var now = Now;
-            LockElementsForTransition(now);
+            ResetInteractionState();
             pageTransitionAnimator.Reset(now);
+
+            var viewport = GetViewport();
 
             oldPage.SetTime(now);
             oldPage.SetTransitionDuration(TransitionDuration);
+            oldPage.SetViewport(viewport);
             oldPage.Close();
 
             newPage.SetTime(now);
             newPage.SetTransitionDuration(TransitionDuration);
-
+            newPage.SetViewport(viewport);
             DefaultFocusElement = newPage.Open();
+
             Page = newPage;
+            _transitionEnded = false;
         }
 
         public void SetFirstPage(BookPage<TElement> newPage) {
@@ -79,10 +85,10 @@
             foreach(var element in Elements) {
                 element.SetViewport(viewport);
             }
-
+            newPage.SetViewport(viewport);
             DefaultFocusElement = newPage.Open();
+            newPage.Update();
 
-            newPage.Update(viewport);
             foreach(var element in Elements) {
                 element.UpdateAnimatedComputedArea(now);
                 element.SkipAnimation();
@@ -111,65 +117,32 @@
             return element;
         }
 
-        /// <summary>
-        /// Ends the page transition period and allows interactable elements to be pressed and selected.
-        /// </summary>
-        private void UnlockPageControls() {
-            foreach(var element in Elements) {
-                element.EnableKeying();
-            }
-            if(DefaultFocusElement is null) {
-                Logger.WriteLine($"UI page has been opened without a default keyboard focus element!",LoggerLabel.UI); 
-            }
-            FocusDefault();
-            _elementsAreLocked = false;
-        }
-
         private void Update(FloatRectangle viewport) {
             var now = Now;
             pageTransitionAnimator.Update(now);
-            if(_elementsAreLocked && !IsTransitioning) {
-                UnlockPageControls();
+            if(!_transitionEnded && !IsTransitioning) {
+                _transitionEnded = true;
+                OnPageTransitionEnd?.Invoke();
+                FocusDefault();
             }
-            Page?.SetTime(now);
-            foreach(var element in Elements) {
-                element.SetViewport(viewport);
+            if(Page is null) {
+                foreach(var element in Elements) {
+                    element.SetViewport(viewport);
+                }
+            } else {
+                Page.SetTime(now);
+                foreach(var element in Elements) {
+                    element.SetViewport(viewport);
+                }
+                Page.SetViewport(viewport);
+                Page.Update();
             }
-            Page?.Update(viewport);
             foreach(var element in Elements) {
                 element.UpdateAnimatedComputedArea(now);
             }
         }
 
         public void Update() => Update(GetViewport());
-
-        /// <summary>
-        /// Called on every element when a page is closed. <c>TElement</c> is provided in a key locked state (<c>Element.LockKeyAnimation</c>) and with <c>null</c> focus directives (<c>Element.ClearKeyFocus</c>).
-        /// </summary>
-        /// <param name="element">The <c>TElement</c> that needs to be reset.</param>
-        protected virtual void ResetElement(TElement element) {
-            element.Scale = 0;
-            element.Flags = ElementFlags.None;
-        }
-
-        private void LockAndResetElement(TimeSpan now,TElement element) {
-            element.KeyAnimation(now,TransitionDuration);
-            element.DisableKeying();
-            element.ClearKeyFocus();
-            ResetElement(element);
-        }
-
-        /// <summary>
-        /// Hides and resets all elements to a default/non-interactable state. Prevents new animation keying or modifying current selected or pressed element. Clears interaction state.
-        /// </summary>
-        /// <param name="now">Current total time.</param>
-        private void LockElementsForTransition(TimeSpan now) {
-            foreach(var element in Elements) {
-                LockAndResetElement(now,element);
-            }
-            ResetInteractionState();
-            _elementsAreLocked = true;
-        }
 
         protected override bool BackButtonPressed() {
             if(Page is null) {

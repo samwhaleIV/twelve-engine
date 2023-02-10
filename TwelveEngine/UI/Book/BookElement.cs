@@ -107,7 +107,7 @@
         /// Call before changing element layout data to animate the changes.
         /// </summary>
         /// <param name="now">Current, total elapsed time.</param>
-        public void KeyAnimation(TimeSpan now,TimeSpan? overrideAnimationDuration = null) {
+        public void KeyFrame(TimeSpan now,TimeSpan? overrideAnimationDuration = null) {
             if(!AnimationKeyingEnabled) {
                 return;
             }
@@ -126,8 +126,8 @@
 
         private bool AnimationKeyingEnabled = true;
 
-        internal void DisableKeying() => AnimationKeyingEnabled = false;
-        internal void EnableKeying() => AnimationKeyingEnabled = true;
+        public void DisableKeyFrames() => AnimationKeyingEnabled = false;
+        public void EnableKeyFrames() => AnimationKeyingEnabled = true;
 
         /// <summary>
         /// Skip the remainder of the current animation. Useful if you need to immediately hide an element or position it off-screen.

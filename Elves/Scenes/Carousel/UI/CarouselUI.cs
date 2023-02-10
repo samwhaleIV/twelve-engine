@@ -9,10 +9,6 @@ using TwelveEngine.UI.Book;
 namespace Elves.Scenes.Carousel.UI {
     public sealed class CarouselUI:SpriteBook {
 
-        protected override void ResetElement(SpriteElement element) {
-            element.Flags = ElementFlags.None;
-        }
-
         private static readonly Rectangle LeftButtonSource = new(65,5,20,20);
         private static readonly Rectangle RightButtonSource = new(88,5,20,20);
 
@@ -54,22 +50,7 @@ namespace Elves.Scenes.Carousel.UI {
         public DefaultPage DefaultPage { get; private set; }
         public SettingsPage SettingsPage { get; private set; }
 
-        private void Initialize() {
-
-            BackButton = CreateButton(BackButtonSource,ButtonAction.Menu);
-            SettingsButton = CreateButton(SettingsButtonSource,ButtonAction.Settings);
-
-            LeftButton = CreateButton(LeftButtonSource,ButtonAction.Left);
-            RightButton = CreateButton(RightButtonSource,ButtonAction.Right);
-            PlayButton = CreateButton(PlayButtonSource,ButtonAction.Play);
-
-            DefaultPage = new DefaultPage() { Scene = scene, UI = this };
-
-            SettingsPage = new SettingsPage();
-            foreach(var element in SettingsPage.GetElements()) {
-                AddElement(element);
-            }
-
+        private void SetFocusTree() {
             BackButton.FocusSet = new() {
                 Right = SettingsButton,
                 Down = LeftButton
@@ -92,10 +73,35 @@ namespace Elves.Scenes.Carousel.UI {
                 Left = LeftButton,
                 Right = RightButton
             };
+        }
+
+        private void Initialize() {
+
+            BackButton = CreateButton(BackButtonSource,ButtonAction.Menu);
+            SettingsButton = CreateButton(SettingsButtonSource,ButtonAction.Settings);
+
+            LeftButton = CreateButton(LeftButtonSource,ButtonAction.Left);
+            RightButton = CreateButton(RightButtonSource,ButtonAction.Right);
+            PlayButton = CreateButton(PlayButtonSource,ButtonAction.Play);
+
+            DefaultPage = new DefaultPage() { Scene = scene, UI = this };
+
+            SettingsPage = new SettingsPage();
+            SettingsPage.OnBack += SettingsPage_OnBack;
+
+            foreach(var element in SettingsPage.GetElements()) {
+                AddElement(element);
+            }
 
             SelectionArrow = AddElement<SelectionArrow>();
-
             Buttons = ImmutableList.Create(BackButton,SettingsButton,LeftButton,RightButton,PlayButton);
+
+            SetFocusTree();
+        }
+
+        private void SettingsPage_OnBack() {
+            DefaultPage.FromSettingsPage = true;
+            SetPage(DefaultPage);
         }
 
         public event Action<ButtonAction> OnButtonActivated;

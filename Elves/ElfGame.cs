@@ -18,7 +18,7 @@ namespace Elves {
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
         /// </summary>
         /// <returns>The start state for the game.</returns>
-        public static GameState Start() => GetSplashMenu();
+        public static GameState Start() => GetCarouselMenu();
 
         private static GameState GetCarouselMenuAnimatedProgress() {
             var state = new CarouselMenu(animateLastBattleProgress: true);

@@ -26,7 +26,7 @@ namespace Elves.Scenes.SaveSelect {
             bool isEven = false;
             BookElement lastButton = null;
             foreach(var button in buttons) {
-                button.KeyAnimation(now,buttonShiftTime);
+                button.KeyFrame(now,buttonShiftTime);
                 if(disposedButtons.Contains(button)) {
                     disposedButtons.Remove(button);
                 }
@@ -44,7 +44,7 @@ namespace Elves.Scenes.SaveSelect {
                 buttonList.Add(button);
             }
             foreach(var button in disposedButtons) {
-                button.KeyAnimation(now,buttonShiftTime);
+                button.KeyFrame(now,buttonShiftTime);
                 button.Scale = 0;
             }
             disposedButtons.Clear();
@@ -149,31 +149,30 @@ namespace Elves.Scenes.SaveSelect {
             }
         }
 
-        private void UpdateButtons(FloatRectangle viewport) {
-
+        private void UpdateButtons() {
             int buttonCount = buttonList.Count;
 
             float height = tag.Size.Y;
-            float centerX = viewport.Width * 0.5f + height * 0.5f;
-            float buttonY = viewport.Height * (5 / 7f);
+            float centerX = Viewport.Width * 0.5f + height * 0.5f;
+            float buttonY = Viewport.Height * (5 / 7f);
             float centerOffset = height * 0.05f;
             float totalWidth = height * buttonCount + centerOffset * (buttonCount - 1);
             float xStart = centerX - totalWidth * 0.5f;
 
             for(int i = 0;i<buttonCount;i++) {
                 var button = buttonList[i];
-                button.Position = new Vector2(xStart + (centerOffset + height) * i,buttonY) / viewport.Size;
+                button.Position = new Vector2(xStart + (centerOffset + height) * i,buttonY) / Viewport.Size;
                 button.Size = new(height);
             }
         }
 
-        public override void Update(FloatRectangle viewport) {
+        public override void Update() {
             tag.Position = new(0.5f,2/7f);
             tag.Rotation = 0f;
-            float height = viewport.Height * (1 / 3f);
+            float height = Viewport.Height * (1 / 3f);
             tag.Size = new(tag.GetWidth(height),height);
 
-            UpdateButtons(viewport);
+            UpdateButtons();
         }
     }
 }

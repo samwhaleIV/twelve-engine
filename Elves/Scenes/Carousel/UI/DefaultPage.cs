@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FMOD.Studio;
+using Microsoft.Xna.Framework;
 using TwelveEngine;
 using TwelveEngine.Font;
 using TwelveEngine.UI.Book;
@@ -12,25 +13,45 @@ namespace Elves.Scenes.Carousel.UI {
         public override void Close() {
             UI.OnButtonActivated -= UI_OnButtonActivated;
             Scene.OnRender.Remove(renderTextHandle);
+            foreach(var button in UI.Buttons) {
+                button.KeyFrame(Now,TransitionDuration);
+                button.Scale = 0;
+                button.Flags = ElementFlags.None;
+            }
+            UI.SelectionArrow.KeyFrame(Now,TransitionDuration);
+            UI.SelectionArrow.Scale = 0;
+            UI.SelectionArrow.Flags = ElementFlags.None;
         }
 
         private int renderTextHandle;
+
+        public bool FromSettingsPage { get; set; } = false;
 
         public override BookElement Open() {
 
             UI.OnButtonActivated += UI_OnButtonActivated;
 
             foreach(var button in UI.Buttons) {
+                button.KeyFrame(Now,TransitionDuration);
                 button.Scale = 1;
                 button.Flags = ElementFlags.UpdateAndInteract;
             }
 
-            UI.SelectionArrow.CanUpdate = true;
-            UI.SelectionArrow.Scale = 1;
+            var selectionArrow = UI.SelectionArrow;
+            selectionArrow.Flags = ElementFlags.Update;
 
             renderTextHandle = Scene.OnRender.Add(Render,EventPriority.Last);
 
-            return UI.PlayButton;
+            BookElement focusElement;
+
+            if(!FromSettingsPage) {
+                selectionArrow.PositionMode = CoordinateMode.Relative;
+                selectionArrow.Position = new(0.5f,0.5f);
+                focusElement = UI.PlayButton;
+            } else {
+                focusElement = UI.SettingsButton;
+            }
+            return focusElement;
         }
 
         private void UI_OnButtonActivated(ButtonAction buttonAction) {
@@ -45,7 +66,7 @@ namespace Elves.Scenes.Carousel.UI {
                     Scene.StartBattle();
                     break;
                 case ButtonAction.Settings:
-                    //TODO
+                    UI.SetPage(UI.SettingsPage);
                     return;
                 case ButtonAction.Menu:
                     Scene.BackToMenu();
@@ -90,14 +111,14 @@ namespace Elves.Scenes.Carousel.UI {
             selectionArrow.Update(selectedElement,pixelSize,Now);
         }
 
-        public override void Update(FloatRectangle viewport) {
+        public override void Update() {
             float pixelSize = Scene.UIScale;
             float topY = 1/8f, bottomY = 7/8f;
 
             float buttonEdgeMargin = pixelSize * 2;
 
             elfNameScale = pixelSize * Constants.UI.CarouselElfNameScale;
-            elfNameCenter = new Vector2(0.5f,topY) * viewport.Size;
+            elfNameCenter = new Vector2(0.5f,topY) * Viewport.Size;
 
             foreach(Button button in UI.Buttons) {
                 button.SizeByPixels(pixelSize);
@@ -109,13 +130,13 @@ namespace Elves.Scenes.Carousel.UI {
                 leftButton.PositionModeX = CoordinateMode.Absolute;
                 leftButton.PositionModeY = CoordinateMode.Relative;
                 leftButton.Offset = new(-1,-0.5f);
-                leftButton.Position = new(viewport.Center.X - directionButtonOffset,bottomY);
+                leftButton.Position = new(Viewport.Center.X - directionButtonOffset,bottomY);
 
             var rightButton = UI.RightButton;
                 rightButton.PositionModeX = CoordinateMode.Absolute;
                 rightButton.PositionModeY = CoordinateMode.Relative;
                 rightButton.Offset = new(0,-0.5f);
-                rightButton.Position = new(viewport.Center.X + directionButtonOffset,bottomY);
+                rightButton.Position = new(Viewport.Center.X + directionButtonOffset,bottomY);
 
             UI.PlayButton.Position = new(0.5f,bottomY);
 
@@ -129,7 +150,7 @@ namespace Elves.Scenes.Carousel.UI {
                 settingsButton.PositionModeX = CoordinateMode.Absolute;
                 settingsButton.PositionModeY = CoordinateMode.Relative;
                 settingsButton.Offset = new(-1,-0.5f);
-                settingsButton.Position = new(viewport.Width-buttonEdgeMargin,0.5f);
+                settingsButton.Position = new(Viewport.Width-buttonEdgeMargin,0.5f);
 
             UpdateSelectionArrow(pixelSize);
         }

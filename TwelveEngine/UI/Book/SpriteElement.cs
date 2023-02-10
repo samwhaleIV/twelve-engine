@@ -54,7 +54,7 @@
             if(Scale == newScale) {
                 return;
             }
-            KeyAnimation(now);
+            KeyFrame(now);
             Scale = newScale;
         }
 

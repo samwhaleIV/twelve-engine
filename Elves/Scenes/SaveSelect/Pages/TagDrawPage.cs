@@ -38,10 +38,10 @@ namespace Elves.Scenes.SaveSelect {
             return button;
         }
 
-        public override void Update(FloatRectangle viewport) {
+        public override void Update() {
             tag.Position = new(0.5f,1/2f);
             tag.Rotation = 0f;
-            float tagHeight = viewport.Height * (1 / 3f);
+            float tagHeight = Viewport.Height * (1 / 3f);
             tag.Size = new(tagHeight*tag.HeightToWidth,tagHeight);
 
             var label = UI.SignHereLabel;
