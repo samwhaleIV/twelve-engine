@@ -23,7 +23,16 @@ namespace Elves.Scenes.Carousel.UI {
 
         public CarouselUI(CarouselScene3D scene):base(scene) {
             this.scene = scene;
+            OnPageTransitionStart +=CarouselUI_OnPageTransitionStart;
             Initialize();
+        }
+
+        private void CarouselUI_OnPageTransitionStart() {
+            foreach(var button in Buttons) {
+                button.ClearKeyFocus();
+                button.CanInteract = false;
+                button.CanUpdate = false;
+            }
         }
 
         public Button BackButton { get; private set; }
@@ -50,7 +59,7 @@ namespace Elves.Scenes.Carousel.UI {
         public DefaultPage DefaultPage { get; private set; }
         public SettingsPage SettingsPage { get; private set; }
 
-        private void SetFocusTree() {
+        public void SetDefaultFocusTree() {
             BackButton.FocusSet = new() {
                 Right = SettingsButton,
                 Down = LeftButton
@@ -78,6 +87,7 @@ namespace Elves.Scenes.Carousel.UI {
         private void Initialize() {
 
             BackButton = CreateButton(BackButtonSource,ButtonAction.Menu);
+            BackButton.Depth = Constants.Depth.MiddleCloser;
             SettingsButton = CreateButton(SettingsButtonSource,ButtonAction.Settings);
 
             LeftButton = CreateButton(LeftButtonSource,ButtonAction.Left);
@@ -86,8 +96,9 @@ namespace Elves.Scenes.Carousel.UI {
 
             DefaultPage = new DefaultPage() { Scene = scene, UI = this };
 
-            SettingsPage = new SettingsPage();
+            SettingsPage = new SettingsPage(BackButton);
             SettingsPage.OnBack += SettingsPage_OnBack;
+            SettingsPage.OnUpdate += UpdateSelectionArrow;
 
             foreach(var element in SettingsPage.GetElements()) {
                 AddElement(element);
@@ -95,12 +106,10 @@ namespace Elves.Scenes.Carousel.UI {
 
             SelectionArrow = AddElement<SelectionArrow>();
             Buttons = ImmutableList.Create(BackButton,SettingsButton,LeftButton,RightButton,PlayButton);
-
-            SetFocusTree();
         }
 
         private void SettingsPage_OnBack() {
-            DefaultPage.FromSettingsPage = true;
+            DefaultPage.OpeningFromSettingsPage = true;
             SetPage(DefaultPage);
         }
 
@@ -110,5 +119,31 @@ namespace Elves.Scenes.Carousel.UI {
 
         protected override TimeSpan GetCurrentTime() => scene.Now;
         protected override FloatRectangle GetViewport() => new(scene.Viewport);
+
+        public void UpdateSelectionArrow() {
+            if(SelectedElement is null) {
+                SelectionArrow.Update(SelectedElement,scene.UIScale,Now);
+                return;
+            }
+            Direction direction = Direction.None;
+            if(
+                SelectedElement == LeftButton ||
+                SelectedElement == RightButton ||
+                SelectedElement == PlayButton
+            ) {
+                direction = Direction.Down;
+            } else if(
+                SelectedElement == BackButton
+            ) {
+                direction = Direction.Left;
+            } else if(
+                SelectedElement == SettingsButton
+            ) {
+                direction = Direction.Right;
+            }
+            SelectionArrow.Direction = direction;
+
+            SelectionArrow.Update(SelectedElement,scene.UIScale,Now);
+        }
     }
 }
