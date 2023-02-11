@@ -1,21 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using TwelveEngine;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Settings {
 
-    public sealed class SettingsPage:BookPage<SpriteElement> {
+    public sealed class SettingsPage<TBackButton>:BookPage<SpriteElement> where TBackButton:SpriteElement,ISettingsBackButton {
 
         public event Action OnUpdate, OnBack;
 
-        private readonly SpriteElement backButton;
+        private readonly TBackButton backButton;
 
-        public SettingsPage(SpriteElement backButton) {
+        public SettingsPage(TBackButton backButton) {
             this.backButton = backButton;
-
             settingsPhone = new() {
                 Scale = 1,
                 SmoothStepAnimation = true,
@@ -45,6 +43,7 @@ namespace Elves.Settings {
         }
 
         public override void Close() {
+            backButton.OnBackAction -= BackButton_OnBackAction;
             settingsPhone.KeyFrame(Now,TransitionDuration);
 
             settingsPhone.Scale = 1;
@@ -60,6 +59,7 @@ namespace Elves.Settings {
             backButton.SizeMode = CoordinateMode.Absolute;
             backButton.Offset = new(-0.5f,-0.5f);
             backButton.Flags = ElementFlags.UpdateAndInteract;
+            backButton.OnBackAction += BackButton_OnBackAction;
             Update();
 
             settingsPhone.Scale = 1;
@@ -70,6 +70,10 @@ namespace Elves.Settings {
             settingsPhone.KeyFrame(Now,TransitionDuration);
 
             return backButton; //todo return first focus element.
+        }
+
+        private void BackButton_OnBackAction() {
+            OnBack?.Invoke();
         }
 
         public float Scale { get; set; } = 0.98f;

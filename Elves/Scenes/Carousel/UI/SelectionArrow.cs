@@ -10,7 +10,7 @@ namespace Elves.Scenes.Carousel.UI {
         public SelectionArrow() {
             Texture = Program.Textures.Carousel;
             Offset = new Vector2(-0.5f);
-            Depth = Constants.Depth.Middle;
+            Depth = Constants.Depth.MiddleCloser;
         }
 
         public Direction Direction { get; set; } = Direction.Left;
@@ -19,7 +19,7 @@ namespace Elves.Scenes.Carousel.UI {
             {Direction.None, Rectangle.Empty},
             {Direction.Left, new(34,55,10,8)},
             {Direction.Right, new(23,55,10,8)},
-            {Direction.Up, new(8,10,14,54)},
+            {Direction.Up, new(14,54,8,10)},
             {Direction.Down, new(5,54,8,10)} 
         };
 

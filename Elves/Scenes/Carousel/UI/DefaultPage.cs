@@ -67,7 +67,7 @@ namespace Elves.Scenes.Carousel.UI {
                 case ButtonAction.Right: Scene.RotateCarousel(MoveDirection.Right); return;
                 case ButtonAction.Play: Scene.StartBattle(); return;
                 case ButtonAction.Settings: UI.SetPage(UI.SettingsPage); return;
-                case ButtonAction.Menu: Scene.BackToMenu(); return;
+                case ButtonAction.Back: Scene.BackToMenu(); return;
             }
         }
 

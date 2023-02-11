@@ -23,7 +23,7 @@ namespace Elves.Scenes.Carousel.UI {
 
         public CarouselUI(CarouselScene3D scene):base(scene) {
             this.scene = scene;
-            OnPageTransitionStart +=CarouselUI_OnPageTransitionStart;
+            OnPageTransitionStart += CarouselUI_OnPageTransitionStart;
             Initialize();
         }
 
@@ -57,7 +57,7 @@ namespace Elves.Scenes.Carousel.UI {
         }
 
         public DefaultPage DefaultPage { get; private set; }
-        public SettingsPage SettingsPage { get; private set; }
+        public SettingsPage<Button> SettingsPage { get; private set; }
 
         public void SetDefaultFocusTree() {
             BackButton.FocusSet = new() {
@@ -86,7 +86,7 @@ namespace Elves.Scenes.Carousel.UI {
 
         private void Initialize() {
 
-            BackButton = CreateButton(BackButtonSource,ButtonAction.Menu);
+            BackButton = CreateButton(BackButtonSource,ButtonAction.Back);
             BackButton.Depth = Constants.Depth.MiddleCloser;
             SettingsButton = CreateButton(SettingsButtonSource,ButtonAction.Settings);
 
@@ -96,7 +96,7 @@ namespace Elves.Scenes.Carousel.UI {
 
             DefaultPage = new DefaultPage() { Scene = scene, UI = this };
 
-            SettingsPage = new SettingsPage(BackButton);
+            SettingsPage = new SettingsPage<Button>(BackButton);
             SettingsPage.OnBack += SettingsPage_OnBack;
             SettingsPage.OnUpdate += UpdateSelectionArrow;
 
@@ -125,23 +125,22 @@ namespace Elves.Scenes.Carousel.UI {
                 SelectionArrow.Update(SelectedElement,scene.UIScale,Now);
                 return;
             }
-            Direction direction = Direction.None;
-            if(
-                SelectedElement == LeftButton ||
-                SelectedElement == RightButton ||
-                SelectedElement == PlayButton
-            ) {
-                direction = Direction.Down;
-            } else if(
-                SelectedElement == BackButton
-            ) {
-                direction = Direction.Left;
-            } else if(
-                SelectedElement == SettingsButton
-            ) {
-                direction = Direction.Right;
+            var selectedElementCenter = SelectedElement.ComputedArea.Center / GetViewport().Size;
+
+            if(Page == SettingsPage) {
+                if(SelectedElement == BackButton) {
+                    SelectionArrow.Direction = Direction.Up;
+                } else {
+                    SelectionArrow.Direction = Direction.Left;
+                }
+            } else {
+                SelectionArrow.Direction = selectedElementCenter switch {
+                    { X: < 1 / 3f } => Direction.Left,
+                    { X: > 2 / 3f } => Direction.Right,
+                    { Y: > 1 / 2f } => Direction.Down,
+                    _ => Direction.Up
+                };
             }
-            SelectionArrow.Direction = direction;
 
             SelectionArrow.Update(SelectedElement,scene.UIScale,Now);
         }

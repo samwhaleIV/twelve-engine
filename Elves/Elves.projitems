@@ -54,6 +54,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\SplashMenuUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Test\DVDCornerTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ISettingsBackButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingsPage.cs" />
     <Compile Include="..\Elves\Scenes\SaveSelect\SaveSelectPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\Tag.cs" />
@@ -86,6 +87,5 @@
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\Battle\" />
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\" />
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Settings\" />
   </ItemGroup>
 </Project>

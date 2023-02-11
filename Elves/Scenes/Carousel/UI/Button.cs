@@ -1,15 +1,25 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Elves.Settings;
+using Microsoft.Xna.Framework;
 using System;
 using TwelveEngine;
 using TwelveEngine.UI;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.Carousel.UI {
-    public sealed class Button:SpriteElement, IEndpoint<ButtonAction> {
+    public sealed class Button:SpriteElement, IEndpoint<ButtonAction>, ISettingsBackButton {
 
         public ButtonAction GetEndPointValue() => Action;
-        public void FireActivationEvent(ButtonAction value) => OnActivated?.Invoke(value);
+
+        public void FireActivationEvent(ButtonAction value) {
+            OnActivated?.Invoke(value);
+            if(value != ButtonAction.Back) {
+                return;
+            }
+            OnBackAction?.Invoke();
+        }
+
         public event Action<ButtonAction> OnActivated;
+        public event Action OnBackAction;
 
         public ButtonAction Action { get; init; }
 
