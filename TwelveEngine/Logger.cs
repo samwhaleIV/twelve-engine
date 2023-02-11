@@ -7,7 +7,6 @@ namespace TwelveEngine {
     public static class Logger {
 
         private static StreamWriter streamWriter = null;
-        private static readonly StringBuilder stringBuilder = new();
 
         public static string Path { get; private set; } = null;
 
@@ -173,46 +172,47 @@ namespace TwelveEngine {
                 return;
             }
             string loggerLabel = GetLoggerLabel(label);
+            var lease = Pools.StringBuilder.Lease(out var sb);
             if(loggerLabel != null) {
-                stringBuilder.Append(loggerLabel);
+                sb.Append(loggerLabel);
             }
-            stringBuilder.Append(text);
-            stringBuilder.Append(": ");
+            sb.Append(text);
+            sb.Append(": ");
             for(int i = 0;i<names.Length;i++) {
-                stringBuilder.Append(names[i]);
-                stringBuilder.Append(" = ");
-                stringBuilder.Append(values[i] ? "Yes" : "No");
-                stringBuilder.Append(" | ");
+                sb.Append(names[i]);
+                sb.Append(" = ");
+                sb.Append(values[i] ? "Yes" : "No");
+                sb.Append(" | ");
             }
-            stringBuilder.Remove(stringBuilder.Length - 3, 3);
-            WriteLine(stringBuilder);
-            stringBuilder.Clear();
+            sb.Remove(sb.Length - 3, 3);
+            WriteLine(sb);
+            Pools.StringBuilder.Return(lease);
         }
 
         public static void LogStateChange(GameState state) {
-            stringBuilder.Append('[');
-            stringBuilder.AppendFormat(Constants.TimeSpanFormat,ProxyTime.GetElapsedTime());
-            stringBuilder.Append("] Set state: ");
+            var lease = Pools.StringBuilder.Lease(out var sb);
+            sb.Append('[');
+            sb.AppendFormat(Constants.TimeSpanFormat,ProxyTime.GetElapsedTime());
+            sb.Append("] Set state: ");
             string stateName = state.Name;
-            stringBuilder.Append('"');
-            stringBuilder.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);
-            stringBuilder.Append("\" { Args = ");
+            sb.Append('"');
+            sb.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);
+            sb.Append("\" { Args = ");
             StateData data = state.Data;
             if(data.Args is not null && data.Args.Length >= 1) {
                 foreach(var arg in data.Args) {
                     if(string.IsNullOrWhiteSpace(arg)) {
                         continue;
                     }
-                    stringBuilder.Append($"{arg}, ");
+                    sb.Append($"{arg}, ");
                 }
-                stringBuilder.Remove(stringBuilder.Length-2,2);
+                sb.Remove(sb.Length-2,2);
             } else {
-                stringBuilder.Append("None");
+                sb.Append("None");
             }
-            stringBuilder.AppendLine($", Flags = {data.Flags.ToString()} }}");
-
-            Write(stringBuilder);
-            stringBuilder.Clear();
+            sb.AppendLine($", Flags = {data.Flags.ToString()} }}");
+            Write(sb);
+            Pools.StringBuilder.Return(lease);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace TwelveEngine {
         }
 
         internal static void WriteToLog() {
-            StringBuilder sb = new();
+            var lease = Pools.StringBuilder.Lease(out StringBuilder sb);
             sb.Append($"{{ ");
             if(_flags.Count <= 0) {
                 sb.Append(Logger.NONE_TEXT);
@@ -32,6 +32,7 @@ namespace TwelveEngine {
             sb.Remove(sb.Length-2,2);
             sb.Append(" }");
             Logger.WriteLine(sb,LoggerLabel.Flags);
+            Pools.StringBuilder.Return(lease);
         }
 
         internal static void Load(string[] args) {

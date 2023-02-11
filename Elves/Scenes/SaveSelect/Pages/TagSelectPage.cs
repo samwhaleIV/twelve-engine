@@ -7,7 +7,6 @@ namespace Elves.Scenes.SaveSelect {
     public sealed class TagSelectPage:SaveSelectPage {
 
         public override void Close() {
-
             UI.Tag1.OnActivated -= TagPressed;
             UI.Tag2.OnActivated -= TagPressed;
             UI.Tag3.OnActivated -= TagPressed;
@@ -69,29 +68,29 @@ namespace Elves.Scenes.SaveSelect {
 
             var finger = UI.Finger;
             if(finger.Position != fingerPosition) {
-                finger.KeyAnimation(Now);
+                finger.KeyFrame(Now);
             }
 
             finger.Position = fingerPosition;
             finger.Offset = (new(-1.2f,-0.1f));
         }
 
-        public override void Update(FloatRectangle viewport) {
+        public override void Update() {
             SpriteElement tag1 = UI.Tag1, tag2 = UI.Tag2, tag3 = UI.Tag3;
-            float twoThirdsX = viewport.Width * (2 / 3f);
-            float scale = viewport.Height / tag1.SourceHeight * 0.26f;
+            float twoThirdsX = Viewport.Width * (2 / 3f);
+            float scale = Viewport.Height / tag1.SourceHeight * 0.26f;
 
             float horizontalStep = scale * tag1.SourceHeight * 0.11f;
-            tag1.Position = new((twoThirdsX+horizontalStep)/viewport.Width,1/5f);
-            tag2.Position = new(twoThirdsX/viewport.Width,2/4f);
-            tag3.Position = new((twoThirdsX-horizontalStep)/viewport.Width,4/5f);
+            tag1.Position = new((twoThirdsX+horizontalStep)/Viewport.Width,1/5f);
+            tag2.Position = new(twoThirdsX/Viewport.Width,2/4f);
+            tag3.Position = new((twoThirdsX-horizontalStep)/Viewport.Width,4/5f);
 
             Vector2 size = scale * tag1.SourceSize;
             foreach(var tag in UI.Tags) {
                 tag.Size = size;
             }
 
-            UpdateFinger(viewport);
+            UpdateFinger(Viewport);
         }
     }
 }

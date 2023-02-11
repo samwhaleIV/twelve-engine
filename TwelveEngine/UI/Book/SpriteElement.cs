@@ -3,7 +3,6 @@
 
         public Texture2D Texture { get; set; }
         public Rectangle TextureSource { get; set; } = Rectangle.Empty;
-        public Color Color { get; set; } = Color.White;
 
         public float Depth { get; set; } = 0.5f;
 
@@ -55,16 +54,16 @@
             if(Scale == newScale) {
                 return;
             }
-            KeyAnimation(now);
+            KeyFrame(now);
             Scale = newScale;
         }
 
         protected void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
-            FloatRectangle destination = ComputedArea.Destination;
+            FloatRectangle destination = ComputedArea;
             destination.Position += destination.Size * 0.5f;
 
             Vector2 origin = sourceArea.Size.ToVector2() * 0.5f;
-            spriteBatch.Draw(texture,(Rectangle)destination,sourceArea,Color,MathHelper.ToRadians(ComputedArea.Rotation),origin,SpriteEffects.None,Depth);
+            spriteBatch.Draw(texture,(Rectangle)destination,sourceArea,ComputedColor,MathHelper.ToRadians(ComputedRotation),origin,SpriteEffects.None,Depth);
         }
 
         public void Render(SpriteBatch spriteBatch) {
@@ -73,11 +72,11 @@
         }
 
         public Point GetComputedCenterPoint() {
-            return ComputedArea.Destination.Center.ToPoint();
+            return ComputedArea.Center.ToPoint();
         }
 
         public Vector2 GetComputedCenter() {
-            return ComputedArea.Destination.Center;
+            return ComputedArea.Center;
         }
     }
 }

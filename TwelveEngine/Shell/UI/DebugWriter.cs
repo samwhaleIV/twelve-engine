@@ -14,8 +14,7 @@ namespace TwelveEngine.Shell.UI {
 
         public int Padding { get; set; } = Constants.ScreenEdgePadding;
 
-        private readonly StringBuilder writer = new();
-        private readonly StringBuilder reverseBuffer = new();
+        private readonly StringBuilder sb = new(), rtlReversalBuffer = new();
 
         private (Vector2 Position, Corner Corner,int LineHeight,Color Color) renderState;
 
@@ -24,15 +23,15 @@ namespace TwelveEngine.Shell.UI {
             bool rightSide = renderState.Corner == Corner.BottomRight || renderState.Corner == Corner.TopRight;
             if(rightSide) {
                 /* RTL text rendering draws text in FIFO, so we have to reverse it to LIFO with a buffer */
-                for(int i = writer.Length-1;i>=0;i--) {
-                    reverseBuffer.Append(writer[i]);
+                for(int i = sb.Length-1;i>=0;i--) {
+                    rtlReversalBuffer.Append(sb[i]);
                 }
-                SpriteBatch.DrawString(SpriteFont,reverseBuffer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,true);
-                reverseBuffer.Clear();
+                SpriteBatch.DrawString(SpriteFont,rtlReversalBuffer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,true);
+                rtlReversalBuffer.Clear();
             } else {
-                SpriteBatch.DrawString(SpriteFont,writer,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,false);
+                SpriteBatch.DrawString(SpriteFont,sb,position,renderState.Color,0f,Vector2.Zero,Vector2.One,SpriteEffects.None,1f,false);
             }
-            writer.Clear();
+            sb.Clear();
         }
 
         private void Begin(Corner corner,Color? color = null) {
@@ -80,8 +79,8 @@ namespace TwelveEngine.Shell.UI {
             if(label == null) {
                 return;
             }
-            writer.Append(label);
-            writer.Append(": ");
+            sb.Append(label);
+            sb.Append(": ");
         }
 
         public void SetColor(Color color) {
@@ -93,116 +92,116 @@ namespace TwelveEngine.Shell.UI {
 
         public void WriteTimeMS(TimeSpan time,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat(NUMBER_FORMAT,time.TotalMilliseconds);
-            writer.Append("ms");
+            sb.AppendFormat(NUMBER_FORMAT,time.TotalMilliseconds);
+            sb.Append("ms");
             DrawString();
         }
 
         public void WriteFPS(double fps) {
             WriteLabel("FPS");
-            writer.AppendFormat("{0:0}",fps);
+            sb.AppendFormat("{0:0}",fps);
             DrawString();
         }
 
         public void Write(string text,string label = null) {
             WriteLabel(label);
-            writer.Append(text);
+            sb.Append(text);
             DrawString();
         }
 
         public void Write(bool value,string label = null) {
             WriteLabel(label);
-            writer.Append(value ? "True" : "False");
+            sb.Append(value ? "True" : "False");
             DrawString();
         }
 
         public void Write(int value,string label = null) {
             WriteLabel(label);
-            writer.Append(value);
+            sb.Append(value);
             DrawString();
         }
 
         public void WriteRange(int value,int max,string label = null) {
             WriteLabel(label);
-            writer.Append(value);
-            writer.Append(" / ");
-            writer.Append(max);
+            sb.Append(value);
+            sb.Append(" / ");
+            sb.Append(max);
             DrawString();
         }
 
         public void WriteRange(float value,float max,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat(NUMBER_FORMAT,value);
-            writer.Append(" / ");
-            writer.AppendFormat(NUMBER_FORMAT,max);
+            sb.AppendFormat(NUMBER_FORMAT,value);
+            sb.Append(" / ");
+            sb.AppendFormat(NUMBER_FORMAT,max);
             DrawString();
         }
 
         public void WriteRange(double value,double max,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat(NUMBER_FORMAT,value);
-            writer.Append(" / ");
-            writer.AppendFormat(NUMBER_FORMAT,max);
+            sb.AppendFormat(NUMBER_FORMAT,value);
+            sb.Append(" / ");
+            sb.AppendFormat(NUMBER_FORMAT,max);
             DrawString();
         }
 
         public void Write(float value,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat(NUMBER_FORMAT,value);
+            sb.AppendFormat(NUMBER_FORMAT,value);
             DrawString();
         }
 
         public void Write(double value,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat(NUMBER_FORMAT,value);
+            sb.AppendFormat(NUMBER_FORMAT,value);
             DrawString();
         }
 
         public void Write(TimeSpan time,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat(Constants.TimeSpanFormat,time);
+            sb.AppendFormat(Constants.TimeSpanFormat,time);
             DrawString();
         }
 
         public void Write(Point point,string label = null) {
             WriteLabel(label);
-            writer.Append(point.X);
-            writer.Append(", ");
-            writer.Append(point.Y);
+            sb.Append(point.X);
+            sb.Append(", ");
+            sb.Append(point.Y);
             DrawString();
         }
 
         public void Write(Vector2 vector,string label = null) {
             WriteLabel(label);
-            writer.AppendFormat(NUMBER_FORMAT,vector.X);
-            writer.Append(", ");
-            writer.AppendFormat(NUMBER_FORMAT,vector.Y);
+            sb.AppendFormat(NUMBER_FORMAT,vector.X);
+            sb.Append(", ");
+            sb.AppendFormat(NUMBER_FORMAT,vector.Y);
             DrawString();
         }
 
         public void Write(Vector3 vector,string label = null) {
             WriteLabel(label);
-            writer.Append("X ");
-            writer.AppendFormat(NUMBER_FORMAT,vector.X);
-            writer.Append("  Y ");
-            writer.AppendFormat(NUMBER_FORMAT,vector.Y);
-            writer.Append("  Z ");
-            writer.AppendFormat(NUMBER_FORMAT,vector.Z);
+            sb.Append("X ");
+            sb.AppendFormat(NUMBER_FORMAT,vector.X);
+            sb.Append("  Y ");
+            sb.AppendFormat(NUMBER_FORMAT,vector.Y);
+            sb.Append("  Z ");
+            sb.AppendFormat(NUMBER_FORMAT,vector.Z);
             DrawString();
         }
 
         public void WriteXY(float x,float y,string xLabel,string yLabel) {
             if(xLabel != null) {
-                writer.Append(xLabel);
-                writer.Append(' ');
+                sb.Append(xLabel);
+                sb.Append(' ');
             }
-            writer.AppendFormat(NUMBER_FORMAT,x);
-            writer.Append("  ");
+            sb.AppendFormat(NUMBER_FORMAT,x);
+            sb.Append("  ");
             if(yLabel != null) {
-                writer.Append(yLabel);
-                writer.Append(' ');
+                sb.Append(yLabel);
+                sb.Append(' ');
             }
-            writer.AppendFormat(NUMBER_FORMAT,y);
+            sb.AppendFormat(NUMBER_FORMAT,y);
             DrawString();
         }
 

@@ -42,7 +42,7 @@ namespace Elves.Scenes.Carousel {
             {RotationPosition.Right, new Vector3(CENTER_OFFSET,0f,MIDDLE_DEPTH) }
         };
 
-        private readonly bool _animateLastBattleProgress;
+        private bool _animateLastBattleProgress;
 
         public CarouselScene3D(bool animateLastBattleProgress) {
             _animateLastBattleProgress = animateLastBattleProgress;
@@ -69,12 +69,35 @@ namespace Elves.Scenes.Carousel {
             background.Render(SpriteBatch,Viewport);
         }
 
+        private int GetStartIndex() {
+            int lastCompletedBattle;
+            if(Program.Save is not null) {
+                Program.Save.TryGetInt(SaveKeys.LastCompletedBattle,out lastCompletedBattle,-1);
+            } else {
+                lastCompletedBattle = -1;
+            }
+            int index;
+            if(lastCompletedBattle < highestCompletedBattle) {
+                index = lastCompletedBattle + 1;
+            } else {
+                index = highestCompletedBattle + 1;
+            }
+            int maxIndex = ElfManifest.Count - 1;
+            if(index >= maxIndex) {
+                index = maxIndex;
+                _animateLastBattleProgress = false;
+            }
+            if(_animateLastBattleProgress) {
+                index -= 1;
+            }
+            return index;
+        }
+
         private void Load() {
             CreateItems();
-            UpdateIndex(_animateLastBattleProgress ? highestCompletedBattle : highestCompletedBattle + 1,MoveDirection.None);
+            UpdateIndex(GetStartIndex(),MoveDirection.None);
             ApplyDefaultRotations();
             CreateBackground();
-
             if(!_animateLastBattleProgress) {
                 return;
             }
@@ -200,12 +223,17 @@ namespace Elves.Scenes.Carousel {
         }
 
         private void UpdateIndex(int index,MoveDirection direction) {
+            int oldIndex = centerItem?.Index ?? -1;
             int minIndex = 0, maxIndex = items.Count - 1;
 
             if(index < minIndex) {
                 index = minIndex;
             } else if(index > maxIndex) {
                 index = maxIndex;
+            }
+
+            if(oldIndex == index) {
+                return;
             }
 
             foreach(CarouselItem item in items) {

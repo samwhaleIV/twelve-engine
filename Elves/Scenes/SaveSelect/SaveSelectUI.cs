@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TwelveEngine;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Scenes.SaveSelect {
@@ -11,13 +12,18 @@ namespace Elves.Scenes.SaveSelect {
         public SaveSelectUI(SaveSelectScene scene):base(scene) {
             this.scene = scene;
 
+            OnPageTransitionEnd += SaveSelectUI_OnPageTransitionEnd;
+            OnPageTransitionStart += SaveSelectUI_OnPageTransitionStart;
+
             BackButton = AddButton(0,123,ButtonImpulse.Back);
             PlayButton = AddButton(17,123,ButtonImpulse.Play);
+
             AcceptButton = AddButton(0,140,ButtonImpulse.Accept);
             DeleteButton = AddButton(17,140,ButtonImpulse.Delete);
 
             BackButton.OnActivated += ButtonPressed;
             PlayButton.OnActivated += ButtonPressed;
+
             AcceptButton.OnActivated += ButtonPressed;
             DeleteButton.OnActivated += ButtonPressed;
 
@@ -31,12 +37,12 @@ namespace Elves.Scenes.SaveSelect {
                 PositionMode = CoordinateMode.Relative,
                 Position = new(0,-1),
                 Depth = Depth.Finger,
-                SmoothStep = true,
+                SmoothStepAnimation = true,
                 DefaultAnimationDuration = TimeSpan.FromMilliseconds(300)
             });
 
             SignHereLabel = AddElement(new SpriteElement() {
-                TextureSource = new(141,50,83,20),
+                TextureSource = new(141,50,81,20),
                 Offset = (new(-0.5f,-0.5f)),
                 PositionMode = CoordinateMode.Relative,
                 Position = new(0.5f,1/5f),
@@ -47,8 +53,24 @@ namespace Elves.Scenes.SaveSelect {
             TagContextPage = new TagContextPage() { Scene = scene, UI = this };
             TagDrawPage = new TagDrawPage() { Scene = scene, UI = this };
 
-            SetFirstPage(TagSelectPage,new(scene.Viewport));
+            SetFirstPage(TagSelectPage);
             scene.OnInputActivated += FocusDefault;
+        }
+
+        private void SaveSelectUI_OnPageTransitionStart() {
+            foreach(var element in Elements) {
+                element.KeyFrame(Now,TransitionDuration);
+                element.Flags = ElementFlags.None;
+                element.Scale = 0;
+                element.ClearKeyFocus();
+                element.DisableKeyFrames();
+            }
+        }
+
+        private void SaveSelectUI_OnPageTransitionEnd() {
+            foreach(var element in Elements) {
+                element.EnableKeyFrames();
+            }
         }
 
         public readonly SaveSelectPage TagSelectPage, TagContextPage, TagDrawPage;
@@ -94,6 +116,10 @@ namespace Elves.Scenes.SaveSelect {
 
         protected override TimeSpan GetCurrentTime() {
             return scene.Now;
+        }
+
+        protected override FloatRectangle GetViewport() {
+            return new(scene.Viewport);
         }
     }
 }

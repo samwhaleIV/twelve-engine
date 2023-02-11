@@ -55,11 +55,11 @@ namespace Elves {
             }
 
             SaveDirectory = saveDirectory;
+
             LoadSaveFiles();
-
             LoadGlobalSaveFile();
-
             LoadAudioBanks();
+            SetupVolume();
 
             game.SetState(ElfGame.Start());
         }
@@ -74,12 +74,27 @@ namespace Elves {
             CustomCursor.Sources.Add(cursorState,MouseCursor.FromTexture2D(texture,originX ?? 0,originY ?? 0));
         }
 
-        public static BankWrapper MusicBank { get; private set; }
+        public static BankWrapper AudioBank { get; private set; }
+        public static bool HasAudioBank { get; private set; }
+
+        private static void SetupVolume() {
+            GlobalSave.TryGetFloat(SaveKeys.SoundVolume,out float soundVolume,Constants.DefaultSoundVolume);
+            AudioSystem.SoundVolume = soundVolume;
+            GlobalSave.SetValue(SaveKeys.SoundVolume,soundVolume);
+
+            GlobalSave.TryGetFloat(SaveKeys.MusicVolume,out float musicVolume,Constants.DefaultMusicVolume);
+            AudioSystem.MusicVolume = musicVolume;
+            GlobalSave.SetValue(SaveKeys.MusicVolume,musicVolume);
+        }
 
         private static void LoadAudioBanks() {
-            AudioSystem.LoadBank("Content/Music/Master.strings.bank");
-            AudioSystem.LoadBank("Content/Music/Master.bank");
-            MusicBank = AudioSystem.LoadBank("Content/Music/Music.bank");
+            AudioSystem.TryLoadBank(Config.GetString(Config.Keys.FMODStrings),out _);
+            AudioSystem.TryLoadBank(Config.GetString(Config.Keys.FMODMaster),out _);
+
+            HasAudioBank = AudioSystem.TryLoadBank(Config.GetString(Config.Keys.FMODGame),out var audioBank);
+            AudioBank = HasAudioBank ? audioBank : default;
+
+            AudioSystem.BindVCAs();
         }
 
         private static void AddCustomCursors() {

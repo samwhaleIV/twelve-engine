@@ -350,7 +350,8 @@ namespace TwelveEngine.UI {
 
 
         private static bool ElementCanFulfilInteraction(TElement element) {
-            return element.CanInteract && !element.InputIsPaused && element.Endpoint is not null;
+            /* Wow, I can't beleive I put 'element.Endpoint is not null' here... Had to sanity check this when debugging a new UI. */
+            return element.CanInteract && !element.InputIsPaused && element.Endpoint is not null; 
         }
 
         /// <summary>

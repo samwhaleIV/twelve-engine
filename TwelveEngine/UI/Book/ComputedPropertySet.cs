@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine.UI.Book {
-    public readonly struct ComputedArea {
+    public readonly struct ComputedPropertySet {
         /// <summary>
         /// Floating point rectangle in screen space.
         /// </summary>
@@ -10,16 +10,20 @@
         /// </summary>
         public readonly float Rotation;
 
-        public ComputedArea() {
+        public readonly Color Color;
+
+        public ComputedPropertySet() {
             Destination = FloatRectangle.Empty;
             Rotation = 0;
+            Color = Color.White;
         }
 
-        public ComputedArea(FloatRectangle area,float rotation) {
+        public ComputedPropertySet(FloatRectangle area,float rotation,Color color) {
             Destination = area;
             Rotation = rotation;
+            Color = color;
         }
 
-        public static readonly ComputedArea Empty = new();
+        public static readonly ComputedPropertySet Empty = new();
     }
 }

@@ -23,6 +23,7 @@ namespace Elves.ElfData {
                 return (ElfID)ID;
             }
         }
+        public static int Count => manifest.Count;
 
         /* This should probably be information loaded from a data file, but C# is so expressive... I can't help myself. */
         static ElfManifest() {

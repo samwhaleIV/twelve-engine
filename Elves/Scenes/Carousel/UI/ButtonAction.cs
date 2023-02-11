@@ -1,3 +1,3 @@
 ﻿namespace Elves.Scenes.Carousel.UI {
-    public enum ButtonAction { Menu, Play, Left, Right, Settings }
+    public enum ButtonAction { Back, Play, Left, Right, Settings }
 }

@@ -10,6 +10,9 @@ namespace Elves {
         public const float Debug3DMovementSpeed = 0.75f;
         public const float Debug3DLookSpeed = 10f;
 
+        public const float DefaultSoundVolume = 1f;
+        public const float DefaultMusicVolume = 1f;
+
         public static class Flags {
             public const string OrthoDebug = "orthodebug";
             public const string OSCursor = "oscursor";

@@ -2,7 +2,7 @@
 
 namespace TwelveEngine {
 
-    public enum SaveValueType { String, Int, Flag, Bool, ByteArray }
+    public enum SaveValueType { String, Int, Flag, Bool, ByteArray, Float }
 
     public readonly struct SaveValue {
         public SaveValue(SaveValueType type,object value) {
@@ -104,6 +104,9 @@ namespace TwelveEngine {
                     case SaveValueType.Int:
                         binaryWriter.Write((int)value);
                         break;
+                    case SaveValueType.Float:
+                        binaryWriter.Write((float)value);
+                        break;
                     case SaveValueType.Bool:
                         binaryWriter.Write((bool)value);
                         break;
@@ -131,6 +134,7 @@ namespace TwelveEngine {
                     SaveValueType.Int => new SaveValue(valueType,reader.ReadInt32()),
                     SaveValueType.Bool => new SaveValue(valueType,reader.ReadBoolean()),
                     SaveValueType.ByteArray => new SaveValue(valueType,reader.ReadBytes(reader.ReadInt32())),
+                    SaveValueType.Float => new SaveValue(valueType,reader.ReadSingle()),
                     _ => new SaveValue(SaveValueType.Flag,null),
                 };
             }
@@ -151,6 +155,15 @@ namespace TwelveEngine {
                 return false;
             }
             value = (int)saveValue.Value;
+            return true;
+        }
+
+        public bool TryGetFloat(int key,out float value,float defaultValue = 0) {
+            if(!dataTable.TryGetValue(key,out var saveValue) || saveValue.Type != SaveValueType.Float) {
+                value = defaultValue;
+                return false;
+            }
+            value = (float)saveValue.Value;
             return true;
         }
 
@@ -192,13 +205,9 @@ namespace TwelveEngine {
         }
 
         public void SetFlag(int key) {
+            bool hasOldValue = HasFlag(key);
             dataTable[key] = new SaveValue(SaveValueType.Flag,null);
-            _isDirty = true;
-        }
-
-        public void SetValue(int key,string value) {
-            dataTable[key] = new SaveValue(SaveValueType.String,value);
-            _isDirty = true;
+            _isDirty = !hasOldValue;
         }
 
         public void IncrementCounter(int key,int amount = 1) {
@@ -207,14 +216,28 @@ namespace TwelveEngine {
             SetValue(key,value);
         }
 
+        public void SetValue(int key,string value) {
+            bool hasOldValue = TryGetString(key,out var oldValue);
+            dataTable[key] = new SaveValue(SaveValueType.String,value);
+            _isDirty = !hasOldValue || oldValue != value;
+        }
+
         public void SetValue(int key,int value) {
+            bool hasOldValue = TryGetInt(key,out var oldValue);
             dataTable[key] = new SaveValue(SaveValueType.Int,value);
-            _isDirty = true;
+            _isDirty = !hasOldValue || oldValue != value;
         }
 
         public void SetValue(int key,bool value) {
+            bool hasOldValue = TryGetBool(key,out var oldValue);
             dataTable[key] = new SaveValue(SaveValueType.Bool,value);
-            _isDirty = true;
+            _isDirty = !hasOldValue || oldValue != value;
+        }
+
+        public void SetValue(int key,float value) {
+            bool hasOldValue = TryGetFloat(key,out var oldValue);
+            dataTable[key] = new SaveValue(SaveValueType.Float,value);
+            _isDirty = !hasOldValue || oldValue != value;
         }
 
         public void SetBytes(int key,byte[] value) {

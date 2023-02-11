@@ -5,7 +5,7 @@ namespace TwelveEngine.UI.Book {
         public void Render(SpriteBatch spriteBatch) {
             spriteBatch.Begin(SpriteSortMode.FrontToBack,null,SamplerState.PointClamp);
             foreach(var element in Elements) {
-                if(element.TextureSource.Size == Point.Zero || element.ComputedArea.Destination.Size == Vector2.Zero) {
+                if(element.TextureSource.Size == Point.Zero || element.ComputedArea.Size == Vector2.Zero) {
                     continue;
                 }
                 element.Render(spriteBatch);

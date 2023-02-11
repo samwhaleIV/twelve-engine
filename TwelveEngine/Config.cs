@@ -4,8 +4,6 @@ namespace TwelveEngine {
 
     public static class Config {
 
-        private const int CONFIG_SEGMENT_BUFFER_SIZE = 64;
-
         public enum Keys {
             Flags,
             HWFullScreenWidth,
@@ -14,10 +12,13 @@ namespace TwelveEngine {
             StateCleanUpGC,
             GamePadIndex,
             LimitFrameDelta,
-            SampleRate
+            SampleRate,
+            FMODGame,
+            FMODMaster,
+            FMODStrings
         }
 
-        public enum ConfigValueType { Int, IntNullable, Bool, StringArray }
+        public enum ConfigValueType { Int, IntNullable, Bool, StringArray, String }
 
         private static Dictionary<string,(ConfigValueType Type, object Value)> GetConfigValues() => new() {
             { GetKey(Keys.Flags), (ConfigValueType.StringArray, null) },
@@ -28,13 +29,14 @@ namespace TwelveEngine {
             { GetKey(Keys.GamePadIndex), (ConfigValueType.Int, 0) },
             { GetKey(Keys.LimitFrameDelta), (ConfigValueType.Bool, false) },
             { GetKey(Keys.SampleRate), (ConfigValueType.IntNullable, null) },
+            { GetKey(Keys.FMODGame), (ConfigValueType.String, Constants.DefaultFMODGameBank) },
+            { GetKey(Keys.FMODStrings), (ConfigValueType.String, Constants.DefaultFMODStringBank) },
+            { GetKey(Keys.FMODMaster), (ConfigValueType.String, Constants.DefaultFMODMasterBank) },
         };
 
         private static readonly Dictionary<string,(ConfigValueType Type, object Value)> configValues;
 
         private static readonly string[] keys;
-
-        private static readonly StringBuilder stringBuilder = new();
 
         private static readonly Keys[] KeysList = Enum.GetValues<Keys>();
 
@@ -100,6 +102,7 @@ namespace TwelveEngine {
             return (int)configValues[key].Value;
         }
 
+
         public static int? GetIntNullable(string key) {
             ValidateKey(key,ConfigValueType.IntNullable);
             return (int?)configValues[key].Value;
@@ -113,6 +116,11 @@ namespace TwelveEngine {
         public static string[] GetStringArray(string key) {
             ValidateKey(key,ConfigValueType.StringArray);
             return (string[])configValues[key].Value;
+        }
+
+        public static string GetString(string key) {
+            ValidateKey(key,ConfigValueType.String);
+            return (string)configValues[key].Value;
         }
 
         public static void SetInt(Keys key,int value) {
@@ -131,6 +139,11 @@ namespace TwelveEngine {
             SetStringArray(GetKey(key),value);
         }
 
+        public static void SetString(string key,string value) {
+            ValidateKey(key,ConfigValueType.String);
+            configValues[key] = (ConfigValueType.String, value);
+        }
+
         public static int GetInt(Keys key) {
             return GetInt(GetKey(key));
         }
@@ -144,6 +157,14 @@ namespace TwelveEngine {
 
         public static string[] GetStringArray(Keys key) {
             return GetStringArray(GetKey(key));
+        }
+
+        public static void SetString(Keys key,string value) {
+            SetString(GetKey(key),value);
+        }
+
+        public static string GetString(Keys key) {
+            return GetString(GetKey(key));
         }
 
         public static bool TryLoad(string path) {
@@ -173,50 +194,54 @@ namespace TwelveEngine {
         }
 
         public static void WriteToLog() {
-            stringBuilder.AppendLine("Config data: {");
+            var lease = Pools.StringBuilder.Lease(out var sb);
+            sb.AppendLine("Config data: {");
             foreach(var key in KeysList) {
                 if(!configValues.TryGetValue(GetKey(key),out var value)) {
                     continue;
                 }
                 var keyValue = GetKey(key);
-                stringBuilder.Append($"    {keyValue} = ");
+                sb.Append($"    {keyValue} = ");
                 switch(value.Type) {
                     case ConfigValueType.Int:
-                        stringBuilder.Append(GetInt(keyValue));
+                        sb.Append(GetInt(keyValue));
                         break;
                     case ConfigValueType.IntNullable:
                         int? intValue = GetIntNullable(keyValue);
                         if(intValue.HasValue) {
-                            stringBuilder.Append(intValue.Value);
+                            sb.Append(intValue.Value);
                         } else {
-                            stringBuilder.Append(Logger.NONE_TEXT);
+                            sb.Append(Logger.NONE_TEXT);
                         }
                         break;
                     case ConfigValueType.Bool:
-                        stringBuilder.Append(GetBool(keyValue));
+                        sb.Append(GetBool(keyValue));
                         break;
                     case ConfigValueType.StringArray:
                         var stringArray = GetStringArray(keyValue);
                         if(stringArray == null || stringArray.Length <= 0) {
-                            stringBuilder.Append(Logger.NONE_TEXT);
+                            sb.Append(Logger.NONE_TEXT);
                         } else {
-                            stringBuilder.Append("{ ");
+                            sb.Append("{ ");
                             foreach(var item in stringArray) {
-                                stringBuilder.Append($"{(string.IsNullOrWhiteSpace(item) ? Logger.EMPTY_TEXT : item)}, ");
+                                sb.Append($"{(string.IsNullOrWhiteSpace(item) ? Logger.EMPTY_TEXT : item)}, ");
                             }
-                            stringBuilder.Remove(stringBuilder.Length-2,2);
-                            stringBuilder.Append(" }");
+                            sb.Remove(sb.Length-2,2);
+                            sb.Append(" }");
                         }
                         break;
+                    case ConfigValueType.String:
+                        sb.Append(GetString(keyValue));
+                        break;
                     default:
-                        stringBuilder.Append(Logger.UNKNOWN_TEXT);
+                        sb.Append(Logger.UNKNOWN_TEXT);
                         break;
                 }
-                stringBuilder.AppendLine();
+                sb.AppendLine();
             }
-            stringBuilder.AppendLine("}");
-            Logger.Write(stringBuilder,LoggerLabel.Config);
-            stringBuilder.Clear();
+            sb.AppendLine("}");
+            Logger.Write(sb,LoggerLabel.Config);
+            Pools.StringBuilder.Return(lease);
         }
 
         private static bool IsOpenCloseSet(string value) => (value[0], value[^1]) switch {
@@ -235,22 +260,24 @@ namespace TwelveEngine {
                 i += 1;
                 end -= 1;
             }
+            var lease = Pools.StringBuilder.Lease(out var sb);
             void FlushValue() {
-                if(stringBuilder.Length != 0) {
-                    values.Add(stringBuilder.ToString());
+                if(sb.Length != 0) {
+                    values.Add(sb.ToString());
                 }
-                stringBuilder.Clear();
+                sb.Clear();
             }
             while(i < end) {
                 char ch = value[i];
                 if(ch == ',') {
                     FlushValue();
                 } else {
-                    stringBuilder.Append(ch);
+                    sb.Append(ch);
                 }
                 i += 1;
             }
             FlushValue();
+            Pools.StringBuilder.Return(lease);
             return values.ToArray();
         }
 
@@ -269,15 +296,32 @@ namespace TwelveEngine {
             return (b == 'u' && c == 'l' && d == 'l') || (b == 'o' && c == 'n' && d == 'e');
         }
 
+        private static string RemoveWhiteSpace(string value) {
+            var lease = Pools.StringBuilder.Lease(out var sb);
+            for(int i = 0;i<value.Length;i++) {
+                char c = value[i];
+                if(c == ' ') {
+                    continue;
+                }
+                sb.Append(c);
+            }
+            value = sb.ToString();
+            Pools.StringBuilder.Return(lease);
+            return value;
+        }
+
         private static void SetConfigValue(string key,string value,ConfigValueType type) {
             switch(type) {
                 case ConfigValueType.Bool:
+                    value = RemoveWhiteSpace(value);
                     SetBool(key,bool.Parse(value));
                     return;
                 case ConfigValueType.Int:
+                    value = RemoveWhiteSpace(value);
                     SetInt(key,int.Parse(value));
                     return;
                 case ConfigValueType.IntNullable:
+                    value = RemoveWhiteSpace(value);
                     if(IsExplicitNullValue(value)) {
                         SetIntNullable(key,null);
                     } else {
@@ -285,12 +329,16 @@ namespace TwelveEngine {
                     }
                     return;
                 case ConfigValueType.StringArray:
+                    value = RemoveWhiteSpace(value);
                     if(IsExplicitNullValue(value)) {
                         SetStringArray(key,Array.Empty<string>());
                     } else {
                         SetStringArray(key,ParseStringArray(value));
                     }
                     return;
+                case ConfigValueType.String:
+                    SetString(key,value.Trim());
+                    break;
                 default:
                     Logger.WriteLine($"No value type found for key '{key}'",LoggerLabel.Config);
                     return;
@@ -298,7 +346,7 @@ namespace TwelveEngine {
         }
 
         private static void AddConfigLines(IEnumerable<string> lines) {
-            StringBuilder keyBuffer = new(CONFIG_SEGMENT_BUFFER_SIZE), valueBuffer = new(CONFIG_SEGMENT_BUFFER_SIZE);
+            var sbLeases = Pools.StringBuilder.Lease(out var keyBuffer,out var valueBuffer);
 
             foreach(string line in lines) {
 
@@ -308,24 +356,22 @@ namespace TwelveEngine {
                 bool writeKey = true;
 
                 foreach(char ch in line) {
-                    switch(ch) {
-                        case ' ':
-                            /* Ignore white space */
+                    if(writeKey && ch == ' ') {
+                        /* Ignore white space for keys */
+                        continue;
+                    }
+                    if(ch == Constants.ConfigValueOperand) {
+                        if(!writeKey) {
+                            /* Ignore the value operand if it shows up as part of the value itself */
                             break;
-                        case Constants.ConfigValueOperand:
-                            if(!writeKey) {
-                                /* Ignore the value operand if it shows up as part of the value itself */
-                                break;
-                            }
-                            writeKey = false;
-                            break;
-                        default:
-                            if(writeKey) {
-                                keyBuffer.Append(ch);
-                            } else {
-                                valueBuffer.Append(ch);
-                            }
-                            break;
+                        }
+                        writeKey = false;
+                        continue;
+                    }
+                    if(writeKey) {
+                        keyBuffer.Append(ch);
+                    } else {
+                        valueBuffer.Append(ch);
                     }
                 }
                 if(writeKey) {
@@ -347,6 +393,8 @@ namespace TwelveEngine {
                     Logger.WriteLine($"Illegal value for key '{key}': {exception.Message}",LoggerLabel.Config);
                 }
             }
+
+            Pools.StringBuilder.Return(sbLeases);
         }
     }
 }

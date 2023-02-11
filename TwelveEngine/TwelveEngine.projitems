@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)LowMemorySortedSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Flags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OrderedEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pools.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\CustomCursor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\Fonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\Glyph.cs" />
@@ -79,7 +80,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shell\TransitionState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\Book.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ComputedArea.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ComputedPropertySet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\CoordinateMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\BookElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Book\ElementFlags.cs" />

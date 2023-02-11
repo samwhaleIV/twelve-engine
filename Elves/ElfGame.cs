@@ -4,7 +4,6 @@ using Elves.Scenes.Carousel;
 using Elves.Scenes.Intro;
 using Elves.Scenes.SaveSelect;
 using Elves.Scenes.SplashMenu;
-using Elves.Scenes;
 using Elves.Battle;
 using Elves.ElfData;
 using static Elves.Constants;
@@ -19,7 +18,7 @@ namespace Elves {
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
         /// </summary>
         /// <returns>The start state for the game.</returns>
-        public static GameState Start() => GetSaveSelectScene();
+        public static GameState Start() => GetCarouselMenu();
 
         private static GameState GetCarouselMenuAnimatedProgress() {
             var state = new CarouselMenu(animateLastBattleProgress: true);
@@ -65,7 +64,7 @@ namespace Elves {
                 Program.Save = Program.Saves[saveID];
             }
             scene.TransitionOut(new() {
-                Generator = saveID < 0 ? GetSplashMenu : GetCarouselMenu,
+                Generator = saveID < 0 ? GetSplashMenu : GetStartSceneForSave,
                 Data = new() {
                     Flags = StateFlags.ForceGC | StateFlags.FadeIn,
                     TransitionDuration = TransitionDuration
@@ -110,14 +109,17 @@ namespace Elves {
             } else {
                 save.SetValue(SaveKeys.LastCompletedBattle,(int)ID);
                 if(result == BattleResult.PlayerWon) {
+                    animateProgress = true;
                     save.TryGetInt(SaveKeys.HighestCompletedBattle,out int oldValue,-1);
                     if((int)ID > oldValue) {
-                        animateProgress = true;
                         save.SetValue(SaveKeys.HighestCompletedBattle,(int)ID);
                     }
                 }
                 save.IncrementCounter(result == BattleResult.PlayerWon ? SaveKeys.WinCount : SaveKeys.LoseCount);
                 Program.Save.TrySave();
+            }
+            if((int)ID == ElfManifest.Count - 1) {
+                throw new NotImplementedException();
             }
             scene.TransitionOut(new() {
                 Generator = animateProgress ? GetCarouselMenuAnimatedProgress : GetCarouselMenu,

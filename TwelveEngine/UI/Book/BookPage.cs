@@ -6,6 +6,8 @@
         /// </summary>
         protected TimeSpan Now { get; private set; }
 
+        protected FloatRectangle Viewport { get; private set; }
+
         /// <summary>
         /// The latest transition duration. This may not reflect a changed value on the parent book, only the most recently used.
         /// </summary>
@@ -13,6 +15,7 @@
 
         internal void SetTime(TimeSpan now) => Now = now;
         internal void SetTransitionDuration(TimeSpan duration) => TransitionDuration = duration;
+        internal void SetViewport(FloatRectangle viewport) => Viewport = viewport;
 
         /// <summary>
         /// Setup the page because it has been opened. No need to key element animations. They will be dropped until the page transition period has ended.
@@ -25,7 +28,7 @@
         /// </summary>
         public abstract void Close();
 
-        public abstract void Update(FloatRectangle viewport);
+        public abstract void Update();
 
         /// <summary>
         /// Method is executed when a keyboard/gamepad cancel impulse has been pressed.

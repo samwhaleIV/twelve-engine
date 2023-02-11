@@ -41,7 +41,7 @@ namespace Elves.Scenes.SaveSelect {
             if(Scale == newScale && Rotation == newRotation) {
                 return;
             }
-            KeyAnimation(now);
+            KeyFrame(now);
             Scale = newScale;
             Rotation = newRotation;
         }
