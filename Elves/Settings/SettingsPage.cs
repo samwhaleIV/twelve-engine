@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Elves.Scenes.SaveSelect;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using TwelveEngine;
@@ -6,7 +7,7 @@ using TwelveEngine.UI.Book;
 
 namespace Elves.Settings {
 
-    public sealed class SettingsPage<TBackButton>:BookPage<SpriteElement> where TBackButton:SpriteElement,ISettingsBackButton {
+    public sealed class SettingsPage<TBackButton>:BookPage<SpriteElement> where TBackButton : SpriteElement, ISettingsBackButton {
 
         private readonly Vector2 MusicBarOrigin = new(9,52),
             SfxBarOrigin = new(9,88),
@@ -58,13 +59,16 @@ namespace Elves.Settings {
             volumeButtons.Add(musicDown);
 
             foreach(var volumeButton in volumeButtons) {
-                volumeButton.Scale = 1;
-                volumeButton.Depth = Constants.Depth.MiddleCloser;
                 embeddedElements.Add(volumeButton);
             }
 
             embeddedElements.Add(musicVolumeBar);
             embeddedElements.Add(sfxVolumeBar);
+
+            foreach(var embeddedElement in embeddedElements) {
+                embeddedElement.Scale = 1;
+                embeddedElement.Depth = Constants.Depth.MiddleCloser;
+            }
         }
 
         private void AdjustMusicVolume(VolumeAdjustment adjustment) {
@@ -186,6 +190,9 @@ namespace Elves.Settings {
 
             musicVolumeBar.SetOrigin(musicBarOrigin,_pixelSize);
             sfxVolumeBar.SetOrigin(sfxBarOrigin,_pixelSize);
+
+            musicVolumeBar.Position = musicBarOrigin;
+            sfxVolumeBar.Position = sfxBarOrigin;
 
             Vector2 volumeButtonSize = musicDown.SourceSize * _pixelSize;
 
