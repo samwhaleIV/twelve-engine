@@ -66,7 +66,7 @@ namespace Elves.Scenes.SaveSelect {
 
         private void Render() {
             background.Render(SpriteBatch,Viewport);
-            UI.Render(SpriteBatch,Viewport.Bounds.Bottom);
+            UI.Render(SpriteBatch);
         }
 
         private void LoadDrawingFrames() {

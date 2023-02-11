@@ -71,13 +71,14 @@ namespace Elves.Settings {
             }
         }
 
-        private void AdjustMusicVolume(VolumeAdjustment adjustment) {
-            //todo
+        private static void AdjustVolume(VolumeBar volumeBar,VolumeAdjustment adjustment) {
+            var newValue = volumeBar.Value + (int)adjustment * (1 / 8f);
+            newValue = MathF.Max(MathF.Min(newValue,1),0);
+            volumeBar.Value = newValue;
         }
 
-        private void AdjustSfxVolume(VolumeAdjustment adjustment) {
-            //todo
-        }
+        private void AdjustMusicVolume(VolumeAdjustment adjustment) => AdjustVolume(musicVolumeBar, adjustment);
+        private void AdjustSfxVolume(VolumeAdjustment adjustment) => AdjustVolume(sfxVolumeBar,adjustment);
 
         private readonly FloatRectangle TotalArea = new(0,0,131,256), PhoneArea = new(5,0,72,120);
 

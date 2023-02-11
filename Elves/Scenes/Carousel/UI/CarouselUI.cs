@@ -135,9 +135,9 @@ namespace Elves.Scenes.Carousel.UI {
                 }
             } else {
                 SelectionArrow.Direction = selectedElementCenter switch {
+                    { Y: > 2 / 3f } => Direction.Down,
                     { X: < 1 / 3f } => Direction.Left,
                     { X: > 2 / 3f } => Direction.Right,
-                    { Y: > 1 / 2f } => Direction.Down,
                     _ => Direction.Up
                 };
             }

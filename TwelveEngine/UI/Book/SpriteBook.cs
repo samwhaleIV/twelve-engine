@@ -2,7 +2,7 @@
 
 namespace TwelveEngine.UI.Book {
     public abstract class SpriteBook:Book<SpriteElement> {
-        public void Render(SpriteBatch spriteBatch,float maxY) {
+        public void Render(SpriteBatch spriteBatch) {
             spriteBatch.Begin(SpriteSortMode.FrontToBack,null,SamplerState.PointClamp);
             foreach(var element in Elements) {
                 if(element.TextureSource.Size == Point.Zero || element.ComputedArea.Size == Vector2.Zero) {
