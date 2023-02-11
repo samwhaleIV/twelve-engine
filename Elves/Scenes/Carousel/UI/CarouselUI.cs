@@ -131,7 +131,7 @@ namespace Elves.Scenes.Carousel.UI {
                 if(SelectedElement == BackButton) {
                     SelectionArrow.Direction = Direction.Up;
                 } else {
-                    SelectionArrow.Direction = Direction.Left;
+                    SelectionArrow.Direction = Direction.Down;
                 }
             } else {
                 SelectionArrow.Direction = selectedElementCenter switch {
