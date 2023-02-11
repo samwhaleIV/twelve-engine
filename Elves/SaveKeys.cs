@@ -13,5 +13,8 @@
 
         public const int WinCount = 8;
         public const int LoseCount = 9;
+
+        public const int MusicVolume = 10;
+        public const int SoundVolume = 11;
     }
 }

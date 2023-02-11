@@ -63,7 +63,7 @@ namespace Elves.Scenes.Test {
         private void Load() {
             background.Load(Content);
 
-            song = Program.MusicBank.Events["menu"].Create();
+            song = Program.AudioBank.Events["menu"].Create();
 
             song.SetParameter("BaseTrack",1);
             song.SetParameter("ATrack",0);

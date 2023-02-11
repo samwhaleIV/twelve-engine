@@ -15,6 +15,14 @@ namespace Elves.Scenes.Carousel {
             OnUpdate.Add(Update);
             OnLoad.Add(LoadUI);
             OnInputActivated += UI.FocusDefault;
+            OnUnload.Add(SaveSettingsVolume);
+        }
+
+
+        private void SaveSettingsVolume() {
+            Program.GlobalSave.SetValue(SaveKeys.MusicVolume,UI.SettingsPage.MusicVolume);
+            Program.GlobalSave.SetValue(SaveKeys.SoundVolume,UI.SettingsPage.SoundVolume);
+            Program.GlobalSave.TrySave();
         }
 
         private void LoadUI() {

@@ -6,6 +6,8 @@ namespace TwelveEngine.Audio {
         private const int DEFAULT_SAMPLE_RATE = 48000;
         private const int MAX_STUDIO_CHANNELS = 32;
 
+        private const float FALLBACK_VOLUME = 1;
+
         private static bool _initialized = false, _disposed = false;
 
         private static FMOD.Studio.System StudioSystem;
@@ -15,13 +17,18 @@ namespace TwelveEngine.Audio {
         private static readonly Dictionary<string,int> BankIDs = new();
         private static readonly Dictionary<int,BankWrapper> Banks = new();
 
+        public static float MusicVolume { get => GetMusicVolume(); set => SetMusicVolume(value); }
+        public static float SoundVolume { get => GetSoundVolume(); set => SetSoundVolume(value); }
+
         public static IEnumerable<BankWrapper> GetBanks() => Banks.Values;
 
         private static void ValidateInitializationState() {
-            if(_initialized) {
-                return;
+            if(!_initialized) {
+                throw new InvalidOperationException("Audio controller has not been initialized.");
             }
-            throw new InvalidOperationException("Audio controller has not been initialized.");
+            if(_disposed) {
+                throw new InvalidOperationException("Audio controller has already been disposed.");
+            }
         }
 
         private static FMOD.INITFLAGS GetSystemInitFlags() {
@@ -34,6 +41,9 @@ namespace TwelveEngine.Audio {
 
         internal static void Load() {
             /* Initialization guard */
+            if(_disposed) {
+                throw new InvalidOperationException("Audio controller has already been disposed.");
+            }
             if(_initialized) {
                 throw new InvalidOperationException("Audio controller has already been initialized.");
             }
@@ -63,20 +73,49 @@ namespace TwelveEngine.Audio {
             return ID;
         }
 
-        public static BankWrapper LoadBank(string bankFile) {
+        public static bool TryLoadBank(string bankFile,out BankWrapper bankWrapper) {
             ValidateInitializationState();
             int bankID = GetBankID(bankFile);
             if(Banks.ContainsKey(bankID)) {
                 throw new InvalidOperationException($"Bank '{bankFile}' (ID: {bankID}) has already been loaded.");
             }
-            /* 'LOAD_BANK_FLAGS.NORMAL' is blocking. This way, we cannot return use that has not been fully loaded */
-            StudioSystem.loadBankFile(bankFile,LOAD_BANK_FLAGS.NORMAL,out Bank bank);
-            BankWrapper bankWrapper = new(bank,bankID,bankFile);
+            /* 'LOAD_BANK_FLAGS.NORMAL' is blocking. This way, we cannot return a bank that has not been fully loaded */
+            var result = StudioSystem.loadBankFile(bankFile,LOAD_BANK_FLAGS.NORMAL,out Bank bank);
+            if(result != FMOD.RESULT.OK) {
+                Logger.WriteLine($"Could not load '{bankFile}'. Does the file exist?",LoggerLabel.Audio);
+                bankWrapper = default;
+                return false;
+            }
+            bankWrapper = new(bank,bankID,bankFile);
             Banks.Add(bankID,bankWrapper);
-            return bankWrapper;
+            bankWrapper.LogEvents();
+            return true;
         }
 
-        public static bool HasBank(int bankID) => Banks.ContainsKey(bankID);
+        private static VCA? _musicVCA, _soundVCA;
+
+        private static bool TryGetVCA(string name,out VCA vca) {
+            return StudioSystem.getVCA($"vca:/{name}",out vca) == FMOD.RESULT.OK;
+        }
+
+        public static void BindVCAs(string musicVCAName = Constants.MusicVCAName,string soundVCAName = Constants.SoundVCAName) {
+            ValidateInitializationState();
+            if(!_musicVCA.HasValue && TryGetVCA(musicVCAName,out VCA musicVSA)) {
+                _musicVCA = musicVSA;
+            } else {
+                Logger.WriteLine($"Music VCA '{musicVCAName}' not found.",LoggerLabel.Audio);
+            }
+            if(!_soundVCA.HasValue && TryGetVCA(soundVCAName,out VCA soundVCA)) {
+                _soundVCA = soundVCA;
+            } else {
+                Logger.WriteLine($"Sound VCA '{soundVCAName}' not found.",LoggerLabel.Audio);
+            }
+        }
+
+        public static bool HasBank(int bankID) {
+            ValidateInitializationState();
+            return Banks.ContainsKey(bankID);
+        }
 
         public static void UnloadBank(int bankID) {
             ValidateInitializationState();
@@ -88,7 +127,10 @@ namespace TwelveEngine.Audio {
             bank.unload();
         }
 
-        public static bool TryGetBank(int bankID,out BankWrapper bank) => Banks.TryGetValue(bankID,out bank);
+        public static bool TryGetBank(int bankID,out BankWrapper bank) {
+            ValidateInitializationState();
+            return Banks.TryGetValue(bankID,out bank);
+        }
 
         /// <summary>
         /// Cleanup the underlying FMOD audio system. Must been called before the game terminates.<br/>
@@ -98,16 +140,60 @@ namespace TwelveEngine.Audio {
         /// <exception cref="InvalidOperationException"></exception>
         internal static void Unload() {
             ValidateInitializationState();
-            if(_disposed) {
-                throw new InvalidOperationException("Audio controller has already been disposed.");
-            }
             _disposed = true;
             foreach(var bank in Banks.Values) {
                 bank.Bank.unload();
             }
             Banks.Clear();
             StudioSystem.release();
-            /* The core audio system is automatically released when the studio system is. */;
+            /* The core audio system is automatically released with the studio system. */;
         }
+
+        private static bool TryGetMusicVCA(out VCA vca) {
+            vca = _musicVCA ?? default;
+            return _musicVCA.HasValue;
+        }
+
+        private static bool TryGetSoundVCA(out VCA vca) {
+            vca = _soundVCA ?? default;
+            return _soundVCA.HasValue;
+        }
+
+        private static float GetMusicVolume() {
+            ValidateInitializationState();
+            float volume = FALLBACK_VOLUME;
+            if(TryGetMusicVCA(out VCA vca)) {
+                vca.getVolume(out volume);
+            }
+            return volume;
+        }
+
+        private static float GetSoundVolume() {
+            ValidateInitializationState();
+            float volume = FALLBACK_VOLUME;
+            if(TryGetSoundVCA(out VCA vca)) {
+                vca.getVolume(out volume);
+            }
+            return volume;
+        }
+
+        private static void SetMusicVolume(float volume) {
+            ValidateInitializationState();
+            if(!TryGetMusicVCA(out VCA vca)) {
+                return;
+            }
+            vca.setVolume(volume);
+            Logger.WriteLine($"Set music volume to {volume}.",LoggerLabel.Audio);
+        }
+
+        private static void SetSoundVolume(float volume) {
+            ValidateInitializationState();
+            if(!TryGetSoundVCA(out VCA vca)) {
+                return;
+            }
+            vca.setVolume(volume);
+            Logger.WriteLine($"Set sound volume to {volume}.",LoggerLabel.Audio);
+        }
+
     }
 }

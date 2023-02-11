@@ -12,10 +12,13 @@ namespace TwelveEngine {
             StateCleanUpGC,
             GamePadIndex,
             LimitFrameDelta,
-            SampleRate
+            SampleRate,
+            FMODGame,
+            FMODMaster,
+            FMODStrings
         }
 
-        public enum ConfigValueType { Int, IntNullable, Bool, StringArray }
+        public enum ConfigValueType { Int, IntNullable, Bool, StringArray, String }
 
         private static Dictionary<string,(ConfigValueType Type, object Value)> GetConfigValues() => new() {
             { GetKey(Keys.Flags), (ConfigValueType.StringArray, null) },
@@ -26,6 +29,9 @@ namespace TwelveEngine {
             { GetKey(Keys.GamePadIndex), (ConfigValueType.Int, 0) },
             { GetKey(Keys.LimitFrameDelta), (ConfigValueType.Bool, false) },
             { GetKey(Keys.SampleRate), (ConfigValueType.IntNullable, null) },
+            { GetKey(Keys.FMODGame), (ConfigValueType.String, Constants.DefaultFMODGameBank) },
+            { GetKey(Keys.FMODStrings), (ConfigValueType.String, Constants.DefaultFMODStringBank) },
+            { GetKey(Keys.FMODMaster), (ConfigValueType.String, Constants.DefaultFMODMasterBank) },
         };
 
         private static readonly Dictionary<string,(ConfigValueType Type, object Value)> configValues;
@@ -96,6 +102,7 @@ namespace TwelveEngine {
             return (int)configValues[key].Value;
         }
 
+
         public static int? GetIntNullable(string key) {
             ValidateKey(key,ConfigValueType.IntNullable);
             return (int?)configValues[key].Value;
@@ -109,6 +116,11 @@ namespace TwelveEngine {
         public static string[] GetStringArray(string key) {
             ValidateKey(key,ConfigValueType.StringArray);
             return (string[])configValues[key].Value;
+        }
+
+        public static string GetString(string key) {
+            ValidateKey(key,ConfigValueType.String);
+            return (string)configValues[key].Value;
         }
 
         public static void SetInt(Keys key,int value) {
@@ -127,6 +139,11 @@ namespace TwelveEngine {
             SetStringArray(GetKey(key),value);
         }
 
+        public static void SetString(string key,string value) {
+            ValidateKey(key,ConfigValueType.String);
+            configValues[key] = (ConfigValueType.String, value);
+        }
+
         public static int GetInt(Keys key) {
             return GetInt(GetKey(key));
         }
@@ -140,6 +157,14 @@ namespace TwelveEngine {
 
         public static string[] GetStringArray(Keys key) {
             return GetStringArray(GetKey(key));
+        }
+
+        public static void SetString(Keys key,string value) {
+            SetString(GetKey(key),value);
+        }
+
+        public static string GetString(Keys key) {
+            return GetString(GetKey(key));
         }
 
         public static bool TryLoad(string path) {
@@ -205,6 +230,9 @@ namespace TwelveEngine {
                             sb.Append(" }");
                         }
                         break;
+                    case ConfigValueType.String:
+                        sb.Append(GetString(keyValue));
+                        break;
                     default:
                         sb.Append(Logger.UNKNOWN_TEXT);
                         break;
@@ -268,15 +296,32 @@ namespace TwelveEngine {
             return (b == 'u' && c == 'l' && d == 'l') || (b == 'o' && c == 'n' && d == 'e');
         }
 
+        private static string RemoveWhiteSpace(string value) {
+            var lease = Pools.StringBuilder.Lease(out var sb);
+            for(int i = 0;i<value.Length;i++) {
+                char c = value[i];
+                if(c == ' ') {
+                    continue;
+                }
+                sb.Append(c);
+            }
+            value = sb.ToString();
+            Pools.StringBuilder.Return(lease);
+            return value;
+        }
+
         private static void SetConfigValue(string key,string value,ConfigValueType type) {
             switch(type) {
                 case ConfigValueType.Bool:
+                    value = RemoveWhiteSpace(value);
                     SetBool(key,bool.Parse(value));
                     return;
                 case ConfigValueType.Int:
+                    value = RemoveWhiteSpace(value);
                     SetInt(key,int.Parse(value));
                     return;
                 case ConfigValueType.IntNullable:
+                    value = RemoveWhiteSpace(value);
                     if(IsExplicitNullValue(value)) {
                         SetIntNullable(key,null);
                     } else {
@@ -284,12 +329,16 @@ namespace TwelveEngine {
                     }
                     return;
                 case ConfigValueType.StringArray:
+                    value = RemoveWhiteSpace(value);
                     if(IsExplicitNullValue(value)) {
                         SetStringArray(key,Array.Empty<string>());
                     } else {
                         SetStringArray(key,ParseStringArray(value));
                     }
                     return;
+                case ConfigValueType.String:
+                    SetString(key,value.Trim());
+                    break;
                 default:
                     Logger.WriteLine($"No value type found for key '{key}'",LoggerLabel.Config);
                     return;
@@ -307,24 +356,22 @@ namespace TwelveEngine {
                 bool writeKey = true;
 
                 foreach(char ch in line) {
-                    switch(ch) {
-                        case ' ':
-                            /* Ignore white space */
+                    if(writeKey && ch == ' ') {
+                        /* Ignore white space for keys */
+                        continue;
+                    }
+                    if(ch == Constants.ConfigValueOperand) {
+                        if(!writeKey) {
+                            /* Ignore the value operand if it shows up as part of the value itself */
                             break;
-                        case Constants.ConfigValueOperand:
-                            if(!writeKey) {
-                                /* Ignore the value operand if it shows up as part of the value itself */
-                                break;
-                            }
-                            writeKey = false;
-                            break;
-                        default:
-                            if(writeKey) {
-                                keyBuffer.Append(ch);
-                            } else {
-                                valueBuffer.Append(ch);
-                            }
-                            break;
+                        }
+                        writeKey = false;
+                        continue;
+                    }
+                    if(writeKey) {
+                        keyBuffer.Append(ch);
+                    } else {
+                        valueBuffer.Append(ch);
                     }
                 }
                 if(writeKey) {

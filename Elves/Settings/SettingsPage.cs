@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using TwelveEngine;
+using TwelveEngine.Audio;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Settings {
@@ -25,6 +26,9 @@ namespace Elves.Settings {
         private readonly List<VolumeAdjustmentButton> volumeButtons = new();
 
         private readonly List<SpriteElement> embeddedElements = new();
+
+        public float MusicVolume => musicVolumeBar.Value;
+        public float SoundVolume => sfxVolumeBar.Value;
 
         public SettingsPage(TBackButton backButton) {
             this.backButton = backButton;
@@ -50,8 +54,11 @@ namespace Elves.Settings {
             musicUp.OnActivated += AdjustMusicVolume;
             sfxUp.OnActivated += AdjustSfxVolume;
 
-            musicVolumeBar = new();
-            sfxVolumeBar = new();
+            musicVolumeBar = new(AudioSystem.MusicVolume);
+            sfxVolumeBar = new(AudioSystem.SoundVolume);
+
+            musicVolumeBar.OnValueChanged += MusicVolumeBar_OnValueChanged;
+            sfxVolumeBar.OnValueChanged += SfxVolumeBar_OnValueChanged;
 
             volumeButtons.Add(sfxUp);
             volumeButtons.Add(sfxDown);
@@ -70,6 +77,9 @@ namespace Elves.Settings {
                 embeddedElement.Depth = Constants.Depth.MiddleCloser;
             }
         }
+
+        private void SfxVolumeBar_OnValueChanged(float volume) => AudioSystem.SoundVolume = volume;
+        private void MusicVolumeBar_OnValueChanged(float volume) => AudioSystem.MusicVolume = volume;
 
         private static void AdjustVolume(VolumeBar volumeBar,VolumeAdjustment adjustment) {
             var newValue = volumeBar.Value + (int)adjustment * (1 / 8f);

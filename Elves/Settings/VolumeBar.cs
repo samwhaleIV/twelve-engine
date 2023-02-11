@@ -1,14 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using TwelveEngine;
 using TwelveEngine.UI.Book;
 
 namespace Elves.Settings {
     public sealed class VolumeBar:SpriteElement {
-        public float Value { get; set; } = 4 / 8f;
+        private float _value;
+
+        public float Value {
+            get => _value;
+            set {
+                if(_value == value) {
+                    return;
+                }
+                _value = value;
+                OnValueChanged?.Invoke(_value);
+            }
+        }
 
         private readonly Vector2[] origins = new Vector2[] {
             new(4,2),new(10,2),new(16,2),new(22,2),
@@ -19,7 +28,10 @@ namespace Elves.Settings {
             new(236,13,4,6), new(241,13,4,6), new(246,13,4,6)
         };
 
-        public VolumeBar() {
+        public event Action<float> OnValueChanged;
+
+        public VolumeBar(float value) {
+            _value = value;
             Texture = Program.Textures.SettingsPhone;
             TextureSource = new(200,61,54,12);
             OnRender += RenderVolumeDots;

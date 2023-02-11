@@ -7,7 +7,7 @@ namespace TwelveEngine {
         private static readonly Dictionary<int,T> active = new();
         private static readonly Stack<T> inactive = new();
 
-        private int _IDCounter = int.MinValue;
+        private int _IDCounter = 0;
 
         protected abstract void Reset(T item);
         protected internal abstract T CreateNew();
