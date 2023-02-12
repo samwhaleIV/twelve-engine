@@ -183,7 +183,7 @@ namespace TwelveEngine.Audio {
                 return;
             }
             vca.setVolume(volume);
-            Logger.WriteLine($"Set music volume to {volume}.",LoggerLabel.Audio);
+            Console.WriteLine($"[{LoggerLabel.Audio}] Set music volume to {volume}.");
         }
 
         private static void SetSoundVolume(float volume) {
@@ -192,7 +192,7 @@ namespace TwelveEngine.Audio {
                 return;
             }
             vca.setVolume(volume);
-            Logger.WriteLine($"Set sound volume to {volume}.",LoggerLabel.Audio);
+            Console.WriteLine($"[{LoggerLabel.Audio}] Set sound volume to {volume}.");
         }
 
     }

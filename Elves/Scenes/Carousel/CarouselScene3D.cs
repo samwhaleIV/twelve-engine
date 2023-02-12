@@ -45,7 +45,7 @@ namespace Elves.Scenes.Carousel {
         private bool _animateLastBattleProgress;
 
         public CarouselScene3D(bool animateLastBattleProgress) {
-            _animateLastBattleProgress = animateLastBattleProgress;
+            _animateLastBattleProgress = Program.Save is not null && animateLastBattleProgress;
             OnLoad.Add(Load);
             Camera.FieldOfView = FIELD_OF_VIEW;
             var position = Camera.Position;

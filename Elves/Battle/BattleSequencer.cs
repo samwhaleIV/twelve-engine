@@ -67,9 +67,10 @@ namespace Elves.Battle {
             await transitionTask.Task;
         }
 
-        public BattleSequencer(BattleScript script,string background):base(background) => Initialize(script);
-        public BattleSequencer(BattleScript script,Texture2D background):base(background) => Initialize(script);
-        public BattleSequencer(BattleScript script):base() => Initialize(script);
+        public BattleSequencer(BattleScript script) : base() {
+            Initialize(script);
+            Background = script.CreateBackground();
+        }
 
         private void AddScriptToScheduler() => GameLoopSyncContext.RunTask(ExecuteScript);
 

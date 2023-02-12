@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using TwelveEngine;
 using Elves.Animation;
 using Elves.ElfData;
+using TwelveEngine.Shell;
+using TwelveEngine.Effects;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace Elves.Battle {
     public abstract class BattleScript {
@@ -110,7 +114,6 @@ namespace Elves.Battle {
         }
 
         private UserData SetActor(BattleSprite sprite) {
-            _sequencer.Background.Color = sprite.UserData.Color;
             var userData = sprite.UserData;
             _actorData = userData;
             _actorSprite = sprite;
@@ -186,5 +189,16 @@ namespace Elves.Battle {
                     break;
             }
         }
+
+        public virtual ScrollingBackground CreateBackground() => new() {
+            TileScale = 4f,
+            Scale = 2f,
+            Bulge = -0.75f,
+            Color = ElfSource.Color,
+            Texture = Program.Textures.Nothing,
+            ScrollTime = Constants.AnimationTiming.ScrollingBackgroundDefault,
+            ColorA = Color.FromNonPremultiplied(new Vector4(new Vector3(0.41f),1)),
+            ColorB = Color.FromNonPremultiplied(new Vector4(new Vector3(0.66f),1))
+        };
     }
 }
