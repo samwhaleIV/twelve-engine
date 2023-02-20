@@ -52,39 +52,33 @@ namespace TwelveEngine {
                 Console.Write(GetLoggerLabel(LoggerLabel.Logger));
                 Console.WriteLine($"Failure flushing log stream. This will not be reflected in file. Exception: {exception}");
             }
-            streamWriter?.Dispose();
-            streamWriter = null;
+            streamWriter?.Close();
         }
 
         private static bool TryCreateStreamWriter(string path) {
+            if(HasStreamWriter) {
+                throw new InvalidOperationException("Stream writer alerady exists!");
+            }
             Path = path;
             bool fileExists = File.Exists(path);
-            bool addNewLine = fileExists;
             try {
                 if(fileExists) {
                     var info = new FileInfo(path);
                     if(info.Length > Constants.LogResetLimit) {
                         streamWriter = File.CreateText(path);
-                        addNewLine = false;
                     } else {
                         streamWriter = File.AppendText(path);
                     }
                 } else {
                     streamWriter = File.CreateText(path);
-                    addNewLine = false;
                 }
             } catch(Exception exception) {
-                streamWriter = null;
                 Console.Write(GetLoggerLabel(LoggerLabel.Logger));
                 Console.WriteLine($"Failure creating log stream: {exception}");
                 return false;
             }
-            if(addNewLine && HasStreamWriter) {
-                /* Only writes a new line to the file already existed before we append to it. Makes logging sessions blank line seperated */
-                streamWriter.WriteLine();
-            }
             if(HasStreamWriter) {
-                streamWriter.AutoFlush = true;
+                streamWriter.AutoFlush = false;
             }
             return HasStreamWriter;
         }
@@ -121,6 +115,7 @@ namespace TwelveEngine {
                 streamWriter.Write(loggerLabel);
             }
             streamWriter.WriteLine(line);
+            streamWriter.Flush();
         }
 
         public static void WriteLine(StringBuilder line,LoggerLabel label = LoggerLabel.None) {
@@ -136,6 +131,7 @@ namespace TwelveEngine {
                 streamWriter.Write(loggerLabel);
             }
             streamWriter.WriteLine(line);
+            streamWriter.Flush();
         }
 
         public static void Write(string text,LoggerLabel label = LoggerLabel.None) {
@@ -151,6 +147,7 @@ namespace TwelveEngine {
                 streamWriter.Write(loggerLabel);
             }
             streamWriter.Write(text);
+            streamWriter.Flush();
         }
 
         public static void Write(StringBuilder text,LoggerLabel label = LoggerLabel.None) {
@@ -166,6 +163,7 @@ namespace TwelveEngine {
                 streamWriter.Write(loggerLabel);
             }
             streamWriter.Write(text);
+            streamWriter.Flush();
         }
 
         public static void WriteBooleanSet(string text,string[] names,bool[] values,LoggerLabel label = LoggerLabel.None) {
@@ -193,14 +191,14 @@ namespace TwelveEngine {
             Pools.StringBuilder.Return(lease);
         }
 
-        public static void LogStateChange(GameState state) {
+        public static void WriteStateChange(GameState state) {
             var lease = Pools.StringBuilder.Lease(out var sb);
             sb.Append('[');
             sb.AppendFormat(Constants.TimeSpanFormat,ProxyTime.GetElapsedTime());
             sb.Append("] Set state: ");
             string stateName = state.Name;
             sb.Append('"');
-            sb.Append(string.IsNullOrEmpty(stateName) ? Logger.NO_NAME_TEXT : stateName);
+            sb.Append(string.IsNullOrEmpty(stateName) ? NO_NAME_TEXT : stateName);
             sb.Append("\" { Args = ");
             StateData data = state.Data;
             if(data.Args is not null && data.Args.Length >= 1) {

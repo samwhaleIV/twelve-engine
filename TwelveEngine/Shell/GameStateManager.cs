@@ -133,7 +133,7 @@ namespace TwelveEngine.Shell {
             RenderTarget.Reset();
             CustomCursor.State = CursorState.Default;
             state.Load(this);
-            Logger.LogStateChange(state);
+            Logger.WriteStateChange(state);
         }
 
         public void SetState(GameState state,StateData? data = null) => SetState(() => state,data ?? StateData.Empty);
