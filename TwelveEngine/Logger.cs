@@ -83,6 +83,9 @@ namespace TwelveEngine {
                 /* Only writes a new line to the file already existed before we append to it. Makes logging sessions blank line seperated */
                 streamWriter.WriteLine();
             }
+            if(HasStreamWriter) {
+                streamWriter.AutoFlush = true;
+            }
             return HasStreamWriter;
         }
 
@@ -95,6 +98,7 @@ namespace TwelveEngine {
 #if DEBUG
             if(Flags.Get(Constants.Flags.Console)) {
                 AllocConsole();
+                Console.Title = Constants.ConsoleWindowTitle;
             }
 #endif
             if(TryCreateStreamWriter(path)) {
