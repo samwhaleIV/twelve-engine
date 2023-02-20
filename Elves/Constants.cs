@@ -29,6 +29,14 @@ namespace Elves {
         }
 
         public static class BattleUI {
+
+            public static readonly Rectangle SpeechBoxSource = new(48,16,72,48);
+            public static readonly Rectangle HealthBarSource = new(16,0,16,16);
+
+            public static readonly Rectangle ButtonDefaultSource = new(0,16,48,16);
+            public static readonly Rectangle ButtonSelectedSoruce = new(0,32,48,16);
+            public static readonly Rectangle ButtonPressedSource = new(0,48,48,16);
+
             public const float TagBackgroundScale = 2.4f;
             public const float HealthImpactScale = 2;
             public const float ButtonScale = 1.25f;
@@ -36,6 +44,9 @@ namespace Elves {
             public const float NameTextScale = 1 / 2f;
             public const float TagTextScale = 1 / 3f;
             public const float ButtonTextScale = 1 / 3f;
+            public const float SpeechBoxTextScale = 1 / 3f;
+            public const float SpeechBoxMarginScale = 6f;
+            public const float SpeechBoxScale = 1.25f;
 
             public const float MarginScale = 1;
 
@@ -46,7 +57,6 @@ namespace Elves {
             public static readonly TimeSpan TagTextMovement = TimeSpan.FromMilliseconds(350);
 
             public static readonly TimeSpan HealthImpact = TimeSpan.FromMilliseconds(80);
-
         }
 
         public static class UI {

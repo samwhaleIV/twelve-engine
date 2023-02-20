@@ -10,59 +10,51 @@ namespace Elves.Scenes.Battle.UI {
 
         private readonly Interpolator interpolator = new(Constants.BattleUI.SpeechBoxMovement);
 
+        public Rectangle TextureSource { get; private init; } = Constants.BattleUI.SpeechBoxSource;
+
         public SpeechBox() {
             Texture = Program.Textures.Panel;
         }
 
-        public bool AnimationIsFinished => interpolator.IsFinished;
-
         public bool LeftSided { get; set; } = false;
+        public bool IsShown { get; private set; }
 
-        private bool _isShown = false;
-
-        public bool IsShown => _isShown;
-
-        public bool IsOffscreen {
-            get {
-                return !_isShown && interpolator.IsFinished;
-            }
-        }
+        public bool AnimationIsFinished => interpolator.IsFinished;
+        public bool IsOffscreen => !IsShown && interpolator.IsFinished;
 
         public void Show(TimeSpan now) {
-            if(_isShown) {
+            if(IsShown) {
                 return;
             }
             interpolator.ResetCarryOver(now);
-            _isShown = true;
+            IsShown = true;
         }
 
         public void Hide(TimeSpan now) {
-            if(!_isShown) {
+            if(!IsShown) {
                 return;
             }
             interpolator.ResetCarryOver(now);
-            _isShown = false;
+            IsShown = false;
         }
 
-        public readonly StringBuilder Text = new();
+        public StringBuilder Text { get; private init; } = new();
 
-        public void Update(TimeSpan now,FloatRectangle viewport) {
+        public void Update(TimeSpan now,FloatRectangle viewport,float scale) {
             interpolator.Update(now);
 
-            float height = viewport.Height * (2f/3f);
-            float width = height / 3f * 4f;
+            Rectangle textureSource = TextureSource;
 
-            float x = viewport.Width * 0.5f - width * 0.5f;
-            float y = viewport.Height * 0.5f - height * 0.5f;
+            float height = textureSource.Height * scale;
+            float width = (float)textureSource.Width / textureSource.Height * height;
 
-            x += width * 0.25f * (LeftSided ? -1 : 1);
+            Vector2 position = viewport.Center - new Vector2(width,height) * 0.5f;
+            position.X += width * 0.25f * (LeftSided ? -1 : 1);
 
-            var onscreenArea = new FloatRectangle(x,y,width,height);
-            var offscreenArea = LeftSided ? new FloatRectangle(viewport.X-width,onscreenArea.Y,width,height) : new FloatRectangle(viewport.Right,onscreenArea.Y,width,height);
+            FloatRectangle onscreenArea = new(position,width,height);
+            FloatRectangle offscreenArea = LeftSided ? new(viewport.X-width,onscreenArea.Y,width,height) : new(viewport.Right,onscreenArea.Y,width,height);
             ScreenArea = IsShown ? interpolator.Interpolate(offscreenArea,onscreenArea) : interpolator.Interpolate(onscreenArea,offscreenArea);
         }
-
-        private static readonly Rectangle TextureSource = new(32,16,64,48);
 
         public override void Draw(SpriteBatch spriteBatch,Color? color = null) {
             if(IsOffscreen || Texture == null) {
@@ -71,16 +63,13 @@ namespace Elves.Scenes.Battle.UI {
             spriteBatch.Draw(Texture,(Rectangle)ScreenArea,TextureSource,Color.White,0f,Vector2.Zero,LeftSided ? SpriteEffects.FlipHorizontally : SpriteEffects.None,1f);
         }
 
-        public void DrawText(UVSpriteFont font) {
+        public void DrawText(UVSpriteFont font,float textScale,float margin) {
             if(IsOffscreen) {
                 return;
             }
-            int textScale = (int)(ScreenArea.Width / font.LineHeight / 16);
-
-            float margin = ScreenArea.Width * 0.075F;
-            Vector2 location = ScreenArea.Position + new Vector2(margin);
-            location.X += ScreenArea.Width * (1/8F);
-            font.Draw(Text,Vector2.Floor(location),textScale,Color.Black,(int)(ScreenArea.Right - location.X - margin));
+            Vector2 position = ScreenArea.Position + new Vector2(margin);
+            position.X += ScreenArea.Width * (1/8f);
+            font.Draw(Text,Vector2.Floor(position),textScale,Color.Black,(int)(ScreenArea.Right - position.X - margin));
         }
     }
 }

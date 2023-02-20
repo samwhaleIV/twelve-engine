@@ -82,16 +82,9 @@ namespace Elves.Scenes.Battle.UI {
 
         private Rectangle Viewport => owner.Viewport.Bounds;
 
-        private static readonly Rectangle HealthBarSource = new(16,0,16,16);
 
-        private readonly HealthBar playerHealthBar = new() {
-            Alignment = HealthBarAlignment.Left,
-            TextureSource = HealthBarSource
-        };
-        private readonly HealthBar targetHealthBar = new() {
-            Alignment = HealthBarAlignment.Right,
-            TextureSource = HealthBarSource
-        };
+        private readonly HealthBar playerHealthBar = new(HealthBarAlignment.Left);
+        private readonly HealthBar targetHealthBar = new(HealthBarAlignment.Right);
 
         private readonly Tagline tagline = new();
         private readonly SpeechBox speechBox = new();
@@ -123,7 +116,7 @@ namespace Elves.Scenes.Battle.UI {
 
             UpdateActionButtons(viewport,now,scale,margin,halfMargin);
             UpdateHealthBars(viewport,scale,margin);
-            speechBox.Update(now,viewport);
+            speechBox.Update(now,viewport,scale*Constants.BattleUI.SpeechBoxScale);
             tagline.Update(now,viewport,scale);
         }
 
@@ -197,6 +190,14 @@ namespace Elves.Scenes.Battle.UI {
             return _scale * Constants.BattleUI.TagTextScale;
         }
 
+        private float GetSpeechBoxTextScale() {
+            return _scale * Constants.BattleUI.SpeechBoxTextScale;
+        }
+
+        private float GetSpeechBoxMarginScale() {
+            return _scale * Constants.BattleUI.SpeechBoxMarginScale;
+        }
+
         private void RenderNames(UserData playerData,UserData targetData) {
             float usernameScale = GetNameTextScale();
             Color usernameColor = Color.White;
@@ -243,7 +244,7 @@ namespace Elves.Scenes.Battle.UI {
             spriteBatch.End();
 
             Fonts.RetroFont.Begin(spriteBatch);
-            speechBox.DrawText(Fonts.RetroFont);
+            speechBox.DrawText(Fonts.RetroFont,GetSpeechBoxTextScale(),GetSpeechBoxMarginScale());
             Fonts.RetroFont.End();
 
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);

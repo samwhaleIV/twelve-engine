@@ -12,7 +12,15 @@ using Microsoft.Xna.Framework;
 namespace Elves.Battle {
     public abstract class BattleScript {
 
-        public abstract void Setup();
+        public virtual void Setup() {
+            CreatePlayer();
+            CreateActor(ElfManifest.Get(ElfSource.ID));
+        }
+
+        public void TODO() {
+            throw new NotImplementedException();
+        }
+
         public abstract Task<BattleResult> Main();
 
         /// <remarks>DEPENDENCY INJECTION, WOOOOOOO!</remarks>
@@ -48,6 +56,18 @@ namespace Elves.Battle {
         public void HideTag() => _sequencer.HideTag();
 
         public async Task<int> GetButton(params string[] options) => await _sequencer.GetButton(false,options);
+
+        public async Task<bool> YesOrNo(string tag = null) {
+            if(tag is not null) {
+                SetTag(tag);
+            }
+            var result = await _sequencer.GetButton(false,"Yes","No");
+            if(tag is not null) {
+                HideTag();
+            }
+            return result == Button1;
+        }
+
         public async Task Continue() => await _sequencer.ContinueButton();
         #endregion
 

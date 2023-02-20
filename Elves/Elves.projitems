@@ -9,6 +9,7 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Battles\RebootElfBattle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\ScriptThreader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleRendererState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleResult.cs" />

@@ -18,7 +18,7 @@ namespace Elves.Scenes.Battle.UI {
             Endpoint = new Endpoint<int>(this);
         }
 
-        public Rectangle TextureSource { get; private set; } = DefaultTextureSource;
+        public Rectangle TextureSource { get; private set; } = Constants.BattleUI.ButtonDefaultSource;
         public int ID { get; set; }
 
         protected override bool GetInputPaused() {
@@ -31,10 +31,6 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         private readonly Interpolator interpolator = new(Constants.BattleUI.ButtonMovement);
-
-        private static readonly Rectangle DefaultTextureSource = new(0,16,32,16);
-        private static readonly Rectangle SelectedTextureSource = new(0,32,32,16);
-        private static readonly Rectangle PressedTextureSource = new(0,48,32,16);
 
         public readonly StringBuilder Label = new();
 
@@ -97,11 +93,11 @@ namespace Elves.Scenes.Battle.UI {
 
         private Rectangle GetTextureSource() {
             if(Pressed) {
-                return PressedTextureSource;
+                return Constants.BattleUI.ButtonPressedSource;
             } else if(Selected) {
-                return SelectedTextureSource;
+                return Constants.BattleUI.ButtonSelectedSoruce;
             } else {
-                return DefaultTextureSource;
+                return Constants.BattleUI.ButtonDefaultSource;
             }
         }
 
