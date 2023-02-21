@@ -18,12 +18,21 @@ namespace Elves.Scenes.Battle.UI {
             Endpoint = new Endpoint<int>(this);
         }
 
+        public Func<bool> CanPress = null;
+
         public Rectangle TextureSource { get; private set; } = Constants.BattleUI.ButtonDefaultSource;
         public int ID { get; set; }
 
+        private bool GetCanPress() {
+            if(CanPress is null) {
+                return true;
+            }
+            return CanPress.Invoke();
+        }
+
         protected override bool GetInputPaused() {
             /* Might need to ignore for turbo button pressing... */
-            return !interpolator.IsFinished || !currentState.OnScreen;
+            return !interpolator.IsFinished || !currentState.OnScreen || !GetCanPress();
         }
 
         protected override void SetInputPaused(bool value) {

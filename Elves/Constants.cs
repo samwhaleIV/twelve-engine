@@ -26,6 +26,8 @@ namespace Elves {
             public const string PlayerName = "You";
             public const string ContinueText = "Continue";
             public static readonly Color DefaultUserColor = Color.White;
+            public const int MiniGameWidth = 128;
+            public const int MiniGameHeight = 96;
         }
 
         public static class BattleUI {
@@ -48,15 +50,19 @@ namespace Elves {
             public const float SpeechBoxMarginScale = 6f;
             public const float SpeechBoxScale = 1.25f;
 
+            public const float MiniGameScale = 0.75f;
+
             public const float MarginScale = 1;
 
             public static readonly TimeSpan ButtonMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(275);
             public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(250);
             public static readonly TimeSpan TagMovement = TimeSpan.FromMilliseconds(250);
             public static readonly TimeSpan TagTextMovement = TimeSpan.FromMilliseconds(350);
 
             public static readonly TimeSpan HealthImpact = TimeSpan.FromMilliseconds(80);
+
+            public static readonly TimeSpan MiniGameMovement = TimeSpan.FromMilliseconds(300);
         }
 
         public static class UI {

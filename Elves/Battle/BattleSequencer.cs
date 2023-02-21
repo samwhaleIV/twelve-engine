@@ -142,6 +142,18 @@ namespace Elves.Battle {
             return await buttonTask.Task;
         }
 
+        public void ShowMiniGame(MiniGame miniGame) {
+            HideAllButtons();
+            miniGame.UpdateState(this);
+            var miniGameScreen = UI.MiniGameScreen;
+            miniGameScreen.MiniGame = miniGame;
+            miniGameScreen.Show(Now);
+        }
+
+        public void HideMiniGame() {
+            UI.MiniGameScreen.Hide(Now);
+        }
+
         protected override void ActionButtonClicked(int ID) {
             if(buttonTask == null) {
                 return;

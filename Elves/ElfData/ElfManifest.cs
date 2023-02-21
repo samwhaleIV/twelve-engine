@@ -27,7 +27,7 @@ namespace Elves.ElfData {
 
         /* This should probably be information loaded from a data file, but C# is so expressive... I can't help myself. */
         static ElfManifest() {
-            Add(Elf.Create<RebootElfBattle>(
+            Add(Elf.Create<MiniGameTest>(
                 ID: AutoID,
                 name: "Reboot Elf",
                 texture: "Elves/harmless-elf",

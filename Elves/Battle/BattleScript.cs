@@ -220,5 +220,12 @@ namespace Elves.Battle {
             ColorA = Color.FromNonPremultiplied(new Vector4(new Vector3(0.41f),1)),
             ColorB = Color.FromNonPremultiplied(new Vector4(new Vector3(0.66f),1))
         };
+
+        public async Task<TResult> ShowMiniGame<TResult>(ResultMiniGame<TResult> miniGame) {
+            _sequencer.ShowMiniGame(miniGame);
+            var result = await miniGame.GetResult();
+            _sequencer.HideMiniGame();
+            return result;
+        }
     }
 }
