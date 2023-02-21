@@ -4,6 +4,7 @@ using Elves.Battle;
 using Elves.ElfData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TwelveEngine.Font;
 using TwelveEngine.Shell;
 
 namespace Elves.Battles {
@@ -24,8 +25,8 @@ namespace Elves.Battles {
             }
 
             public override void Render(SpriteBatch spriteBatch,int width,int height) {
-                spriteBatch.Begin();
-                spriteBatch.Draw(Program.Textures.Nothing,new Rectangle(0,0,width,height),Color.Red);
+                spriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
+                spriteBatch.Draw(Program.Textures.TestingTestingCat,new Rectangle(0,0,width,height),Color.White);
                 spriteBatch.End();
             }
         }

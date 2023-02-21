@@ -49,9 +49,11 @@ namespace Elves.Scenes.Battle.UI {
         private FloatRectangle _area, _overlayArea;
 
         public void UpdateLayout(TimeSpan now,FloatRectangle viewport,float scale) {
+            scale = MathF.Round(scale);
             offscreenAnimator.Update(now);
             var size = new Vector2(Width,Height) * scale;
             FloatRectangle area = new(viewport.Center-size*0.5f,size);
+            area.Position = Vector2.Floor(area.Position);
 
             float startY = area.Y, endY = viewport.Bottom;
             if(_showing) (startY, endY) = (endY, startY);
@@ -62,7 +64,8 @@ namespace Elves.Scenes.Battle.UI {
             Vector2 overlaySize = Texture.Bounds.Size.ToVector2() * scale;
             Vector2 offset = SourceOffset * scale;
 
-            _overlayArea = new(area.Position - offset,overlaySize);
+            var overlayArea = new FloatRectangle(area.Position - offset,overlaySize);
+            _overlayArea = overlayArea;
         }
 
         private bool ShouldRender => MiniGame is not null && _showing || !offscreenAnimator.IsFinished;
