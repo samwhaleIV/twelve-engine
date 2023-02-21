@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using TwelveEngine.Shell;
 
@@ -18,5 +19,7 @@ namespace Elves.Battle {
 
         public abstract void Activate();
         public abstract void Deactivate();
+
+        public Color ClearColor { get; set; } = Color.FromNonPremultiplied(242,242,242,byte.MaxValue);
     }
 }

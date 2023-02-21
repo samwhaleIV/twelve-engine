@@ -22,9 +22,7 @@ namespace Elves.Scenes.Battle.UI {
         public MiniGameScreen MiniGameScreen { get; private init; } = new() {
             Width = Constants.Battle.MiniGameWidth,
             Height = Constants.Battle.MiniGameHeight,
-
-            Texture = Program.Textures.Nothing,
-            TextureSoruce = Rectangle.Empty //todo
+            Texture = Program.Textures.MiniGameTablet
         };
 
         public bool GetCanPress() {

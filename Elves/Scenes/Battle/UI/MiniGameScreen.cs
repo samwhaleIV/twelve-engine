@@ -14,7 +14,8 @@ namespace Elves.Scenes.Battle.UI {
         public int Height { get; init; }
 
         public Texture2D Texture { get; set; }
-        public Rectangle TextureSoruce { get; set; }
+
+        public Vector2 SourceOffset { get; private init; }  = Constants.BattleUI.MiniGameScreenInnerArea.Location.ToVector2();
 
         public RenderTarget2D Buffer { get; private set; }
 
@@ -45,7 +46,7 @@ namespace Elves.Scenes.Battle.UI {
             Buffer = null;
         }
 
-        private FloatRectangle _area;
+        private FloatRectangle _area, _overlayArea;
 
         public void UpdateLayout(TimeSpan now,FloatRectangle viewport,float scale) {
             offscreenAnimator.Update(now);
@@ -55,8 +56,13 @@ namespace Elves.Scenes.Battle.UI {
             float startY = area.Y, endY = viewport.Bottom;
             if(_showing) (startY, endY) = (endY, startY);
 
-            area.Y = offscreenAnimator.Interpolate(startY,endY);
+            area.Y = offscreenAnimator.SmoothStep(startY,endY);
             _area = area;
+
+            Vector2 overlaySize = Texture.Bounds.Size.ToVector2() * scale;
+            Vector2 offset = SourceOffset * scale;
+
+            _overlayArea = new(area.Position - offset,overlaySize);
         }
 
         private bool ShouldRender => MiniGame is not null && _showing || !offscreenAnimator.IsFinished;
@@ -66,7 +72,7 @@ namespace Elves.Scenes.Battle.UI {
                 return;
             }
             renderTargetStack.Push(Buffer);
-            graphicsDevice.Clear(Color.Black);
+            graphicsDevice.Clear(MiniGame.ClearColor);
             MiniGame.Render(spriteBatch,Width,Height);
             renderTargetStack.Pop();
         }
@@ -75,8 +81,9 @@ namespace Elves.Scenes.Battle.UI {
             if(!ShouldRender) {
                 return;
             }
-            spriteBatch.Begin(SpriteSortMode.Immediate);
+            spriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
             spriteBatch.Draw(Buffer,_area.ToRectangle(),Color.White);
+            spriteBatch.Draw(Texture,_overlayArea.ToRectangle(),Color.White);
             spriteBatch.End();
         }
     }

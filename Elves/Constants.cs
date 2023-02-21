@@ -39,6 +39,8 @@ namespace Elves {
             public static readonly Rectangle ButtonSelectedSoruce = new(0,32,48,16);
             public static readonly Rectangle ButtonPressedSource = new(0,48,48,16);
 
+            public static readonly Rectangle MiniGameScreenInnerArea = new(100,3,128,96);
+
             public const float TagBackgroundScale = 2.4f;
             public const float HealthImpactScale = 2;
             public const float ButtonScale = 1.25f;
