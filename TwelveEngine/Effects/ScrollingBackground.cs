@@ -1,18 +1,6 @@
 ﻿namespace TwelveEngine.Effects {
     public sealed class ScrollingBackground:InfinityBackground {
 
-        public static ScrollingBackground GetCheckered(TimeSpan? scrollTime = null) {
-            scrollTime ??= TimeSpan.FromSeconds(30);
-            return new ScrollingBackground() {
-                TileScale = 4f,
-                Scale = 2f,
-                Bulge = -0.75f,
-                ScrollTime = scrollTime.Value,
-                ColorA = Color.FromNonPremultiplied(new Vector4(new Vector3(0.41f),1)),
-                ColorB = Color.FromNonPremultiplied(new Vector4(new Vector3(0.66f),1))
-            };
-        }
-
         public Vector2 Direction { get; set; } = new(1,0);
 
         public TimeSpan ScrollTime { get; set; } = TimeSpan.FromSeconds(10);

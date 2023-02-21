@@ -15,24 +15,7 @@ namespace Elves.Scenes.Test {
             OnLoad.Add(Load);
 
             Impulse.Router.OnDirectionDown += Router_OnDirectionDown;
-
-            background = ScrollingBackground.GetCheckered();
-            background.Texture = Program.Textures.Nothing;
-            background.ScrollTime = TimeSpan.FromSeconds(30);
-            background.Direction = new(0.5f,0.8f);
-
-            OnRender.Add(RenderBackground);
-            OnUpdate.Add(UpdateBackground);
         }
-
-        private void RenderBackground() {
-            background.Render(SpriteBatch,Viewport);
-            background.Rotation = 45f;
-        }
-
-        private void UpdateBackground() => background.Update(Now);
-
-        private readonly ScrollingBackground background;
 
         private void Router_OnDirectionDown(TwelveEngine.Direction direction) {
             switch(direction) {
@@ -61,8 +44,6 @@ namespace Elves.Scenes.Test {
         private ManagedEventInstance song = null;
 
         private void Load() {
-            background.Load(Content);
-
             song = Program.AudioBank.Events["menu"].Create();
 
             song.SetParameter("BaseTrack",1);

@@ -19,6 +19,8 @@ namespace TwelveEngine {
         public const string ConfigFile = "te.config";
         public const string KeyBindsFile = "keybinds.config";
 
+        public const string ConsoleWindowTitle = "Twelve Engine";
+
         public const string TimeSpanFormat = "{0:hh\\:mm\\:ss\\.f}";
 
         public const long LogResetLimit = (long)(0.25 * 1048576); // megabytes * bytesPerMegabyte

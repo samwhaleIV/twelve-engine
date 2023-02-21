@@ -26,9 +26,21 @@ namespace Elves {
             public const string PlayerName = "You";
             public const string ContinueText = "Continue";
             public static readonly Color DefaultUserColor = Color.White;
+            public const int MiniGameWidth = 128;
+            public const int MiniGameHeight = 96;
         }
 
         public static class BattleUI {
+
+            public static readonly Rectangle SpeechBoxSource = new(48,16,72,48);
+            public static readonly Rectangle HealthBarSource = new(16,0,16,16);
+
+            public static readonly Rectangle ButtonDefaultSource = new(0,16,48,16);
+            public static readonly Rectangle ButtonSelectedSoruce = new(0,32,48,16);
+            public static readonly Rectangle ButtonPressedSource = new(0,48,48,16);
+
+            public static readonly Rectangle MiniGameScreenInnerArea = new(100,3,128,96);
+
             public const float TagBackgroundScale = 2.4f;
             public const float HealthImpactScale = 2;
             public const float ButtonScale = 1.25f;
@@ -36,17 +48,23 @@ namespace Elves {
             public const float NameTextScale = 1 / 2f;
             public const float TagTextScale = 1 / 3f;
             public const float ButtonTextScale = 1 / 3f;
+            public const float SpeechBoxTextScale = 1 / 3f;
+            public const float SpeechBoxMarginScale = 6f;
+            public const float SpeechBoxScale = 1.25f;
+
+            public const float MiniGameScale = 0.75f;
 
             public const float MarginScale = 1;
 
             public static readonly TimeSpan ButtonMovement = TimeSpan.FromMilliseconds(150);
-            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(250);
+            public static readonly TimeSpan SpeechBoxMovement = TimeSpan.FromMilliseconds(275);
             public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(250);
             public static readonly TimeSpan TagMovement = TimeSpan.FromMilliseconds(250);
             public static readonly TimeSpan TagTextMovement = TimeSpan.FromMilliseconds(350);
 
             public static readonly TimeSpan HealthImpact = TimeSpan.FromMilliseconds(80);
 
+            public static readonly TimeSpan MiniGameMovement = TimeSpan.FromMilliseconds(300);
         }
 
         public static class UI {

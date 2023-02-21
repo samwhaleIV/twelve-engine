@@ -8,20 +8,23 @@ namespace Elves.Scenes.Battle.UI {
 
     public sealed class HealthBar:UIElement {
 
-        public HealthBar() => Texture = Program.Textures.Panel;
+        public Rectangle TextureSource { get; private init; } = Constants.BattleUI.HealthBarSource;
+        public HealthBarAlignment Alignment { get; private init; }
+        public FloatRectangle UVArea { get; private init; }
 
-        public Rectangle TextureSource { get; set; }
+        public HealthBar(HealthBarAlignment alignment) {
+            Alignment = alignment;
+            Texture = Program.Textures.Panel;
+            UVArea = GetUVArea();
+        }
 
-        public FloatRectangle UVArea {
-            get {
-                Vector2 textureSize = new(Texture.Width,Texture.Height);
-                return new FloatRectangle(TextureSource.X / textureSize.X,TextureSource.Y / textureSize.Y,TextureSource.Size.ToVector2() / textureSize);
-            }
+        private FloatRectangle GetUVArea() {
+            Rectangle textureSource = TextureSource;
+            Vector2 textureSize = new(Texture.Width,Texture.Height);
+            return new(textureSource.Location.ToVector2() / textureSize,textureSource.Size.ToVector2() / textureSize);
         }
 
         private readonly Interpolator impactAnimator = new(Constants.BattleUI.HealthImpact);
-
-        public HealthBarAlignment Alignment { get; set; } = HealthBarAlignment.Left;
 
         private float _value;
 
@@ -48,11 +51,11 @@ namespace Elves.Scenes.Battle.UI {
             impactAnimator.Reset();
         }
 
-        public (float Start,float End) GetOffColorRange() {
+        public (float Start, float End) GetOffColorRange() {
             if(Alignment == HealthBarAlignment.Left) {
-                return (Value,1);
+                return (Value, 1);
             } else {
-                return (0,1-Value);
+                return (0, 1-Value);
             }
         }
 

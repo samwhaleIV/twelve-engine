@@ -5,11 +5,6 @@ using Elves.ElfData;
 namespace Elves.Battles {
     public sealed class DebugBattle:BattleScript {
 
-        public override void Setup() {
-            CreatePlayer();
-            CreateActor(ElfManifest.Get(ElfID.HarmlessElf));
-        }
-
         public override async Task<BattleResult> Main() {     
             await Tag("Press any button to win.");
             int result = await GetButton("No","No","No","Yes");

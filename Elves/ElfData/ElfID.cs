@@ -6,7 +6,7 @@ namespace Elves.ElfData {
     /// </summary>
     public enum ElfID {
         None = -1,
-        HarmlessElf,
+        RebootElf,
         RedGirlElf,
         YellowElf,
         MagicElf,

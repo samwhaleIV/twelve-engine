@@ -4,11 +4,23 @@ using System.Threading.Tasks;
 using TwelveEngine;
 using Elves.Animation;
 using Elves.ElfData;
+using TwelveEngine.Shell;
+using TwelveEngine.Effects;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace Elves.Battle {
     public abstract class BattleScript {
 
-        public abstract void Setup();
+        public virtual void Setup() {
+            CreatePlayer();
+            CreateActor(ElfManifest.Get(ElfSource.ID));
+        }
+
+        public void TODO() {
+            throw new NotImplementedException();
+        }
+
         public abstract Task<BattleResult> Main();
 
         /// <remarks>DEPENDENCY INJECTION, WOOOOOOO!</remarks>
@@ -44,6 +56,18 @@ namespace Elves.Battle {
         public void HideTag() => _sequencer.HideTag();
 
         public async Task<int> GetButton(params string[] options) => await _sequencer.GetButton(false,options);
+
+        public async Task<bool> YesOrNo(string tag = null) {
+            if(tag is not null) {
+                SetTag(tag);
+            }
+            var result = await _sequencer.GetButton(false,"Yes","No");
+            if(tag is not null) {
+                HideTag();
+            }
+            return result == Button1;
+        }
+
         public async Task Continue() => await _sequencer.ContinueButton();
         #endregion
 
@@ -110,7 +134,6 @@ namespace Elves.Battle {
         }
 
         private UserData SetActor(BattleSprite sprite) {
-            _sequencer.Background.Color = sprite.UserData.Color;
             var userData = sprite.UserData;
             _actorData = userData;
             _actorSprite = sprite;
@@ -185,6 +208,24 @@ namespace Elves.Battle {
                     SetTag("Especially you.");
                     break;
             }
+        }
+
+        public virtual ScrollingBackground CreateBackground() => new() {
+            TileScale = 4f,
+            Scale = 2f,
+            Bulge = -0.75f,
+            Color = ElfSource.Color,
+            Texture = Program.Textures.Nothing,
+            ScrollTime = Constants.AnimationTiming.ScrollingBackgroundDefault,
+            ColorA = Color.FromNonPremultiplied(new Vector4(new Vector3(0.41f),1)),
+            ColorB = Color.FromNonPremultiplied(new Vector4(new Vector3(0.66f),1))
+        };
+
+        public async Task<TResult> ShowMiniGame<TResult>(ResultMiniGame<TResult> miniGame) {
+            _sequencer.ShowMiniGame(miniGame);
+            var result = await miniGame.GetResult();
+            _sequencer.HideMiniGame();
+            return result;
         }
     }
 }

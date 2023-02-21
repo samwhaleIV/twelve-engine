@@ -19,24 +19,41 @@ namespace Elves.Scenes.Battle.UI {
 
         private static readonly Color HealthBarOffColor = new(25,25,25,255);
 
+        public MiniGameScreen MiniGameScreen { get; private init; } = new() {
+            Width = Constants.Battle.MiniGameWidth,
+            Height = Constants.Battle.MiniGameHeight,
+            Texture = Program.Textures.MiniGameTablet
+        };
+
+        public bool GetCanPress() {
+            return !MiniGameScreen.ExternalInputDisabled;
+        }
+
         public BattleUI(InputGameState owner) {
             this.owner = owner;
 
             foreach(var button in actionButtons) {
-                interactableElements.Add(button);
+                _interactableElements.Add(button);
                 button.OnActivated += ButtonClicked;
+                button.CanPress = GetCanPress;
             }
 
-            Button1 = actionButtons[0];
-            Button2 = actionButtons[1];
-            Button3 = actionButtons[2];
-            Button4 = actionButtons[3];
+            /* I hate this but I also love it at the same time. */
+            (Button1,Button2,Button3,Button4) = (actionButtons[0],actionButtons[1],actionButtons[2],actionButtons[3]);
 
             DefaultFocusElement = Button1;
 
             LoadHealthBarEffect();
 
             owner.OnInputActivated += FocusDefault;
+
+            MiniGameScreen.Load(owner.GraphicsDevice);
+            owner.OnUnload.Add(MiniGameScreen.Unload);
+            owner.OnPreRender.Add(PreRenderMiniGame,EventPriority.First);
+        }
+
+        private void PreRenderMiniGame() {
+            MiniGameScreen.PreRender(owner.GraphicsDevice,owner.SpriteBatch,owner.RenderTarget);
         }
 
         private void LoadHealthBarEffect() {
@@ -82,30 +99,19 @@ namespace Elves.Scenes.Battle.UI {
 
         private Rectangle Viewport => owner.Viewport.Bounds;
 
-        private static readonly Rectangle HealthBarSource = new(16,0,16,16);
 
-        private readonly HealthBar playerHealthBar = new() {
-            Alignment = HealthBarAlignment.Left,
-            TextureSource = HealthBarSource
-        };
-        private readonly HealthBar targetHealthBar = new() {
-            Alignment = HealthBarAlignment.Right,
-            TextureSource = HealthBarSource
-        };
+        private readonly HealthBar playerHealthBar = new(HealthBarAlignment.Left), targetHealthBar = new(HealthBarAlignment.Right);
 
-        private readonly Tagline tagline = new();
-        private readonly SpeechBox speechBox = new();
-
-        public SpeechBox SpeechBox => speechBox;
-        public Tagline Tagline => tagline;
+        public SpeechBox SpeechBox { get; private init; } = new();
+        public Tagline Tagline { get; private init; } = new();
       
-        private readonly List<Button> interactableElements = new();
+        private readonly List<Button> _interactableElements = new();
 
         #region INTERACTION AGENT
 
         protected override TimeSpan GetCurrentTime() => owner.Now;
 
-        protected override IEnumerable<UIElement> GetElements() => interactableElements;
+        protected override IEnumerable<UIElement> GetElements() => _interactableElements;
 
         #endregion
         #region UPDATE, RENDER, & LAYOUT
@@ -123,8 +129,10 @@ namespace Elves.Scenes.Battle.UI {
 
             UpdateActionButtons(viewport,now,scale,margin,halfMargin);
             UpdateHealthBars(viewport,scale,margin);
-            speechBox.Update(now,viewport);
-            tagline.Update(now,viewport,scale);
+            SpeechBox.Update(now,viewport,scale*Constants.BattleUI.SpeechBoxScale);
+            Tagline.Update(now,viewport,scale);
+
+            MiniGameScreen.UpdateLayout(now,viewport,scale * Constants.BattleUI.MiniGameScale);
         }
 
         public void UpdateActionButtons(FloatRectangle viewport,TimeSpan now,float scale,float margin,float halfMargin) {
@@ -158,7 +166,6 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         private void SetHealthBarEffectRange(HealthBar healthBar) {
-
             (float start,float end) = healthBar.GetOffColorRange();
 
             FloatRectangle uvArea = healthBar.UVArea;
@@ -185,26 +192,14 @@ namespace Elves.Scenes.Battle.UI {
             spriteBatch.End();
         }
 
-        private float GetNameTextScale() {
-            return _scale * Constants.BattleUI.NameTextScale;
-        }
-
-        private float GetButtonTextScale() {
-            return _scale * Constants.BattleUI.ButtonTextScale;
-        }
-
-        private float GetTaglineTextScale() {
-            return _scale * Constants.BattleUI.TagTextScale;
-        }
-
         private void RenderNames(UserData playerData,UserData targetData) {
-            float usernameScale = GetNameTextScale();
+            float usernameScale = _scale * Constants.BattleUI.NameTextScale;
             Color usernameColor = Color.White;
             if(playerData != null && playerData.Name != null) {
                 Fonts.RetroFont.Draw(
                     playerData.Name,
                     new Vector2((int)playerHealthBar.ScreenArea.X,(int)(playerHealthBar.ScreenArea.Bottom + playerHealthBar.ScreenArea.Top)),
-                    GetNameTextScale(),usernameColor
+                    usernameScale,usernameColor
                 );
             }
             if(targetData != null && targetData.Name != null) {
@@ -217,7 +212,7 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         private void RenderActionButtonText() {
-            float buttonTextScale = GetButtonTextScale();
+            float buttonTextScale = _scale * Constants.BattleUI.ButtonTextScale;
             foreach(var button in actionButtons) {
                 button.DrawText(Fonts.RetroFont,buttonTextScale,Color.White);
             }
@@ -225,10 +220,11 @@ namespace Elves.Scenes.Battle.UI {
 
         private void RenderTagline(SpriteBatch spriteBatch) {
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-            tagline.Draw(spriteBatch);
+            Tagline.Draw(spriteBatch);
             spriteBatch.End();
             Fonts.RetroFont.Begin(spriteBatch);
-            tagline.DrawText(Fonts.RetroFont,GetTaglineTextScale());
+            float tagTextScale = _scale * Constants.BattleUI.TagTextScale;
+            Tagline.DrawText(Fonts.RetroFont,tagTextScale);
             Fonts.RetroFont.End();
         }
 
@@ -239,11 +235,12 @@ namespace Elves.Scenes.Battle.UI {
             Fonts.RetroFont.End();
 
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-            speechBox.Draw(spriteBatch,targetData.Color);
+            SpeechBox.Draw(spriteBatch,targetData.Color);
             spriteBatch.End();
 
             Fonts.RetroFont.Begin(spriteBatch);
-            speechBox.DrawText(Fonts.RetroFont);
+            float speechBoxMargin = _scale * Constants.BattleUI.SpeechBoxMarginScale;
+            SpeechBox.DrawText(Fonts.RetroFont,_scale * Constants.BattleUI.SpeechBoxTextScale,speechBoxMargin);
             Fonts.RetroFont.End();
 
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
@@ -256,6 +253,8 @@ namespace Elves.Scenes.Battle.UI {
             Fonts.RetroFont.Begin(spriteBatch);
             RenderActionButtonText();
             Fonts.RetroFont.End();
+
+            MiniGameScreen.Render(spriteBatch);
 
             RenderTagline(spriteBatch);
         }

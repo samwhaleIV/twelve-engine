@@ -27,5 +27,9 @@ namespace Elves {
         public readonly Texture2D Carousel = Load("carousel");
 
         public readonly Texture2D SettingsPhone = Load("settings-phone");
+
+        public readonly Texture2D MiniGameTablet = Load("minigame-tablet");
+
+        public readonly Texture2D TestingTestingCat = Load("testing-testing-cat");
     }
 }

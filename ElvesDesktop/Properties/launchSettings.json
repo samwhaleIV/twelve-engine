@@ -4,16 +4,16 @@
       "commandName": "WSL2",
       "distributionName": ""
     },
-    "Debug Ortho": {
-      "commandName": "Project",
-      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console debugortho"
-    },
     "Dev": {
       "commandName": "Project",
       "commandLineArgs": "nobattlerandom nofailsafe console"
     },
     "No Flags": {
       "commandName": "Project"
+    },
+    "Debug (HUD)": {
+      "commandName": "Project",
+      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console"
     }
   }
 }

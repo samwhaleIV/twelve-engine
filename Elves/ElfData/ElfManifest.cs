@@ -16,24 +16,29 @@ namespace Elves.ElfData {
 
         private static int _IDCounter = 0;
 
-        private static ElfID AutoID {
-            get {
-                int ID = _IDCounter;
-                _IDCounter++;
-                return (ElfID)ID;
-            }
+        private static ElfID GetAutoID() {
+            int ID = _IDCounter;
+            _IDCounter++;
+            return (ElfID)ID;
         }
+
+        private static ElfID AutoID => GetAutoID();
         public static int Count => manifest.Count;
 
         /* This should probably be information loaded from a data file, but C# is so expressive... I can't help myself. */
         static ElfManifest() {
-            Add(Elf.Create<DebugBattle>(
+            Add(Elf.Create<MiniGameTest>(
                 ID: AutoID,
-                name: "Harmless Elf",
+                name: "Reboot Elf",
                 texture: "Elves/harmless-elf",
                 color: Color.Red,
                 baseHeight: 47,
-                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
+                frameSets: new FrameSet[] {
+                    CreateStatic(0,0,19,47),
+                    CreateIdleBlink(new(0,0,19,47),new(19,0,19,47)),
+                    CreateDead(new(38,0,19,47)),
+                    CreateSlideshowAndBack(AnimationType.Hurt,AnimationMode.Once,new(0,47,19,47),3)
+                }
             ));
             Add(Elf.Create<DebugBattle>(
                 ID: AutoID,

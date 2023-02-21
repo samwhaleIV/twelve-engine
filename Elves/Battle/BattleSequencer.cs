@@ -67,9 +67,10 @@ namespace Elves.Battle {
             await transitionTask.Task;
         }
 
-        public BattleSequencer(BattleScript script,string background):base(background) => Initialize(script);
-        public BattleSequencer(BattleScript script,Texture2D background):base(background) => Initialize(script);
-        public BattleSequencer(BattleScript script):base() => Initialize(script);
+        public BattleSequencer(BattleScript script) : base() {
+            Initialize(script);
+            Background = script.CreateBackground();
+        }
 
         private void AddScriptToScheduler() => GameLoopSyncContext.RunTask(ExecuteScript);
 
@@ -139,6 +140,18 @@ namespace Elves.Battle {
             }
             buttonTask = new TaskCompletionSource<int>();
             return await buttonTask.Task;
+        }
+
+        public void ShowMiniGame(MiniGame miniGame) {
+            HideAllButtons();
+            miniGame.UpdateState(this);
+            var miniGameScreen = UI.MiniGameScreen;
+            miniGameScreen.MiniGame = miniGame;
+            miniGameScreen.Show(Now);
+        }
+
+        public void HideMiniGame() {
+            UI.MiniGameScreen.Hide(Now);
         }
 
         protected override void ActionButtonClicked(int ID) {
