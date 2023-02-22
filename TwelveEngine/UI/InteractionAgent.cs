@@ -124,7 +124,7 @@ namespace TwelveEngine.UI {
         public TElement PressedElement {
             get => _pressedElement;
             private set {
-                if(_pressedElement == value || IsTransitioning || value is not null && !ElementCanFulfilInteraction(value)) {
+                if(IsTransitioning || _pressedElement == value || value is not null && !ElementCanFulfilInteraction(value)) {
                     /* Do not set a new pressed element if it is waiting for an animation during a page */
                     return;
                 }
@@ -231,7 +231,7 @@ namespace TwelveEngine.UI {
         /// </summary>
         /// <param name="direction">The direction representing the button that was pressed.</param>
         private void DirectionDown(Direction direction,bool rollover = false) {
-            if(direction == Direction.None || PressedElement is not null || AnyMouseButtonCaptured) {
+            if(IsTransitioning || direction == Direction.None || PressedElement is not null || AnyMouseButtonCaptured) {
                 return;
             }
 
@@ -278,7 +278,7 @@ namespace TwelveEngine.UI {
         /// A button, such as enter, has been released. Fire after <c>AcceptDown</c>.
         /// </summary>
         private void AcceptUp() {
-            if(PressedElement is null || AnyMouseButtonCaptured) {
+            if(IsTransitioning || PressedElement is null || AnyMouseButtonCaptured) {
                 return;
             }
             TryActivateElement(PressedElement);
@@ -290,7 +290,7 @@ namespace TwelveEngine.UI {
         /// Fire when the mouse button has been released.
         /// </summary>
         private void MouseUp() {
-            if(_keyboardIsPressingElement || PressedElement is null) {
+            if(IsTransitioning || _keyboardIsPressingElement || PressedElement is null) {
                 return;
             }
             if(_hiddenMouseHoverElement == PressedElement) {
@@ -303,7 +303,7 @@ namespace TwelveEngine.UI {
         /// A way to implement a keyboard/gamepad back button. Not all pages need to have a back method.
         /// </summary>
         private void CancelDown() {
-            if(PressedElement is not null || AnyMouseButtonCaptured || IsTransitioning) {
+            if(IsTransitioning || PressedElement is not null || AnyMouseButtonCaptured) {
                 return;
             }
             BackButtonPressed();
@@ -347,7 +347,6 @@ namespace TwelveEngine.UI {
             impulse.OnDirectionDown -= DirectionDown;
             impulse.OnFocusDown -= FocusDown;
         }
-
 
         private static bool ElementCanFulfilInteraction(TElement element) {
             /* Wow, I can't beleive I put 'element.Endpoint is not null' here... Had to sanity check this when debugging a new UI. */

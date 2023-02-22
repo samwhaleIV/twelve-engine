@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)ElfData\" />
+    <Folder Include="$(MSBuildThisFileDirectory)MiniGames\" />
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Elements\" />
     <Folder Include="$(MSBuildThisFileDirectory)Scenes\SaveSelect\Pages\" />
   </ItemGroup>

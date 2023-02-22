@@ -26,7 +26,7 @@ namespace Elves.Scenes.Battle.UI {
         };
 
         public bool GetCanPress() {
-            return !MiniGameScreen.ExternalInputDisabled;
+            return !MiniGameScreen.IsActive;
         }
 
         public BattleUI(InputGameState owner) {

@@ -23,9 +23,19 @@ namespace Elves.Scenes.Battle.UI {
 
         public bool _showing = false;
 
+        public MiniGameScreen() {
+            offscreenAnimator.OnEnd += OffscreenAnimator_OnEnd;
+        }
+
         public void Show(TimeSpan now) {
             offscreenAnimator.ResetCarryOver(now);
             _showing = true;
+        }
+
+        private void OffscreenAnimator_OnEnd() {
+            if(!_showing) {
+                return;
+            }
             MiniGame?.Activate();
         }
 
@@ -39,7 +49,7 @@ namespace Elves.Scenes.Battle.UI {
             Buffer = new(graphicsDevice,Width,Height,false,SurfaceFormat.Color,DepthFormat.None,0,RenderTargetUsage.PreserveContents);
         }
 
-        public bool ExternalInputDisabled => _showing || !offscreenAnimator.IsFinished;
+        public bool IsActive => _showing || !offscreenAnimator.IsFinished;
 
         public void Unload() {
             Buffer?.Dispose();
