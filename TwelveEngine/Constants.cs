@@ -63,6 +63,7 @@ namespace TwelveEngine {
             public const string DrawDebug = "drawdebug";
             public const string Console = "console";
             public const string FMODProfile = "fmodprofile";
+            public const string InteractionAgentDiagnostics = "intagentdiag";
         }
 
         public static class UI {

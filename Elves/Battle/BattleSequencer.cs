@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using TwelveEngine;
-using Microsoft.Xna.Framework.Graphics;
 using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
 using TwelveEngine.Shell;
@@ -22,9 +21,6 @@ namespace Elves.Battle {
             Script = script;
             transitionTask = new TaskCompletionSource();
             OnLoad.Add(LoadSequencer);
-#if DEBUG
-            Mouse.Router.OnAltPress += () => OnBattleEnd?.Invoke(this,BattleResult.PlayerWon,Script.ElfSource.ID);
-#endif
         }
 
         private void LoadSequencer() {
@@ -143,6 +139,7 @@ namespace Elves.Battle {
         }
 
         public void ShowMiniGame(MiniGame miniGame) {
+            UI.ResetInteractionState();
             HideAllButtons();
             miniGame.UpdateState(this);
             var miniGameScreen = UI.MiniGameScreen;
@@ -198,10 +195,13 @@ namespace Elves.Battle {
         }
 
         private void HideAllButtons() {
-            UI.Button1.Hide(Now);
-            UI.Button2.Hide(Now);
-            UI.Button3.Hide(Now);
-            UI.Button4.Hide(Now);
+            for(int i = 0;i<BUTTON_COUNT;i++) {
+                var button = UI.GetActionButton(i);
+                button.ClearKeyFocus();
+                button.CanInteract = false;
+                button.Hide(Now);
+            }
+            UI.DefaultFocusElement = null;
         }
 
         private void ConfigDoubleButtons() {

@@ -2,12 +2,18 @@
 using TwelveEngine.Effects;
 using TwelveEngine.Shell;
 using Elves.Battle;
+using TwelveEngine;
 
 namespace Elves.Scenes.Battle {
     public abstract class BattleRendererScene:Scene3D {
 
         public BattleRendererScene() {
-            Initialize();
+            UIScaleModifier = Constants.UI.BattleSceneScaleModifier;
+            OnLoad.Add(Load);
+            OnUpdate.Add(Update);
+            OnRender.Add(Render);
+            OnPreRender.Add(RenderBackground);
+            Camera.Orthographic = true;
         }
 
         private BattleUI battleUI;
@@ -23,23 +29,21 @@ namespace Elves.Scenes.Battle {
             Background.Render(SpriteBatch,Viewport);
         }
 
-        private void Initialize() {
-            UIScaleModifier = Constants.UI.BattleSceneScaleModifier;
-            OnLoad.Add(Load);
-            OnUpdate.Add(UpdateUI);
-            OnRender.Add(Render);
-            OnPreRender.Add(RenderBackground);
-            Camera.Orthographic = true;
-        }
-
         private void Load() {
             InitializeBattleUI();
             Background?.Load(Content);
         }
 
-        private void UpdateUI() {
+        private void Update() {
             battleUI.UpdateLayout(UIScale);
-            CustomCursor.State = battleUI.CursorState;
+            var minigameScreen = UI.MiniGameScreen;
+            var miniGame = minigameScreen.MiniGame;
+            bool updateMiniGame = miniGame is not null && miniGame.IsActive;
+            CursorState miniGameCursorState = CursorState.Default;
+            if(updateMiniGame) {
+                miniGameCursorState = miniGame.Update();
+            }
+            CustomCursor.State = updateMiniGame ? miniGameCursorState : battleUI.CursorState;            
         }
 
         protected abstract UserData GetPlayerData();

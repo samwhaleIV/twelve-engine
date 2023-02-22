@@ -1,5 +1,5 @@
 ﻿namespace TwelveEngine {
     public enum CursorState {
-        Default, Interact, Pressed
+        Default, Interact, Pressed, None
     }
 }

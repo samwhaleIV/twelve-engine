@@ -12,6 +12,7 @@ namespace Elves {
         public readonly Texture2D CursorDefault = Load("Cursor/default");
         public readonly Texture2D CursorAlt1 = Load("Cursor/alt-1");
         public readonly Texture2D CursorAlt2 = Load("Cursor/alt-2");
+        public readonly Texture2D CursorNone = Load("Cursor/none");
         public readonly Texture2D Drowning = Load("drowning");
         public readonly Texture2D Lock = Load("lock");
         public readonly Texture2D Missing = Load("missing");

@@ -23,9 +23,19 @@ namespace Elves.Scenes.Battle.UI {
 
         public bool _showing = false;
 
+        public MiniGameScreen() {
+            offscreenAnimator.OnEnd += OffscreenAnimator_OnEnd;
+        }
+
         public void Show(TimeSpan now) {
             offscreenAnimator.ResetCarryOver(now);
             _showing = true;
+        }
+
+        private void OffscreenAnimator_OnEnd() {
+            if(!_showing) {
+                return;
+            }
             MiniGame?.Activate();
         }
 
@@ -39,14 +49,14 @@ namespace Elves.Scenes.Battle.UI {
             Buffer = new(graphicsDevice,Width,Height,false,SurfaceFormat.Color,DepthFormat.None,0,RenderTargetUsage.PreserveContents);
         }
 
-        public bool ExternalInputDisabled => _showing || !offscreenAnimator.IsFinished;
+        public bool IsActive => _showing || !offscreenAnimator.IsFinished;
 
         public void Unload() {
             Buffer?.Dispose();
             Buffer = null;
         }
 
-        private FloatRectangle _area, _overlayArea;
+        private Rectangle _area, _overlayArea;
 
         public void UpdateLayout(TimeSpan now,FloatRectangle viewport,float scale) {
             scale = MathF.Round(scale);
@@ -59,13 +69,14 @@ namespace Elves.Scenes.Battle.UI {
             if(_showing) (startY, endY) = (endY, startY);
 
             area.Y = offscreenAnimator.SmoothStep(startY,endY);
-            _area = area;
+            _area = area.ToRectangle();
+            MiniGame?.UpdateBounds(_area);
 
             Vector2 overlaySize = Texture.Bounds.Size.ToVector2() * scale;
             Vector2 offset = SourceOffset * scale;
 
             var overlayArea = new FloatRectangle(area.Position - offset,overlaySize);
-            _overlayArea = overlayArea;
+            _overlayArea = overlayArea.ToRectangle();
         }
 
         private bool ShouldRender => MiniGame is not null && _showing || !offscreenAnimator.IsFinished;
@@ -85,8 +96,8 @@ namespace Elves.Scenes.Battle.UI {
                 return;
             }
             spriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp);
-            spriteBatch.Draw(Buffer,_area.ToRectangle(),Color.White);
-            spriteBatch.Draw(Texture,_overlayArea.ToRectangle(),Color.White);
+            spriteBatch.Draw(Buffer,_area,Color.White);
+            spriteBatch.Draw(Texture,_overlayArea,Color.White);
             spriteBatch.End();
         }
     }
