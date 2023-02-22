@@ -51,7 +51,7 @@ namespace Elves {
 
             if(!Flags.Get(Constants.Flags.OSCursor)) {
                 AddCustomCursors();
-                CustomCursor.UseCustomCursor = true;
+                CustomCursor.Enabled = true;
             }
 
             SaveDirectory = saveDirectory;
@@ -71,7 +71,8 @@ namespace Elves {
         private static void AddCursorState(
             CursorState cursorState,Texture2D texture,int? originX = null,int? originY = null
         ) {
-            CustomCursor.Sources.Add(cursorState,MouseCursor.FromTexture2D(texture,originX ?? 0,originY ?? 0));
+            MouseCursorData data = new(texture,MouseCursor.FromTexture2D(texture,originX ?? 0,originY ?? 0));
+            CustomCursor.Sources.Add(cursorState,data);
         }
 
         public static BankWrapper AudioBank { get; private set; }
@@ -101,6 +102,7 @@ namespace Elves {
             AddCursorState(CursorState.Default,Textures.CursorDefault,32,32);
             AddCursorState(CursorState.Interact,Textures.CursorAlt1,32,32);
             AddCursorState(CursorState.Pressed,Textures.CursorAlt2,32,32);
+            AddCursorState(CursorState.None,Textures.CursorNone,32,32);
         }
     }
 }

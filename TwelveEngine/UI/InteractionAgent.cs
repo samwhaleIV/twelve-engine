@@ -4,6 +4,20 @@ using TwelveEngine.Shell;
 namespace TwelveEngine.UI {
     public abstract class InteractionAgent<TElement> where TElement : InteractionElement<TElement> {
 
+        private static void WriteDiagnostics(string message) {
+            Console.WriteLine($"[Interaction Agent] {message}");
+        }
+
+        private static string ElementNameOrDefault(object element) {
+            if(element is null) {
+                return "null";
+            } else {
+                return element.ToString();
+            }
+        }
+
+        private static readonly bool DiagnosticsEnabled = Flags.Get(Constants.Flags.InteractionAgentDiagnostics);
+
         /// <summary>
         /// See <see cref="GetLastEventWasFromMouse"/>
         /// </summary>
@@ -60,6 +74,19 @@ namespace TwelveEngine.UI {
         }
 
         private bool _keyboardIsPressingElement = false;
+        private bool KeyboardIsPressingElement {
+            get => _keyboardIsPressingElement;
+            set {
+                if(value == _keyboardIsPressingElement) {
+                    return;
+                }
+                _keyboardIsPressingElement = value;
+                if(!DiagnosticsEnabled) {
+                    return;
+                }
+                WriteDiagnostics($"Keyboard is pressing element flag set to {value}.");
+            }
+        }
         private TElement _selectedElement = null, _pressedElement = null;
 
         /// <summary>
@@ -105,6 +132,9 @@ namespace TwelveEngine.UI {
                 }
 
                 _selectedElement = value;
+                if(DiagnosticsEnabled) {
+                    WriteDiagnostics($"Selected element set to {ElementNameOrDefault(value)}.");
+                }
                 value?.UpdateInteractionState(InteractionStateChange.SetSelected);
             }
         }
@@ -130,6 +160,9 @@ namespace TwelveEngine.UI {
                 }
                 _pressedElement?.UpdateInteractionState(InteractionStateChange.ClearPressed);
                 _pressedElement = value;
+                if(DiagnosticsEnabled) {
+                    WriteDiagnostics($"Pressed element set to {ElementNameOrDefault(value)}.");
+                }
                 value?.UpdateInteractionState(InteractionStateChange.SetPressed);
             }
         }
@@ -147,6 +180,10 @@ namespace TwelveEngine.UI {
                 }
                 hoverElement = element;
                 break;
+            }
+
+            if(DiagnosticsEnabled && _hiddenMouseHoverElement != hoverElement) {
+                WriteDiagnostics($"Hidden hover element set to {ElementNameOrDefault(hoverElement)}.");
             }
             _hiddenMouseHoverElement = hoverElement;
 
@@ -178,11 +215,20 @@ namespace TwelveEngine.UI {
 
         private void MouseDown() {
             if(PressedElement is not null || SelectedElement is null || RightMouseButtonIsCaptured) {
+                if(DiagnosticsEnabled) {
+                    WriteDiagnostics("Mouse is down, could not fulfill.");
+                }
                 return;
             }
             if(_hiddenMouseHoverElement == null) {
+                if(DiagnosticsEnabled) {
+                    WriteDiagnostics("Mouse is down, no hidden hover element.");
+                }
                 SelectedElement = null;
                 return;
+            }
+            if(DiagnosticsEnabled) {
+                WriteDiagnostics("Mouse is down.");
             }
             if(SelectedElement != _hiddenMouseHoverElement) {
                 SelectedElement = _hiddenMouseHoverElement;
@@ -195,14 +241,21 @@ namespace TwelveEngine.UI {
         /// </summary>
         private void AcceptDown() {
             if(PressedElement is not null || AnyMouseButtonCaptured) {
+                if(DiagnosticsEnabled) {
+                    WriteDiagnostics("Accept key is down, could not fulfill.");
+                }
                 return;
+            }
+            if(DiagnosticsEnabled) {
+                WriteDiagnostics("Accept key is down.");
             }
             SelectedElement ??= GetLastSelectedOrDefault();
             if(SelectedElement is null) {
                 return;
             }
             PressedElement = SelectedElement;
-            _keyboardIsPressingElement = true;
+            KeyboardIsPressingElement = true;
+
         }
 
         /* If performance mattered, you could do this with arithmetic and setting enum values to specific integers */
@@ -281,20 +334,28 @@ namespace TwelveEngine.UI {
             if(IsTransitioning || PressedElement is null || AnyMouseButtonCaptured) {
                 return;
             }
+            if(DiagnosticsEnabled) {
+                WriteDiagnostics("Try activate element (Accept key released.)");
+            }
             TryActivateElement(PressedElement);
             PressedElement = null;
-            _keyboardIsPressingElement = false;
+            KeyboardIsPressingElement = false;
         }
 
         /// <summary>
         /// Fire when the mouse button has been released.
         /// </summary>
         private void MouseUp() {
-            if(IsTransitioning || _keyboardIsPressingElement || PressedElement is null) {
+            if(IsTransitioning || KeyboardIsPressingElement || PressedElement is null) {
                 return;
             }
             if(_hiddenMouseHoverElement == PressedElement) {
+                if(DiagnosticsEnabled) {
+                    WriteDiagnostics("Try activate element (Mouse click released.)");
+                }
                 TryActivateElement(PressedElement);
+            } else if(DiagnosticsEnabled) {
+                WriteDiagnostics("Mouse button released, but the hidden hover element did not match.");
             }
             PressedElement = null;
         }
@@ -369,7 +430,7 @@ namespace TwelveEngine.UI {
             }
 
             if(
-                !_keyboardIsPressingElement && PressedElement is not null &&
+                !KeyboardIsPressingElement && PressedElement is not null &&
                 _hiddenMouseHoverElement == PressedElement &&
                 LeftMouseButtonIsCaptured
             ) {

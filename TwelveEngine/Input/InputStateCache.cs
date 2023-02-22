@@ -41,12 +41,11 @@ namespace TwelveEngine.Input {
             KeyboardChanged = keyboardState != LastKeyboard;
             GamePadChanged = gamePadState != LastGamePad;
 
-            /* Priority for keyboard or gamepad events, even if the mouse data changed in the same frame. */
-            if(gameIsActive && MouseChanged) {
-                LastInputEventWasFromMouse = true;
-            }
             if(gameIsActive && (KeyboardChanged || GamePadChanged)) {
                 LastInputEventWasFromMouse = false;
+            }
+            if(gameIsActive && MouseChanged) {
+                LastInputEventWasFromMouse = true;
             }
 
             LastMouse = mouseState;

@@ -1,20 +1,22 @@
 ﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
+using TwelveEngine.Input;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Shell {
     public class GameState {
 
-        private GameStateManager _game = null;
+        internal GameStateManager Game { get; private set; }
 
-        public ContentManager Content => _game.Content;
-        public SpriteBatch SpriteBatch => _game.SpriteBatch;
-        public RenderTargetStack RenderTarget => _game.RenderTarget;
+        public ContentManager Content => Game.Content;
+        public SpriteBatch SpriteBatch => Game.SpriteBatch;
+        public RenderTargetStack RenderTarget => Game.RenderTarget;
 
-        public GraphicsDevice GraphicsDevice => _game.GraphicsDevice;
-        public Viewport Viewport => _game.RenderTarget.GetViewport();
+        public GraphicsDevice GraphicsDevice => Game.GraphicsDevice;
+        public Viewport Viewport => Game.RenderTarget.GetViewport();
 
-        public bool GameIsActive => _game.IsActive;
-        public bool GameIsPaused => _game.IsPaused;
+        public bool GameIsActive => Game.IsActive;
+        public bool GameIsPaused => Game.IsPaused;
 
         #pragma warning disable CA1822 // Mark members as static
 
@@ -109,7 +111,7 @@ namespace TwelveEngine.Shell {
 
         internal void Load(GameStateManager game) {
             IsLoading = true;
-            _game = game;
+            Game = game;
             OnLoad?.Invoke();
             IsLoaded = true;
             IsLoading = false;
@@ -118,7 +120,7 @@ namespace TwelveEngine.Shell {
 
         internal void Unload() {
             OnUnload?.Invoke();
-            _game = null;
+            Game = null;
             IsLoaded = false;
         }
 
@@ -129,9 +131,9 @@ namespace TwelveEngine.Shell {
 
         private void HandleTransitionOut(Shell.TransitionData data) {
             if(data.Generator != null) {
-                _game.SetState(data.Generator,data.Data);
+                Game.SetState(data.Generator,data.Data);
             } else {
-                _game.SetState(data.State,data.Data);
+                Game.SetState(data.State,data.Data);
             }
         }
 
@@ -244,6 +246,10 @@ namespace TwelveEngine.Shell {
             TransitionState = TransitionState.In;
             _transitionDuration = duration;
             _transitionOutData = null;
+        }
+
+        internal virtual bool GetCustomCursorHiddenState() {
+            return false;
         }
 
          protected internal virtual void ResetGraphicsState(GraphicsDevice graphicsDevice) {

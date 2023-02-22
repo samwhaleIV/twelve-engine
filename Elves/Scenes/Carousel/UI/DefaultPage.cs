@@ -48,7 +48,7 @@ namespace Elves.Scenes.Carousel.UI {
 
             UI.SetDefaultFocusTree();
 
-            _renderTextHandle = Scene.OnRender.Add(RenderElfNameText,EventPriority.Last);
+            _renderTextHandle = Scene.OnRender.Add(RenderElfNameText,EventPriority.SecondToLast);
 
             BookElement defaultFocusElement;
             if(OpeningFromSettingsPage) {

@@ -259,6 +259,7 @@ namespace TwelveEngine.Shell {
 
             InputStateCache.Update(IsActive);
             GameState.Update();
+            CustomCursor.Hidden = GameState.GetCustomCursorHiddenState();
 
             AutomationAgent.EndUpdate();
         }
