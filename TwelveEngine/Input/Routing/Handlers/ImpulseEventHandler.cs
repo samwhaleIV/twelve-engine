@@ -112,7 +112,7 @@ namespace TwelveEngine.Input.Routing {
             return true;
         }
 
-        private float GetSpeedModifier(bool turbo,bool snail) {
+        private static float GetSpeedModifier(bool turbo,bool snail) {
             float speedModifier = 1;
             if(turbo) {
                 speedModifier += 1;
