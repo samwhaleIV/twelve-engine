@@ -6,7 +6,7 @@
         public Screenspace3DSprite(string textureName) : base(textureName) => Initialize();
         public Screenspace3DSprite(Texture2D texture) : base(texture) => Initialize();
 
-        public FloatRectangle Area { get; set; } = FloatRectangle.Zero; /* Space in pixels */
+        public FloatRectangle Area { get; set; } = FloatRectangle.Empty; /* Space in pixels */
         public Rectangle TextureSource { get; set; }
 
         private void Initialize() => OnPreRender += UpdateVerticesArea;

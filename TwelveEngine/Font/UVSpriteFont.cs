@@ -54,7 +54,7 @@ namespace TwelveEngine.Font {
             characterQueueStartSize = characterQueueSize;
         }
 
-        private Glyph GlyphOrDefault(char character) {
+        public Glyph GlyphOrDefault(char character) {
             if(!glyphs.TryGetValue(character,out Glyph value)) {
                 value = new Glyph();
             }
@@ -215,7 +215,7 @@ namespace TwelveEngine.Font {
             }
         }
 
-        private void DrawCentered(Vector2 center,float scale,Color color) {
+        private FloatRectangle DrawCentered(Vector2 center,float scale,Color color) {
             float wordSpacing = this.wordSpacing * scale;
             float letterSpacing = this.letterSpacing * scale;
 
@@ -226,8 +226,12 @@ namespace TwelveEngine.Font {
             }
             totalWidth -= wordSpacing;
 
+            float characterHeight = lineHeight * scale;
+
             float x = center.X - totalWidth / 2;
-            float y = center.Y - lineHeight * scale / 2;
+            float y = center.Y - characterHeight / 2;
+
+            FloatRectangle area = new(x,y,totalWidth,characterHeight);
 
             foreach(var word in words) {
                 foreach(var character in word) {
@@ -235,6 +239,8 @@ namespace TwelveEngine.Font {
                 }
                 x = x - letterSpacing + wordSpacing;
             }
+
+            return area;
         }
 
         private static float ValidateScale(ref float scale) => scale = MathF.Round(scale);
@@ -271,20 +277,22 @@ namespace TwelveEngine.Font {
             EmptyWordsQueue();
         }
 
-        public void DrawCentered(StringBuilder stringBuilder,Vector2 center,float scale,Color? color = null) {
+        public FloatRectangle DrawCentered(StringBuilder stringBuilder,Vector2 center,float scale,Color? color = null) {
             ValidateScale(ref scale);
             AssertSpriteBatch();
             FillWordsQueue(stringBuilder);
-            DrawCentered(center,scale,color ?? DefaultColor);
+            var area = DrawCentered(center,scale,color ?? DefaultColor);
             EmptyWordsQueue();
+            return area;
         }
 
-        public void DrawCentered(string text,Vector2 center,float scale,Color? color = null) {
+        public FloatRectangle DrawCentered(string text,Vector2 center,float scale,Color? color = null) {
             ValidateScale(ref scale);
             AssertSpriteBatch();
             FillWordsQueue(text);
-            DrawCentered(center,scale,color ?? DefaultColor);
+            var area = DrawCentered(center,scale,color ?? DefaultColor);
             EmptyWordsQueue();
+            return area;
         }
     }
 }

@@ -116,6 +116,8 @@ namespace TwelveEngine.UI {
             return _lastSelectedElement ?? DefaultFocusElement;
         }
 
+        public event Action<TElement> OnSelectionChanged;
+
         /// <summary>
         /// Current selected element. Selection status is guaranteed to be exclusive to one element from the element pool.
         /// </summary>
@@ -136,6 +138,8 @@ namespace TwelveEngine.UI {
                     WriteDiagnostics($"Selected element set to {ElementNameOrDefault(value)}.");
                 }
                 value?.UpdateInteractionState(InteractionStateChange.SetSelected);
+
+                OnSelectionChanged?.Invoke(value);
             }
         }
 

@@ -1,141 +1,157 @@
-﻿using Elves.Scenes.SaveSelect;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Font;
 using TwelveEngine;
 
 namespace Elves.Scenes.ModeSelectMenu {
-    using static Constants.Terminal;
 
-    public sealed class ModeSelectMenuScene:Scene3D {
+    using static Constants.ModeSelectMenu;
 
-        private readonly struct Line {
-            public readonly int LeaseID;
-            public readonly StringBuilder StringBuilder;
+    public sealed class ModeSelectMenuScene:TerminalScene {
 
-            public Line(int leaseID,StringBuilder stringBuilder) {
-                LeaseID = leaseID;
-                StringBuilder = stringBuilder;
-            }
-        }
+        private const int NO_SELECTION = -1;
 
-        private Line GetLine() {
-            int leaseID = _sbPool.Lease(out StringBuilder sb);
-            return new Line(leaseID,sb);
-        }
-
-        private void ReturnLine(Line line) {
-            _sbPool.Return(line.LeaseID);
-        }
-
-        private readonly StringBuilderPool _sbPool = new();
-
-        public bool IsWritingMessage => _messageQueue.Count > 0;
-
-        private readonly Queue<char> _messageQueue = new();
-        private readonly HashSet<char> _slowCharacters = new();
-
-        private TimeSpan LastLetterTime = TimeSpan.Zero;
-
-        private TimeSpan lastLetterTimeReal;
-
-        private void UpdateModeSelectMenu() {
-            if(_messageQueue.Count <= 0 || LocalNow - LastLetterTime < TypeRate) {
-                return;
-            }
-
-            var diff = lastLetterTimeReal - Now;
-            lastLetterTimeReal = Now;
-            Console.WriteLine(diff);
-
-            var character = _messageQueue.Dequeue();
-            LastLetterTime = _slowCharacters.Contains(character) ? LocalNow - TypeRate + TypeRateSlow : LocalNow;
-            if(character == '\n') {
-                _lines.Add(GetLine());
-            } else {
-                if(_lines.Count <= 0) {
-                    _lines.Add(GetLine());
-                }
-                _lines[_lines.Count-1].StringBuilder.Append(character);
-            }
-        }
-
-        private readonly List<Line> _lines = new();
+        private int _commandIndex = NO_SELECTION;
+        private readonly bool ClassicModeUnlocked = Program.Save?.HasFlag(SaveKeys.ClassicModeUnlocked) ?? false;
+        private readonly Command[] _commands;
+        public ModeSelectMenuInteractionAgent InteractionAgent { get; private init; }
 
         public ModeSelectMenuScene() {
-            foreach(var character in SlowCharacters) {
-                _slowCharacters.Add(character);
-            }
-            ClearColor = BackgroundColor;
-            OnUpdate.Add(UpdateModeSelectMenu);
-            OnRender.Add(RenderModeSelectMenu);
-            Impulse.Router.OnDirectionDown += Router_OnDirectionDown;
+            Name = "Mode Select Menu";
+            _commands = new Command[] {
+                new(PlayGameText,PlayGame),
+                new(SaveSelectText,SaveSelect),
+                new(ReplayIntroText,ReplayIntro),
+                new(MusicPlayerText,MusicPlayer),
+                new(ClassicModeUnlocked ? ClassicModeText : RedactedText,ClassicMode),
+                new(CreditsText,Credits)
+            };
+            PrintMenuLines();
+            InteractionAgent = GetInteractionAgent();
+            OnTextQueueEmptied += ModeSelectMenuScene_OnTextQueueEmptied;
         }
 
-        private void RemoveLastLine() {
-            if(_lines.Count <= 0) {
+        private void ModeSelectMenuScene_OnTextQueueEmptied() {
+            InteractionAgent.FocusDefault();
+            OnTextQueueEmptied -= ModeSelectMenuScene_OnTextQueueEmptied;
+        }
+
+        private void PrintMenuLines() {
+            PrintLine(StartMessage);
+            PrintLine();
+            foreach(var command in _commands) {
+                PrintLine(command.Text);
+            }
+        }
+
+        private readonly struct Command {
+
+            public readonly string Text;
+            public readonly Action Action;
+
+            public Command(string text,Action action) {
+                Text = text;
+                Action = action;
+            }
+        }
+
+        private void Credits() {
+            throw new NotImplementedException();
+        }
+
+        private void ClassicMode() {
+            if(!ClassicModeUnlocked) {
                 return;
             }
-            var lastIndex = _lines.Count - 1;
-            var lastLine = _lines[lastIndex];
-            ReturnLine(lastLine);
-            _lines.RemoveAt(lastIndex);
+            throw new NotImplementedException();
         }
 
-        public void PrintLine(string message) {
-            if(_lines.Count >= 1) {
-                _messageQueue.Enqueue('\n');
-            }
-            foreach(var character in message) {
-                _messageQueue.Enqueue(character);
-            }
+        private void ReplayIntro() {
+            throw new NotImplementedException();
         }
 
-        private void Router_OnDirectionDown(Direction direction) {
-            if(direction == Direction.Left) {
-                PrintLine("Hello, world!");
-            } else if(direction == Direction.Right) {
-                RemoveLastLine();        
-            }
+        private void SaveSelect() {
+            throw new NotImplementedException();
         }
 
-        private bool ShouldShowCaret {
-            get {
-                return !IsWritingMessage && (int)Math.Floor((LocalNow - LastLetterTime) / CaretBlinkRate) % 2 == 1;
-            }
+        private void PlayGame() {
+            throw new NotImplementedException();
         }
 
-        private void RenderModeSelectMenu() {
+        private void MusicPlayer() {
+            throw new NotImplementedException();
+        }
 
-            float textScale = UIScale * TextScale;
+        private FloatRectangle GetCommandLineArea(int commandIndex) {
+            if(IsWritingText) {
+                return FloatRectangle.Empty;
+            }
+            return GetLineArea(GetLineIndex(commandIndex));
+        }
 
-            Vector2 screenCenter = Viewport.Bounds.Center.ToVector2();
-
-            var font = Fonts.RetroFont;
-            float rowHeight = font.LineHeight * textScale * 1.5f;
-
-            float totalHeight = (_lines.Count - 1) * rowHeight;
-            float y = screenCenter.Y - totalHeight / 2;
-
-            font.Begin(SpriteBatch);
-            for(int i = 0;i<_lines.Count;i++) {
-                bool lastLine = i == _lines.Count - 1;
-                StringBuilder text = _lines[i].StringBuilder;
-                Vector2 position = new Vector2(screenCenter.X,y);
-                if(lastLine) {
-                    text.Append(ShouldShowCaret ? CaretSymbol : HiddenCaretSymbol);
-                    font.DrawCentered(text,position,textScale,ForegroundColor);
-                    text.Remove(text.Length-1,1);
-                    continue;
-                } else {
-                    font.DrawCentered(text,position,textScale,ForegroundColor);
+        private TerminalLineInteractionProxy[] GetTerminalLineInteractionProxies() {
+            var lineProxies = new TerminalLineInteractionProxy[_commands.Length];
+            TerminalLineInteractionProxy lastElement = null;
+            bool isWritingText() => IsWritingText;
+            for(int commandIndex = 0;commandIndex < lineProxies.Length;commandIndex++) {
+                TerminalLineInteractionProxy lineProxy = new() {
+                    CommandIndex = commandIndex,
+                    GetArea = GetCommandLineArea,
+                    PreviousFocusElement = lastElement,
+                    CanInteract = true,
+                    GetInteractionPaused = isWritingText
+                };
+                if(lastElement is not null) {
+                    lastElement.NextFocusElement = lineProxy;
                 }
-                y += rowHeight;
+                lastElement = lineProxy;
+                var command = _commands[commandIndex];
+                lineProxy.OnActivated += command.Action;
+                lineProxies[commandIndex] = lineProxy;
             }
-            font.End();
+            return lineProxies;
+        }
+
+        private ModeSelectMenuInteractionAgent GetInteractionAgent() {
+            var lineProxies = GetTerminalLineInteractionProxies();
+            ModeSelectMenuInteractionAgent interactionAgent = new(this,lineProxies);
+            interactionAgent.BindInputEvents(this);
+            interactionAgent.OnSelectionChanged += OnSelectionChanged;
+            interactionAgent.DefaultFocusElement = lineProxies[0];
+            return interactionAgent;
+        }
+
+        private int GetLineIndex(int commandIndex) {
+            return Lines.Count - _commands.Length + commandIndex;
+        }
+
+        private StringBuilder GetLine(int commandIndex) {
+            return Lines[GetLineIndex(commandIndex)].StringBuilder;
+        }
+
+        private void ClearOldCommandSelection(int commandIndex) {
+            var oldLine = GetLine(commandIndex);
+            var suffixLength = SelectedCommandSuffix.Length;
+            oldLine.Remove(oldLine.Length-suffixLength,suffixLength);
+            oldLine.Remove(0,SelectedCommandPrefix.Length);
+        }
+
+        private void DecorateNewCommandSelection(int commandIndex) {
+            var newLine = GetLine(commandIndex);
+            newLine.Insert(0,SelectedCommandPrefix);
+            newLine.Append(SelectedCommandSuffix);
+            _commandIndex = commandIndex;
+        }
+
+        private void OnSelectionChanged(TerminalLineInteractionProxy lineProxy) {
+            if(_commandIndex > NO_SELECTION) {
+                ClearOldCommandSelection(_commandIndex);
+            }
+            if(lineProxy is null) {
+                _commandIndex = NO_SELECTION;
+                return;
+            }
+            DecorateNewCommandSelection(lineProxy.CommandIndex);
         }
     }
 }

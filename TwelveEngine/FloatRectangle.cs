@@ -119,9 +119,8 @@
         public Vector2 BottomLeft => new(x,y+height);
         public Vector2 TopRight => new(x+width,y);
 
-        public static readonly FloatRectangle Zero = new(0,0,0,0);
         public static readonly FloatRectangle One = new(0,0,1,1);
-        public static readonly FloatRectangle Empty = new(Vector2.Zero,Vector2.Zero);
+        public static readonly FloatRectangle Empty = new(0,0,0,0);
 
         public bool Contains(Point point) {
             return x <= point.X && point.X < x + width && y <= point.Y && point.Y < y + height;

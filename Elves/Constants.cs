@@ -128,11 +128,20 @@ namespace Elves {
             /// </summary>
             public const char HiddenCaretSymbol = char.MinValue;
 
-            public static float TextScale = 0.75f;
+            public const float TextScale = 0.75f;
         }
 
-        public static class Songs {
-
+        public static class ModeSelectMenu {
+            public const string StartMessage = "Assignment: Kill elves.";
+            public const string SaveSelectText = "Save Select";
+            public const string ReplayIntroText = "Replay Intro";
+            public const string MusicPlayerText = "Music Player";
+            public const string RedactedText = "[ REDACTED ]";
+            public const string ClassicModeText = "UV27";
+            public const string CreditsText = "Credits";
+            public const string PlayGameText = "Kill Elves";
+            public const string SelectedCommandPrefix = "> ";
+            public const string SelectedCommandSuffix = " <";
         }
     }
 }

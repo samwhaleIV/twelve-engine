@@ -16,5 +16,7 @@
 
         public const int MusicVolume = 10;
         public const int SoundVolume = 11;
+
+        public const int ClassicModeUnlocked = 12;
     }
 }
