@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TwelveEngine;
@@ -18,6 +20,7 @@ namespace Elves.Scenes.ModeSelectMenu {
 
         public ModeSelectMenuScene() {
             Name = "Mode Select Menu";
+            ClearColor = Color.Orange;
             _commands = new Command[] {
                 new(PlayGameText,PlayGame),
                 new(SaveSelectText,SaveSelect),
@@ -29,6 +32,7 @@ namespace Elves.Scenes.ModeSelectMenu {
             PrintMenuLines();
             InteractionAgent = GetInteractionAgent();
             OnTextQueueEmptied += ModeSelectMenuScene_OnTextQueueEmptied;
+            OnRender.Add(RenderCRTStencil,EventPriority.Fourth);
         }
 
         private void ModeSelectMenuScene_OnTextQueueEmptied() {
@@ -152,6 +156,19 @@ namespace Elves.Scenes.ModeSelectMenu {
                 return;
             }
             DecorateNewCommandSelection(lineProxy.CommandIndex);
+        }
+
+        private void RenderCRTStencil() {
+            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            var source = new Rectangle(98,0,96,96);
+            var scale = UIScale * Constants.Terminal.CRTScale;
+            var size = new Vector2(96,96) * scale;
+            FloatRectangle area = new(Viewport.Bounds.Center.ToVector2()-size*0.5f,size);
+            area.Y += scale * 9 * 0.5f;
+            SpriteBatch.Draw(Program.Textures.CRTStencil,area.ToRectangle(),source,Constants.Terminal.BackgroundColor);
+            source.X = 0;
+            SpriteBatch.Draw(Program.Textures.CRTStencil,area.ToRectangle(),source,Color.White);
+            SpriteBatch.End();
         }
     }
 }

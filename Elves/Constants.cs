@@ -76,6 +76,7 @@ namespace Elves {
 
             public const float SplashMenuScaleModifier = 1.5f;
             public const float BattleSceneScaleModifier = 1.25f;
+            public const float TerminalSceneScaleModifier = 1f;
             public const float UIScaleBaseDivisor = 0.008f;
 
             public static readonly Color PressedColor = Color.Lerp(Color.White,Color.Black,0.1f);
@@ -128,7 +129,8 @@ namespace Elves {
             /// </summary>
             public const char HiddenCaretSymbol = char.MinValue;
 
-            public const float TextScale = 0.75f;
+            public const float TextScale = 0.525f;
+            public const float CRTScale = 1.4f;
         }
 
         public static class ModeSelectMenu {

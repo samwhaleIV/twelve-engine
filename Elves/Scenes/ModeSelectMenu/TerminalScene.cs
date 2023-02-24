@@ -12,6 +12,7 @@ namespace Elves.Scenes.ModeSelectMenu {
     public class TerminalScene:Scene3D {
 
         public TerminalScene() {
+            UIScaleModifier = Constants.UI.TerminalSceneScaleModifier;
             foreach(var character in SlowCharacters) {
                 _slowCharacters.Add(character);
             }

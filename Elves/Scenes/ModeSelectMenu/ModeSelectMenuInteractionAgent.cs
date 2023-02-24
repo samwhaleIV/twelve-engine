@@ -7,15 +7,15 @@ namespace Elves.Scenes.ModeSelectMenu {
     public sealed class ModeSelectMenuInteractionAgent:InteractionAgent<TerminalLineInteractionProxy> {
 
         private readonly IEnumerable<TerminalLineInteractionProxy> _elements;
-        private readonly InputGameState _owner;
+        private readonly ModeSelectMenuScene _owner;
 
-        public ModeSelectMenuInteractionAgent(InputGameState owner,IEnumerable<TerminalLineInteractionProxy> elements) {
+        public ModeSelectMenuInteractionAgent(ModeSelectMenuScene owner,IEnumerable<TerminalLineInteractionProxy> elements) {
             _owner = owner;
             _elements = elements;
         }
 
         protected override bool GetContextTransitioning() {
-            return _owner.IsTransitioning;
+            return _owner.IsTransitioning || _owner.IsWritingText;
         }
 
         protected override TimeSpan GetCurrentTime() {
