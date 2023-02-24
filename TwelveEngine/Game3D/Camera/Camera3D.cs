@@ -91,7 +91,7 @@
             return MathHelper.ToRadians(FieldOfView);
         }
 
-        public FloatRectangle OrthographicArea { get; private set; } = FloatRectangle.Zero;
+        public FloatRectangle OrthographicArea { get; private set; } = FloatRectangle.Empty;
 
         private Matrix GetProjectionMatrix() {
             if(orthographic) {

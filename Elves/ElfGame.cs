@@ -8,6 +8,7 @@ using Elves.Battle;
 using Elves.ElfData;
 using static Elves.Constants;
 using TwelveEngine;
+using Elves.Scenes.ModeSelectMenu;
 
 namespace Elves {
     public static class ElfGame {
@@ -18,7 +19,7 @@ namespace Elves {
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
         /// </summary>
         /// <returns>The start state for the game.</returns>
-        public static GameState Start() => GetCarouselMenu();
+        public static GameState Start() => new ModeSelectMenuScene();
 
         private static GameState GetCarouselMenuAnimatedProgress() {
             var state = new CarouselMenu(animateLastBattleProgress: true);

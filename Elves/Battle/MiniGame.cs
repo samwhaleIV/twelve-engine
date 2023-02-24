@@ -17,7 +17,7 @@ namespace Elves.Battle {
 
         protected bool MouseOnScreen() {
             var mousePosition = GameState.VirtualMouseProvider.VirtualMousePositionNormal;
-            return mousePosition.X >= 0 && mousePosition.X < 1 && mousePosition.Y >= 0 && mousePosition.Y < 1;
+            return mousePosition.X >= 0 && mousePosition.X <= 1 && mousePosition.Y >= 0 && mousePosition.Y <= 1;
         }
 
         public CursorState Update() {

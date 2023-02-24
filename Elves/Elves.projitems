@@ -47,6 +47,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\MoveDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\DefaultPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\SelectionArrow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\ModeSelectMenuInteractionAgent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\ModeSelectMenuScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\TerminalLine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\TerminalLineInteractionProxy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\TerminalScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\SplashMenu\GrabBag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\CarouselScene3D.cs" />

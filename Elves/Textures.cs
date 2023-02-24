@@ -32,5 +32,6 @@ namespace Elves {
         public readonly Texture2D MiniGameTablet = Load("minigame-tablet");
 
         public readonly Texture2D TestingTestingCat = Load("testing-testing-cat");
+        public readonly Texture2D CRTStencil = Load("crt-stencil");
     }
 }
