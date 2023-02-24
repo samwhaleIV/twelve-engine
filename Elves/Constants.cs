@@ -108,12 +108,27 @@ namespace Elves {
             public const float IntroTextFadeSpeed = 2f;
 
             public static readonly TimeSpan QuickTransition = TimeSpan.FromSeconds(0.25f);
-
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
-
             public static readonly TimeSpan BattleEndDelay = TimeSpan.FromSeconds(2f);
-
             public static readonly TimeSpan CarouselRotationDurationSlow = TimeSpan.FromSeconds(0.75f);
+        }
+
+        public static class Terminal {
+            public static readonly TimeSpan CaretBlinkRate = TimeSpan.FromMilliseconds(400);
+            public static readonly TimeSpan TypeRate = TimeSpan.FromMilliseconds(125);
+            public static readonly TimeSpan TypeRateSlow = TimeSpan.FromMilliseconds(400);
+            public static readonly Color BackgroundColor = new(7,17,7,255);
+            public static readonly Color ForegroundColor = new(0,224,0,255);
+
+            public const string SlowCharacters = ",.!?:\n";
+            public const char CaretSymbol = '_';
+
+            /// <summary>
+            /// A symbol that is not visible but equal length to the caret. Used for proper X axis alignment that isn't constantly alternating the line origin.
+            /// </summary>
+            public const char HiddenCaretSymbol = char.MinValue;
+
+            public static float TextScale = 0.75f;
         }
 
         public static class Songs {

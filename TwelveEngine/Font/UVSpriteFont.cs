@@ -14,7 +14,7 @@ namespace TwelveEngine.Font {
         private readonly int characterQueueStartSize;
 
         public float LineHeight => lineHeight;
-        public float LeterSpacing => letterSpacing;
+        public float LetterSpacing => letterSpacing;
         public float WordSpacing => wordSpacing;
 
         private const char SPACE_CHARACTER = ' ';
