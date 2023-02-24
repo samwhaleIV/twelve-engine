@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TwelveEngine;
+using TwelveEngine.Shell;
 
 namespace Elves.Scenes.ModeSelectMenu {
 
@@ -20,7 +21,7 @@ namespace Elves.Scenes.ModeSelectMenu {
 
         public ModeSelectMenuScene() {
             Name = "Mode Select Menu";
-            ClearColor = Color.Orange;
+            ClearColor = Color.White;
             _commands = new Command[] {
                 new(PlayGameText,PlayGame),
                 new(SaveSelectText,SaveSelect),
@@ -33,6 +34,11 @@ namespace Elves.Scenes.ModeSelectMenu {
             InteractionAgent = GetInteractionAgent();
             OnTextQueueEmptied += ModeSelectMenuScene_OnTextQueueEmptied;
             OnRender.Add(RenderCRTStencil,EventPriority.Fourth);
+            OnUpdate.Add(UpdateCustomCursor,EventPriority.Second);
+        }
+
+        private void UpdateCustomCursor() {
+            CustomCursor.State = InteractionAgent.CursorState;
         }
 
         private void ModeSelectMenuScene_OnTextQueueEmptied() {
