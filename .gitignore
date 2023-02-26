@@ -380,3 +380,10 @@ fmodstudio.dll
 fmod*.cs
 
 *.bank
+
+# FMOD Logos - Not sure if these can legally be hosted in open source code
+Content/Elves/Logos/fmod-black.png
+Content/Elves/Logos/fmod-white.png
+Content/Elves/Logos/monogame-white.png
+/Elves/Scenes/Credits/TestCreditsScene.cs
+/Elves/Scenes/Credits/GameCredits.cs
