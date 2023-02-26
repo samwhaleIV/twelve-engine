@@ -70,7 +70,7 @@ namespace Elves.Scenes.Intro {
             timeline = new Timeline();
             OnWriteDebug.Add(timeline.WriteDebug);
 
-            timeline.CreateFixedDuration(duration,
+            timeline.SetTimelineFixedDuration(duration,
                 (STAGE_START_DELAY, startDelayLength),
                 (STAGE_TEXT, textLength),
                 (STAGE_FADE_DELAY, endDelayLength),
@@ -110,7 +110,7 @@ namespace Elves.Scenes.Intro {
 
         private int GetTextSize() {
             float height = Viewport.Bounds.Size.Y;
-            int lineHeight = (int)Fonts.RetroFont.LineHeight;
+            int lineHeight = (int)Fonts.Retro.LineHeight;
             int totalHeight = lineHeight * lineHeight;
             float size = height / totalHeight * 0.5f;
             int textSize = (int)size;
@@ -143,13 +143,13 @@ namespace Elves.Scenes.Intro {
             int centerX = (int)(size.X * 0.5f);
             int textSize = GetTextSize();
 
-            Fonts.RetroFont.Begin(SpriteBatch);
+            Fonts.Retro.Begin(SpriteBatch);
             for(int i = 0;i<end;i++) {
                 Color color = GetTextColor(t,i);
                 Vector2 destination = new(centerX,(int)(rowSize*(i+1)));
-                Fonts.RetroFont.DrawCentered(Text[i],destination,textSize,color);
+                Fonts.Retro.DrawCentered(Text[i],destination,textSize,color);
             }
-            Fonts.RetroFont.End();
+            Fonts.Retro.End();
         }
     }
 }

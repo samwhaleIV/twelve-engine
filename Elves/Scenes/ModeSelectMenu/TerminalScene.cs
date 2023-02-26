@@ -109,7 +109,7 @@ namespace Elves.Scenes.ModeSelectMenu {
 
             Vector2 screenCenter = Viewport.Bounds.Center.ToVector2();
 
-            var font = Fonts.RetroFont;
+            var font = Fonts.Retro;
             float rowHeight = font.LineHeight * textScale * 1.5f;
 
             float totalHeight = (Lines.Count - 1) * rowHeight;

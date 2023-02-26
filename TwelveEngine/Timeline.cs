@@ -3,6 +3,11 @@
 namespace TwelveEngine {
     public sealed class Timeline {
 
+        public Timeline() {
+            timeline.Clear();
+            timeline.Add((0, 0));
+        }
+
         public TimeSpan Duration { get; private set; }
         public TimeSpan StartTimeOffset { get; set; }
 
@@ -52,25 +57,18 @@ namespace TwelveEngine {
         public float GlobalT { get; private set; } = 0;
         public float LocalT { get; private set; } = 0;
 
-        private void ResetTimeline() {
-            timeline.Clear();
-            timeline.Add((0, 0));
-        }
-
         private void AddStage(int stage,TimeSpan length) {
             timeline.Add((stage, length / Duration + timeline[^1].End));
         }
 
-        public void CreateFixedDuration(TimeSpan duration,params (int Stage, TimeSpan Length)[] stages) {
-            ResetTimeline();
+        public void SetTimelineFixedDuration(TimeSpan duration,params (int Stage, TimeSpan Length)[] stages) {
             Duration = duration;
             foreach(var stage in stages) {
                 AddStage(stage.Stage,stage.Length);
             }
         }
 
-        public void CreateAutoDuration(params (int Stage, TimeSpan Length)[] stages) {
-            ResetTimeline();
+        public void SetTimelineAutoDuration(params (int Stage, TimeSpan Length)[] stages) {
             TimeSpan duration = TimeSpan.Zero;
             foreach(var stage in stages) {
                 duration += stage.Length;
@@ -79,6 +77,11 @@ namespace TwelveEngine {
             foreach(var stage in stages) {
                 AddStage(stage.Stage,stage.Length);
             }
+        }
+
+        public void AddStage((int Stage,TimeSpan Length) stage) {
+            Duration += stage.Length;
+            AddStage(stage.Stage,stage.Length);
         }
     }
 }

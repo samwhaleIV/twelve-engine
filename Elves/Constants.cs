@@ -112,6 +112,8 @@ namespace Elves {
             public static readonly TimeSpan TransitionDuration = TimeSpan.FromSeconds(1f);
             public static readonly TimeSpan BattleEndDelay = TimeSpan.FromSeconds(2f);
             public static readonly TimeSpan CarouselRotationDurationSlow = TimeSpan.FromSeconds(0.75f);
+
+            public static readonly TimeSpan CreditsRowDuration = TimeSpan.FromSeconds(1f);
         }
 
         public static class Terminal {

@@ -47,6 +47,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\MoveDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\DefaultPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Carousel\UI\SelectionArrow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\CreditsItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\CreditsItemType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\CreditsScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\GameCredits.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\ModeSelectMenuInteractionAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\ModeSelectMenuScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\TerminalLine.cs" />

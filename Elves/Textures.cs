@@ -33,5 +33,10 @@ namespace Elves {
 
         public readonly Texture2D TestingTestingCat = Load("testing-testing-cat");
         public readonly Texture2D CRTStencil = Load("crt-stencil");
+
+        public readonly Texture2D ElvesLogo = Load("Logos/elves");
+        public readonly Texture2D FMODLogo = Load("Logos/fmod");
+        public readonly Texture2D MonoGameLogo = Load("Logos/monogame");
+        public readonly Texture2D TwelveEngineLogo = Load("Logos/twelve-engine");
     }
 }

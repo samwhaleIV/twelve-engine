@@ -96,7 +96,7 @@ namespace Elves.Scenes.Carousel.UI {
         }
 
         private void RenderElfNameText() {
-            var font = Fonts.RetroFontOutlined;
+            var font = Fonts.RetroOutlined;
             font.Begin(Scene.SpriteBatch);
             font.DrawCentered(Scene.CenterItemName,_elfNameCenter,_elfNameScale,Color.White);
             font.End();

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.IO;
 using TwelveEngine.Audio;
+using System.Data.Common;
 
 namespace Elves {
     public static class Program {
@@ -41,7 +42,35 @@ namespace Elves {
 
         public static string SaveDirectory { get; private set; }
 
-        public static void Start(GameStateManager game,string saveDirectory) {
+        private static Func<string,bool> _tryOpenURL;
+
+        public static bool TryOpenURL(string url) {
+            var lease = Pools.StringBuilder.Lease(out var sb);
+            if(_tryOpenURL is null) {
+                sb.Append($"Could not open URL ({url}). URLs are not supported on this platform.");
+                Logger.WriteLine(sb);
+                Pools.StringBuilder.Return(lease);
+                return false;
+            }
+            bool result = false, failure = false;
+            try {
+                result = _tryOpenURL.Invoke(url);
+            } catch(Exception exception) {
+                sb.Append($"Failure opening URL ({url}): {exception}");
+                failure = true;
+            }
+            if(result) {
+                sb.Append($"Opened URL ({url}).");
+            } else if(!failure) {
+                sb.Append($"Could not open URL ({url}).");
+            }
+            Logger.WriteLine(sb);
+            Pools.StringBuilder.Return(lease);
+            return true;
+        }
+
+        public static void Start(GameStateManager game,string saveDirectory,Func<string,bool> tryOpenURL = null) {
+            _tryOpenURL = tryOpenURL;
             Game = game;
 
             Game.Window.Title = "Elves!";
