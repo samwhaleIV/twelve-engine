@@ -3,6 +3,11 @@
 namespace TwelveEngine {
     public sealed class Timeline {
 
+        public Timeline() {
+            _timeline.Clear();
+            _timeline.Add((0, 0));
+        }
+
         public TimeSpan Duration { get; private set; }
         public TimeSpan StartTimeOffset { get; set; }
 
@@ -18,7 +23,7 @@ namespace TwelveEngine {
             double t = (now + StartTimeOffset) / Duration;
 
             if(t >= 1) {
-                Stage = timeline[^1].Stage;
+                Stage = _timeline[^1].Stage;
                 GlobalT = 1;
                 LocalT = 1;
                 return;
@@ -33,9 +38,9 @@ namespace TwelveEngine {
                 LocalT = 0;
             }
 
-            for(int i = 1;i<timeline.Count;i++) {
-                (int Stage, double End) item = timeline[i];
-                double start = timeline[i-1].End;
+            for(int i = 1;i<_timeline.Count;i++) {
+                (int Stage, double End) item = _timeline[i];
+                double start = _timeline[i-1].End;
                 double localT = (t - start) / (item.End - start);
                 if(localT <= 1) {
                     Stage = item.Stage;
@@ -45,40 +50,39 @@ namespace TwelveEngine {
             }
         }
 
-        private readonly List<(int Stage, double End)> timeline = new() { (0, 0) };
+        private readonly List<(int Stage, double End)> _timeline = new() { (0, 0) };
 
         public int Stage { get; private set; } = 0;
+        public int StageCount => _timeline.Count;
 
         public float GlobalT { get; private set; } = 0;
         public float LocalT { get; private set; } = 0;
 
-        private void ResetTimeline() {
-            timeline.Clear();
-            timeline.Add((0, 0));
+        private void AddStage_Private(int stage,TimeSpan length) {
+            _timeline.Add((stage, length / Duration + _timeline[^1].End));
         }
 
-        private void AddStage(int stage,TimeSpan length) {
-            timeline.Add((stage, length / Duration + timeline[^1].End));
-        }
-
-        public void CreateFixedDuration(TimeSpan duration,params (int Stage, TimeSpan Length)[] stages) {
-            ResetTimeline();
+        public void SetTimelineFixedDuration(TimeSpan duration,params (int Stage, TimeSpan Length)[] stages) {
             Duration = duration;
             foreach(var stage in stages) {
-                AddStage(stage.Stage,stage.Length);
+                AddStage_Private(stage.Stage,stage.Length);
             }
         }
 
-        public void CreateAutoDuration(params (int Stage, TimeSpan Length)[] stages) {
-            ResetTimeline();
+        public void SetTimelineAutoDuration(IEnumerable<(int Stage, TimeSpan Length)> stages) {
             TimeSpan duration = TimeSpan.Zero;
             foreach(var stage in stages) {
                 duration += stage.Length;
             }
             Duration = duration;
             foreach(var stage in stages) {
-                AddStage(stage.Stage,stage.Length);
+                AddStage_Private(stage.Stage,stage.Length);
             }
+        }
+
+        public void AddStage(int stage,TimeSpan length) {
+            Duration += length;
+            AddStage_Private(stage,length);
         }
     }
 }

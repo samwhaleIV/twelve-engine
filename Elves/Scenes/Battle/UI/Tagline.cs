@@ -57,7 +57,7 @@ namespace Elves.Scenes.Battle.UI {
             textPositionInterpolator.Update(now);
             elementDisplayInterpolator.Update(now);
 
-            float height = Fonts.RetroFont.LineHeight * MathF.Round(scale * Constants.BattleUI.TagTextScale) * Constants.BattleUI.TagBackgroundScale;
+            float height = Fonts.Retro.LineHeight * MathF.Round(scale * Constants.BattleUI.TagTextScale) * Constants.BattleUI.TagBackgroundScale;
 
             Vector2 center = viewport.Center;
 

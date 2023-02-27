@@ -1,6 +1,5 @@
 ﻿namespace Elves {
     public static class SaveKeys {
-
         public const int SaveImage1 = 1;
         public const int SaveImage2 = 2;
         public const int SaveImage3 = 3;

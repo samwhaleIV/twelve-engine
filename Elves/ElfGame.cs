@@ -9,6 +9,10 @@ using Elves.ElfData;
 using static Elves.Constants;
 using TwelveEngine;
 using Elves.Scenes.ModeSelectMenu;
+using Elves.Scenes.Credits;
+using TwelveEngine.Font;
+using TwelveEngine.Game3D.Entity.Types;
+using Elves.Scenes.Badges;
 
 namespace Elves {
     public static class ElfGame {
@@ -19,7 +23,16 @@ namespace Elves {
         /// Start the game! Everything that happens (not engine wise) stems from here. The entry point... of doom.
         /// </summary>
         /// <returns>The start state for the game.</returns>
-        public static GameState Start() => new ModeSelectMenuScene();
+        public static GameState Start() {
+            if(TwelveEngine.Flags.Get(Constants.Flags.SkipToCarousel)) {
+                Program.Save = Program.Saves[0];
+                return GetCarouselMenu();
+            }
+            if(TwelveEngine.Flags.Get(Constants.Flags.SkipBadges)) {
+                return GetSplashMenu();
+            }
+            return GetBadgesScene();
+        }
 
         private static GameState GetCarouselMenuAnimatedProgress() {
             var state = new CarouselMenu(animateLastBattleProgress: true);
@@ -52,12 +65,77 @@ namespace Elves {
             return state;
         }
 
+        private static GameState GetBadgesScene() {
+            var state = new ElfGameBadgesScene();
+            state.OnSceneEnd += BadgesSceneExit;
+            return state;
+        }
+
+        private static GameState GetModeSelectMenuScene() {
+            bool hasSave = Program.Save is not null;
+            bool skipAnimation = hasSave && Program.Save.HasFlag(SaveKeys.PlayedIntro);
+            if(hasSave) {
+                Program.Save.SetFlag(SaveKeys.PlayedIntro);
+                Program.Save.TrySave();
+            } else {
+                Logger.WriteLine("Missing save file when loading into mode select menu.",LoggerLabel.Save);
+            }
+            var state = new ModeSelectMenuScene(skipAnimation);
+            state.OnSceneEnd += ModeSelectMenuExit;
+            return state;
+        }
+
         private static GameState GetStartSceneForSave() {
             if(Program.Save.HasFlag(SaveKeys.PlayedIntro)) {
-                return GetCarouselMenu();
+                return GetModeSelectMenuScene();
             } else {
                 return GetIntroScene();
             }
+        }
+
+        private static void BadgesSceneExit(GameState scene) {
+            TimeSpan fadeDuration = AnimationTiming.BadgeSceneFadeOutDuration;
+            scene.TransitionOut(new() {
+                Generator = GetSplashMenu,
+                Data = StateData.FadeIn(fadeDuration),
+                Duration = fadeDuration
+            });
+        }
+
+        private static void ModeSelectMenuExit(GameState scene,ModeSelection selection) {
+            Func<GameState> generator = selection switch {
+                ModeSelection.SaveSelect => GetSaveSelectScene,
+                ModeSelection.ReplayIntro => GetIntroScene,
+                ModeSelection.Credits => GetCreditsSceneReturnToModeSelect,
+                ModeSelection.PlayGame => GetCarouselMenu,
+                ModeSelection.ClassicMode => throw new NotImplementedException("Classic mode not implemented."),
+                ModeSelection.MusicPlayer => throw new NotImplementedException("Music player not implemented."),
+                _ => throw new NotImplementedException("Unexpected mode selection. Did you add a new mode and forget to create an endpoint?")
+            };
+            scene.TransitionOut(new() {
+                Generator = generator,
+                Duration = TransitionDuration,
+                Data = StateData.FadeIn(TransitionDuration)
+            });
+        }
+
+        private static GameState GetCreditsSceneReturnToModeSelect() {
+            var state = new ElfGameCreditsScene() { ExitDestination = ExitDestination.ModeSelectMenu };
+            state.OnSceneEnd += CreditsSceneExit;
+            return state;
+        }
+
+        private static GameState GetCreditsSceneReturnToSplashScreen() {
+            var state = new ElfGameCreditsScene() { ExitDestination = ExitDestination.SplashScreen };
+            state.OnSceneEnd += CreditsSceneExit;
+            return state;
+        }
+
+        private static void CreditsSceneExit(GameState scene,ExitDestination exitDestination) {
+            scene.TransitionOut(new() {
+                Generator = exitDestination == ExitDestination.SplashScreen ? GetSplashMenu : GetModeSelectMenuScene,
+                Data = StateData.FadeIn(TransitionDuration)
+            });
         }
 
         private static void SaveSelectExit(GameState scene,int saveID) {
@@ -75,12 +153,9 @@ namespace Elves {
         }
 
         private static void IntroExit(GameState scene,bool quickExit) {
-            Program.Save.SetFlag(SaveKeys.PlayedIntro);
+            
             scene.TransitionOut(new() {
-                Generator = () => {
-                    Program.Save.TrySave();
-                    return GetCarouselMenu();
-                },
+                Generator = GetModeSelectMenuScene,
                 Data = StateData.FadeIn(TransitionDuration),
                 Duration = quickExit ? AnimationTiming.QuickTransition : AnimationTiming.IntroFadeOutDuration,
             });
@@ -132,7 +207,7 @@ namespace Elves {
         private static void CarouselMenuExit(GameState scene,bool backToMenu,ElfID elfID = ElfID.None) {
             if(backToMenu) {
                 scene.TransitionOut(new TransitionData() {
-                    Generator = GetSaveSelectScene,
+                    Generator = GetModeSelectMenuScene,
                     Data = StateData.FadeIn(TransitionDuration),
                     Duration = TransitionDuration
                 });

@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using TwelveEngine.Shell;
+using static Microsoft.Xna.Framework.Graphics.SpriteFont;
 
 namespace TwelveEngine.Font {
     public sealed class UVSpriteFont {
@@ -157,9 +159,9 @@ namespace TwelveEngine.Font {
                 return 0;
             }
             Rectangle glyphArea = glyph.Source;
-            FloatRectangle destination = new(x,y+glyph.YOffset*scale,glyphArea.Width*scale,glyphArea.Height*scale);
-            spriteBatch.Draw(texture,destination.ToRectangle(),glyphArea,color);
-            return destination.Width;
+            Vector2 position = new(x,y+glyph.YOffset*scale);
+            spriteBatch.Draw(texture,position,glyphArea,color,0f,Vector2.Zero,scale,SpriteEffects.None,1f);
+            return glyphArea.Width * scale;
         }
 
         private void DrawLineBreaking(Vector2 destination,float scale,Color color,float maxWidth) {
@@ -225,11 +227,14 @@ namespace TwelveEngine.Font {
                 totalWidth += width + wordSpacing;
             }
             totalWidth -= wordSpacing;
+            if(totalWidth % 2 == 1) {
+                totalWidth += 1;
+            }
 
             float characterHeight = lineHeight * scale;
 
-            float x = center.X - totalWidth / 2;
-            float y = center.Y - characterHeight / 2;
+            float x = center.X - totalWidth * 0.5f;
+            float y = center.Y - characterHeight * 0.5f;
 
             FloatRectangle area = new(x,y,totalWidth,characterHeight);
 
@@ -293,6 +298,15 @@ namespace TwelveEngine.Font {
             var area = DrawCentered(center,scale,color ?? DefaultColor);
             EmptyWordsQueue();
             return area;
+        }
+
+        public void DrawCenteredUnderline(FloatRectangle area,float scale,Color? color = null) {
+            float height = scale;
+            area.Y += area.Height + height;
+            area.Height = height;
+            area.X -= height;
+            area.Width += height * 2;
+            spriteBatch.Draw(RuntimeTextures.Empty,area.Position,new Rectangle(0,0,1,1),color ?? Color.White,0f,Vector2.Zero,area.Size,SpriteEffects.None,1f);
         }
     }
 }

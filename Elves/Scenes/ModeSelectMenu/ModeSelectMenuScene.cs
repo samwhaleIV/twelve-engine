@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using TwelveEngine;
 using TwelveEngine.Shell;
@@ -19,31 +18,36 @@ namespace Elves.Scenes.ModeSelectMenu {
         private readonly Command[] _commands;
         public ModeSelectMenuInteractionAgent InteractionAgent { get; private init; }
 
-        public ModeSelectMenuScene() {
+        public ModeSelectMenuScene(bool skipIntroAnimation) {
             Name = "Mode Select Menu";
             ClearColor = Color.White;
             _commands = new Command[] {
-                new(PlayGameText,PlayGame),
-                new(SaveSelectText,SaveSelect),
-                new(ReplayIntroText,ReplayIntro),
-                new(MusicPlayerText,MusicPlayer),
-                new(ClassicModeUnlocked ? ClassicModeText : RedactedText,ClassicMode),
-                new(CreditsText,Credits)
+                new(PlayGameText,ModeSelection.PlayGame),
+                new(SaveSelectText,ModeSelection.SaveSelect),
+                new(ReplayIntroText,ModeSelection.ReplayIntro),
+                new(MusicPlayerText,ModeSelection.MusicPlayer),
+                new(ClassicModeUnlocked ? ClassicModeText : RedactedText,ModeSelection.ClassicMode),
+                new(CreditsText,ModeSelection.Credits)
             };
             PrintMenuLines();
             InteractionAgent = GetInteractionAgent();
-            OnTextQueueEmptied += ModeSelectMenuScene_OnTextQueueEmptied;
             OnRender.Add(RenderCRTStencil,EventPriority.Fourth);
             OnUpdate.Add(UpdateCustomCursor,EventPriority.Second);
-        }
-
-        private void UpdateCustomCursor() {
-            CustomCursor.State = InteractionAgent.CursorState;
+            if(!skipIntroAnimation) {
+                OnTextQueueEmptied += ModeSelectMenuScene_OnTextQueueEmptied;
+            } else {
+                FlushTextQueue();
+                OnInputActivated += InteractionAgent.FocusDefault;
+            }
         }
 
         private void ModeSelectMenuScene_OnTextQueueEmptied() {
             InteractionAgent.FocusDefault();
             OnTextQueueEmptied -= ModeSelectMenuScene_OnTextQueueEmptied;
+        }
+
+        private void UpdateCustomCursor() {
+            CustomCursor.State = InteractionAgent.CursorState;
         }
 
         private void PrintMenuLines() {
@@ -57,39 +61,22 @@ namespace Elves.Scenes.ModeSelectMenu {
         private readonly struct Command {
 
             public readonly string Text;
-            public readonly Action Action;
+            public readonly ModeSelection Action;
 
-            public Command(string text,Action action) {
+            public Command(string text,ModeSelection modeSelection) {
                 Text = text;
-                Action = action;
+                Action = modeSelection;
             }
         }
 
-        private void Credits() {
-            throw new NotImplementedException();
-        }
+        public event Action<GameState,ModeSelection> OnSceneEnd;
 
-        private void ClassicMode() {
-            if(!ClassicModeUnlocked) {
+        private void SelectionTransition(ModeSelection selection) {
+            if(selection == ModeSelection.ClassicMode && !ClassicModeUnlocked) {
+                //TODO a sound effect or something?
                 return;
             }
-            throw new NotImplementedException();
-        }
-
-        private void ReplayIntro() {
-            throw new NotImplementedException();
-        }
-
-        private void SaveSelect() {
-            throw new NotImplementedException();
-        }
-
-        private void PlayGame() {
-            throw new NotImplementedException();
-        }
-
-        private void MusicPlayer() {
-            throw new NotImplementedException();
+            OnSceneEnd?.Invoke(this,selection);
         }
 
         private FloatRectangle GetCommandLineArea(int commandIndex) {
@@ -104,19 +91,20 @@ namespace Elves.Scenes.ModeSelectMenu {
             TerminalLineInteractionProxy lastElement = null;
             bool isWritingText() => IsWritingText;
             for(int commandIndex = 0;commandIndex < lineProxies.Length;commandIndex++) {
+                var command = _commands[commandIndex];
                 TerminalLineInteractionProxy lineProxy = new() {
                     CommandIndex = commandIndex,
                     GetArea = GetCommandLineArea,
                     PreviousFocusElement = lastElement,
                     CanInteract = true,
+                    Selection = command.Action,
                     GetInteractionPaused = isWritingText
                 };
                 if(lastElement is not null) {
                     lastElement.NextFocusElement = lineProxy;
                 }
                 lastElement = lineProxy;
-                var command = _commands[commandIndex];
-                lineProxy.OnActivated += command.Action;
+                lineProxy.OnActivated += SelectionTransition;
                 lineProxies[commandIndex] = lineProxy;
             }
             return lineProxies;
