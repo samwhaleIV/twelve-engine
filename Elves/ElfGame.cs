@@ -23,9 +23,9 @@ namespace Elves {
         /// </summary>
         /// <returns>The start state for the game.</returns>
         public static GameState Start() {
-            // new ModeSelectMenuScene();
+            //return new ModeSelectMenuScene();
 
-            return new GameCredits();
+             return new GameCredits();
         }
 
         private static GameState GetCarouselMenuAnimatedProgress() {

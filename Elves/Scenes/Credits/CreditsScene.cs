@@ -22,6 +22,8 @@ namespace Elves.Scenes.Credits {
 
         public float Progress => MathF.Max(MathF.Min((float)(LocalRealTime / _duration),1),0);
 
+        private readonly Queue<(FloatRectangle Area, string URL)> _urlBuffer = new();
+
         private float CategorizeItems(CreditsItem[] items) {
 
             float y = 0, rowPadding = _lineHeight;
@@ -35,7 +37,7 @@ namespace Elves.Scenes.Credits {
                     case CreditsItemType.TextHeading:
                     case CreditsItemType.Text:
                     case CreditsItemType.Link:
-                        _textItems.Add((item, y));
+                        _textItems.Add((item,y));
                         y += _font.LineHeight;
                         break;
                     case CreditsItemType.Image:
@@ -58,7 +60,7 @@ namespace Elves.Scenes.Credits {
             _endY = CategorizeItems(items);
             _duration = _endY / _lineHeight * Constants.AnimationTiming.CreditsRowDuration;
             OnRender.Add(RenderCredits);
-            Mouse.Router.OnPress += OnMouseClick;
+            OnUpdate.Add(UpdateURLInteraction,EventPriority.Second);
             Impulse.Router.OnAcceptDown += EndScene;
             Impulse.Router.OnCancelDown += EndScene;
         }
@@ -71,7 +73,25 @@ namespace Elves.Scenes.Credits {
         }
 
         private bool _mousePressed = false;
-        private void OnMouseClick() => _mousePressed = true;
+
+        private void UpdateURLInteraction() {
+            string selectedURL = null;
+            foreach(var item in _urlBuffer) {
+                if(!item.Area.Contains(Mouse.Position)) {
+                    continue;
+                }
+                selectedURL = item.URL;
+                break;
+            }
+            bool mousePressed = Mouse.CapturingLeft;
+            bool wasPressingLastFrame = _mousePressed;
+            _mousePressed = mousePressed;
+            CustomCursor.State = selectedURL is null ? CursorState.Default : CursorState.Interact;
+            if(!mousePressed || (mousePressed && wasPressingLastFrame) || selectedURL is null) {
+                return;
+            }
+            Program.TryOpenURL(selectedURL);
+        }
 
         private void RenderCredits() {
             FloatRectangle viewport = new(Viewport);
@@ -103,6 +123,8 @@ namespace Elves.Scenes.Credits {
             }
             SpriteBatch.End();
 
+            _urlBuffer.Clear();
+
             _font.Begin(SpriteBatch);
             foreach(var (TextItem, Y) in _textItems) {
                 float y = GetY(Y);
@@ -122,15 +144,19 @@ namespace Elves.Scenes.Credits {
                 if(TextItem.IsLink) {
                     color = LinkColor;
                 }
+                
                 FloatRectangle area = _font.DrawCentered(TextItem.TextValue,new(xCenter,y+halfLineHeight),_scale,color);
-                if(!_mousePressed || !area.Contains(Mouse.Position)) {
+                if(!TextItem.IsLink) {
                     continue;
                 }
-                _mousePressed = false;
-                Program.TryOpenURL(TextItem.TextValue);
+                _urlBuffer.Enqueue((area, TextItem.TextValue));
+                if(!area.Contains(Mouse.Position)) {
+                    continue;
+                }
+                _font.DrawCenteredUnderline(area,_scale,color);
             }
             _font.End();
-            _mousePressed = false;
         }
     }
 }
+ 

@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using TwelveEngine.Shell;
+using static Microsoft.Xna.Framework.Graphics.SpriteFont;
 
 namespace TwelveEngine.Font {
     public sealed class UVSpriteFont {
@@ -296,6 +298,13 @@ namespace TwelveEngine.Font {
             var area = DrawCentered(center,scale,color ?? DefaultColor);
             EmptyWordsQueue();
             return area;
+        }
+
+        public void DrawCenteredUnderline(FloatRectangle area,float scale,Color? color = null) {
+            float height = scale * 2;
+            area.Y += area.Height + height;
+            area.Height = height;
+            spriteBatch.Draw(RuntimeTextures.Empty,area.Position,new Rectangle(0,0,1,1),color ?? Color.White,0f,Vector2.Zero,area.Size,SpriteEffects.None,1f);
         }
     }
 }
