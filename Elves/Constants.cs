@@ -114,6 +114,10 @@ namespace Elves {
             public static readonly TimeSpan CarouselRotationDurationSlow = TimeSpan.FromSeconds(0.75f);
 
             public static readonly TimeSpan CreditsRowDuration = TimeSpan.FromSeconds(1f);
+
+            public static readonly TimeSpan BadgeFadeInDuration = TimeSpan.FromSeconds(1.5f);
+            public static readonly TimeSpan BadgeFadeOutDuration = TimeSpan.FromSeconds(1.5f);
+            public static readonly TimeSpan BadgeHoldDuration = TimeSpan.FromSeconds(4f);
         }
 
         public static class Terminal {

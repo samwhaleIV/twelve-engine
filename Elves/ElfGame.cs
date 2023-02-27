@@ -12,6 +12,7 @@ using Elves.Scenes.ModeSelectMenu;
 using Elves.Scenes.Credits;
 using TwelveEngine.Font;
 using TwelveEngine.Game3D.Entity.Types;
+using Elves.Scenes.Badges;
 
 namespace Elves {
     public static class ElfGame {
@@ -24,8 +25,8 @@ namespace Elves {
         /// <returns>The start state for the game.</returns>
         public static GameState Start() {
             //return new ModeSelectMenuScene();
-
-             return new GameCredits();
+            return new GameBadges();
+            // return new GameCredits();
         }
 
         private static GameState GetCarouselMenuAnimatedProgress() {

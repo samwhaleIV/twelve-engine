@@ -8,7 +8,7 @@ namespace Elves.Scenes.Credits {
     public sealed class GameCredits:CreditsScene {
         private static CreditsItem[] GetCreditItems() {
             var lines = new CreditsItem[] {
-                Image(Program.Textures.ElvesLogo,12),
+                Image(Program.Textures.ElvesLogo),
                 LineBreak,
                 Heading("Programming"),
                 TextLabel("Lead","Samuel Robinson"),

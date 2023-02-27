@@ -76,11 +76,12 @@ namespace Elves.Scenes.Credits {
 
         private void UpdateURLInteraction() {
             string selectedURL = null;
-            foreach(var item in _urlBuffer) {
-                if(!item.Area.Contains(Mouse.Position)) {
+            Point mousePosition = Mouse.Position;
+            foreach(var (Area, URL) in _urlBuffer) {
+                if(!Area.Contains(mousePosition)) {
                     continue;
                 }
-                selectedURL = item.URL;
+                selectedURL = URL;
                 break;
             }
             bool mousePressed = Mouse.CapturingLeft;
