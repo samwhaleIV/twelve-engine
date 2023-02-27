@@ -17,7 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\ScriptThreader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Badges\Badge.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Badges\BadgesScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Badges\GameBadges.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Badges\ElfGameBadgesScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleRendererState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScript.cs" />
@@ -53,7 +53,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\CreditsItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\CreditsItemType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\CreditsScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\GameCredits.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\ExitDestination.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Credits\ElfGameCreditsScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\ModeSelection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\ModeSelectMenuInteractionAgent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\ModeSelectMenuScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\ModeSelectMenu\TerminalLine.cs" />

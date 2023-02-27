@@ -20,7 +20,7 @@ namespace Elves.Scenes.Credits {
         private readonly UVSpriteFont _font;
         private readonly float _lineHeight, _endY, _scale;
 
-        public float Progress => MathF.Max(MathF.Min((float)(LocalRealTime / _duration),1),0);
+        public float Progress => MathF.Max(MathF.Min((float)((LocalRealTime - Data.TransitionDuration) / _duration),1),0);
 
         private readonly Queue<(FloatRectangle Area, string URL)> _urlBuffer = new();
 
@@ -65,11 +65,18 @@ namespace Elves.Scenes.Credits {
             Impulse.Router.OnCancelDown += EndScene;
         }
 
+        public ExitDestination ExitDestination { get; init; } = ExitDestination.SplashScreen;
+
+        public event Action<GameState,ExitDestination> OnSceneEnd;
+
+        private bool _sceneEnded = false;
+
         private void EndScene() {
-            if(Progress < 1) {
+            if(Progress < 1 || _sceneEnded) {
                 return;
             }
-            throw new NotImplementedException();
+            _sceneEnded = true;
+            OnSceneEnd?.Invoke(this,ExitDestination);
         }
 
         private bool _mousePressed = false;

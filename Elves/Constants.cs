@@ -17,6 +17,8 @@ namespace Elves {
             public const string OrthoDebug = "orthodebug";
             public const string OSCursor = "oscursor";
             public const string FixedBattleRandom = "norandombattle";
+            public const string SkipToCarousel = "skiptocarousel";
+            public const string SkipBadges = "skipbadges";
         }
 
         public static class Battle {
@@ -118,6 +120,8 @@ namespace Elves {
             public static readonly TimeSpan BadgeFadeInDuration = TimeSpan.FromSeconds(1.5f);
             public static readonly TimeSpan BadgeFadeOutDuration = TimeSpan.FromSeconds(1.5f);
             public static readonly TimeSpan BadgeHoldDuration = TimeSpan.FromSeconds(4f);
+
+            public static readonly TimeSpan BadgeSceneFadeOutDuration = TimeSpan.FromSeconds(4);
         }
 
         public static class Terminal {

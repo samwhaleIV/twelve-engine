@@ -41,12 +41,15 @@ namespace Elves.Scenes.ModeSelectMenu {
 
         protected event Action OnTextQueueEmptied;
 
-        private void UpdateTerminal() {
-            if(textQueue.Count <= 0 || LocalNow - LastLetterTime < TypeRate) {
-                return;
+        protected void FlushTextQueue() {
+            LastLetterTime = TimeSpan.Zero;
+            while(textQueue.Count > 0) {
+                AdvanceTextQueue();
             }
+        }
+
+        private void AdvanceTextQueue() {
             var character = textQueue.Dequeue();
-            LastLetterTime = _slowCharacters.Contains(character) ? LocalNow - TypeRate + TypeRateSlow : LocalNow;
             if(character == '\n') {
                 Lines.Add(GetLine());
             } else {
@@ -59,6 +62,14 @@ namespace Elves.Scenes.ModeSelectMenu {
                 return;
             }
             OnTextQueueEmptied?.Invoke();
+        }
+
+        private void UpdateTerminal() {
+            if(textQueue.Count <= 0 || LocalNow - LastLetterTime < TypeRate) {
+                return;
+            }
+            LastLetterTime = _slowCharacters.Contains(textQueue.Peek()) ? LocalNow - TypeRate + TypeRateSlow : LocalNow;
+            AdvanceTextQueue();
         }
 
         protected List<TerminalLine> Lines { get; private init; } = new();

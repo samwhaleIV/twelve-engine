@@ -5,7 +5,7 @@ using TwelveEngine.Font;
 
 namespace Elves.Scenes.Credits {
     using static CreditsItem;
-    public sealed class GameCredits:CreditsScene {
+    public sealed class ElfGameCreditsScene:CreditsScene {
         private static CreditsItem[] GetCreditItems() {
             var lines = new CreditsItem[] {
                 Image(Program.Textures.ElvesLogo),
@@ -95,6 +95,6 @@ namespace Elves.Scenes.Credits {
             };
             return lines;
         }
-        public GameCredits() : base(Fonts.Retro,5,GetCreditItems()) { }
+        public ElfGameCreditsScene() : base(Fonts.Retro,5,GetCreditItems()) {}
     }
 }

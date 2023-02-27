@@ -11,7 +11,7 @@ namespace Elves.Scenes.Badges {
 
         private readonly Timeline _timeline = new();
 
-        public event Action OnSceneEnd;
+        public event Action<GameState> OnSceneEnd;
 
         private readonly Badge[] _badges;
 
@@ -47,7 +47,7 @@ namespace Elves.Scenes.Badges {
                 }
                 AddStage(BadgeFadeOutDuration,i,BadgeRenderState.FadeOut);
             }
-            AddStage(IntroFadeOutDuration,badges.Length-1,BadgeRenderState.Hold);
+            AddStage(BadgeSceneFadeOutDuration,badges.Length-1,BadgeRenderState.Hold);
 
             _timeline.SetTimelineAutoDuration(_timelineStages);
 
@@ -55,14 +55,14 @@ namespace Elves.Scenes.Badges {
         }
 
         private void ExitScene() {
-            OnSceneEnd?.Invoke();
+            OnSceneEnd?.Invoke(this);
         }
 
         private bool exiting = false;
 
         private void UpdateTimeline() {
             _timeline.Update(LocalRealTime);
-            if(_timeline.Stage >= _timeline.StageCount - 1 || exiting) {
+            if(_timeline.Stage < _timeline.StageCount - 1 || exiting) {
                 return;
             }
             exiting = true;

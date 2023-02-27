@@ -13,7 +13,7 @@
     },
     "Debug (HUD)": {
       "commandName": "Project",
-      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console"
+      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console skipbadges"
     }
   }
 }
