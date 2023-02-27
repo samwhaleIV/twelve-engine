@@ -301,8 +301,11 @@ namespace TwelveEngine.Font {
         }
 
         public void DrawCenteredUnderline(FloatRectangle area,float scale,Color? color = null) {
-            area.Y += area.Height + scale;
-            area.Height = scale;
+            float height = scale;
+            area.Y += area.Height + height;
+            area.Height = height;
+            area.X -= height;
+            area.Width += height * 2;
             spriteBatch.Draw(RuntimeTextures.Empty,area.Position,new Rectangle(0,0,1,1),color ?? Color.White,0f,Vector2.Zero,area.Size,SpriteEffects.None,1f);
         }
     }

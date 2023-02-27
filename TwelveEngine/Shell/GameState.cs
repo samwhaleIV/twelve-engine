@@ -225,7 +225,6 @@ namespace TwelveEngine.Shell {
             } else if(t >= 1) {
                 return 1;
             }
-            Console.WriteLine("Transition T: " + t);
             return t;
         }
 
