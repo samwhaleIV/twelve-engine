@@ -96,12 +96,12 @@ namespace Elves.Battle {
 
         private TaskCompletionSource<int> buttonTask;
 
-        private static readonly string[] DefaultOptions = new string[] { Constants.Battle.ContinueText };
+        private static readonly LowMemoryList<string> DefaultOptions = new(Constants.Battle.ContinueText);
 
         public async Task ContinueButton() => await GetButton(true,DefaultOptions);
 
-        public async Task<int> GetButton(bool isContinue,params string[] options) {
-            if(options.Length < 1) {
+        public async Task<int> GetButton(bool isContinue,LowMemoryList<string> options) {
+            if(options.Size < 1) {
                 /* Might want to handle this better if we ever create a opened battle API */
                 options = DefaultOptions;
             }
@@ -112,17 +112,22 @@ namespace Elves.Battle {
                 button.CanInteract = false;
             }
 
-            int end = Math.Min(options.Length,BUTTON_COUNT);
-            for(int i = 0;i<end;i++) {
-                var button = UI.GetActionButton(i);
+            int end = Math.Min(options.Size,BUTTON_COUNT);
+            int optionIndex = 0;
+            foreach(var option in options) {
+                var button = UI.GetActionButton(optionIndex);
                 button.CanInteract = true;
                 var buttonLabel = button.Label;
                 buttonLabel.Clear();
-                buttonLabel.Append(options[i]);
+                buttonLabel.Append(option);
+                optionIndex++;
+                if(optionIndex >= end) {
+                    break;
+                }
             }
 
             UI.ResetInteractionState();
-            switch(options.Length) {
+            switch(options.Size) {
                 case 1: ConfigSingleButton(isContinue); break;
                 case 2: ConfigDoubleButtons(); break;
                 case 3: ConfigTripleButtons(); break;

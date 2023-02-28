@@ -4,13 +4,11 @@ using System.Threading.Tasks;
 using TwelveEngine;
 using Elves.Animation;
 using Elves.ElfData;
-using TwelveEngine.Shell;
 using TwelveEngine.Effects;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
 namespace Elves.Battle {
-    public abstract class BattleScript {
+    public abstract partial class BattleScript {
 
         public virtual void Setup() {
             CreatePlayer();
@@ -26,20 +24,25 @@ namespace Elves.Battle {
         /// <remarks>DEPENDENCY INJECTION, WOOOOOOO!</remarks>
         internal void SetSequencer(BattleSequencer sequencer) => _sequencer = sequencer;
 
-        protected const int Button1 = 0, Button2 = 1, Button3 = 2, Button4 = 3;
+        protected const int B1 = 0, B2 = 1, B3 = 2, B4 = 3;
 
         /// <summary>
         /// For debug and logging purposes.
         /// </summary>
         public Elf ElfSource { get; set; }
-
-        private BattleSequencer _sequencer;
-
         public Random Random { get; private init; }
 
+        private BattleSequencer _sequencer;
         private BattleSprite _actorSprite;
-
         private UserData _playerData, _actorData;
+
+        public bool EverybodyIsAlive => Player.IsAlive && Actor.IsAlive;
+        public bool EveryBodyIsDead => Player.IsDead && Actor.IsDead;
+
+        public UserData Player => GetPlayerData();
+        public UserData Actor => GetActorData();
+
+        public BattleSprite ActorSprite { get => GetActorSprite(); set => SetActor(value); }
 
         protected ScriptThreader Threader { get; private init; }
 
@@ -48,28 +51,7 @@ namespace Elves.Battle {
             Random = Flags.Get(Constants.Flags.FixedBattleRandom) ? new Random(Constants.Battle.FixedSeed) : new Random();
         }
 
-        #region SEQUENCER UI BINDINGS
-        public void ShowSpeech(string speech) => _sequencer.ShowSpeech(speech,ActorSprite);
-        public void HideSpeech() => _sequencer.HideSpeech(ActorSprite);
-
-        public void SetTag(string tag) => _sequencer.SetTag(tag);
-        public void HideTag() => _sequencer.HideTag();
-
-        public async Task<int> GetButton(params string[] options) => await _sequencer.GetButton(false,options);
-
-        public async Task<bool> YesOrNo(string tag = null) {
-            if(tag is not null) {
-                SetTag(tag);
-            }
-            var result = await _sequencer.GetButton(false,"Yes","No");
-            if(tag is not null) {
-                HideTag();
-            }
-            return result == Button1;
-        }
-
         public async Task Continue() => await _sequencer.ContinueButton();
-        #endregion
 
         public BattleResult WinCondition {
             get {
@@ -85,9 +67,6 @@ namespace Elves.Battle {
                 return BattleResult.PlayerWon;
             }
         }
-
-        public bool EverybodyIsAlive => Player.IsAlive && Actor.IsAlive;
-        public bool EveryBodyIsDead => Player.IsDead && Actor.IsDead;
 
         private UserData GetPlayerData() {
             var data = _playerData;
@@ -107,9 +86,6 @@ namespace Elves.Battle {
             }
             return data;
         }
-
-        public UserData Player => GetPlayerData();
-        public UserData Actor => GetActorData();
 
         protected UserData CreatePlayer(string name = null) {
             var data = new UserData(string.IsNullOrEmpty(name) ? Constants.Battle.PlayerName : name);
@@ -159,53 +135,17 @@ namespace Elves.Battle {
             return _actorSprite;
         }
 
-        public BattleSprite ActorSprite { get => GetActorSprite(); set => SetActor(value); }
-
-        protected async Task Tag(string tag) {
-            SetTag(tag);
-            await Continue();
-            HideTag();
-        }
-
-        protected async Task Speech(string speech) {
-            ShowSpeech(speech);
-            await Continue();
-            HideSpeech();
-        }
-
-        protected async Task Tag(params string[] tags) {
-            foreach(var tag in tags) {
-                SetTag(tag);
-                await Continue();
-            }
-            HideTag();
-        }
-
-        protected async Task Speech(params string[] speeches) {
-            foreach(var speech in speeches) {
-                ShowSpeech(speech);
-                await Continue();
-            }
-            HideSpeech();
-        }
-
         public virtual async Task Exit(BattleResult battleResult) {
             //todo: get randomly generated messages - or whatever
             switch(battleResult) {
                 case BattleResult.PlayerWon:
-                    SetTag("You survived...");
-                    await Continue();
-                    SetTag("Your journey continues.");
+                    await Tag("You survived...","Your journey continues.");
                     break;
                 case BattleResult.PlayerLost:
-                    SetTag("You died...");
-                    await Continue();
-                    SetTag("Better luck next time.");
+                    await Tag("You died...","Better luck next time.");
                     break;
                 default:
-                    SetTag("Everybody is a loser...");
-                    await Continue();
-                    SetTag("Especially you.");
+                    await Tag("Everybody is a loser...","Especially you.");
                     break;
             }
         }
@@ -226,6 +166,26 @@ namespace Elves.Battle {
             var result = await miniGame.GetResult();
             _sequencer.HideMiniGame();
             return result;
+        }
+
+        public async Task<int> GetButton(LowMemoryList<string> options) {
+            return await _sequencer.GetButton(false,options);
+        }
+
+        public async Task Tag(LowMemoryList<string> tags) {
+            foreach(var tag in tags) {
+                _sequencer.SetTag(tag);
+                await Continue();
+            }
+            _sequencer.HideTag();
+        }
+
+        public async Task Speech(LowMemoryList<string> speeches) {
+            foreach(var speech in speeches) {
+                _sequencer.ShowSpeech(speech,ActorSprite);
+                await Continue();
+            }
+            _sequencer.HideSpeech(ActorSprite);
         }
     }
 }

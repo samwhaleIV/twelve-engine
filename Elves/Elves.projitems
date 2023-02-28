@@ -9,8 +9,8 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Battles\MiniGameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battles\RebootElfBattle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScriptVariadics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\MiniGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\MiniGameException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\ResultMiniGame.cs" />
@@ -22,7 +22,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSequencer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battles\DebugBattle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\PositionController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\SpritePosition.cs" />

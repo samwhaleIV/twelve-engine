@@ -27,7 +27,7 @@ namespace Elves.ElfData {
 
         /* This should probably be information loaded from a data file, but C# is so expressive... I can't help myself. */
         static ElfManifest() {
-            Add(Elf.Create<MiniGameTest>(
+            Add(Elf.Create<RebootElfBattle>(
                 ID: AutoID,
                 name: "Reboot Elf",
                 texture: "Elves/harmless-elf",
@@ -39,30 +39,6 @@ namespace Elves.ElfData {
                     CreateDead(new(38,0,19,47)),
                     CreateSlideshowAndBack(AnimationType.Hurt,AnimationMode.Once,new(0,47,19,47),3)
                 }
-            ));
-            Add(Elf.Create<DebugBattle>(
-                ID: AutoID,
-                name: "Harmless Elf",
-                texture: "Elves/harmless-elf",
-                color: Color.Red,
-                baseHeight: 47,
-                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
-            ));
-            Add(Elf.Create<DebugBattle>(
-                ID: AutoID,
-                name: "Harmless Elf",
-                texture: "Elves/harmless-elf",
-                color: Color.Red,
-                baseHeight: 47,
-                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
-            ));
-            Add(Elf.Create<DebugBattle>(
-                ID: AutoID,
-                name: "Harmless Elf",
-                texture: "Elves/harmless-elf",
-                color: Color.Red,
-                baseHeight: 47,
-                frameSets: new FrameSet[] { CreateStatic(0,0,19,47) }
             ));
         }
     }

@@ -4,11 +4,11 @@
         /* https://github.com/vchelaru/FlatRedBall/blob/NetStandard/LICENSE */
 
         private readonly struct CallbackAndState {
-            public SendOrPostCallback Callback { get; init; }
-            public object State { get; init; }
+            public readonly SendOrPostCallback Callback { get; init; }
+            public readonly object State { get; init; }
         }
 
-        private readonly Queue<CallbackAndState> _messageQueue = new();
+        private readonly Queue<CallbackAndState> _frameQueue = new(), _messageQueue = new();
         private readonly object _messageQueueSyncLock = new();
 
         internal static TaskScheduler Scheduler { get; private set; }
@@ -26,7 +26,7 @@
             },CancellationToken.None,options,Scheduler);
         }
 
-        public GameLoopSyncContext() {
+        internal GameLoopSyncContext() {
             if(Context is not null) {
                 throw new InvalidOperationException("Only one game sync context can be instantiated.");
             }
@@ -35,7 +35,9 @@
             Scheduler = TaskScheduler.FromCurrentSynchronizationContext();
         }
 
-        public override void Send(SendOrPostCallback message,object state) => throw new NotImplementedException();
+        public override void Send(SendOrPostCallback message,object state) {
+            throw new NotImplementedException();
+        }
 
         public override void Post(SendOrPostCallback message,object state) {
             lock(_messageQueueSyncLock) {
@@ -47,19 +49,18 @@
             }
         }
 
-        private readonly Queue<CallbackAndState> frameQueue = new();
-        public void Update() {
+        internal void Update() {
             lock(_messageQueueSyncLock) {
                 while(_messageQueue.TryDequeue(out CallbackAndState message)) {
-                    frameQueue.Enqueue(message);
+                    _frameQueue.Enqueue(message);
                 }
             }
-            while(frameQueue.TryDequeue(out CallbackAndState message)) {
+            while(_frameQueue.TryDequeue(out CallbackAndState message)) {
                 message.Callback.Invoke(message.State);
             }
         }
 
-        public void Clear() {
+        internal void Clear() {
             lock(_messageQueueSyncLock) {
                 _messageQueue.Clear();
             }

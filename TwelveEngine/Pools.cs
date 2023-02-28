@@ -4,8 +4,8 @@ namespace TwelveEngine {
 
     public abstract class PoolSet<T> {
 
-        private static readonly Dictionary<int,T> active = new();
-        private static readonly Stack<T> inactive = new();
+        private readonly Dictionary<int,T> _active = new();
+        private readonly Stack<T> _inactive = new();
 
         private int _IDCounter = 0;
 
@@ -17,23 +17,22 @@ namespace TwelveEngine {
                 _IDCounter = int.MinValue;
             }
             int ID = _IDCounter++;
-            if(inactive.Count <= 0) {
+            if(_inactive.Count <= 0) {
                 item = CreateNew();
             } else {
-                item = inactive.Pop();
+                item = _inactive.Pop();
             }
-            active[ID] = item;
+            _active[ID] = item;
             return ID;
         }
 
-
         public void Return(int ID) {
-            if(!active.TryGetValue(ID,out T value)) {
+            if(!_active.TryGetValue(ID,out T value)) {
                 throw new InvalidOperationException($"ID '{ID}' not contained in active pool.");
             }
             Reset(value);
-            active.Remove(ID);
-            inactive.Push(value);
+            _active.Remove(ID);
+            _inactive.Push(value);
         }
 
         public (int ID1, int ID2) Lease(out T item1,out T item2) {

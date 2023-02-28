@@ -24,6 +24,9 @@ namespace Elves {
         /// </summary>
         /// <returns>The start state for the game.</returns>
         public static GameState Start() {
+            if(TwelveEngine.Flags.Get(Constants.Flags.QuickBattle) && TryGetQuickBattle(out var battle)) {
+                return battle;
+            }
             if(TwelveEngine.Flags.Get(Constants.Flags.SkipToCarousel)) {
                 Program.Save = Program.Saves[0];
                 return GetCarouselMenu();
@@ -32,6 +35,20 @@ namespace Elves {
                 return GetSplashMenu();
             }
             return GetBadgesScene();
+        }
+
+        private static bool TryGetQuickBattle(out GameState gameState) {
+            var value = Environment.GetEnvironmentVariable("quickbattle",EnvironmentVariableTarget.Process);
+            if(!int.TryParse(value,out int battleID)) {
+                Logger.WriteLine($"Could not {(value is null ? "find" : "parse")} 'quickbattle' process environment variable.");
+                gameState = null;
+                return false;
+            }
+            /* No guarantee that the battle ID was valid. If you're using flags, you do so at your own risk. It's a debug feature. */
+            ElfID ID = (ElfID)battleID;
+            Program.Save = Program.Saves[0];
+            gameState = GetBattleScene(ID);
+            return true;
         }
 
         private static GameState GetCarouselMenuAnimatedProgress() {

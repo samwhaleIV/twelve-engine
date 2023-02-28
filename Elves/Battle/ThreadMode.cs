@@ -3,6 +3,6 @@
 namespace Elves.Battle {
     [Flags]
     public enum ThreadMode {
-        NoRepeat, SkipFirstOnRepeat, RepeatLast, Random
+        NoRepeat = 0, Repeat, SkipFirst, HoldLast, Random
     }
 }
