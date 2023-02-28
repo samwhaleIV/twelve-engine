@@ -5,6 +5,7 @@ using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
 using TwelveEngine.Shell;
 using Elves.ElfData;
+using Elves.Battle.Scripting;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererScene {

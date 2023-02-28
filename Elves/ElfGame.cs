@@ -13,6 +13,7 @@ using Elves.Scenes.Credits;
 using TwelveEngine.Font;
 using TwelveEngine.Game3D.Entity.Types;
 using Elves.Scenes.Badges;
+using Elves.Battle.Scripting;
 
 namespace Elves {
     public static class ElfGame {

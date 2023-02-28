@@ -7,7 +7,7 @@ using Elves.ElfData;
 using TwelveEngine.Effects;
 using Microsoft.Xna.Framework;
 
-namespace Elves.Battle {
+namespace Elves.Battle.Scripting {
     public abstract partial class BattleScript {
 
         public virtual void Setup() {

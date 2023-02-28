@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Elves.Battle {
+namespace Elves.Battle.Scripting {
     public abstract partial class BattleScript {
 
         public async Task Speech(string speech1) {
