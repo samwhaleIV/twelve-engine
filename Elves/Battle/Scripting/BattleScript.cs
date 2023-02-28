@@ -135,21 +135,6 @@ namespace Elves.Battle.Scripting {
             return _actorSprite;
         }
 
-        public virtual async Task Exit(BattleResult battleResult) {
-            //todo: get randomly generated messages - or whatever
-            switch(battleResult) {
-                case BattleResult.PlayerWon:
-                    await Tag("You survived...","Your journey continues.");
-                    break;
-                case BattleResult.PlayerLost:
-                    await Tag("You died...","Better luck next time.");
-                    break;
-                default:
-                    await Tag("Everybody is a loser...","Especially you.");
-                    break;
-            }
-        }
-
         public virtual ScrollingBackground CreateBackground() => new() {
             TileScale = 4f,
             Scale = 2f,

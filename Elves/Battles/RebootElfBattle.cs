@@ -10,8 +10,5 @@ namespace Elves.Battles {
                 await Continue();
             }
         }
-        public override Task Exit(BattleResult battleResult) {
-            return base.Exit(battleResult);
-        }
     }
 }

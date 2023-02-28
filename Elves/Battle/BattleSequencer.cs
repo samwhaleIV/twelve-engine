@@ -89,7 +89,6 @@ namespace Elves.Battle {
             Script.Setup();
             await TransitionIn();
             battleResult = await Script.Main();
-            await Script.Exit(battleResult);
             HideAllButtons();
             exitStart = Now;
             endSceneHandle = OnUpdate.Add(EndSceneDelay);
