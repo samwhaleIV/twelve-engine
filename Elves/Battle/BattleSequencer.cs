@@ -179,15 +179,19 @@ namespace Elves.Battle {
         }
 
         public void SetTag(string text) {
-            if(UI.Tagline.IsShown) {
-                UI.Tagline.CycleText(Now);
+            var tagline = UI.Tagline;
+            tagline.UpdateAnimationTime(Now);
+            if(tagline.IsShown || (!tagline.IsShown && tagline.AnimationProgress <= 0)) {
+                tagline.CycleText(Now);
             }
-            UI.Tagline.CurrentText.Clear();
-            UI.Tagline.CurrentText.Append(text);
-            UI.Tagline.Show(Now);
+            tagline.CurrentText.Clear();
+            tagline.CurrentText.Append(text);
+            tagline.Show(Now);
         }
 
-        public void HideTag() => UI.Tagline.Hide(Now);
+        public void HideTag() {
+            UI.Tagline.Hide(Now);
+        }
 
         protected override UserData GetPlayerData() => Script.Player;
         protected override UserData GetTargetData() => Script.Actor;

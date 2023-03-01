@@ -76,6 +76,10 @@ namespace Elves.Battle {
 
         public void Heal(float amount) => Health += amount;
         public void Hurt(float amount) => Health -= amount;
+
+        public void HealPercent(float percent) => Health += percent * MaxHealth;
+        public void HurtPercent(float percent) => Health -= percent * MaxHealth;
+
         public void Kill() => Health = 0;
 
         public event Action OnHeal, OnHurt, OnDied;
