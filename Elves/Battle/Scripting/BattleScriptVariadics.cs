@@ -229,35 +229,92 @@ namespace Elves.Battle.Scripting {
         }
 
         public async Task Button(ButtonTable<Action> buttonTable) {
-            var result = await _sequencer.GetButton(false,buttonTable.Options);
-            buttonTable.Values[result].Invoke();
+            buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke();
         }
 
         public async Task Button<TParameter>(TParameter parameter,ButtonTable<Action<TParameter>> buttonTable) {
-            var result = await _sequencer.GetButton(false,buttonTable.Options);
-            buttonTable.Values[result].Invoke(parameter);
+            buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke(parameter);
         }
 
         public async Task<TResult> Button<TResult>(ButtonTable<TResult> buttonTable) {
-            var result = await _sequencer.GetButton(false,buttonTable.Options);
-            return buttonTable.Values[result];
+            return buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)];
         }
 
         public async Task Button(ButtonTable<Func<Task>> buttonTable) {
-            int index = await _sequencer.GetButton(false,buttonTable.Options);
-            await buttonTable.Values[index].Invoke();
+            await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke();
         }
 
         public async Task<TResult> Button<TResult>(ButtonTable<Func<Task<TResult>>> buttonTable) {
-            int index = await _sequencer.GetButton(false,buttonTable.Options);
-            var result = await buttonTable.Values[index].Invoke();
-            return result;
+            return await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke();
         }
 
         public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,ButtonTable<Func<TParameter,Task<TResult>>> buttonTable) {
-            int index = await _sequencer.GetButton(false,buttonTable.Options);
-            var result = await buttonTable.Values[index].Invoke(parameter);
-            return result;
+            return await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke(parameter);
+        }
+
+        public async Task<TResult> Button<TResult>(string option1,Func<Task<TResult>> action1) {
+            var result = await Button<Func<Task<TResult>>>(new ButtonTable<Func<Task<TResult>>>(option1,action1));
+            return await result.Invoke();
+        }
+
+        public async Task<TResult> Button<TResult>(string option1,Func<Task<TResult>> action1,string option2,Func<Task<TResult>> action2) {
+            return await (await Button<Func<Task<TResult>>>(new ButtonTable<Func<Task<TResult>>>(option1,action1,option2,action2))).Invoke();
+        }
+
+        public async Task<TResult> Button<TResult>(string option1,Func<Task<TResult>> action1,string option2,Func<Task<TResult>> action2,string option3,Func<Task<TResult>> action3) {
+            return await (await Button<Func<Task<TResult>>>(new ButtonTable<Func<Task<TResult>>>(option1,action1,option2,action2,option3,action3))).Invoke();
+        }
+
+        public async Task<TResult> Button<TResult>(string option1,Func<Task<TResult>> action1,string option2,Func<Task<TResult>> action2,string option3,Func<Task<TResult>> action3,string option4,Func<Task<TResult>> action4) {
+            return await (await Button<Func<Task<TResult>>>(new ButtonTable<Func<Task<TResult>>>(option1,action1,option2,action2,option3,action3,option4,action4))).Invoke();
+        }
+
+        public async Task<TResult> Button<TResult>(string option1,Func<TResult> action1) {
+            return (await Button(new ButtonTable<Func<TResult>>(option1,action1))).Invoke();
+        }
+
+        public async Task<TResult> Button<TResult>(string option1,Func<TResult> action1,string option2,Func<TResult> action2) {
+            return (await Button(new ButtonTable<Func<TResult>>(option1,action1,option2,action2))).Invoke();
+        }
+
+        public async Task<TResult> Button<TResult>(string option1,Func<TResult> action1,string option2,Func<TResult> action2,string option3,Func<TResult> action3) {
+            return (await Button(new ButtonTable<Func<TResult>>(option1,action1,option2,action2,option3,action3))).Invoke();
+        }
+
+        public async Task<TResult> Button<TResult>(string option1,Func<TResult> action1,string option2,Func<TResult> action2,string option3,Func<TResult> action3,string option4,Func<TResult> action4) {
+            return (await Button(new ButtonTable<Func<TResult>>(option1,action1,option2,action2,option3,action3,option4,action4))).Invoke();
+        }
+
+        public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,string option1,Func<TParameter,Task<TResult>> action1) {
+            return await (await Button(new ButtonTable<Func<TParameter,Task<TResult>>>(option1,action1))).Invoke(parameter);
+        }
+
+        public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,string option1,Func<TParameter,Task<TResult>> action1,string option2,Func<TParameter,Task<TResult>> action2) {
+            return await (await Button(new ButtonTable<Func<TParameter,Task<TResult>>>(option1,action1,option2,action2))).Invoke(parameter);
+        }
+
+        public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,string option1,Func<TParameter,Task<TResult>> action1,string option2,Func<TParameter,Task<TResult>> action2,string option3,Func<TParameter,Task<TResult>> action3) {
+            return await (await Button(new ButtonTable<Func<TParameter,Task<TResult>>>(option1,action1,option2,action2,option3,action3))).Invoke(parameter);
+        }
+
+        public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,string option1,Func<TParameter,Task<TResult>> action1,string option2,Func<TParameter,Task<TResult>> action2,string option3,Func<TParameter,Task<TResult>> action3,string option4,Func<TParameter,Task<TResult>> action4) {
+            return await (await Button(new ButtonTable<Func<TParameter,Task<TResult>>>(option1,action1,option2,action2,option3,action3,option4,action4))).Invoke(parameter);
+        }
+
+        public async Task Button(string option1,Func<Task> action1) {
+            await (await Button<Func<Task>>(new ButtonTable<Func<Task>>(option1,action1))).Invoke();
+        }
+
+        public async Task Button(string option1,Func<Task> action1,string option2,Func<Task> action2) {
+            await (await Button<Func<Task>>(new ButtonTable<Func<Task>>(option1,action1,option2,action2))).Invoke();
+        }
+
+        public async Task Button(string option1,Func<Task> action1,string option2,Func<Task> action2,string option3,Func<Task> action3) {
+            await (await Button<Func<Task>>(new ButtonTable<Func<Task>>(option1,action1,option2,action2,option3,action3))).Invoke();
+        }
+
+        public async Task Button(string option1,Func<Task> action1,string option2,Func<Task> action2,string option3,Func<Task> action3,string option4,Func<Task> action4) {
+            await (await Button<Func<Task>>(new ButtonTable<Func<Task>>(option1,action1,option2,action2,option3,action3,option4,action4))).Invoke();
         }
     }
 }

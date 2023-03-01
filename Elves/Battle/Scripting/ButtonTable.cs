@@ -1,4 +1,6 @@
-﻿using TwelveEngine;
+﻿using System.Threading.Tasks;
+using System;
+using TwelveEngine;
 
 namespace Elves.Battle.Scripting {
     public readonly struct ButtonTable<T> {
@@ -6,29 +8,24 @@ namespace Elves.Battle.Scripting {
         public readonly LowMemoryList<string> Options { get; private init; }
         public readonly LowMemoryList<T> Values { get; private init; }
 
-        public ButtonTable(LowMemoryList<string> options,LowMemoryList<T> actions) {
-            Options = options;
-            Values = actions;
+        public ButtonTable(string option1,T value1) {
+            Options = new(option1);
+            Values = new(value1);
         }
 
-        public ButtonTable((string Option,T Value) button) {
-            Options = new(button.Option);
-            Values = new(button.Value);
+        public ButtonTable(string option1,T value1,string option2,T value2) {
+            Options = new(option1,option2);
+            Values = new(value1,value2);
         }
 
-        public ButtonTable((string Option,T Value) button1,(string Option,T Value) button2) {
-            Options = new(button1.Option,button2.Option);
-            Values = new(button1.Value,button2.Value);
+        public ButtonTable(string option1,T value1,string option2,T value2,string option3,T value3) {
+            Options = new(option1,option2,option3);
+            Values = new(value1,value2,value3);
         }
 
-        public ButtonTable((string Option,T Value) button1,(string Option,T Value) button2,(string Option,T Value) button3) {
-            Options = new(button1.Option,button2.Option,button3.Option);
-            Values = new(button1.Value,button2.Value,button3.Value);
-        }
-
-        public ButtonTable((string Option,T Value) button1,(string Option,T Value) button2,(string Option,T Value) button3,(string Option,T Value) button4) {
-            Options = new(button1.Option,button2.Option,button3.Option,button4.Option);
-            Values = new(button1.Value,button2.Value,button3.Value,button4.Value);
+        public ButtonTable(string option1,T value1,string option2,T value2,string option3,T value3,string option4,T value4) {
+            Options = new(option1,option2,option3,option4);
+            Values = new(value1,value2,value3,value4);
         }
     }
 }
