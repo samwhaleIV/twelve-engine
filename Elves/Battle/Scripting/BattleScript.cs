@@ -153,7 +153,7 @@ namespace Elves.Battle.Scripting {
             return result;
         }
 
-        public async Task<int> GetButton(LowMemoryList<string> options) {
+        public async Task<int> Button(LowMemoryList<string> options) {
             return await _sequencer.GetButton(false,options);
         }
 
