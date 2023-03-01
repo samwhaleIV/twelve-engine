@@ -40,6 +40,15 @@ namespace Elves.Battle {
         private SpritePosition oldPosition, currentPosition;
 
         public void SetSpritePosition(TimeSpan now,SpritePosition position) {
+            interpolator.Update(now);
+            if(currentPosition == position) {
+                return;
+            }
+            if(oldPosition == position && interpolator.Value <= 0) {
+                currentPosition = position;
+                interpolator.Finish();
+                return;
+            }
             interpolator.Reset(now);
             oldPosition = currentPosition;
             currentPosition = position;

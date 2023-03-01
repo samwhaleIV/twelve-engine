@@ -252,8 +252,8 @@ namespace Elves.Battle.Scripting {
             return await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke(parameter);
         }
 
-        public async Task<TResult> Button<TResult>(string option1,Func<Task<TResult>> action1) {
-            var result = await Button<Func<Task<TResult>>>(new ButtonTable<Func<Task<TResult>>>(option1,action1));
+        public async Task<TResult> Button<TResult>(string option,Func<Task<TResult>> action) {
+            var result = await Button<Func<Task<TResult>>>(new ButtonTable<Func<Task<TResult>>>(option,action));
             return await result.Invoke();
         }
 
@@ -269,8 +269,8 @@ namespace Elves.Battle.Scripting {
             return await (await Button<Func<Task<TResult>>>(new ButtonTable<Func<Task<TResult>>>(option1,action1,option2,action2,option3,action3,option4,action4))).Invoke();
         }
 
-        public async Task<TResult> Button<TResult>(string option1,Func<TResult> action1) {
-            return (await Button(new ButtonTable<Func<TResult>>(option1,action1))).Invoke();
+        public async Task<TResult> Button<TResult>(string option,Func<TResult> action) {
+            return (await Button(new ButtonTable<Func<TResult>>(option,action))).Invoke();
         }
 
         public async Task<TResult> Button<TResult>(string option1,Func<TResult> action1,string option2,Func<TResult> action2) {
@@ -285,8 +285,8 @@ namespace Elves.Battle.Scripting {
             return (await Button(new ButtonTable<Func<TResult>>(option1,action1,option2,action2,option3,action3,option4,action4))).Invoke();
         }
 
-        public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,string option1,Func<TParameter,Task<TResult>> action1) {
-            return await (await Button(new ButtonTable<Func<TParameter,Task<TResult>>>(option1,action1))).Invoke(parameter);
+        public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,string option,Func<TParameter,Task<TResult>> action) {
+            return await (await Button(new ButtonTable<Func<TParameter,Task<TResult>>>(option,action))).Invoke(parameter);
         }
 
         public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,string option1,Func<TParameter,Task<TResult>> action1,string option2,Func<TParameter,Task<TResult>> action2) {
@@ -301,8 +301,8 @@ namespace Elves.Battle.Scripting {
             return await (await Button(new ButtonTable<Func<TParameter,Task<TResult>>>(option1,action1,option2,action2,option3,action3,option4,action4))).Invoke(parameter);
         }
 
-        public async Task Button(string option1,Func<Task> action1) {
-            await (await Button<Func<Task>>(new ButtonTable<Func<Task>>(option1,action1))).Invoke();
+        public async Task Button(string option,Func<Task> action) {
+            await (await Button<Func<Task>>(new ButtonTable<Func<Task>>(option,action))).Invoke();
         }
 
         public async Task Button(string option1,Func<Task> action1,string option2,Func<Task> action2) {

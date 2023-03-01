@@ -172,5 +172,12 @@ namespace Elves.Battle.Scripting {
             }
             _sequencer.HideSpeech(ActorSprite);
         }
+
+        public void SetTag(string tag) {
+            _sequencer.SetTag(tag);
+        }
+        public void HideTag() {
+            _sequencer.HideTag();
+        }
     }
 }

@@ -170,8 +170,7 @@ namespace Elves {
             });
         }
 
-        private static void IntroExit(GameState scene,bool quickExit) {
-            
+        private static void IntroExit(GameState scene,bool quickExit) {           
             scene.TransitionOut(new() {
                 Generator = GetModeSelectMenuScene,
                 Data = StateData.FadeIn(TransitionDuration),
@@ -184,6 +183,11 @@ namespace Elves {
             Data = StateData.FadeIn(TransitionDuration),
             Duration = TransitionDuration
         });
+
+        private static GameState GetBeatGameScene() {
+            //TODO...
+            return GetCreditsSceneReturnToSplashScreen();
+        }
 
         private static GameState GetBattleScene(ElfID elfID) {
             Elf elf = ElfManifest.Get(elfID);
@@ -212,11 +216,9 @@ namespace Elves {
                 save.IncrementCounter(result == BattleResult.PlayerWon ? SaveKeys.WinCount : SaveKeys.LoseCount);
                 Program.Save.TrySave();
             }
-            if((int)ID == ElfManifest.Count - 1) {
-                throw new NotImplementedException();
-            }
+            bool beatGame = (int)ID == ElfManifest.Count - 1;
             scene.TransitionOut(new() {
-                Generator = animateProgress ? GetCarouselMenuAnimatedProgress : GetCarouselMenu,
+                Generator = beatGame ? GetBeatGameScene : animateProgress ? GetCarouselMenuAnimatedProgress : GetCarouselMenu,
                 Data = StateData.FadeIn(TransitionDuration),
                 Duration = TransitionDuration
             });
