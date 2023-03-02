@@ -7,8 +7,6 @@ using TwelveEngine;
 namespace Elves.Battle.Scripting {
     public sealed partial class ScriptThreader {
 
-        private const ThreadMode DefaultThreadMode = ThreadMode.Repeat;
-
         private BattleScript Script { get; init; }
         public ScriptThreader(BattleScript script) => Script = script;
 
@@ -65,21 +63,21 @@ namespace Elves.Battle.Scripting {
             return true;
         }
 
-        public async Task Task(LowMemoryList<Func<Task>> functions,ThreadMode threadMode = DefaultThreadMode,[CallerLineNumber] int threadID = 0) {
+        public async Task Task(ThreadMode threadMode,LowMemoryList<Func<Task>> functions,[CallerLineNumber] int threadID = 0) {
             if(!TryGetThreadValue(threadID,threadMode,functions,out var func)) {
                 return;
             }
             await func.Invoke();
         }
 
-        public async Task Speech(LowMemoryList<PolyThreadSelection<string>> selections,ThreadMode threadMode = DefaultThreadMode,[CallerLineNumber] int threadID = 0) {
+        public async Task Speech(ThreadMode threadMode,LowMemoryList<PolyThreadSelection<string>> selections,[CallerLineNumber] int threadID = 0) {
             if(!TryGetThreadValue(threadID,threadMode,selections,out var selection)) {
                 return;
             }
             await (selection.IsItem ? Script.Speech(selection.ItemList) : selection.Task.Invoke());
         }
 
-        public async Task Tag(LowMemoryList<PolyThreadSelection<string>> selections,ThreadMode threadMode = DefaultThreadMode,[CallerLineNumber] int threadID = 0) {
+        public async Task Tag(ThreadMode threadMode,LowMemoryList<PolyThreadSelection<string>> selections,[CallerLineNumber] int threadID = 0) {
             if(!TryGetThreadValue(threadID,threadMode,selections,out var selection)) {
                 return;
             }

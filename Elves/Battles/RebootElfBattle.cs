@@ -10,7 +10,7 @@ namespace Elves.Battles {
             SetTag("What do you want to know?");
             await Button(
                 "Yes",async () => {
-                    await Threader.Speech(new(
+                    await Threader.Speech(ThreadMode.HoldLast,new(
                         (
                             "Huh? What?",
                             "That's not a question, I can't answer this."
@@ -38,7 +38,7 @@ namespace Elves.Battles {
                             await Speech("Doesn't matter, it was a hypothetical question.","Here is your answer...","Yes.","Yes yes.","A resounding yes.");
                         }),
                         "*rolls eyes* Yes..."
-                    ),ThreadMode.HoldLast);
+                    ));
                     await OtherQuestions("Anything else you want to know?");
                 },
                 "Why am I here?",async () => {
