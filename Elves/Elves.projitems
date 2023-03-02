@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Battle\MiniGameException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\ResultMiniGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\ButtonTable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\PolyThreadSelection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\ScriptThreaderVariadics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\ScriptThreader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Badges\Badge.cs" />

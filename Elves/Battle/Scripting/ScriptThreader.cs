@@ -51,32 +51,39 @@ namespace Elves.Battle.Scripting {
             return false;
         }
 
-        private string GetThreadValue(int threadID,ThreadMode threadMode,LowMemoryList<string> values) {
+        private bool TryGetThreadValue<T>(int threadID,ThreadMode threadMode,LowMemoryList<T> values,out T value) {
             int index = GetThreadIndex(threadID);
             if(!TryGetNewThreadIndex(ref index,threadMode,values.Size,Script.Random)) {
-                return null;
+                value = default;
+                return false;
             }
             SetThreadIndex(threadID,index);
             LastThreadIndex = index;
             LastThreadSize = values.Size;
             LastThreadAtEnd = index + 1 >= values.Size;   
-            return values[index];
+            value = values[index];
+            return true;
         }
 
-        public async Task Tag(LowMemoryList<string> tags,ThreadMode threadMode = DefaultThreadMode,[CallerLineNumber] int threadID = 0) {
-            var threadValue = GetThreadValue(threadID,threadMode,tags);
-            if(threadValue == null) {
+        public async Task Task(LowMemoryList<Func<Task>> functions,ThreadMode threadMode = DefaultThreadMode,[CallerLineNumber] int threadID = 0) {
+            if(!TryGetThreadValue(threadID,threadMode,functions,out var func)) {
                 return;
             }
-            await Script.Tag(threadValue);
+            await func.Invoke();
         }
 
-        public async Task Speech(LowMemoryList<string> speeches,ThreadMode threadMode = DefaultThreadMode,[CallerLineNumber] int threadID = 0) {
-            var threadValue = GetThreadValue(threadID,threadMode,speeches);
-            if(threadValue == null) {
+        public async Task Speech(LowMemoryList<PolyThreadSelection<string>> selections,ThreadMode threadMode = DefaultThreadMode,[CallerLineNumber] int threadID = 0) {
+            if(!TryGetThreadValue(threadID,threadMode,selections,out var selection)) {
                 return;
             }
-            await Script.Speech(threadValue);
+            await (selection.IsItem ? Script.Speech(selection.ItemList) : selection.Task.Invoke());
+        }
+
+        public async Task Tag(LowMemoryList<PolyThreadSelection<string>> selections,ThreadMode threadMode = DefaultThreadMode,[CallerLineNumber] int threadID = 0) {
+            if(!TryGetThreadValue(threadID,threadMode,selections,out var selection)) {
+                return;
+            }
+            await (selection.IsItem ? Script.Tag(selection.ItemList) : selection.Task.Invoke());
         }
     }
 }

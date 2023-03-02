@@ -28,7 +28,8 @@ namespace TwelveEngine {
             { LoggerLabel.Flags, "Flags" },
             { LoggerLabel.UI, "UI" },
             { LoggerLabel.Script, "Script" },
-            { LoggerLabel.Audio, "Audio" }
+            { LoggerLabel.Audio, "Audio" },
+            { LoggerLabel.Debug, "Debug" }
         };
 
         private static string GetLoggerLabel(LoggerLabel label) {

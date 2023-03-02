@@ -189,7 +189,7 @@ namespace Elves {
             return GetCreditsSceneReturnToSplashScreen();
         }
 
-        private static GameState GetBattleScene(ElfID elfID) {
+        public static GameState GetBattleScene(ElfID elfID) {
             Elf elf = ElfManifest.Get(elfID);
             BattleScript battleScript = elf.ScriptGenerator.Invoke();
             battleScript.ElfSource = elf;

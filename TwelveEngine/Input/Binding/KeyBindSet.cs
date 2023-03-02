@@ -14,5 +14,7 @@ namespace TwelveEngine.Input.Binding {
 
         public MultiBindKey Ascend = Keys.Space;
         public MultiBindKey Descend = Keys.LeftControl;
+
+        public MultiBindKey Debug = Keys.F1;
     }
 }

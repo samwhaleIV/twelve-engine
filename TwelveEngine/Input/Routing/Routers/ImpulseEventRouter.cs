@@ -11,7 +11,7 @@
             (impulseEvent.Pressed ? endPoint.OnPressed : endPoint.OnReleased).Invoke();
         }
 
-        public event Action OnAcceptDown, OnAcceptUp, OnCancelDown, OnCancelUp, OnFocusDown, OnFocusUp;
+        public event Action OnAcceptDown, OnAcceptUp, OnCancelDown, OnCancelUp, OnFocusDown, OnFocusUp, OnDebugDown, OnDebugUp;
         public event Action<Direction> OnDirectionUp, OnDirectionDown;
 
         private void AcceptDown() => OnAcceptDown?.Invoke();
@@ -34,6 +34,9 @@
         private void FocusDown() => OnFocusDown?.Invoke();
         private void FocusUp() => OnFocusUp?.Invoke();
 
+        private void DebugDown() => OnDebugDown?.Invoke();
+        private void DebugUp() =>  OnDebugUp?.Invoke();
+
         /// <summary>
         /// She dreamt of late binding, every time she closed her eyes...
         /// </summary>
@@ -46,7 +49,9 @@
             {Impulse.Up,(UpDown,UpUp)},
             {Impulse.Down,(DownDown,DownUp)},
             {Impulse.Left,(LeftDown,LeftUp)},
-            {Impulse.Right,(RightDown,RightUp)}
+            {Impulse.Right,(RightDown,RightUp)},
+
+            {Impulse.Debug,(DebugDown,DebugUp)}
         };
     }
 }

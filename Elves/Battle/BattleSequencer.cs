@@ -17,11 +17,22 @@ namespace Elves.Battle {
         public event Action<GameState,BattleResult,ElfID> OnBattleEnd;
 
         private void Initialize(BattleScript script) {
-            Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.ID})";
+            ElfID elfID = script.ElfSource.ID;
+            string elfName = script.ElfSource.Name;
+            Name = $"{elfName} battle (ID: {(int)elfID})";
             script.SetSequencer(this);
             Script = script;
             transitionTask = new TaskCompletionSource();
             OnLoad.Add(LoadSequencer);
+            if(!Flags.Get(Constants.Flags.QuickBattle)) {
+                return;
+            }
+            Impulse.Router.OnDebugDown += () => {
+                Logger.WriteLine($"Restarting battle state for battle {elfID} ({elfName}).",LoggerLabel.Debug);
+                TransitionOut(new() { State = ElfGame.GetBattleScene(elfID),Duration = TimeSpan.Zero, Data = new() {
+                    Flags = StateFlags.CarryInput
+                } });
+            };
         }
 
         private void LoadSequencer() {
@@ -58,6 +69,9 @@ namespace Elves.Battle {
 
         public async Task TransitionIn() {
             if(transitionTask is null) {
+                if(!FadeInIsFlagged) {
+                    return;
+                }
                 Logger.WriteLine("Tried to transition in, but the game state is already done transitioning.",LoggerLabel.Script);
                 return;
             }
@@ -144,6 +158,7 @@ namespace Elves.Battle {
         }
 
         public void ShowMiniGame(MiniGame miniGame) {
+            HideTag();
             UI.ResetInteractionState();
             HideAllButtons();
             miniGame.UpdateState(this);
@@ -166,6 +181,7 @@ namespace Elves.Battle {
         }
 
         public void ShowSpeech(string text,BattleSprite battleSprite) {
+            HideTag();
             UI.SpeechBox.Show(Now);
             battleSprite?.SetPosition(SpritePosition.Left);
             var stringBuilder = UI.SpeechBox.Text;

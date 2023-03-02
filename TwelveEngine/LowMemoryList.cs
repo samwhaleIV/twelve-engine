@@ -147,5 +147,37 @@ namespace TwelveEngine {
                 yield break;
             }
         }
+
+        public static implicit operator LowMemoryList<T>(T value) {
+            return new LowMemoryList<T>(value);
+        }
+
+        public static implicit operator LowMemoryList<T>((T Value1, T Value2) values) {
+            return new LowMemoryList<T>(values.Value1,values.Value2);
+        }
+
+        public static implicit operator LowMemoryList<T>((T Value1, T Value2, T Value3) values) {
+            return new LowMemoryList<T>(values.Value1,values.Value2,values.Value3);
+        }
+
+        public static implicit operator LowMemoryList<T>((T Value1, T Value2, T Value3, T Value4) values) {
+            return new LowMemoryList<T>(values.Value1,values.Value2,values.Value3,values.Value4);
+        }
+
+        public static implicit operator LowMemoryList<T>((T Value1, T Value2, T Value3, T Value4, T Value5) values) {
+            return new LowMemoryList<T>(values.Value1,values.Value2,values.Value3,values.Value4,values.Value5);
+        }
+
+        public static implicit operator LowMemoryList<T>((T Value1, T Value2, T Value3, T Value4, T Value5, T Value6) values) {
+            return new LowMemoryList<T>(values.Value1,values.Value2,values.Value3,values.Value4,values.Value5,values.Value6);
+        }
+
+        public static implicit operator LowMemoryList<T>((T Value1, T Value2, T Value3, T Value4, T Value5, T Value6, T Value7) values) {
+            return new LowMemoryList<T>(values.Value1,values.Value2,values.Value3,values.Value4,values.Value5,values.Value6,values.Value7);
+        }
+
+        public static implicit operator LowMemoryList<T>((T Value1,T Value2,T Value3,T Value4,T Value5,T Value6,T Value7,T Value8) values) {
+            return new LowMemoryList<T>(values.Value1,values.Value2,values.Value3,values.Value4,values.Value5,values.Value6,values.Value7,values.Value8);
+        }
     }
 }
