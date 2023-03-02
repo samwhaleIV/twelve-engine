@@ -5,6 +5,7 @@ using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
 using TwelveEngine.Shell;
 using Elves.ElfData;
+using Elves.Battle.Scripting;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererScene {
@@ -16,11 +17,22 @@ namespace Elves.Battle {
         public event Action<GameState,BattleResult,ElfID> OnBattleEnd;
 
         private void Initialize(BattleScript script) {
-            Name = $"{script.ElfSource.Name} battle (ID: {(int)script.ElfSource.ID})";
+            ElfID elfID = script.ElfSource.ID;
+            string elfName = script.ElfSource.Name;
+            Name = $"{elfName} battle (ID: {(int)elfID})";
             script.SetSequencer(this);
             Script = script;
             transitionTask = new TaskCompletionSource();
             OnLoad.Add(LoadSequencer);
+            if(!Flags.Get(Constants.Flags.QuickBattle)) {
+                return;
+            }
+            Impulse.Router.OnDebugDown += () => {
+                Logger.WriteLine($"Restarting battle state for battle {elfID} ({elfName}).",LoggerLabel.Debug);
+                TransitionOut(new() { State = ElfGame.GetBattleScene(elfID),Duration = TimeSpan.Zero, Data = new() {
+                    Flags = StateFlags.CarryInput
+                } });
+            };
         }
 
         private void LoadSequencer() {
@@ -57,6 +69,9 @@ namespace Elves.Battle {
 
         public async Task TransitionIn() {
             if(transitionTask is null) {
+                if(!FadeInIsFlagged) {
+                    return;
+                }
                 Logger.WriteLine("Tried to transition in, but the game state is already done transitioning.",LoggerLabel.Script);
                 return;
             }
@@ -88,7 +103,6 @@ namespace Elves.Battle {
             Script.Setup();
             await TransitionIn();
             battleResult = await Script.Main();
-            await Script.Exit(battleResult);
             HideAllButtons();
             exitStart = Now;
             endSceneHandle = OnUpdate.Add(EndSceneDelay);
@@ -96,12 +110,12 @@ namespace Elves.Battle {
 
         private TaskCompletionSource<int> buttonTask;
 
-        private static readonly string[] DefaultOptions = new string[] { Constants.Battle.ContinueText };
+        private static readonly LowMemoryList<string> DefaultOptions = new(Constants.Battle.ContinueText);
 
         public async Task ContinueButton() => await GetButton(true,DefaultOptions);
 
-        public async Task<int> GetButton(bool isContinue,params string[] options) {
-            if(options.Length < 1) {
+        public async Task<int> GetButton(bool isContinue,LowMemoryList<string> options) {
+            if(options.Size < 1) {
                 /* Might want to handle this better if we ever create a opened battle API */
                 options = DefaultOptions;
             }
@@ -112,17 +126,22 @@ namespace Elves.Battle {
                 button.CanInteract = false;
             }
 
-            int end = Math.Min(options.Length,BUTTON_COUNT);
-            for(int i = 0;i<end;i++) {
-                var button = UI.GetActionButton(i);
+            int end = Math.Min(options.Size,BUTTON_COUNT);
+            int optionIndex = 0;
+            foreach(var option in options) {
+                var button = UI.GetActionButton(optionIndex);
                 button.CanInteract = true;
                 var buttonLabel = button.Label;
                 buttonLabel.Clear();
-                buttonLabel.Append(options[i]);
+                buttonLabel.Append(option);
+                optionIndex++;
+                if(optionIndex >= end) {
+                    break;
+                }
             }
 
             UI.ResetInteractionState();
-            switch(options.Length) {
+            switch(options.Size) {
                 case 1: ConfigSingleButton(isContinue); break;
                 case 2: ConfigDoubleButtons(); break;
                 case 3: ConfigTripleButtons(); break;
@@ -139,6 +158,7 @@ namespace Elves.Battle {
         }
 
         public void ShowMiniGame(MiniGame miniGame) {
+            HideTag();
             UI.ResetInteractionState();
             HideAllButtons();
             miniGame.UpdateState(this);
@@ -161,6 +181,7 @@ namespace Elves.Battle {
         }
 
         public void ShowSpeech(string text,BattleSprite battleSprite) {
+            HideTag();
             UI.SpeechBox.Show(Now);
             battleSprite?.SetPosition(SpritePosition.Left);
             var stringBuilder = UI.SpeechBox.Text;
@@ -174,15 +195,19 @@ namespace Elves.Battle {
         }
 
         public void SetTag(string text) {
-            if(UI.Tagline.IsShown) {
-                UI.Tagline.CycleText(Now);
+            var tagline = UI.Tagline;
+            tagline.UpdateAnimationTime(Now);
+            if(tagline.IsShown || (!tagline.IsShown && tagline.AnimationProgress <= 0)) {
+                tagline.CycleText(Now);
             }
-            UI.Tagline.CurrentText.Clear();
-            UI.Tagline.CurrentText.Append(text);
-            UI.Tagline.Show(Now);
+            tagline.CurrentText.Clear();
+            tagline.CurrentText.Append(text);
+            tagline.Show(Now);
         }
 
-        public void HideTag() => UI.Tagline.Hide(Now);
+        public void HideTag() {
+            UI.Tagline.Hide(Now);
+        }
 
         protected override UserData GetPlayerData() => Script.Player;
         protected override UserData GetTargetData() => Script.Actor;

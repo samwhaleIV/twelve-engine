@@ -19,6 +19,7 @@ namespace Elves {
             public const string FixedBattleRandom = "norandombattle";
             public const string SkipToCarousel = "skiptocarousel";
             public const string SkipBadges = "skipbadges";
+            public const string QuickBattle = "quickbattle";
         }
 
         public static class Battle {

@@ -1,5 +1,6 @@
 ﻿using Elves.Animation;
 using Elves.Battle;
+using Elves.Battle.Scripting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;

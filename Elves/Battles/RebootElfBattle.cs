@@ -1,145 +1,82 @@
 ﻿using System.Threading.Tasks;
-using Elves.Battle;
+using Elves.Battle.Scripting;
+using TwelveEngine;
 
 namespace Elves.Battles {
     public sealed class RebootElfBattle:BattleScript {
-
-        private async Task Suicide() {
-            Player.Kill();
-            SetTag("You died.");
-            await Speech("Fighting for the rebellion is going to be easier than I thought.","I had no idea humans were so weak.","I didn't even kick you yet.");
-            await Tag($"{Actor.Name} still kicked you anwyay.");
-            battleResult = BattleResult.PlayerLost;
+        
+        private async Task OtherQuestions(string message) {
+            await Speech(message);
+            SetTag("What do you want to know?");
+            await Button(
+                "Yes",async () => {
+                    await Threader.Speech(new(
+                        (
+                            "Huh? What?",
+                            "That's not a question, I can't answer this."
+                        ),
+                            "That's still not a question! I still can't answer this!",
+                            "You are wasting your time!",
+                        (
+                            "Please stop. Yes is not a question.",
+                            "The second the laws of conversation change, you will be the first to know.",
+                            "But until that day comes, please stop asking me \"yes\"."
+                        ),
+                        (
+                            "Wow, okay. You are more stubborn than I thought.",
+                            "We elves spend all our childhoods reading stories about little stubborn human kids.",
+                            "I always thought they were just stories... Until now."         
+                        ),
+                        (
+                            "Okay. Fine. I've got an answer for you.",
+                            "The answer... It's around here somewhere."
+                        ),
+                        new(async () => {
+                            await Speech("Okay... I have the answer. Are you ready?");
+                            SetTag("Are you ready?");
+                            await Button("Yes","No");
+                            await Speech("Doesn't matter, it was a hypothetical question.","Here is your answer...","Yes.","Yes yes.","A resounding yes.");
+                        }),
+                        "*rolls eyes* Yes..."
+                    ),ThreadMode.HoldLast);
+                    await OtherQuestions("Anything else you want to know?");
+                },
+                "Why am I here?",async () => {
+                    await Speech("That's a question I ask myself every day.","Unfortunately, I don't have an answer for you.");
+                },
+                "Meaning of life.",async () => {
+                    await Speech("Look, human. We elves have a lot on our plate.","We don't have any time to waste answering pointless questions.");
+                },
+                "No",async () => await Speech("Okay, moving on.")
+            );
         }
 
-        private async Task ElfWillKick() {
-            SetTag($"{Actor.Name} is about to kick you.");
-            var result = await GetButton("Do nothing","Brace for Impact","Scream","Die");
-            bool bracedYourself = false, screamed = false;
-            switch(result) {
-                case Button1:
-                    break;
-                case Button2:
-                    bracedYourself = true;
-                    SetTag("You braced yourself.");
-                    await Continue();
-                    break;
-                case Button3:
-                    TODO();
-                    SetTag("You screamed.");
-                    await Continue();
-                    SetTag("Everyone's ears are ringing.");
-                    await Continue();
-                    HideTag();
-                    await Speech("Ow! My ears. Now I'm going to kick you even harder!");
-                    screamed = true;
-                    break;
-                case Button4:
-                    await Suicide();
-                    return;
-            }
-            Player.Hurt(Player.Health*0.1f*(bracedYourself?0.5f:1)*(screamed?2:1));
-            SetTag($"{Actor.Name} kicked you{(screamed ? " really hard" : "")}.");
-            await Continue();
-            if(bracedYourself) {
-                SetTag("Bracing yourself took the edge off.");
-                await Continue();
-            }
-            HideTag();
-            ShowSpeech("My only regret is having to touch you to do that.");
-            await Continue();
-            if(playerIsALiar) {
-                ShowSpeech("Especially since you are a liar. I hope it's not contagious.");
-            }
-            HideSpeech();
-
-            TODO();
+        private async Task OtherQuestionsDefault() {
+            await OtherQuestions("What do you want to know?");
         }
 
-        private bool playerIsALiar;
-
-        private async Task PlayerIsALiar() {
-            playerIsALiar = true;
-            await Speech("Typical human, lying your way through life.");
-            if(await GetButton("Apologize","Double Down") == Button1) {
-                await Speech("Save it. Your words are empty.");
-            } else {
-                await Speech("First the lies, then the arrogance. Just like clockwork.");
-            }
-            await ElfWillKick();
+        private async Task HelpImLost() {
+            await Speech("You're in the North Pole. Any other questions?");
+            SetTag("Any other questions?");
+            await Button("Yes",OtherQuestionsDefault,"No",async () => await Speech("Okay, moving on..."));
         }
-
-        private async Task HeadInjury() {
-            TODO();
-        }
-
-        private async Task DrugAddictSafeSpace() {
-            await Speech("Look human, I'm not a cop. This is an addiction safe space.");
-            if(await GetButton("Gratitude","Get Defensive") == Button1) {
-                TODO();
-            } else {
-                TODO();
-            }
-        }
-
-        private async Task PlayerDoesntKnowTheirName() {
-            await Speech("How strange! Have you had a head injury?");
-            if(await YesOrNo("Are you brain damaged?")) {
-                await HeadInjury();
-            }
-            await Speech("No? No brain damage? Okay, are you taking any medications?");
-            switch(await GetButton("No","Me? Drugs?","All of them","HIPAA Violation")) {
-                case Button1:
-                    break;
-                case Button2:
-                    await DrugAddictSafeSpace();
-                    break;
-                case Button3:
-                    TODO();
-                    break;
-                case Button4:
-                    TODO();
-                    break;
-            }
-        }
-
-        private async Task PlayerHasNoName() {
-            await Speech("Really? Are you lying?");
-            if(!await YesOrNo("Are you lying?")) {
-                await PlayerIsALiar();
-            }
-
-        }
-
-        private BattleResult battleResult = BattleResult.Stalemate;
 
         public override async Task<BattleResult> Main() {
-            await Speech("Hello, I'm Reboot Elf.");
-            await GetButton("Reboot elf?");
-            await Speech("Yes, my name is very unusual. My parents were Holllywood writers.","What's your name?");
+            await Speech("So, you finally made it.");
+            await Speech("But, somehow, I can't shake the feeling that this all seems very familiar.");
+            await Speech("Let's get started. Do you know how to use buttons?");
 
-            SetTag("What's your name?");
-            var result = await GetButton("I don't know","I don't have one","Player","Elf");
-            HideTag();
+            SetTag("Do you know how to use buttons?");
+            await Button(
+                "Yes",async () => await Speech("Ah, an old pro. Perhaps we have done this before?"),
+                "No", async () => await Speech("Ah, a quick learner."),
+                "Help, I'm lost", HelpImLost
+            );
 
-            switch(result) {
-                case Button1:
-                    await PlayerDoesntKnowTheirName();
-                    break;
-                case Button2:
-                    await PlayerHasNoName();
-                    break;
-                case Button3:
-                    TODO();
-                    break;
-                case Button4:
-                    TODO();
-                    break;
-            }
+            Actor.Kill();
+            await Tag($"{Actor.Name} killed themselves.");
 
-            return battleResult;
-            
+            return BattleResult.Stalemate;
         }
-
     }
 }

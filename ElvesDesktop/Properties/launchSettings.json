@@ -6,14 +6,20 @@
     },
     "Dev": {
       "commandName": "Project",
-      "commandLineArgs": "nobattlerandom nofailsafe console"
+      "commandLineArgs": "drawdebug nofailsafe console",
+      "nativeDebugging": false
     },
     "No Flags": {
-      "commandName": "Project"
-    },
-    "Debug (HUD)": {
       "commandName": "Project",
-      "commandLineArgs": "nobattlerandom drawdebug nofailsafe console"
+      "hotReloadEnabled": false
+    },
+    "Elf Battle": {
+      "commandName": "Project",
+      "commandLineArgs": "drawdebug nofailsafe console quickbattle",
+      "environmentVariables": {
+        "quickbattle": "0"
+      },
+      "nativeDebugging": false
     }
   }
 }

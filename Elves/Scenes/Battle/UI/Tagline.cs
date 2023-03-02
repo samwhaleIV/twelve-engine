@@ -43,6 +43,7 @@ namespace Elves.Scenes.Battle.UI {
         public bool AnimationIsFinished => elementDisplayInterpolator.IsFinished;
 
         public bool IsShown { get; private set; } = false;
+        public float AnimationProgress => elementDisplayInterpolator.Value;
 
         public bool IsOffscreen {
             get {
@@ -52,10 +53,14 @@ namespace Elves.Scenes.Battle.UI {
 
         private Vector2 oldTextPosition, currentTextPosition;
 
-        public void Update(TimeSpan now,FloatRectangle viewport,float scale) {
-            //todo use scale
+        public void UpdateAnimationTime(TimeSpan now) {
             textPositionInterpolator.Update(now);
             elementDisplayInterpolator.Update(now);
+        }
+
+        public void Update(TimeSpan now,FloatRectangle viewport,float scale) {
+            //todo use scale
+            UpdateAnimationTime(now);
 
             float height = Fonts.Retro.LineHeight * MathF.Round(scale * Constants.BattleUI.TagTextScale) * Constants.BattleUI.TagBackgroundScale;
 
@@ -63,7 +68,9 @@ namespace Elves.Scenes.Battle.UI {
 
             float halfHeight = height * 0.5f;
 
-            float y = IsShown ? elementDisplayInterpolator.Interpolate(viewport.Bottom,center.Y-halfHeight) : elementDisplayInterpolator.Interpolate(center.Y-halfHeight,viewport.Bottom);
+            float y = IsShown ?
+                elementDisplayInterpolator.Interpolate(viewport.Bottom,center.Y-halfHeight):
+                elementDisplayInterpolator.Interpolate(center.Y-halfHeight,viewport.Bottom);
 
             ScreenArea = new FloatRectangle(0,y,viewport.Width,height);
 

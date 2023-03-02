@@ -9,24 +9,26 @@
     <Import_RootNamespace>Elves</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Battles\MiniGameTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battles\RebootElfBattle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\BattleScriptVariadics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\MiniGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\MiniGameException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\ResultMiniGame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\ScriptThreader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\ButtonTable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\PolyThreadSelection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\ScriptThreaderVariadics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\ScriptThreader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Badges\Badge.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Badges\BadgesScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Badges\ElfGameBadgesScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\BattleRendererState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleScript.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\BattleResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\BattleScript.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSequencer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battles\DebugBattle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\BattleSprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\PositionController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Battle\SpritePosition.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Battle\ThreadMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Battle\Scripting\ThreadMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\BattleUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Battle\UI\ButtonPosition.cs" />

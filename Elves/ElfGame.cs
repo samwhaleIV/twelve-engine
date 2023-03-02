@@ -13,6 +13,7 @@ using Elves.Scenes.Credits;
 using TwelveEngine.Font;
 using TwelveEngine.Game3D.Entity.Types;
 using Elves.Scenes.Badges;
+using Elves.Battle.Scripting;
 
 namespace Elves {
     public static class ElfGame {
@@ -24,6 +25,9 @@ namespace Elves {
         /// </summary>
         /// <returns>The start state for the game.</returns>
         public static GameState Start() {
+            if(TwelveEngine.Flags.Get(Constants.Flags.QuickBattle) && TryGetQuickBattle(out var battle)) {
+                return battle;
+            }
             if(TwelveEngine.Flags.Get(Constants.Flags.SkipToCarousel)) {
                 Program.Save = Program.Saves[0];
                 return GetCarouselMenu();
@@ -32,6 +36,20 @@ namespace Elves {
                 return GetSplashMenu();
             }
             return GetBadgesScene();
+        }
+
+        private static bool TryGetQuickBattle(out GameState gameState) {
+            var value = Environment.GetEnvironmentVariable("quickbattle",EnvironmentVariableTarget.Process);
+            if(!int.TryParse(value,out int battleID)) {
+                Logger.WriteLine($"Could not {(value is null ? "find" : "parse")} 'quickbattle' process environment variable.");
+                gameState = null;
+                return false;
+            }
+            /* No guarantee that the battle ID was valid. If you're using flags, you do so at your own risk. It's a debug feature. */
+            ElfID ID = (ElfID)battleID;
+            Program.Save = Program.Saves[0];
+            gameState = GetBattleScene(ID);
+            return true;
         }
 
         private static GameState GetCarouselMenuAnimatedProgress() {
@@ -152,8 +170,7 @@ namespace Elves {
             });
         }
 
-        private static void IntroExit(GameState scene,bool quickExit) {
-            
+        private static void IntroExit(GameState scene,bool quickExit) {           
             scene.TransitionOut(new() {
                 Generator = GetModeSelectMenuScene,
                 Data = StateData.FadeIn(TransitionDuration),
@@ -167,7 +184,12 @@ namespace Elves {
             Duration = TransitionDuration
         });
 
-        private static GameState GetBattleScene(ElfID elfID) {
+        private static GameState GetBeatGameScene() {
+            //TODO...
+            return GetCreditsSceneReturnToSplashScreen();
+        }
+
+        public static GameState GetBattleScene(ElfID elfID) {
             Elf elf = ElfManifest.Get(elfID);
             BattleScript battleScript = elf.ScriptGenerator.Invoke();
             battleScript.ElfSource = elf;
@@ -194,11 +216,9 @@ namespace Elves {
                 save.IncrementCounter(result == BattleResult.PlayerWon ? SaveKeys.WinCount : SaveKeys.LoseCount);
                 Program.Save.TrySave();
             }
-            if((int)ID == ElfManifest.Count - 1) {
-                throw new NotImplementedException();
-            }
+            bool beatGame = (int)ID == ElfManifest.Count - 1;
             scene.TransitionOut(new() {
-                Generator = animateProgress ? GetCarouselMenuAnimatedProgress : GetCarouselMenu,
+                Generator = beatGame ? GetBeatGameScene : animateProgress ? GetCarouselMenuAnimatedProgress : GetCarouselMenu,
                 Data = StateData.FadeIn(TransitionDuration),
                 Duration = TransitionDuration
             });

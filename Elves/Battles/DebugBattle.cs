@@ -8,7 +8,7 @@ namespace Elves.Battles {
         public override async Task<BattleResult> Main() {     
             await Tag("Press any button to win.");
             int result = await GetButton("No","No","No","Yes");
-            if(result != Button4) {
+            if(result != B4) {
                 return BattleResult.PlayerLost;
             } else {
                 return BattleResult.PlayerWon;
@@ -17,11 +17,10 @@ namespace Elves.Battles {
 
         public override async Task Exit(BattleResult battleResult) {
             if(battleResult == BattleResult.PlayerWon) {
-                SetTag("Good job.");
-                await Continue();
+                await Tag("Good job.");
                 Actor.Kill();
             } else {
-                SetTag("I lied.");
+                Tag("I lied.");
                 await Continue();
                 Player.Kill();
             }

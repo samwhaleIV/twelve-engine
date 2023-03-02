@@ -15,7 +15,8 @@ namespace TwelveEngine.Input.Binding {
             { Impulse.Ascend, keyBindSet.Ascend },
             { Impulse.Descend, keyBindSet.Descend },
 
-            { Impulse.Focus, keyBindSet.Focus }
+            { Impulse.Focus, keyBindSet.Focus },
+            { Impulse.Debug, keyBindSet.Debug }
         };
 
         public static Dictionary<Impulse,Buttons> GetControllerBinds() => new() {
