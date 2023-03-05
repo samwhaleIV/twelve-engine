@@ -1,14 +1,10 @@
-﻿using ElfScript.IR;
-using ElfScript.IR.Expressions;
-using ElfScript.IR.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ElfScript.Expressions.Block;
+using ElfScript.Expressions.Variable.Types;
+using ElfScript.Expressions.Variable;
+using ElfScript.IR;
 
-namespace ElfScript.Test
-{
+
+namespace ElfScript.Test {
     public static class Test {
         public static void Main() {
             var sm = new StateMachine();
@@ -17,8 +13,8 @@ namespace ElfScript.Test
             var expression = new FunctionExpression(new string[] {
                 "a","b","c"
             },new Expression[] {
-                new StatementExpression(new SetVariableExpression("z",new NumberExpression(2))),
-                new StatementExpression(new ReturnExpression(new GetVariableExpression("z"))),
+                new SetVariableExpression("z",new NumberExpression(2)),
+                new ReturnExpression(new GetVariableExpression("z")),
                 new NumberExpression(1),
                 new NumberExpression(2),
                 new NumberExpression(3),

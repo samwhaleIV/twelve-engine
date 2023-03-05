@@ -39,7 +39,8 @@ namespace ElfScript {
             foreach(var ID in _activeStackFrame.Values) {
                 Memory.RemovePin(ID);
             }
-            _activeStackFrame = stackFrames.Pop();
+            stackFrames.Pop();
+            _activeStackFrame = stackFrames.Peek();
             Memory.AddPin(_returnRegister.ID);
             Memory.CleanUp();
         }
