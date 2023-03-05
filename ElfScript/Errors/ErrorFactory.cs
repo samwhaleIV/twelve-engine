@@ -18,11 +18,8 @@
         public static ElfScriptException IndexTypeError(Type expectedType) {
             return new($"{nameof(TypeError)}: Index value is not of type '{expectedType}'.");
         }
-        public static ElfScriptException ScopeDeletionViolation(string variableName) {
-            return new($"{nameof(ScopeDeletionViolation)}: Cannot delete variable '{variableName}' because it is not owned by this scope.");
-        }
         public static ElfScriptException StackUnderflow() {
-            return new($"{nameof(StackUnderflow)}: Cannot pop the block frame because we are already at the global frame level.");
+            return new($"{nameof(StackUnderflow)}: Cannot pop stack frame from top level.");
         }
         public static ElfScriptException OperatorNotImplemented(Type a,Type b,Operator operatorType) {
             return new($"{nameof(OperatorNotImplemented)}: Operator '{operatorType}' is not implemented between type '{a}' and '{b}'");

@@ -1,5 +1,4 @@
 ﻿using ElfScript.Errors;
-using ElfScript.IR;
 
 namespace ElfScript.Expressions.Block {
     internal sealed class ExecuteFunctionExpression:Expression {

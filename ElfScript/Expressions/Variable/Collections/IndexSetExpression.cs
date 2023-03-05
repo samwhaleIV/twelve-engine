@@ -1,5 +1,4 @@
 ﻿using ElfScript.Errors;
-using ElfScript.IR;
 
 namespace ElfScript.Expressions.Variable.Collections {
     internal sealed class IndexSetExpression:Expression {

@@ -1,6 +1,4 @@
-﻿using ElfScript.IR;
-
-namespace ElfScript.Expressions.Variable {
+﻿namespace ElfScript.Expressions.Variable {
     internal sealed class GetVariableExpression:Expression {
 
         public string VariableName { get; private init; }

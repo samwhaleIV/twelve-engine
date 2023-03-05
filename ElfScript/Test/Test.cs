@@ -1,8 +1,6 @@
 ﻿using ElfScript.Expressions.Block;
 using ElfScript.Expressions.Variable.Types;
 using ElfScript.Expressions.Variable;
-using ElfScript.IR;
-
 
 namespace ElfScript.Test {
     public static class Test {

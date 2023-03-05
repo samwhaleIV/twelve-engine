@@ -1,9 +1,10 @@
 ﻿using ElfScript.Errors;
 using ElfScript.Expressions.Block;
-using ElfScript.IR;
 
 namespace ElfScript {
     internal sealed class VirtualMemory {
+
+        /* All saved data goes through virtual memory. Dangling expression values come through here, but unless they are pinned, they are deleted on CleanUp() */
 
         private Dictionary<int,string> Strings { get; init; } = new();
         private Dictionary<int,int> Numbers { get; init; } = new();
@@ -130,7 +131,7 @@ namespace ElfScript {
             _values.Remove(ID);
         }
 
-        private int _IDCounter = 1;
+        private int _IDCounter = Value.None.ID + 1;
 
         private int GetID() {
             return _IDCounter++;
