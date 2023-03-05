@@ -33,5 +33,11 @@
         public static ElfScriptException InternalMemoryTypeError(int ID,Type expectedType,Type currentType) {
             return new($"{nameof(InternalMemoryTypeError)}: Value for ID:{ID} has incorrect type. Expected type is {expectedType}, found type {currentType}.");
         }
+        public static ElfScriptException ExpressionIsNotAsync() {
+            return new($"{nameof(ExpressionIsNotAsync)}: Cannot execute expression asynchronously, the expression is synchronous.");
+        }
+        public static ElfScriptException AsyncNotImplemented() {
+            return new($"{nameof(AsyncNotImplemented)}: This expression should be be able to execute asynchronously, but it is missing an async implementation.");
+        }
     }
 }
