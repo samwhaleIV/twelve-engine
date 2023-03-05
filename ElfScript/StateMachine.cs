@@ -56,14 +56,14 @@ namespace ElfScript {
 
         public Value GetValue(string variableName) {
             if(!_activeStackFrame.TryGetValue(variableName,out var value)) {
-                throw ErrorFactory.ReferenceError(variableName);
+                throw ErrorFactory.VariableReferenceError(variableName);
             }
             return Memory.Get(value);
         }
 
         public void DeleteValue(string variableName) {
             if(!_activeStackFrame.TryGetValue(variableName,out var value)) {
-                throw ErrorFactory.ReferenceError(variableName);
+                throw ErrorFactory.VariableReferenceError(variableName);
             }
             Memory.RemovePin(value);
             Memory.Delete(value);

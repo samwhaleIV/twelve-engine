@@ -14,7 +14,7 @@ namespace ElfScript.Expressions.Block {
         public override Value Evaluate(StateMachine stateMachine) {
             var value = stateMachine.GetValue(FunctionVariableName);
             if(value.Type != Type.Function) {
-                throw ErrorFactory.TypeError(FunctionVariableName,Type.Function);
+                throw ErrorFactory.ValueTypeError(FunctionVariableName,Type.Function);
             }
             var functionExpression = stateMachine.Memory.GetFunction(value.ID);
             /* Warning! Dynamically allocated stack memory... */
@@ -22,7 +22,7 @@ namespace ElfScript.Expressions.Block {
             for(int i = 0;i < parameterValues.Length;i++) {
                 parameterValues[i] = FunctionParameterExpressions[i].Evaluate(stateMachine);
             }
-            value = functionExpression.EvaluateFunction(stateMachine,parameterValues);
+            value = functionExpression.Invoke(stateMachine,parameterValues);
             return value;
         }
     }

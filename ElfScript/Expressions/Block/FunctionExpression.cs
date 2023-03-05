@@ -11,7 +11,7 @@ namespace ElfScript.Expressions.Block {
             FunctionBody = functionBody;
         }
 
-        public Value EvaluateFunction(StateMachine stateMachine,ReadOnlySpan<Value> parameters) {
+        public Value Invoke(StateMachine stateMachine,ReadOnlySpan<Value> parameters) {
             if(parameters.Length != ParameterNames.Length) {
                 throw ErrorFactory.ParameterMismatch(ParameterNames.Length,parameters.Length);
             }
@@ -28,7 +28,7 @@ namespace ElfScript.Expressions.Block {
         }
 
         public override Value Evaluate(StateMachine stateMachine) {
-            throw ErrorFactory.IllegalFunctionExecution();
+            return stateMachine.Memory.CreateFunction(this);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace ElfScript.Expressions.Variable.Collections {
             var table = stateMachine.Memory.GetTable(value.ID);
             var index = IndexExpression.Evaluate(stateMachine);
             if(index.Type != Type.String) {
-                throw ErrorFactory.IndexTypeError(Type.String);
+                throw ErrorFactory.IndexValueTypeError(Type.String);
             }
             table.Remove(stateMachine.Memory.GetString(index.ID));
             return Value.None;

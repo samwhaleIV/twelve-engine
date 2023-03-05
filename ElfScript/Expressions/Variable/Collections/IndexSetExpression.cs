@@ -18,7 +18,7 @@ namespace ElfScript.Expressions.Variable.Collections {
             var list = stateMachine.Memory.GetList(valueID);
             var indexValue = IndexExpression.Evaluate(stateMachine);
             if(indexValue.Type != Type.Number) {
-                throw ErrorFactory.IndexTypeError(Type.Number);
+                throw ErrorFactory.IndexValueTypeError(Type.Number);
             }
             var index = stateMachine.Memory.GetNumber(indexValue.ID);
             var value = ValueExpression.Evaluate(stateMachine);
@@ -30,7 +30,7 @@ namespace ElfScript.Expressions.Variable.Collections {
             var table = stateMachine.Memory.GetTable(valueID);
             var indexValue = IndexExpression.Evaluate(stateMachine);
             if(indexValue.Type != Type.String) {
-                throw ErrorFactory.IndexTypeError(Type.String);
+                throw ErrorFactory.IndexValueTypeError(Type.String);
             }
             var value = ValueExpression.Evaluate(stateMachine);
             var index = stateMachine.Memory.GetString(indexValue.ID);

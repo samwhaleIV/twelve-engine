@@ -18,6 +18,12 @@ namespace ElfScript {
         private readonly Dictionary<int,Value> _values = new();
         private readonly HashSet<int> _pinnedValues = new();
 
+        private int _IDCounter = Value.None.ID + 1;
+
+        private int GetID() {
+            return _IDCounter++;
+        }
+
         public void CleanUp() {
             foreach(var ID in _values.Keys) {
                 if(_pinnedValues.Contains(ID)) {
@@ -36,26 +42,56 @@ namespace ElfScript {
         }
 
         public string GetString(int ID) {
+            if(!_values.TryGetValue(ID,out var value)) {
+                throw ErrorFactory.InternalMemoryReferenceError(ID,Type.String);
+            } else if(value.Type != Type.String) {
+                throw ErrorFactory.InternalMemoryTypeError(ID,Type.String,value.Type);
+            }
             return Strings[ID];
         }
 
         public int GetNumber(int ID) {
+            if(!_values.TryGetValue(ID,out var value)) {
+                throw ErrorFactory.InternalMemoryReferenceError(ID,Type.Number);
+            } else if(value.Type != Type.Number) {
+                throw ErrorFactory.InternalMemoryTypeError(ID,Type.Number,value.Type);
+            }
             return Numbers[ID];
         }
 
         public bool GetBoolean(int ID) {
+            if(!_values.TryGetValue(ID,out var value)) {
+                throw ErrorFactory.InternalMemoryReferenceError(ID,Type.Boolean);
+            } else if(value.Type != Type.Boolean) {
+                throw ErrorFactory.InternalMemoryTypeError(ID,Type.Boolean,value.Type);
+            }
             return Booleans[ID];
         }
 
         public List<Value> GetList(int ID) {
+            if(!_values.TryGetValue(ID,out var value)) {
+                throw ErrorFactory.InternalMemoryReferenceError(ID,Type.List);
+            } else if(value.Type != Type.List) {
+                throw ErrorFactory.InternalMemoryTypeError(ID,Type.List,value.Type);
+            }
             return Lists[ID];
         }
 
         public Dictionary<string,Value> GetTable(int ID) {
+            if(!_values.TryGetValue(ID,out var value)) {
+                throw ErrorFactory.InternalMemoryReferenceError(ID,Type.Table);
+            } else if(value.Type != Type.Table) {
+                throw ErrorFactory.InternalMemoryTypeError(ID,Type.Table,value.Type);
+            }
             return Tables[ID];
         }
 
         public FunctionExpression GetFunction(int ID) {
+            if(!_values.TryGetValue(ID,out var value)) {
+                throw ErrorFactory.InternalMemoryReferenceError(ID,Type.Function);
+            } else if(value.Type != Type.Function) {
+                throw ErrorFactory.InternalMemoryTypeError(ID,Type.Function,value.Type);
+            }
             return Functions[ID];
         }
 
@@ -131,16 +167,10 @@ namespace ElfScript {
             _values.Remove(ID);
         }
 
-        private int _IDCounter = Value.None.ID + 1;
-
-        private int GetID() {
-            return _IDCounter++;
-        }
-
         public Value CreateString(string stringValue) {
             var ID = GetID();
             Strings[ID] = stringValue;
-            var value = new Value(ID,Type.Number);
+            var value = new Value(ID,Type.String);
             _values[ID] = value;
             return value;
         }
