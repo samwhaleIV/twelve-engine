@@ -27,17 +27,19 @@ namespace Elves.ElfData {
 
         /* This should probably be information loaded from a data file, but C# is so expressive... I can't help myself. */
         static ElfManifest() {
-            Add(Elf.Create<RebootElfBattle>(
+            Add(Elf.Create<MeanElfBattle>(
                 ID: AutoID,
-                name: "Reboot Elf",
-                texture: "Elves/harmless-elf",
+                name: "Mean Elf",
+                texture: "Elves/mean-elf",
                 color: Color.Red,
                 baseHeight: 47,
                 frameSets: new FrameSet[] {
                     CreateStatic(0,0,19,47),
                     CreateIdleBlink(new(0,0,19,47),new(19,0,19,47)),
                     CreateDead(new(38,0,19,47)),
-                    CreateSlideshowAndBack(AnimationType.Hurt,AnimationMode.Once,new(0,47,19,47),3)
+                    CreateSlideshowAndBack(AnimationType.Hurt,AnimationMode.Once,new(0,47,19,47),3),
+                    FrameSet.CreateStatic(AnimationType.Backwards,new(57,0,19,47)),
+                    FrameSet.CreateStatic(AnimationType.NoHead,new(76,0,19,47))
                 }
             ));
         }
