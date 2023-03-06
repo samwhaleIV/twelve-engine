@@ -2,10 +2,11 @@
 using ElfScript.Expressions.Variable.Types;
 using ElfScript.Expressions.Variable;
 using ElfScript.Expressions.System;
+using ElfScript.Compiler;
 
 namespace ElfScript.Test {
     public static class Test {
-        public static void Main() {
+        public static void ExpressionTest() {
             var sm = new StateMachine();
 
             var expression2 = new BodyExpression(new Expression[] {
@@ -31,6 +32,13 @@ namespace ElfScript.Test {
             expression2.Evaluate(sm);
 
             Console.ReadKey(true);
+        }
+
+        public static void CompilerTest() {
+            var lines = new string[] {
+                "Hello, World!"
+            };
+            TokenTranslator.GenerateExpressions(lines);
         }
     }
 }
