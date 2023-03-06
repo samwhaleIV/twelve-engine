@@ -1,7 +1,6 @@
 ﻿namespace ElfScript.VirtualMachine {
     public sealed class AddressGenerator {
-        public Address GetNext() {
-            throw new NotImplementedException();
-        }
+        private ulong _address = Address.Null.ID + 1;
+        public Address GetNext() => new Address(_address++);
     }
 }
