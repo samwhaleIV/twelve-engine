@@ -11,4 +11,10 @@
     <ProjectReference Include="..\ElfScript\ElfScript.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ElfScriptTest.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

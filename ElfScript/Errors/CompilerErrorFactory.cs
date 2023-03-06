@@ -2,7 +2,7 @@
     internal static class CompilerErrorFactory {
 
         private static ElfScriptCompilerException Create(string type,int line,int column,string message) {
-            return new($"{type}: {message} {{ Line: {line}, Column: {column} }}");
+            return new($"{type}: {message} {{ Line: {line + 1}, Column: {column} }}");
         }
 
         public static ElfScriptCompilerException UnexpectedSymbol(int line,int column,char symbol) {

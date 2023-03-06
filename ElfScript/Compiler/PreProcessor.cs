@@ -1,6 +1,6 @@
 ﻿namespace ElfScript.Compiler {
     internal static class PreProcessor {
-        public static Token[] GetTokens(string[] lines) {
+        public static IEnumerable<Token> GetTokens(string[] lines) {
             var generator = new TokenGenerator();
             for(int lineNumber = 0;lineNumber<lines.Length;lineNumber++) {
                 var line = lines[lineNumber];
@@ -8,6 +8,7 @@
                     var character = line[column];
                     generator.AddCharacter(character,lineNumber,column);
                 }
+                generator.AddLineBreak();
             }
             return generator.Export();
         }

@@ -3,6 +3,7 @@ using ElfScript.Expressions.Variable.Types;
 using ElfScript.Expressions.Variable;
 using ElfScript.Expressions.System;
 using ElfScript.Compiler;
+using System.Text;
 
 namespace ElfScript.Test {
     public static class Test {
@@ -30,15 +31,10 @@ namespace ElfScript.Test {
             });
 
             expression2.Evaluate(sm);
-
-            Console.ReadKey(true);
         }
 
         public static void CompilerTest() {
-            var lines = new string[] {
-                "Hello, World!"
-            };
-            TokenTranslator.GenerateExpressions(lines);
+            TokenTranslator.GenerateExpressions(File.ReadAllLines("ElfScriptTest.txt"),Console.Write);
         }
     }
 }
