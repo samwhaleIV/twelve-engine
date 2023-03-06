@@ -15,16 +15,10 @@ namespace Elves.Battle.Scripting {
             CreateActor(ElfManifest.Get(ElfSource.ID));
         }
 
-        public void TODO() {
-            throw new NotImplementedException();
-        }
-
         public abstract Task<BattleResult> Main();
 
         /// <remarks>DEPENDENCY INJECTION, WOOOOOOO!</remarks>
         internal void SetSequencer(BattleSequencer sequencer) => _sequencer = sequencer;
-
-        protected const int B1 = 0, B2 = 1, B3 = 2, B4 = 3;
 
         /// <summary>
         /// For debug and logging purposes.

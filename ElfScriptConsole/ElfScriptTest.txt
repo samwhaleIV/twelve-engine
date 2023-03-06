@@ -1,0 +1,22 @@
+﻿"\"Ligma\"";
+
+"\"Lig
+ma\"";
+
+carl
+
+ca
+rl
+
+"\\Ligma\\";
+
+" \\ \" Ligma \\ \" ";
+
+Hello, World!;
+
+[ Apple ];
+( Banana );
+{ Cucumber };
+{ Ligma };
+{ "Ligma" };
+"Ligma";
