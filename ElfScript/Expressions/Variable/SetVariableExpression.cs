@@ -1,4 +1,6 @@
-﻿namespace ElfScript.Expressions.Variable {
+﻿using ElfScript.VirtualMachine;
+
+namespace ElfScript.Expressions.Variable {
     internal sealed class SetVariableExpression:Expression {
 
         public string VariableName { get; private init; }
@@ -11,7 +13,7 @@
 
         public override Value Evaluate(StateMachine stateMachine) {
             var value = ValueExpression.Evaluate(stateMachine);
-            stateMachine.SetValue(VariableName,value.ID);
+            stateMachine.SetValue(VariableName,value.Address);
             return value;
         }
     }

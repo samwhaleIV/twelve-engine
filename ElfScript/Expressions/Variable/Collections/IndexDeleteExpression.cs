@@ -1,4 +1,5 @@
-﻿using ElfScript.Errors;
+﻿using ElfScript.VirtualMachine;
+using ElfScript.Errors;
 
 namespace ElfScript.Expressions.Variable.Collections {
     internal sealed class IndexDeleteExpression:Expression {
@@ -17,12 +18,12 @@ namespace ElfScript.Expressions.Variable.Collections {
             if(value.Type != Type.Table) {
                 throw ErrorFactory.InvalidIndexDeleteOperation(VariableName);
             }
-            var table = stateMachine.Memory.GetTable(value.ID);
+            var table = stateMachine.Memory.GetTable(value.Address);
             var index = IndexExpression.Evaluate(stateMachine);
             if(index.Type != Type.String) {
                 throw ErrorFactory.IndexValueTypeError(Type.String);
             }
-            table.Remove(stateMachine.Memory.GetString(index.ID));
+            table.Remove(stateMachine.Memory.GetString(index.Address));
             return Value.None;
         }
     }

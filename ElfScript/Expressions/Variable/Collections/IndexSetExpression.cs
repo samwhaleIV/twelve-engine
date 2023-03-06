@@ -1,4 +1,5 @@
-﻿using ElfScript.Errors;
+﻿using ElfScript.VirtualMachine;
+using ElfScript.Errors;
 
 namespace ElfScript.Expressions.Variable.Collections {
     internal sealed class IndexSetExpression:Expression {
@@ -14,26 +15,26 @@ namespace ElfScript.Expressions.Variable.Collections {
             ValueExpression = valueExpression;
         }
 
-        private Value ExecuteList(StateMachine stateMachine,int valueID) {
-            var list = stateMachine.Memory.GetList(valueID);
+        private Value EvaluateList(StateMachine stateMachine,Address address) {
+            var list = stateMachine.Memory.GetList(address);
             var indexValue = IndexExpression.Evaluate(stateMachine);
             if(indexValue.Type != Type.Number) {
                 throw ErrorFactory.IndexValueTypeError(Type.Number);
             }
-            var index = stateMachine.Memory.GetNumber(indexValue.ID);
+            var index = stateMachine.Memory.GetNumber(indexValue.Address);
             var value = ValueExpression.Evaluate(stateMachine);
             list[index] = value;
             return value;
         }
 
-        private Value ExecuteTable(StateMachine stateMachine,int valueID) {
-            var table = stateMachine.Memory.GetTable(valueID);
+        private Value EvaluateTable(StateMachine stateMachine,Address address) {
+            var table = stateMachine.Memory.GetTable(address);
             var indexValue = IndexExpression.Evaluate(stateMachine);
             if(indexValue.Type != Type.String) {
                 throw ErrorFactory.IndexValueTypeError(Type.String);
             }
             var value = ValueExpression.Evaluate(stateMachine);
-            var index = stateMachine.Memory.GetString(indexValue.ID);
+            var index = stateMachine.Memory.GetString(indexValue.Address);
             table[index] = value;
             return value;
         }
@@ -41,9 +42,9 @@ namespace ElfScript.Expressions.Variable.Collections {
         public override Value Evaluate(StateMachine stateMachine) {
             var value = stateMachine.GetValue(VariableName);
             if(value.Type == Type.List) {
-                return ExecuteList(stateMachine,value.ID);
+                return EvaluateList(stateMachine,value.Address);
             } else if(value.Type == Type.Table) {
-                return ExecuteTable(stateMachine,value.ID);
+                return EvaluateTable(stateMachine,value.Address);
             } else {
                 throw ErrorFactory.InvalidIndexOperation(VariableName);
             }

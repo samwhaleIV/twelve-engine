@@ -1,4 +1,5 @@
 ﻿using ElfScript.Errors;
+using ElfScript.VirtualMachine;
 
 namespace ElfScript.Expressions.Block {
     internal sealed class FunctionExpression:Expression {
@@ -18,7 +19,7 @@ namespace ElfScript.Expressions.Block {
             stateMachine.CreateStackFrame();
             for(int i = 0;i < parameters.Length;i++) {
                 var value = parameters[i];
-                stateMachine.SetValue(ParameterNames[i],value.ID);
+                stateMachine.SetValue(ParameterNames[i],value.Address);
             }
             for(int i = 0;i < FunctionBody.Length;i++) {
                 FunctionBody[i].Evaluate(stateMachine);
@@ -34,7 +35,7 @@ namespace ElfScript.Expressions.Block {
             stateMachine.CreateStackFrame();
             for(int i = 0;i < parameters.Length;i++) {
                 var value = parameters[i];
-                stateMachine.SetValue(ParameterNames[i],value.ID);
+                stateMachine.SetValue(ParameterNames[i],value.Address);
             }
             for(int i = 0;i<FunctionBody.Length;i++) {
                 var bodyExpression = FunctionBody[i];

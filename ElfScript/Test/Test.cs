@@ -1,11 +1,13 @@
-﻿using ElfScript.Expressions.Block;
+﻿using ElfScript.VirtualMachine;
+using ElfScript.Expressions.Block;
 using ElfScript.Expressions.Variable.Types;
 using ElfScript.Expressions.Variable;
 using ElfScript.Expressions.System;
 using ElfScript.Compiler;
 using System.Text;
 
-namespace ElfScript.Test {
+namespace ElfScript.Test
+{
     public static class Test {
         public static void ExpressionTest() {
             var sm = new StateMachine();

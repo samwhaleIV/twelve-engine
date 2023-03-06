@@ -1,4 +1,6 @@
-﻿namespace ElfScript.Expressions.Variable.Types {
+﻿using ElfScript.VirtualMachine;
+
+namespace ElfScript.Expressions.Variable.Types {
     internal sealed class NumberExpression:Expression {
 
         public int Number { get; private init; }

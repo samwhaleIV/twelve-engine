@@ -1,4 +1,6 @@
-﻿namespace ElfScript.Expressions.System {
+﻿using ElfScript.VirtualMachine;
+
+namespace ElfScript.Expressions.System {
     internal sealed class WriteConsoleLineExpression:Expression {
 
         public Expression Expression { get; private init; }
@@ -14,13 +16,13 @@
                     Console.WriteLine("<List>");
                     break;
                 case Type.Number:
-                    Console.WriteLine(stateMachine.Memory.GetNumber(value.ID));
+                    Console.WriteLine(stateMachine.Memory.GetNumber(value.Address));
                     break;
                 case Type.Function:
                     Console.WriteLine("<Function Expression>");
                     break;
                 case Type.String:
-                    Console.WriteLine(stateMachine.Memory.GetString(value.ID));
+                    Console.WriteLine(stateMachine.Memory.GetString(value.Address));
                     break;
                 case Type.Table:
                     Console.WriteLine("<Table>");

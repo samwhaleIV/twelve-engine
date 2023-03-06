@@ -1,4 +1,5 @@
 ﻿using ElfScript.Errors;
+using ElfScript.VirtualMachine;
 
 namespace ElfScript.Expressions.Block {
     internal sealed class ExecuteFunctionExpression:Expression {
@@ -17,7 +18,7 @@ namespace ElfScript.Expressions.Block {
             if(value.Type != Type.Function) {
                 throw ErrorFactory.ValueTypeError(FunctionVariableName,Type.Function);
             }
-            var functionExpression = stateMachine.Memory.GetFunction(value.ID);
+            var functionExpression = stateMachine.Memory.GetFunction(value.Address);
             /* Warning! Dynamically allocated stack memory... */
             Span<Value> parameterValues = stackalloc Value[FunctionParameterExpressions.Length];
             for(int i = 0;i < parameterValues.Length;i++) {
@@ -32,7 +33,7 @@ namespace ElfScript.Expressions.Block {
             if(value.Type != Type.Function) {
                 throw ErrorFactory.ValueTypeError(FunctionVariableName,Type.Function);
             }
-            var functionExpression = stateMachine.Memory.GetFunction(value.ID);
+            var functionExpression = stateMachine.Memory.GetFunction(value.Address);
             var parameterValues = new Value[FunctionParameterExpressions.Length];
             for(int i = 0;i < parameterValues.Length;i++) {
                 var parameterExpression = FunctionParameterExpressions[i];

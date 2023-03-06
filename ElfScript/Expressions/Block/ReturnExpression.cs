@@ -1,4 +1,6 @@
-﻿namespace ElfScript.Expressions.Block {
+﻿using ElfScript.VirtualMachine;
+
+namespace ElfScript.Expressions.Block {
     internal sealed class ReturnExpression:Expression {
         public Expression ReturnValueExpression { get; private init; }
         public ReturnExpression(Expression expression) {

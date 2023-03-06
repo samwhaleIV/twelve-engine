@@ -1,5 +1,3 @@
 ﻿namespace ElfScript {
-    internal enum Operator {
-        Add, Subtract, Multiply, Divide, Min, Max
-    }
+    internal enum Operator { Add, Subtract, Multiply, Divide, Min, Max }
 }

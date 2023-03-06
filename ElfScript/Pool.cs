@@ -1,6 +1,5 @@
 ﻿namespace ElfScript {
-
-    internal abstract class Pool<T> {
+    internal abstract class Pool<T> where T:IPoolItem {
 
         private readonly Dictionary<int,T> _active = new();
         private readonly Stack<T> _inactive = new();
@@ -10,26 +9,24 @@
         protected abstract void Reset(T item);
         protected internal abstract T CreateNew();
 
-        public int Lease(out T item) {
+        public T Lease() {
             if(_IDCounter == int.MaxValue) {
                 _IDCounter = int.MinValue;
             }
             int ID = _IDCounter++;
-            if(_inactive.Count <= 0) {
-                item = CreateNew();
-            } else {
-                item = _inactive.Pop();
-            }
+            T item = _inactive.Count < 1 ? CreateNew() : _inactive.Pop();
             _active[ID] = item;
-            return ID;
+            item.SetLeaseID(ID);
+            return item;
         }
 
-        public void Return(int ID) {
-            if(!_active.TryGetValue(ID,out T? value)) {
-                throw new InvalidOperationException($"ID '{ID}' not contained in active pool.");
+        public void Return(IPoolItem poolItem) {
+            int leaseID = poolItem.GetLeaseID();
+            if(!_active.TryGetValue(leaseID,out T? value)) {
+                throw new InvalidOperationException($"ID '{leaseID}' not contained in active pool.");
             }
             Reset(value);
-            _active.Remove(ID);
+            _active.Remove(leaseID);
             _inactive.Push(value);
         }
     }

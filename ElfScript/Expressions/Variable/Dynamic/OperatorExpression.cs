@@ -1,4 +1,5 @@
-﻿using ElfScript.Errors;
+﻿using ElfScript.VirtualMachine;
+using ElfScript.Errors;
 
 namespace ElfScript.Expressions.Variable.Dynamic {
     internal sealed class OperatorExpression:Expression {
@@ -19,7 +20,7 @@ namespace ElfScript.Expressions.Variable.Dynamic {
             if(!(valueA.Type == valueB.Type && Operator == Operator.Add)) {
                 throw ErrorFactory.OperatorNotImplemented(valueA.Type,valueB.Type,Operator);
             }
-            int a = stateMachine.Memory.GetNumber(valueA.ID), b = stateMachine.Memory.GetNumber(valueB.ID);
+            int a = stateMachine.Memory.GetNumber(valueA.Address), b = stateMachine.Memory.GetNumber(valueB.Address);
             return stateMachine.Memory.CreateNumber(a + b);
         }
     }

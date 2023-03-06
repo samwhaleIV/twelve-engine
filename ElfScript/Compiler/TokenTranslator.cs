@@ -1,6 +1,7 @@
 ﻿using System.Text;
 
-namespace ElfScript.Compiler {
+namespace ElfScript.Compiler
+{
     internal sealed class TokenTranslator {
 
         private readonly Queue<Token> _tokens = new();
@@ -9,7 +10,7 @@ namespace ElfScript.Compiler {
             _tokens.Enqueue(token);
         }
 
-        public Expression[] Export() {
+        public Expression[] GenerateExpressions() {
             //todo
             return Array.Empty<Expression>();
         }
@@ -29,7 +30,7 @@ namespace ElfScript.Compiler {
                 compiler.AddToken(token);
             }
             writeDisassembly?.Invoke(compiler.GetTokenDisassembly());
-            return compiler.Export();
+            return compiler.GenerateExpressions();
         }
     }
 }

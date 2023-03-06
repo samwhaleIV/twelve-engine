@@ -1,4 +1,6 @@
-﻿namespace ElfScript.Expressions.Block {
+﻿using ElfScript.VirtualMachine;
+
+namespace ElfScript.Expressions.Block {
     internal class BodyExpression:Expression {
 
         public Expression[] Expressions { get; private init; }

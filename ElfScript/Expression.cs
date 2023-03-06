@@ -1,4 +1,5 @@
 ﻿using ElfScript.Errors;
+using ElfScript.VirtualMachine;
 
 namespace ElfScript {
     internal abstract class Expression {

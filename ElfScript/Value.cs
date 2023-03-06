@@ -1,8 +1,10 @@
-﻿namespace ElfScript {
+﻿using ElfScript.VirtualMachine;
+
+namespace ElfScript {
     internal readonly struct Value {
         public readonly Type Type { get; private init; }
-        public readonly int ID { get; private init; }
-        public Value(int ID,Type type) { this.ID = ID; Type = type; }
-        public static readonly Value None = new(0,Type.Number);
+        public readonly Address Address { get; private init; }
+        public Value(Address address,Type type) { Address = address; Type = type; }
+        public static readonly Value None = new(Address.Null,Type.Number);
     }
 }

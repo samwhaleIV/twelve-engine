@@ -1,4 +1,6 @@
-﻿namespace ElfScript.Errors {
+﻿using ElfScript.VirtualMachine;
+
+namespace ElfScript.Errors {
     internal static class ErrorFactory {
         public static ElfScriptException ValueTypeError(string variableName,Type expectedType) {
             return new($"{nameof(ValueTypeError)}: '{variableName}' is not of type '{expectedType}'.");
@@ -27,11 +29,11 @@
         public static ElfScriptException IllegalDeletionOfPinnedValue() {
             return new($"{nameof(IllegalDeletionOfPinnedValue)}: Cannot delete a pinned memory value. You must first unpin the value.");
         }
-        public static ElfScriptException InternalMemoryReferenceError(int ID,Type expectedType) {
-            return new($"{nameof(InternalMemoryReferenceError)}: Value for ID:{ID} not found, expected type is {expectedType}.");
+        public static ElfScriptException InternalMemoryReferenceError(Address address) {
+            return new($"{nameof(InternalMemoryReferenceError)}: Value for address '{address}' not found.");
         }
-        public static ElfScriptException InternalMemoryTypeError(int ID,Type expectedType,Type currentType) {
-            return new($"{nameof(InternalMemoryTypeError)}: Value for ID:{ID} has incorrect type. Expected type is {expectedType}, found type {currentType}.");
+        public static ElfScriptException InternalMemoryTypeError(Address address,Type expectedType,Type currentType) {
+            return new($"{nameof(InternalMemoryTypeError)}: Value for address '{address}' has incorrect type. Expected type is {expectedType}, found type {currentType}.");
         }
         public static ElfScriptException ExpressionIsNotAsync() {
             return new($"{nameof(ExpressionIsNotAsync)}: Cannot execute expression asynchronously, the expression is synchronous.");

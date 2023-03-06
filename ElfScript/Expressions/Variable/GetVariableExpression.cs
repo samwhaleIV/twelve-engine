@@ -1,4 +1,6 @@
-﻿namespace ElfScript.Expressions.Variable {
+﻿using ElfScript.VirtualMachine;
+
+namespace ElfScript.Expressions.Variable {
     internal sealed class GetVariableExpression:Expression {
 
         public string VariableName { get; private init; }

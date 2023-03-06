@@ -1,19 +1,17 @@
 ﻿using ElfScript.Errors;
 
-namespace ElfScript {
+namespace ElfScript.VirtualMachine {
     internal sealed class StateMachine {
-
-        private sealed class StackFrame:Dictionary<string,int> { public int PoolID { get; set; } }
 
         private sealed class StackFramePool:Pool<StackFrame> {
             protected override void Reset(StackFrame item) => item.Clear();
             protected internal override StackFrame CreateNew() => new();
         }
 
-        private readonly Dictionary<string,int> _globalStackFrame = new();
-        private Dictionary<string,int> _activeStackFrame; /* Initialized to _globalBlockFrame */
+        private readonly Dictionary<string,Address> _globalStackFrame = new();
+        private Dictionary<string,Address> _activeStackFrame; /* Initialized to _globalBlockFrame */
 
-        private readonly Stack<Dictionary<string,int>> stackFrames = new();
+        private readonly Stack<Dictionary<string,Address>> stackFrames = new();
 
         public VirtualMemory Memory { get; private init; } = new();
 
@@ -23,24 +21,23 @@ namespace ElfScript {
         }
 
         private readonly StackFramePool _stackFramePool = new();
-    
+
         public void CreateStackFrame() {
-            var poolID = _stackFramePool.Lease(out var newFrame);
-            newFrame.PoolID = poolID;
-            stackFrames.Push(newFrame);
-            _activeStackFrame = newFrame;
+            var frame = _stackFramePool.Lease();
+            stackFrames.Push(frame);
+            _activeStackFrame = frame;
         }
 
         public void PopStackFrame() {
             if(stackFrames.Count <= 1) {
                 throw ErrorFactory.StackUnderflow();
             }
-            foreach(var ID in _activeStackFrame.Values) {
-                Memory.RemovePin(ID);
+            foreach(Address address in _activeStackFrame.Values) {
+                Memory.RemovePin(address);
             }
             stackFrames.Pop();
             _activeStackFrame = stackFrames.Peek();
-            Memory.AddPin(_returnRegister.ID);
+            Memory.AddPin(_returnRegister.Address);
             Memory.CleanUp();
         }
 
@@ -55,24 +52,24 @@ namespace ElfScript {
         }
 
         public Value GetValue(string variableName) {
-            if(!_activeStackFrame.TryGetValue(variableName,out var value)) {
+            if(!_activeStackFrame.TryGetValue(variableName,out Address address)) {
                 throw ErrorFactory.VariableReferenceError(variableName);
             }
-            return Memory.Get(value);
+            return Memory.Get(address);
         }
 
         public void DeleteValue(string variableName) {
-            if(!_activeStackFrame.TryGetValue(variableName,out var value)) {
+            if(!_activeStackFrame.TryGetValue(variableName,out Address address)) {
                 throw ErrorFactory.VariableReferenceError(variableName);
             }
-            Memory.RemovePin(value);
-            Memory.Delete(value);
+            Memory.RemovePin(address);
+            Memory.Delete(address);
             _activeStackFrame.Remove(variableName);
         }
 
-        public void SetValue(string variableName,int ID) {
-            _activeStackFrame[variableName] = ID;
-            Memory.AddPin(ID);
+        public void SetValue(string variableName,Address address) {
+            _activeStackFrame[variableName] = address;
+            Memory.AddPin(address);
         }
     }
 }
