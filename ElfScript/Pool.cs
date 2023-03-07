@@ -7,7 +7,7 @@
         private int _IDCounter = 0;
 
         protected abstract void Reset(T item);
-        protected internal abstract T CreateNew();
+        protected abstract T CreateNew();
 
         public T Lease() {
             if(_IDCounter == int.MaxValue) {

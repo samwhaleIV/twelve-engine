@@ -1,14 +1,9 @@
-﻿using ElfScript.Errors;
-
-namespace ElfScript.VirtualMachine.Collections {
-    public sealed class TypeContainer<T>:Dictionary<Address,T>, ITypeContainer {
-        public event Action<T>? OnDeleted;
+﻿namespace ElfScript.VirtualMachine.Collections {
+    public sealed class TypeContainer<T>:Dictionary<Address,T>,ITypeContainer {
+        public event Action<Address>? OnDeleted;
         public void Delete(Address address) {
-            if(!TryGetValue(address,out T? value)) {
-                throw ErrorFactory.InternalMemoryReferenceError(address);
-            }
+            OnDeleted?.Invoke(address);
             Remove(address);
-            OnDeleted?.Invoke(value);
         }
     }
 }

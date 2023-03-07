@@ -1,91 +1,91 @@
 ﻿using ElfScript.Errors;
-using ElfScript.Expressions.Block;
 using ElfScript.VirtualMachine.Collections;
-using ElfScript.VirtualMachine.Collections.Runtime;
 
-namespace ElfScript.VirtualMachine
-{
+namespace ElfScript.VirtualMachine {
     internal sealed partial class VirtualMemory {
 
-        /* All saved data goes through virtual memory. Dangling expression values come through here, but unless they are pinned, they are deleted on CleanUp() */
-        private readonly TypeContainer<string> _strings = new();
-        private readonly TypeContainer<int> _numbers = new();
-        private readonly TypeContainer<bool> _booleans = new();
-
-        private readonly TypeContainer<VirtualList> _lists = new();
-        private readonly TypeContainer<VirtualTable> _tables = new();
-        private readonly TypeContainer<FunctionExpression> _functions = new();
-
         private readonly Dictionary<Type,ITypeContainer> _typeContainers;
+        public VirtualMemory() {
+            _typeContainers = new() {
+                { Type.String, _strings },
+                { Type.Number, _numbers },
+                { Type.Boolean, _booleans },
+                { Type.List, _lists },
+                { Type.Table, _tables },
+                { Type.Function, _functions }
+            };
 
-        public VirtualMemory() => _typeContainers = new() {
-            { Type.String, _strings }, { Type.Number, _numbers }, { Type.Boolean, _booleans },
-            { Type.List, _lists }, { Type.Table, _tables }, { Type.Function, _functions }
-        };
+            _virtualListPool = new(this);
+            _virtualTablePool = new(this);
 
-        private readonly Dictionary<Address,Value> _values = new();
-        private readonly HashSet<Address> _pinnedValues = new();
-
-        private readonly AddressGenerator _addressGenerator = new();
-
-        private readonly VirtualListPool _virtualListPool = new();
-        private readonly VirtualTablePool _virtualTablePool = new();
-
-        public void CleanUp() {
-            foreach(Address address in _values.Keys) {
-                if(_pinnedValues.Contains(address)) {
-                    continue;
-                }
-                Delete(address);
-            }
+            _lists.OnDeleted += DeleteList;
+            _tables.OnDeleted += DeleteTable;
         }
 
-        public void AddPin(Address address) => _pinnedValues.Add(address);
-        public void RemovePin(Address address) => _pinnedValues.Remove(address);
+        private void DeleteTable(Address address) {
+            var table = _tables[address];
+            table.Reset();
+            _virtualTablePool.Return(table);
+        }
+
+        private void DeleteList(Address address) {
+            var list = _lists[address];
+            list.Reset();
+            _virtualListPool.Return(list);
+        }
+
+        private readonly AddressGenerator _addressGenerator = new();
+        private readonly ReferenceStateCache _references = new();
+
+        public void Delete(Value value) {
+            if(!_references.Contains(value.Address)) {
+                throw ErrorFactory.MemoryReferenceError(value.Address);
+            }
+            _typeContainers[value.Type].Delete(value.Address);
+        }
 
         public Value Get(Address address) {
-            if(!_values.ContainsKey(address)) {
-                throw ErrorFactory.InternalMemoryReferenceError(address);
+            if(!_references.Contains(address)) {
+                throw ErrorFactory.MemoryReferenceError(address);
             }
-            return _values[address];
+            return _references.GetValue(address);
         }
 
         public T Get<T>(Address address,Type type,TypeContainer<T> container) {
-            if(!_values.TryGetValue(address,out Value value)) {
-                throw ErrorFactory.InternalMemoryReferenceError(address);
-            } else if(value.Type != Type.String) {
-                throw ErrorFactory.InternalMemoryTypeError(address,type,value.Type);
+            if(!_references.TryGet(address,out ValueReference reference)) {
+                throw ErrorFactory.MemoryReferenceError(address);
+            } else if(reference.Type != Type.String) {
+                throw ErrorFactory.MemoryTypeError(address,type,reference.Type);
             }
             return container[address];
         }
 
         public Value Set<T>(Address address,T variableValue,Type type,TypeContainer<T> container) {
-            if(_values.ContainsKey(address)) {
-                Delete(address);
+            if(_references.TryGet(address,out var reference) && reference.Type != type) {
+                _typeContainers[type].Delete(address);
             }
             container[address] = variableValue;
-            var value = new Value(address,type);
-            _values[address] = value;
-            return value;
+            _references.Set(address,type);
+            return new(address,type);
         }
 
         public Value Create<T>(T variableValue,Type type,TypeContainer<T> container) {
             var address = _addressGenerator.GetNext();
             container[address] = variableValue;
-            Value value = new(address,type);
-            _values[address] = value;
-            return value;
+            _references.Set(address,type);
+            return new(address,type);
         }
 
-        public void Delete(Address address) {
-            if(!_values.ContainsKey(address)) {
-                throw ErrorFactory.InternalMemoryReferenceError(address);
-            }
-            if(_pinnedValues.Contains(address)) {
-                throw ErrorFactory.IllegalDeletionOfPinnedValue();
-            }
-            _typeContainers[_values[address].Type].Delete(address);
-            _values.Remove(address);
+        public void Reference(Address address) {
+            _references.IncreaseReferenceCounter(address);
+        }
+
+        public void Dereference(Address address) {
+            _references.DecreaseReferenceCounter(address);
+        }
+
+        public void Sweep() {
+            _references.SweepWeakReferences(this);
         }
     }
 }

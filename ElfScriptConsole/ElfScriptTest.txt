@@ -1,4 +1,11 @@
-﻿" \\"
+﻿name = "Sam";
+delete name;
+
+name = "Dave";
+name = 4 + 5 + 3;
+
+
+" \\"
 "Yes, that is \"fine\""
 
 bool str            num list table func

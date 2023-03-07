@@ -26,20 +26,20 @@ namespace ElfScript.Errors {
         public static ElfScriptException OperatorNotImplemented(Type a,Type b,Operator operatorType) {
             return new($"{nameof(OperatorNotImplemented)}: Operator '{operatorType}' is not implemented between type '{a}' and '{b}'");
         }
-        public static ElfScriptException IllegalDeletionOfPinnedValue() {
-            return new($"{nameof(IllegalDeletionOfPinnedValue)}: Cannot delete a pinned memory value. You must first unpin the value.");
+        public static ElfScriptException MemoryReferenceError(Address address) {
+            return new($"{nameof(MemoryReferenceError)}: Value for address '{address}' not found.");
         }
-        public static ElfScriptException InternalMemoryReferenceError(Address address) {
-            return new($"{nameof(InternalMemoryReferenceError)}: Value for address '{address}' not found.");
-        }
-        public static ElfScriptException InternalMemoryTypeError(Address address,Type expectedType,Type currentType) {
-            return new($"{nameof(InternalMemoryTypeError)}: Value for address '{address}' has incorrect type. Expected type is {expectedType}, found type {currentType}.");
+        public static ElfScriptException MemoryTypeError(Address address,Type expectedType,Type currentType) {
+            return new($"{nameof(MemoryTypeError)}: Value for address '{address}' has incorrect type. Expected type is {expectedType}, found type {currentType}.");
         }
         public static ElfScriptException ExpressionIsNotAsync() {
             return new($"{nameof(ExpressionIsNotAsync)}: Cannot execute expression asynchronously, the expression is synchronous.");
         }
         public static ElfScriptException AsyncNotImplemented() {
             return new($"{nameof(AsyncNotImplemented)}: This expression should be be able to execute asynchronously, but it is missing an async implementation.");
+        }
+        public static ElfScriptException CollectionElementDoesNotExist<TIndex>(TIndex index) where TIndex:notnull {
+            return new($"{nameof(CollectionElementDoesNotExist)}: Cannot delete collection element at index '{index}' because the item does not exist.");
         }
     }
 }
