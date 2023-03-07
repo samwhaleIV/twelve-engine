@@ -1,5 +1,6 @@
 ﻿using ElfScript.Errors;
 using ElfScript.VirtualMachine.Memory;
+using ElfScript.VirtualMachine.Operations;
 
 namespace ElfScript.VirtualMachine {
     internal sealed class StateMachine {
@@ -8,6 +9,9 @@ namespace ElfScript.VirtualMachine {
             protected override void Reset(StackFrame item) => item.Clear();
             protected override StackFrame CreateNew() => new();
         }
+
+        /// <remarks>Don't give this to anyone else... This helps memory safety. </remarks>
+        private readonly ExecutionHandshake _executionHandshake;
 
         private readonly StackFrame _globalStackFrame = new();
 
@@ -21,7 +25,10 @@ namespace ElfScript.VirtualMachine {
         public StateMachine() {
             _stackFrames.Push(_globalStackFrame);
             _activeStackFrame = _globalStackFrame;
+            _executionHandshake = ExecutionHandshake.Create(this);
         }
+
+        ~StateMachine() => ExecutionHandshake.Delete(_executionHandshake);
 
         private readonly StackFramePool _stackFramePool = new();
 
@@ -38,16 +45,6 @@ namespace ElfScript.VirtualMachine {
             var oldStackFrame = _stackFrames.Pop();
             _stackFramePool.Return(oldStackFrame);
             _activeStackFrame = _stackFrames.Peek();
-        }
-
-        private Value _returnRegister;
-
-        public void SetReturnRegisterValue(Value value) {
-            _returnRegister = value;
-        }
-
-        public Value GetReturnRegisterValue() {
-            return _returnRegister;
         }
 
         public Value GetVariable(string variableName) {
@@ -71,6 +68,37 @@ namespace ElfScript.VirtualMachine {
             }
             Memory.Reference(address);
             _activeStackFrame[variableName] = address;
+        }
+
+        public async Task Execute(Operation operation) {
+            ShouldExitBlock = false;
+            await operation.Execute(_executionHandshake);
+            Memory.Sweep();
+        }
+
+        public async Task Execute(FunctionDeclaration function,Operation[] arguments) {
+            ShouldExitBlock = false;
+            await function.Invoke(this,arguments);
+            Memory.Sweep();
+        }
+
+        public bool ShouldExitBlock { get; set; } = false;
+
+        private Value? _valueRegister;
+        public Value ValueRegister {
+            get {
+                if(!_valueRegister.HasValue) {
+                    throw ErrorFactory.OperationResultNullReference();
+                }
+                return _valueRegister.Value;
+            }
+            set {
+                if(_valueRegister.HasValue) {
+                    Memory.Dereference(_valueRegister.Value.Address);
+                }
+                _valueRegister = value;
+                Memory.Reference(value.Address);
+            }
         }
     }
 }

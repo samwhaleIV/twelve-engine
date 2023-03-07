@@ -3,27 +3,27 @@
 namespace ElfScript.VirtualMachine.Memory {
     internal sealed class ReferenceStateCache {
 
+        private const int MAX_SWEEP_ITERATIONS = 64;
+
         private readonly HashSet<Address> _strongReferences = new(), _weakReferences = new();
         private readonly Dictionary<Address,ValueReference> _referenceTable = new();
 
-        private readonly Stack<Value> _collectionDeletionBuffer = new(), _deletionBuffer = new();
-
-        private static bool IsCollection(Type type) => type == Type.Table || type == Type.List;
+        private readonly Stack<Value> _deletionBuffer = new();
 
         public void SweepWeakReferences(VirtualMemory memory) {
-            foreach(Address address in _weakReferences) {
-                ValueReference reference = _referenceTable[address];
-                if(IsCollection(reference.Type)) {
-                    _collectionDeletionBuffer.Push(new(address,reference.Type));
-                    continue;
+            int iterations = 0;
+            while(_weakReferences.Count > 0) {
+                if(iterations >= MAX_SWEEP_ITERATIONS) {
+                    throw ErrorFactory.SweepCycleLimit();
                 }
-                _deletionBuffer.Push(new(address,reference.Type));
-            }
-            while(_deletionBuffer.TryPop(out var reference)) {
-                while(_collectionDeletionBuffer.TryPop(out var collectionReference)) {
-                    memory.Delete(collectionReference);
+                foreach(Address address in _weakReferences) {
+                    _deletionBuffer.Push(new(address,_referenceTable[address].Type));
                 }
-                memory.Delete(reference);
+                while(_deletionBuffer.TryPop(out var reference)) {
+                    memory.Delete(reference);
+                    _weakReferences.Remove(reference.Address);
+                }
+                iterations += 1;
             }
         }
 
