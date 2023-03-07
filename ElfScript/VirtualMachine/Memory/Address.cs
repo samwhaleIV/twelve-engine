@@ -1,4 +1,4 @@
-﻿namespace ElfScript.VirtualMachine {
+﻿namespace ElfScript.VirtualMachine.Memory {
     public readonly struct Address:IEquatable<Address> {
         private readonly int _value;
         public Address(int ID) => _value = ID;

@@ -1,4 +1,4 @@
-﻿namespace ElfScript.VirtualMachine.Collections.Runtime {
+﻿namespace ElfScript.VirtualMachine.Memory.Collections.Runtime {
     internal sealed class VirtualTable:VirtualCollection<string> {
         public VirtualTable(VirtualMemory memory) : base(memory) { }
 
@@ -25,7 +25,7 @@
         }
 
         protected override void RemoveValue(string index) {
-           _items.Remove(index);
+            _items.Remove(index);
         }
 
         public sealed class Pool:Pool<VirtualTable> {

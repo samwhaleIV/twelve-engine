@@ -1,6 +1,6 @@
 ﻿using ElfScript.Errors;
 
-namespace ElfScript.VirtualMachine {
+namespace ElfScript.VirtualMachine.Memory {
     internal sealed class ReferenceStateCache {
 
         private readonly HashSet<Address> _strongReferences = new(), _weakReferences = new();

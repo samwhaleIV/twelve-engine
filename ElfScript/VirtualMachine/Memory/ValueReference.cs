@@ -1,4 +1,4 @@
-﻿namespace ElfScript.VirtualMachine {
+﻿namespace ElfScript.VirtualMachine.Memory {
     internal struct ValueReference {
         public readonly Type Type { get; private init; }
         public int ReferenceCount { get; set; }

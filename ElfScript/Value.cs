@@ -1,4 +1,4 @@
-﻿using ElfScript.VirtualMachine;
+﻿using ElfScript.VirtualMachine.Memory;
 
 namespace ElfScript {
     internal readonly struct Value {

@@ -1,4 +1,5 @@
 ﻿using ElfScript.Errors;
+using ElfScript.VirtualMachine.Memory;
 
 namespace ElfScript.VirtualMachine {
     internal sealed class StateMachine {
@@ -9,7 +10,9 @@ namespace ElfScript.VirtualMachine {
         }
 
         private readonly StackFrame _globalStackFrame = new();
-        private StackFrame _activeStackFrame; /* Initialized to _globalBlockFrame */
+
+        /// <remarks>Initialized to <see cref="_globalStackFrame"/>.</remarks>
+        private StackFrame _activeStackFrame;
 
         private readonly Stack<StackFrame> _stackFrames = new();
 

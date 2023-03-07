@@ -1,4 +1,4 @@
-﻿namespace ElfScript.VirtualMachine.Collections.Runtime {
+﻿namespace ElfScript.VirtualMachine.Memory.Collections.Runtime {
     internal sealed class VirtualList:VirtualCollection<int> {
         public VirtualList(VirtualMemory memory) : base(memory) { }
 

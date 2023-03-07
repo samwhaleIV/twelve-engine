@@ -1,6 +1,7 @@
-﻿using ElfScript.VirtualMachine;
+﻿using ElfScript.VirtualMachine.Memory;
 
-namespace ElfScript.Errors {
+namespace ElfScript.Errors
+{
     internal static class ErrorFactory {
         public static ElfScriptException ValueTypeError(string variableName,Type expectedType) {
             return new($"{nameof(ValueTypeError)}: '{variableName}' is not of type '{expectedType}'.");
@@ -8,8 +9,8 @@ namespace ElfScript.Errors {
         public static ElfScriptException VariableReferenceError(string variableName) {
             return new($"{nameof(VariableReferenceError)}: '{variableName}' was not found.");
         }
-        public static ElfScriptException ParameterMismatch(int expectedCount,int count) {
-            return new($"{nameof(ParameterMismatch)}: Function defined with arity {expectedCount}, but invoked with arity {count}.");
+        public static ElfScriptException FunctionParameterMismatch(int expectedCount,int count) {
+            return new($"{nameof(FunctionParameterMismatch)}: Function defined with arity {expectedCount}, but invoked with arity {count}.");
         }
         public static ElfScriptException InvalidIndexOperation(string variableName) {
             return new($"{nameof(InvalidIndexOperation)}: {variableName} is not a collection type.");

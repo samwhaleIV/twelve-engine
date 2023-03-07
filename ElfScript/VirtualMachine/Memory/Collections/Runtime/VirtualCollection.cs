@@ -1,7 +1,7 @@
 ﻿using ElfScript.Errors;
 
-namespace ElfScript.VirtualMachine.Collections.Runtime {
-    internal abstract class VirtualCollection<TIndex>:IPoolItem where TIndex:notnull {
+namespace ElfScript.VirtualMachine.Memory.Collections.Runtime {
+    internal abstract class VirtualCollection<TIndex>:IPoolItem where TIndex : notnull {
 
         private readonly VirtualMemory _memory;
         public VirtualCollection(VirtualMemory memory) => _memory = memory;
