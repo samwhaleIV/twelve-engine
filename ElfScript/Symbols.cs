@@ -21,5 +21,9 @@
         public const char MultiplyOperator = '*';
         public const char DotOperator = '.';
         public const char CommaOperator = ',';
+
+        public const char EqualsOperator = '=';
+
+        public const string LineComment = "//";
     }
 }

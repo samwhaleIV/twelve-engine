@@ -1,15 +1,18 @@
-﻿using ElfScript.VirtualMachine;
+﻿using ElfScript.VirtualMachine.Memory;
 
 namespace ElfScript.Errors {
     internal static class ErrorFactory {
+        public static ElfScriptException ValueTypeError(Type expectedType) {
+            return new($"{nameof(ValueTypeError)}: Value is not of type '{expectedType}'.");
+        }
         public static ElfScriptException ValueTypeError(string variableName,Type expectedType) {
             return new($"{nameof(ValueTypeError)}: '{variableName}' is not of type '{expectedType}'.");
         }
         public static ElfScriptException VariableReferenceError(string variableName) {
             return new($"{nameof(VariableReferenceError)}: '{variableName}' was not found.");
         }
-        public static ElfScriptException ParameterMismatch(int expectedCount,int count) {
-            return new($"{nameof(ParameterMismatch)}: Function defined with arity {expectedCount}, but invoked with arity {count}.");
+        public static ElfScriptException FunctionParameterMismatch(int expectedCount,int count) {
+            return new($"{nameof(FunctionParameterMismatch)}: Function defined with arity {expectedCount}, but invoked with arity {count}.");
         }
         public static ElfScriptException InvalidIndexOperation(string variableName) {
             return new($"{nameof(InvalidIndexOperation)}: {variableName} is not a collection type.");
@@ -26,20 +29,35 @@ namespace ElfScript.Errors {
         public static ElfScriptException OperatorNotImplemented(Type a,Type b,Operator operatorType) {
             return new($"{nameof(OperatorNotImplemented)}: Operator '{operatorType}' is not implemented between type '{a}' and '{b}'");
         }
-        public static ElfScriptException IllegalDeletionOfPinnedValue() {
-            return new($"{nameof(IllegalDeletionOfPinnedValue)}: Cannot delete a pinned memory value. You must first unpin the value.");
+        public static ElfScriptException MemoryReferenceError(Address address) {
+            return new($"{nameof(MemoryReferenceError)}: Value for address '{address}' not found.");
         }
-        public static ElfScriptException InternalMemoryReferenceError(Address address) {
-            return new($"{nameof(InternalMemoryReferenceError)}: Value for address '{address}' not found.");
-        }
-        public static ElfScriptException InternalMemoryTypeError(Address address,Type expectedType,Type currentType) {
-            return new($"{nameof(InternalMemoryTypeError)}: Value for address '{address}' has incorrect type. Expected type is {expectedType}, found type {currentType}.");
+        public static ElfScriptException MemoryTypeError(Address address,Type expectedType,Type currentType) {
+            return new($"{nameof(MemoryTypeError)}: Value for address '{address}' has incorrect type. Expected type is {expectedType}, found type {currentType}.");
         }
         public static ElfScriptException ExpressionIsNotAsync() {
             return new($"{nameof(ExpressionIsNotAsync)}: Cannot execute expression asynchronously, the expression is synchronous.");
         }
-        public static ElfScriptException AsyncNotImplemented() {
-            return new($"{nameof(AsyncNotImplemented)}: This expression should be be able to execute asynchronously, but it is missing an async implementation.");
+        public static ElfScriptException CollectionElementDoesNotExist<TIndex>(TIndex index) where TIndex : notnull {
+            return new($"{nameof(CollectionElementDoesNotExist)}: Cannot delete collection element at index '{index}' because the item does not exist.");
+        }
+        public static ElfScriptException SweepCycleLimit() {
+            return new($"{nameof(SweepCycleLimit)}: The garbage collection tried really hard but it could not clean up your mess. How deep are your objects?");
+        }
+        public static ElfScriptException OperationResultNullReference() {
+            return new($"{nameof(OperationResultNullReference)}: Cannot dereference operation result register because no value has been set.");
+        }
+        public static ElfScriptException NullOperation() {
+            return new($"{nameof(NullOperation)}: Cannot execute null operation.");
+        }
+        public static ElfScriptException IllegalExecutionBypass() {
+            return new($"{nameof(IllegalExecutionBypass)}: Operations are not allowed to bypass the state machine's operation executor.");
+        }
+        public static ElfScriptException IllegalHandshakeDeletion() {
+            return new($"{nameof(IllegalHandshakeDeletion)}: Only the state machine cthat created the handshake token can end its lifetime.");
+        }
+        public static ElfScriptException CannotExecuteFunctionDeclaration() {
+            return new($"{nameof(CannotExecuteFunctionDeclaration)}: Cannot execute a function declaration. It must be invoked with a function operation.");
         }
     }
 }

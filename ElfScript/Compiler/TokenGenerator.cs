@@ -1,5 +1,4 @@
 ﻿using ElfScript.Errors;
-using System.Reflection.PortableExecutable;
 using System.Text;
 using static ElfScript.Symbols;
 
@@ -13,7 +12,7 @@ namespace ElfScript.Compiler {
         private bool _writingString = false, _writingEscapeSequence = false;
 
         private readonly HashSet<char> _operators = new() {
-            AddOperator, SubtractOperator, DivideOperator, MultiplyOperator, DotOperator, CommaOperator
+            AddOperator, SubtractOperator, DivideOperator, MultiplyOperator, DotOperator, CommaOperator, EqualsOperator
         };
 
         private readonly Dictionary<char,TokenType> _symbolTokens = new() {
@@ -31,7 +30,7 @@ namespace ElfScript.Compiler {
         });
 
         private void EnqueueToken(char value,TokenType type) => _tokenQueue.Enqueue(new() {
-            Column = _tokenColumnStart,Line = _line,Type = type,Value = value.ToString(),
+            Column = _column,Line = _line,Type = type,Value = value.ToString(),
         });
 
         private void FlushTokenBuilder() {
@@ -40,6 +39,7 @@ namespace ElfScript.Compiler {
             }
             EnqueueToken(_tokenBuilder.ToString(),_writingString ? TokenType.String : TokenType.Generic);
             _tokenBuilder.Clear();
+            _tokenColumnStart = -1;
         }
 
         private void AppendTokenBuilder(char character) {
@@ -97,6 +97,7 @@ namespace ElfScript.Compiler {
             _column = column;
             if(!_writingString) {
                 if(character == Whitespace) {
+                    FlushTokenBuilder();
                     return;
                 }
                 AddCharacterDefault(character);
@@ -109,7 +110,9 @@ namespace ElfScript.Compiler {
             AddCharacterEscapeSequence(character);
         }
 
-        public void AddLineBreak() {
+        public void AddLineBreak(int line) {
+            _line = line;
+            _column = -1;
             if(_writingString) {
                 return;
             }

@@ -1,22 +1,43 @@
-﻿"\"Ligma\"";
+﻿name = "Sam";
+delete name;
 
-"\"Lig
-ma\"";
+name = "Dave";
+name = 4 + 5 + 3;
 
-carl
 
-ca
-rl
+" \\"
+"Yes, that is \"fine\""
 
-"\\Ligma\\";
+bool str            num list table func
 
-" \\ \" Ligma \\ \" ";
+// Function expression
+(a,b,c) {
 
-Hello, World!;
+};
 
-[ Apple ];
-( Banana );
-{ Cucumber };
-{ Ligma };
-{ "Ligma" };
-"Ligma";
+//Block expression
+{
+    value = 
+}
+
+// Inline function expression
+exec (a,b,c) { a + b + c } | 1, 2, 3
+
+<name> = [<expr>,<expr>,<expr>];
+<name> = (a,b,c) { <expr> };
+
+<name> = <expr>;
+delete <name>;
+<name>.<name> = <expr>;
+
+
+delete <name>.<name>;
+<name>[<expr>] = <expr>
+delete <name>[<expr>]
+
+value[<expr>] = <expr>;
+if not TestValue Exit |> <expr>;
+
+exec <name> | <expr>, <expr>, <expr>;
+
+MinMax = (min,max,value) { };
