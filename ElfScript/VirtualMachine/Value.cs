@@ -1,6 +1,6 @@
 ﻿using ElfScript.VirtualMachine.Memory;
 
-namespace ElfScript {
+namespace ElfScript.VirtualMachine {
     internal readonly struct Value {
         public readonly Type Type { get; private init; }
         public readonly Address Address { get; private init; }

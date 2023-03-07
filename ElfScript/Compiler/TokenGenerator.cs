@@ -1,5 +1,4 @@
 ﻿using ElfScript.Errors;
-using System.Reflection.PortableExecutable;
 using System.Text;
 using static ElfScript.Symbols;
 
