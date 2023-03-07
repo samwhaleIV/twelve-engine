@@ -1,6 +1,4 @@
 ﻿using ElfScript.VirtualMachine.Memory;
-using ElfScript.VirtualMachine.Memory.Collections;
-using ElfScript.VirtualMachine.Memory.Collections.Runtime;
 
 namespace ElfScript.VirtualMachine {
     internal sealed partial class VirtualMemory {

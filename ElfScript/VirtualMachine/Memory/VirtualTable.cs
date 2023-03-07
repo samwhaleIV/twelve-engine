@@ -1,4 +1,4 @@
-﻿namespace ElfScript.VirtualMachine.Memory.Collections.Runtime {
+﻿namespace ElfScript.VirtualMachine.Memory {
     internal sealed class VirtualTable:VirtualCollection<string> {
         public VirtualTable(VirtualMemory memory) : base(memory) { }
 
