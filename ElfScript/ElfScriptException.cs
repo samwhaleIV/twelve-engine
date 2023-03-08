@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace ElfScript.Errors {
+namespace ElfScript {
 	[Serializable]
 	public sealed class ElfScriptException:Exception {
 		public ElfScriptException() {}

@@ -41,9 +41,6 @@ namespace ElfScript.Errors {
         public static ElfScriptException CollectionElementDoesNotExist<TIndex>(TIndex index) where TIndex : notnull {
             return new($"{nameof(CollectionElementDoesNotExist)}: Cannot delete collection element at index '{index}' because the item does not exist.");
         }
-        public static ElfScriptException SweepCycleLimit() {
-            return new($"{nameof(SweepCycleLimit)}: The garbage collection tried really hard but it could not clean up your mess. How deep are your objects?");
-        }
         public static ElfScriptException OperationResultNullReference() {
             return new($"{nameof(OperationResultNullReference)}: Cannot dereference operation result register because no value has been set.");
         }
@@ -58,6 +55,9 @@ namespace ElfScript.Errors {
         }
         public static ElfScriptException CannotExecuteFunctionDeclaration() {
             return new($"{nameof(CannotExecuteFunctionDeclaration)}: Cannot execute a function declaration. It must be invoked with a function operation.");
+        }
+        public static ElfScriptException CircularReferenceInCollection() {
+            return new($"{nameof(CircularReferenceInCollection)}: Circular reference detected in collection layout.");
         }
     }
 }

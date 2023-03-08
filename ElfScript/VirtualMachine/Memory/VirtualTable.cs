@@ -12,7 +12,7 @@
             _items.Clear();
         }
 
-        protected override IEnumerable<Value> GetItems() {
+        public override IEnumerable<Value> GetItems() {
             return _items.Values;
         }
 

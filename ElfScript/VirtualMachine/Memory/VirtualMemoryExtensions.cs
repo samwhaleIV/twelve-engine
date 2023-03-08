@@ -32,7 +32,5 @@ namespace ElfScript.VirtualMachine {
         public Value CreateNumber(int value) => Set(_addressGenerator.GetNext(),value,Type.Number,_numbers);
         public Value CreateBoolean(bool value) => Set(_addressGenerator.GetNext(),value,Type.Boolean,_booleans);
         public Value CreateFunction(FunctionDeclaration value) => Set(_addressGenerator.GetNext(),value,Type.Function,_functions);
-        public Value CreateTable() => Set(_addressGenerator.GetNext(),_virtualTablePool.Lease(),Type.Table,_tables);
-        public Value CreateList() => Set(_addressGenerator.GetNext(),_virtualListPool.Lease(),Type.List,_lists);
     }
 }
