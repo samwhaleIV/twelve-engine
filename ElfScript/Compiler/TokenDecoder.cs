@@ -1,9 +1,10 @@
 ﻿using ElfScript.Errors;
+using ElfScript.VirtualMachine.Operations;
 using System.Text;
 using static ElfScript.Symbols;
 
 namespace ElfScript.Compiler {
-    internal sealed class TokenGenerator {
+    internal sealed class TokenDecoder {
 
         private readonly Queue<Token> _tokenQueue = new();
         private readonly StringBuilder _tokenBuilder = new();
@@ -14,6 +15,9 @@ namespace ElfScript.Compiler {
         private readonly HashSet<char> _operators = new() {
             AddOperator, SubtractOperator, DivideOperator, MultiplyOperator, DotOperator, CommaOperator, EqualsOperator
         };
+
+        private readonly HashSet<char> _digits = new() { '0','1','2','3','4','5','6','7','8','9' };
+        private readonly HashSet<char> _whitespace = new() { ' ', '\t', '\v' };
 
         private readonly Dictionary<char,TokenType> _symbolTokens = new() {
             { OpenBlock, TokenType.OpenBlock },
@@ -33,11 +37,36 @@ namespace ElfScript.Compiler {
             Column = _column,Line = _line,Type = type,Value = value.ToString(),
         });
 
+        private bool IsNumber(string token) {
+            if(token.Length <= 0) {
+                return false;
+            }
+            bool isNumber = true;
+            foreach(var character in token) {
+                if(!_digits.Contains(character)) {
+                    isNumber = false;
+                    break;
+                }
+            }
+            return isNumber;
+        }
+
+        private TokenType GetTokenType(string tokenValue) {
+            if(_writingString) {
+                return TokenType.String;
+            }
+            if(IsNumber(tokenValue)) {
+                return TokenType.Number;
+            }
+            return TokenType.Generic;
+        }
+
         private void FlushTokenBuilder() {
             if(_tokenBuilder.Length < 1) {
                 return;
             }
-            EnqueueToken(_tokenBuilder.ToString(),_writingString ? TokenType.String : TokenType.Generic);
+            string tokenValue = _tokenBuilder.ToString();
+            EnqueueToken(tokenValue,GetTokenType(tokenValue));
             _tokenBuilder.Clear();
             _tokenColumnStart = -1;
         }
@@ -92,11 +121,11 @@ namespace ElfScript.Compiler {
             _writingEscapeSequence = false;
         }
 
-        public void AddCharacter(char character,int line,int column) {
+        private void AddCharacter(char character,int line,int column) {
             _line = line;
             _column = column;
             if(!_writingString) {
-                if(character == Whitespace) {
+                if(_whitespace.Contains(character)) {
                     FlushTokenBuilder();
                     return;
                 }
@@ -110,7 +139,7 @@ namespace ElfScript.Compiler {
             AddCharacterEscapeSequence(character);
         }
 
-        public void AddLineBreak(int line) {
+        private void AddLineBreak(int line) {
             _line = line;
             _column = -1;
             if(_writingString) {
@@ -119,9 +148,34 @@ namespace ElfScript.Compiler {
             FlushTokenBuilder();
         }
 
-        public IEnumerable<Token> Export() {
-            FlushTokenBuilder();
-            return _tokenQueue;
+        public IEnumerable<TokenBlock> Export() {
+            var blockReader = new BlockDecoder();
+            foreach(var token in _tokenQueue) {
+                blockReader.AddToken(token);
+            }
+            return blockReader.GetBlocks();
+        }
+
+        public IEnumerable<TokenBlock> Export(out string disassembly) {
+            var blockReader = new BlockDecoder();
+            foreach(var token in _tokenQueue) {
+                blockReader.AddToken(token);
+            }
+            return blockReader.GetBlocks(out disassembly);
+        }
+
+        public void Import(string[] lines) {
+            for(int lineNumber = 0;lineNumber<lines.Length;lineNumber++) {
+                var line = lines[lineNumber];
+                if(line.StartsWith(LineComment)) {
+                    continue;
+                }
+                for(int column = 0;column<line.Length;column++) {
+                    var character = line[column];
+                    AddCharacter(character,lineNumber,column);
+                }
+                AddLineBreak(lineNumber);
+            }
         }
     }
 }

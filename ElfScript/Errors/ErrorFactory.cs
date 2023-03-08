@@ -1,6 +1,7 @@
 ﻿using ElfScript.VirtualMachine.Memory;
 
-namespace ElfScript.Errors {
+namespace ElfScript.Errors
+{
     internal static class ErrorFactory {
         public static ElfScriptException ValueTypeError(Type expectedType) {
             return new($"{nameof(ValueTypeError)}: Value is not of type '{expectedType}'.");

@@ -12,7 +12,6 @@
         public const char StatementEnd = ';';
         public const char StringLimit = '"';
         public const char StringEscape = '\\';
-        public const char Whitespace = ' ';
 
         public const char FunctionOperator = '|';
         public const char AddOperator = '+';

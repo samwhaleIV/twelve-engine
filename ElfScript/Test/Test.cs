@@ -1,8 +1,10 @@
 ﻿using ElfScript.VirtualMachine;
 using ElfScript.Compiler;
 using System.Text;
+using ElfScript.Errors;
 
-namespace ElfScript.Test {
+namespace ElfScript.Test
+{
     public static class Test {
 
         private const string TestName = "test-item";
@@ -117,6 +119,14 @@ namespace ElfScript.Test {
             MultipleCleanUpTest();
             Console.WriteLine();
             CircularReferenceTest();
+            return;
+        }
+
+        public static void TokenDecoderTest(string file) {
+            var tokenDecoder = new TokenDecoder();
+            tokenDecoder.Import(File.ReadAllLines(file));
+            tokenDecoder.Export(out string disassembly);
+            Console.WriteLine(disassembly);
             return;
         }
     }
