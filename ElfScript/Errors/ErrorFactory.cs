@@ -23,5 +23,8 @@ namespace ElfScript.Errors {
         public static ElfScriptException IncorrectJumpRegisterType() {
             return new($"{nameof(IncorrectJumpRegisterType)}: The jump register does not contain a valid function pointer.");
         }
+        public static ElfScriptException IllegalJumpDestination() {
+            return new($"{nameof(IllegalJumpDestination)}: Illegal jump destination.");
+        }
     }
 }

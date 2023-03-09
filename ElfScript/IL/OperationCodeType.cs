@@ -10,26 +10,26 @@
         Operation_Max,
 
         Memory_StaticToRegister,
-        Memory_StaticToMemory,
+        Memory_StaticToVariable,
 
-        Memory_RegisterToMemory,
+        Memory_RegisterToVariable,
         Memory_RegisterToRegister,
-        Memory_MemoryToRegister,
-        Memory_MemoryToMemory,
+        Memory_VariableToRegister,
+        Memory_VariableToVariable,
         Memory_DeleteMemory,
         Memory_CollectGarbage,
 
-        Memory_CreateList,
-        Memory_CreateTable,
+        Memory_CreateListVariable,
+        Memory_CreateTableVariable,
 
-        Control_EnterBlock,
-        Control_ExitBlock,
+        Flow_CreateScope,
+        Flow_ExitScope,
 
-        Control_Jump,
-        Control_ConditionalJump,
-        Control_JumpDynamic,
-        Control_ConditionalJumpDynamic,
-        Control_Interrupt,
+        Flow_Jump,
+        Flow_ConditionalJump,
+        Flow_JumpDynamic,
+        Flow_ConditionalJumpDynamic,
+        Flow_Interrupt,
 
         Conditional_TypeEqual,
         Conditional_TypeNotEqual,
@@ -39,7 +39,6 @@
         Conditional_IsLessThanOrEqual,
         Conditional_IsNotEqualTo,
         Conditional_IsEqualTo,
-
-        Conditional_MemoryExists
+        Conditional_VariableExists
     }
 }

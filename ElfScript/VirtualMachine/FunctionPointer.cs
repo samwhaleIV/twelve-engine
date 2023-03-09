@@ -2,10 +2,10 @@
     internal readonly struct FunctionPointer {
 
         public FunctionPointer() {
-            OpCodeIndex = -1;
+            Value = -1;
         }
 
-        public readonly int OpCodeIndex { get; init; }
+        public readonly int Value { get; init; }
 
         public static readonly FunctionPointer Null = new();
     }

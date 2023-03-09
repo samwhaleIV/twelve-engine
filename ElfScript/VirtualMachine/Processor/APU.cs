@@ -1,4 +1,4 @@
-﻿namespace ElfScript.VirtualMachine {
+﻿namespace ElfScript.VirtualMachine.Processor {
     internal static class APU {
         public static void Add(Register a,Register b,Register target) {
             throw new NotImplementedException();
