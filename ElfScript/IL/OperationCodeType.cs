@@ -19,6 +19,12 @@
         Memory_DeleteMemory,
         Memory_CollectGarbage,
 
+        Memory_RegisterToCallBuffer,
+        Memory_VariableToCallBuffer,
+        Memory_StaticToCallBuffer,
+        Memory_CallBufferToVariable,
+        Memory_CallBufferToRegister,
+
         Memory_CreateListVariable,
         Memory_CreateTableVariable,
 

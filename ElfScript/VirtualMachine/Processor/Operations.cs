@@ -1,5 +1,6 @@
 ﻿using ElfScript.Errors;
 using ElfScript.VirtualMachine.Memory;
+using Microsoft.Win32;
 
 namespace ElfScript.VirtualMachine.Processor {
     internal sealed partial class OperationProcessor {
@@ -98,11 +99,15 @@ namespace ElfScript.VirtualMachine.Processor {
         }
 
         private void CreateScope() {
+            _stateMachine.SetReturnIndex(ProgramPointer);
             _stateMachine.CreateStackFrame();
+            _stateMachine.ClearReturnIndex();
         }
 
         private void ExitScope() {
             _stateMachine.PopStackFrame();
+            SetProgramPointer(_stateMachine.ReturnIndex);
+            _stateMachine.ClearReturnIndex();
         }
 
         private void TypeEqual() {
@@ -158,6 +163,30 @@ namespace ElfScript.VirtualMachine.Processor {
         }
         private void GarbageCollect() {
             _stateMachine.Memory.Sweep();
+        }
+        private void RegisterToCallBuffer() {
+            var register = _registers.Get(V1);
+            var value = _stateMachine.Memory.Create(register);
+            _stateMachine.PushCallingBuffer(value.Address);
+        }
+        private void VariableToCallBuffer() {
+            var value = _stateMachine.GetVariable(V1);
+            _stateMachine.PushCallingBuffer(value.Address);
+        }
+        private void StaticToCallBuffer() {
+            var staticRegister = _stateMachine.GetStaticValue(V1);
+            var value = _stateMachine.Memory.Create(staticRegister);
+            _stateMachine.PushCallingBuffer(value.Address);
+        }
+        private void CallBufferToVariable() {
+            var address = _stateMachine.ReadCallingBuffer();
+            _stateMachine.SetVariable(V1,address);
+        }
+        private void CallBufferToRegister() {
+            var address = _stateMachine.ReadCallingBuffer();
+            var value = _stateMachine.Memory.Get(address);
+            var register = _stateMachine.Registers.Get(V1);
+            _memoryToRegisterConverters[value.Type].Invoke(register,address);
         }
     }
 }

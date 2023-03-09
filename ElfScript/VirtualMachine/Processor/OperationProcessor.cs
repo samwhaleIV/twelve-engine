@@ -20,7 +20,7 @@ namespace ElfScript.VirtualMachine.Processor {
 
         private readonly Dictionary<Type,Action<Register,Address>> _memoryToRegisterConverters;
 
-        private void SetProgramPointer(int value) {
+        internal void SetProgramPointer(int value) {
             if(value < 0 || value >= _program.Length) {
                 throw ErrorFactory.IllegalJumpDestination();
             }

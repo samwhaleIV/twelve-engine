@@ -1,5 +1,6 @@
 ﻿using ElfScript.Errors;
 using ElfScript.VirtualMachine.Memory;
+using ElfScript.VirtualMachine.Processor;
 
 namespace ElfScript.VirtualMachine {
     internal sealed class StateMachine {
@@ -28,8 +29,19 @@ namespace ElfScript.VirtualMachine {
 
         private readonly StackFramePool _stackFramePool = new();
 
+        public int ReturnIndex { get; private set; } = -1;
+
+        public void SetReturnIndex(int value) {
+            ReturnIndex = value;
+        }
+
+        public void ClearReturnIndex() {
+            ReturnIndex = -1;
+        }
+
         public void CreateStackFrame() {
             var frame = _stackFramePool.Lease();
+            frame.ReturnIndex = ReturnIndex;
             _stackFrames.Push(frame);
             _activeStackFrame = frame;
         }
@@ -39,8 +51,24 @@ namespace ElfScript.VirtualMachine {
                 throw ErrorFactory.StackUnderflow();
             }
             var oldStackFrame = _stackFrames.Pop();
+            ReturnIndex = oldStackFrame.ReturnIndex;
             _stackFramePool.Return(oldStackFrame);
             _activeStackFrame = _stackFrames.Peek();
+        }
+
+        private readonly Queue<Address> _callingBuffer = new();
+
+        public void PushCallingBuffer(Address address) {
+            Memory.Reference(address);
+            _callingBuffer.Enqueue(address);
+        }
+
+        public Address ReadCallingBuffer() {
+            if(!_callingBuffer.TryDequeue(out Address address)) {
+                throw ErrorFactory.CallingBufferIsEmpty();
+            }
+            Memory.Dereference(address);
+            return address;
         }
 
         public Value GetVariable(int variableID) {

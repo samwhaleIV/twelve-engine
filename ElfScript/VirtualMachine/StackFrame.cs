@@ -6,5 +6,6 @@ namespace ElfScript.VirtualMachine {
         public int GetLeaseID() => _leaseID;
         public void Reset() => Clear();
         public void SetLeaseID(int ID) => _leaseID = ID;
+        public int ReturnIndex { get; set; } = -1;
     }
 }

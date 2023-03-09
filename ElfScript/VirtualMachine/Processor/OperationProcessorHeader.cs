@@ -39,6 +39,12 @@ namespace ElfScript.VirtualMachine.Processor {
             { Flow_JumpDynamic, JumpDynamic },
             { Flow_CreateScope, CreateScope },
             { Flow_ExitScope, ExitScope },
+
+            { Memory_RegisterToCallBuffer, RegisterToCallBuffer },
+            { Memory_VariableToCallBuffer, VariableToCallBuffer },
+            { Memory_StaticToCallBuffer, StaticToCallBuffer },
+            { Memory_CallBufferToVariable, CallBufferToVariable },
+            { Memory_CallBufferToRegister, CallBufferToRegister }
         }, new() {
             { Type.Integer, (r,a) => r.Set(_stateMachine.Memory.GetInteger(a)) },
             { Type.Decimal, (r,a) => r.Set(_stateMachine.Memory.GetDecimal(a)) },

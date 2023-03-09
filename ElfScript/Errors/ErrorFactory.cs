@@ -26,5 +26,8 @@ namespace ElfScript.Errors {
         public static ElfScriptException IllegalJumpDestination() {
             return new($"{nameof(IllegalJumpDestination)}: Illegal jump destination.");
         }
+        public static ElfScriptException CallingBufferIsEmpty() {
+            return new($"{nameof(CallingBufferIsEmpty)}: The calling buffer is empty.");
+        }
     }
 }
