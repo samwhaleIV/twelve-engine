@@ -1,5 +1,4 @@
 ﻿using ElfScript.Errors;
-using ElfScript.VirtualMachine.Operations;
 using System.Text;
 using static ElfScript.Symbols;
 

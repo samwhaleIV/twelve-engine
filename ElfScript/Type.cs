@@ -1,3 +1,12 @@
 ﻿namespace ElfScript {
-    internal enum Type { Boolean, String, Number, List, Table, Function }
+    internal enum Type:byte {
+        Boolean,
+        Integer,
+        Decimal,
+        Character,
+        String,
+        List,
+        Table,
+        Function
+    }
 }

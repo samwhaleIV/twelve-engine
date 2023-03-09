@@ -22,9 +22,9 @@ namespace ElfScript.Test
 
             var VM = new VirtualMemory();
 
-            var string1 = VM.CreateString("Hello, World!");
-            var string2 = VM.CreateString("Hello, World!");
-            var string3 = VM.CreateString("Hello, World!");
+            var string1 = VM.Create("Hello, World!");
+            var string2 = VM.Create("Hello, World!");
+            var string3 = VM.Create("Hello, World!");
 
             var table1 = VM.CreateTable();
             var virtualTable1 = VM.GetTable(table1.Address);
@@ -41,9 +41,9 @@ namespace ElfScript.Test
 
             var VM = new VirtualMemory();
 
-            var string1 = VM.CreateString("Hello, World!");
-            var string2 = VM.CreateString("Hello, World!");
-            var string3 = VM.CreateString("Hello, World!");
+            var string1 = VM.Create("Hello, World!");
+            var string2 = VM.Create("Hello, World!");
+            var string3 = VM.Create("Hello, World!");
 
             var table1 = VM.CreateTable();
             var virtualTable1 = VM.GetTable(table1.Address);
@@ -65,7 +65,7 @@ namespace ElfScript.Test
 
             var VM = new VirtualMemory();
 
-            var string1 = VM.CreateString("Hello, World!");
+            var string1 = VM.Create("Hello, World!");
 
             var table1 = VM.CreateTable();
             var virtualTable1 = VM.GetTable(table1.Address);

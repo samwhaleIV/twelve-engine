@@ -24,21 +24,25 @@ namespace ElfScript.VirtualMachine.Memory {
 
         private readonly Stack<Address> _referenceCycleStack = new();
 
+        private readonly HashSet<Address> _circularReferenceTags = new();
+
         private bool CreatesCircularReference(Address childCollection) {
+            _circularReferenceTags.Add(Address);
             _referenceCycleStack.Push(childCollection);
             bool circularReferenceDetected = false;
-            Address selfAddress = Address;
             while(_referenceCycleStack.TryPop(out Address address)) {
-                if(address == selfAddress) {
+                if(_circularReferenceTags.Contains(address)) {
                     circularReferenceDetected = true;
                     break;
                 }
+                _circularReferenceTags.Add(address);
                 IVirtualCollection collection = _memory.GetCollection(address);
                 foreach(Address childAddress in collection.GetCollectionItems()) {
                     _referenceCycleStack.Push(childAddress);
                 }
             }
             _referenceCycleStack.Clear();
+            _circularReferenceTags.Clear();
             return circularReferenceDetected;
         }
 

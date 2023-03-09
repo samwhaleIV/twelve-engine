@@ -9,7 +9,9 @@ namespace ElfScript.VirtualMachine {
         public VirtualMemory() {
             _typeContainers = new() {
                 { Type.String, _strings },
-                { Type.Number, _numbers },
+                { Type.Integer, _integers },
+                { Type.Decimal, _decimals },
+                { Type.Character, _characters },
                 { Type.Boolean, _booleans },
                 { Type.List, _lists },
                 { Type.Table, _tables },
