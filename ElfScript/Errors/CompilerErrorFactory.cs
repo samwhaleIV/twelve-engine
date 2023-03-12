@@ -18,5 +18,17 @@
         public static ElfScriptCompilerException UnexpectedBlockEnd(int line,int column) {
             return Create(nameof(UnexpectedBlockEnd),line,column,$"Unxpected end of block. Are you missing an opening block symbol '{Symbols.OpenBlock}'?");
         }
+        public static ElfScriptCompilerException BadNumberToken(int line,int column,string value) {
+            return Create(nameof(BadNumberToken),line,column,$"Bad number token. Value '{value}' is an invalid number.");
+        }
+        public static ElfScriptCompilerException UnexpectedSymbolInNumber(int line,int column,char symbol) {
+            return Create(nameof(UnexpectedSymbolInNumber),line,column,$"Unexpected symbol in number token '{symbol}'.");
+        }
+        public static ElfScriptCompilerException UnexpectedNewLineInEscapeSequence(int line,int column) {
+            return Create(nameof(UnexpectedNewLineInEscapeSequence),line,column,"Unexpected new line in escape sequence.");
+        }
+        public static ElfScriptCompilerException IllegalTrailingDecimalSymbol(int line,int column) {
+            return Create(nameof(IllegalTrailingDecimalSymbol),line,column,"A numerical constant cannot contain a trailing decimal symbol.");
+        }
     }
 }

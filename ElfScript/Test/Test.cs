@@ -1,6 +1,6 @@
 ﻿using ElfScript.VirtualMachine;
 using ElfScript.Compiler;
-using System.Text;
+using ElfScript.IL;
 using ElfScript.Errors;
 
 namespace ElfScript.Test
@@ -128,6 +128,13 @@ namespace ElfScript.Test
             tokenDecoder.Export(out string disassembly);
             Console.WriteLine(disassembly);
             return;
+        }
+
+        public static async Task ILTest() {
+            var stateMachine = new StateMachine();
+            await stateMachine.Processor.ExecuteProgram(new OperationCode[] {
+
+            });
         }
     }
 }

@@ -9,7 +9,8 @@
         StatementEnd,
         String,
         Operator,
-        Number,
+        Integer,
+        Decimal,
         Generic,
         /// <summary>
         /// Compiler internal token type.

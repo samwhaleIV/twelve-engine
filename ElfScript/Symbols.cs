@@ -19,10 +19,15 @@
         public const char DivideOperator = '/';
         public const char MultiplyOperator = '*';
         public const char DotOperator = '.';
+        public const char DecimalSymbol = '.';
         public const char CommaOperator = ',';
 
         public const char EqualsOperator = '=';
 
         public const string LineComment = "//";
+
+        public const char NewLineCharacter = 'n';
+
+        public const bool DecimalSymbolMasksDotOperator = DecimalSymbol == DotOperator;
     }
 }

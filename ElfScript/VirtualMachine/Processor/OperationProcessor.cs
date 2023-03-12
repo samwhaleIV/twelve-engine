@@ -27,13 +27,16 @@ namespace ElfScript.VirtualMachine.Processor {
             ProgramPointer = value;
         }
 
-        private async Task OperationLoop(Func<Task> onInterrupt) {
+        private async Task OperationLoop(Func<Task>? onInterrupt = null) {
             while(ProgramPointer < _program.Length) {
                 OperationCode operation = _program[ProgramPointer];
                 ProgramPointer += 1;
                 V1 = operation.V1;
                 V2 = operation.V2;
                 if(operation.Type == Flow_Interrupt) {
+                    if(onInterrupt is null) {
+                        continue;
+                    }
                     await onInterrupt.Invoke();
                     continue;
                 }
@@ -44,7 +47,7 @@ namespace ElfScript.VirtualMachine.Processor {
             }
         }
 
-        public async Task ExecuteProgram(OperationCode[] program,Func<Task> onInterrupt) {
+        public async Task ExecuteProgram(OperationCode[] program,Func<Task>? onInterrupt = null) {
             if(IsExecuting) {
                 throw new InvalidOperationException("A program is already executing.");
             }

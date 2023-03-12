@@ -1,6 +1,5 @@
 ﻿using ElfScript.Errors;
 using ElfScript.VirtualMachine.Memory;
-using Microsoft.Win32;
 
 namespace ElfScript.VirtualMachine.Processor {
     internal sealed partial class OperationProcessor {
