@@ -56,9 +56,9 @@ namespace ElfScript.Compiler {
             if(_tokenBuilder.Length < 1) {
                 return;
             }
-            TokenType tokenType = GetTokenType();
-            if(tokenType == TokenType.Decimal && _tokenBuilder[^1] == DecimalSymbol) {
-                throw CompilerErrorFactory.IllegalTrailingDecimalSymbol(_line,_column);
+            TokenType tokenType = BuildContainsDotOperator ? TokenType.Operator : GetTokenType();
+            if(tokenType == TokenType.Decimal && _tokenBuilder[0] == DecimalSymbol) {
+                _tokenBuilder.Insert(0,'0');
             }
             string tokenValue = _tokenBuilder.ToString();
             EnqueueToken(tokenValue,tokenType);
@@ -150,6 +150,7 @@ namespace ElfScript.Compiler {
                 }
                 FlushTokenBuilder();
                 _buildMode = TokenBuildMode.Generic;
+                AppendGenericCharacter(character);
                 return;
             }
             if(character == DecimalSymbol && ++_decimalSymbolCount > 1) {
@@ -158,7 +159,7 @@ namespace ElfScript.Compiler {
             AppendTokenBuilder(character);
         }
 
-        private void AddCharacter(char character,int line,int column) {
+        private void AppendCharacter(char character,int line,int column) {
             _line = line;
             _column = column;
             switch(_buildMode) {
@@ -198,17 +199,21 @@ namespace ElfScript.Compiler {
             return blockReader.GetBlocks(out disassembly);
         }
 
+        private void ImportLine(string line,int lineNumber) {
+            if(line.StartsWith(LineComment)) {
+                return;
+            }
+            for(int column = 0;column<line.Length;column++) {
+                char character = line[column];
+                AppendCharacter(character,lineNumber,column);
+            }
+            AddLineBreak();
+        }
+
         public void Import(string[] lines) {
             for(int lineNumber = 0;lineNumber<lines.Length;lineNumber++) {
-                var line = lines[lineNumber];
-                if(line.StartsWith(LineComment)) {
-                    continue;
-                }
-                for(int column = 0;column<line.Length;column++) {
-                    var character = line[column];
-                    AddCharacter(character,lineNumber,column);
-                }
-                AddLineBreak();
+                string line = lines[lineNumber];
+                ImportLine(line,lineNumber);
             }
         }
     }
