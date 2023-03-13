@@ -1,4 +1,4 @@
-﻿name = "Sam";
+﻿name += "Sam";
 delete name;
 
 name = "Dave";
@@ -45,21 +45,25 @@ bool str            num list table func
 // Inline function expression
 exec (a,b,c) { a + b + c; } | 1, 2, 3;
 
-<name> = [<expr>, <expr>, <expr>];
-<name> = { hello: 2, world: 3 }
+NAME = [EXPR, EXPR, EXPR];
+NAME = { hello: 2, world: 3 }
 
-<name> = <expr>;
-delete <name>;
-<name>.<name> = <expr>;
+NAME = EXPR;
+delete NAME;
+NAME.NAME = EXPR;
 
 
-delete <name>.<name>;
-<name>[<expr>] = <expr>
-delete <name>[<expr>]
+delete NAME.NAME;
+NAME[EXPR] = EXPR
+delete NAME[EXPR]
 
-value[<expr>] = <expr>;
-if not TestValue Exit |> <expr>;
+value[EXPR] = EXPR;
+if not TestValue {
 
-exec <name> | <expr>, <expr>, <expr>;
+} else {
+    
+}
+
+exec NAME | EXPR, EXPR, EXPR;
 
 MinMax = (min,max,value) { };

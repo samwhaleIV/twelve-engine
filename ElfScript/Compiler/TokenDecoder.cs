@@ -1,6 +1,8 @@
-﻿using ElfScript.Errors;
-using System.Text;
+﻿using System.Text;
+using ElfScript.Errors;
 using static ElfScript.Symbols;
+using static ElfScript.Symbols.Operators;
+using static ElfScript.Symbols.Keywords;
 
 namespace ElfScript.Compiler {
     internal sealed class TokenDecoder {
@@ -10,13 +12,29 @@ namespace ElfScript.Compiler {
 
         private int _line = -1, _column = -1, _tokenColumnStart = -1, _decimalSymbolCount = 0;
 
-        private readonly HashSet<char> _operators = new() {
-            AddOperator, SubtractOperator, DivideOperator, MultiplyOperator, DotOperator, CommaOperator, EqualsOperator
-        };
+        private readonly HashSet<string>
+            _operators = new() {
+                Parameter, Assignment, Add, Subtract, Divide, Multiply,
+                Comma, Not, GreaterThan, LessThan, GreaterThanOrEqual, LessThanOrEqual, And, Or,
+                AddAssignment, SubtractAssignment, MultiplyAssignment, DivideAssignment, ModulusAssignment, Modulus
+            },
+            _keyWords = new() {
+                Delete, Exec, If
+            };
 
-        private readonly HashSet<char> _digits = new() { '0','1','2','3','4','5','6','7','8','9', DecimalSymbol };
-        private readonly HashSet<char> _whitespace = new() { ' ', '\t', '\v' };
-        private readonly HashSet<char> _escapeSequenceOperands = new() { '\\', NewLineCharacter, '"' };
+        public TokenDecoder() {
+            foreach(string value in _operators) {
+                foreach(char character in value) {
+                    _operatorSymbols.Add(character);
+                }
+            }
+        }
+
+        private readonly HashSet<char>
+            _digits = new() { '0','1','2','3','4','5','6','7','8','9', DecimalSymbol },
+            _whitespace = new() { ' ', '\t', '\v' },
+            _escapeSequenceOperands = new() { '\\', NewLineCharacter, '"' },
+            _operatorSymbols = new();
 
         private readonly Dictionary<char,TokenType> _symbolTokens = new() {
             { OpenBlock, TokenType.OpenBlock }, { CloseBlock, TokenType.CloseBlock },
@@ -25,7 +43,7 @@ namespace ElfScript.Compiler {
             { StatementEnd, TokenType.StatementEnd }
         };
 
-        private enum TokenBuildMode { String, StringEscape, Number, Generic }
+        private enum TokenBuildMode { String, StringEscape, Number, Generic, Operator }
         private TokenBuildMode _buildMode = TokenBuildMode.Generic;
 
         private void EnqueueToken(string value,TokenType type) => _tokenQueue.Enqueue(new() {
@@ -44,6 +62,7 @@ namespace ElfScript.Compiler {
             switch(_buildMode) {
                 case TokenBuildMode.String: return TokenType.String;
                 case TokenBuildMode.Number: return GetNumberType();
+                case TokenBuildMode.Operator: return TokenType.Operator;
 
                 /* Internal exception. If this happens, the token decoder has bug with escape sequences. */
                 case TokenBuildMode.StringEscape: throw new InvalidOperationException(); 
@@ -56,11 +75,17 @@ namespace ElfScript.Compiler {
             if(_tokenBuilder.Length < 1) {
                 return;
             }
-            TokenType tokenType = BuildContainsDotOperator ? TokenType.Operator : GetTokenType();
+            TokenType tokenType = GetTokenType();
             if(tokenType == TokenType.Decimal && _tokenBuilder[0] == DecimalSymbol) {
                 _tokenBuilder.Insert(0,'0');
             }
             string tokenValue = _tokenBuilder.ToString();
+            if(tokenType == TokenType.Operator && !_operators.Contains(tokenValue)) {
+                throw CompilerErrorFactory.UnknownOperator(_line,_column,tokenValue);
+            }
+            if(tokenType == TokenType.Generic && _keyWords.Contains(tokenValue)) {
+                tokenType = TokenType.Keyword;
+            }
             EnqueueToken(tokenValue,tokenType);
             _tokenBuilder.Clear();
             _tokenColumnStart = -1;
@@ -83,12 +108,29 @@ namespace ElfScript.Compiler {
                 EnqueueToken(character,tokenType);
                 return true;
             }
-            if(_operators.Contains(character)) {
+            if(_operatorSymbols.Contains(character)) {
                 FlushTokenBuilder();
-                EnqueueToken(character,TokenType.Operator);
+                _buildMode = TokenBuildMode.Operator;
+                ApppendOperatorCharacter(character);
                 return true;
             }
             return false;
+        }
+
+        private void ApppendOperatorCharacter(char character) {
+            if(_symbolTokens.TryGetValue(character,out var tokenType)) {
+                FlushTokenBuilder();
+                EnqueueToken(character,tokenType);
+                _buildMode = TokenBuildMode.Generic;
+                return;
+            }
+            if(!_operatorSymbols.Contains(character)) {
+                FlushTokenBuilder();
+                _buildMode = TokenBuildMode.Generic;
+                AppendGenericCharacter(character);
+                return;
+            }
+            AppendTokenBuilder(character);
         }
 
         private void AppendGenericCharacter(char character) {
@@ -136,18 +178,13 @@ namespace ElfScript.Compiler {
             _buildMode = TokenBuildMode.String;
         }
 
-        private bool BuildContainsDotOperator => DecimalSymbolMasksDotOperator && _tokenBuilder.Length == 1 && _tokenBuilder[0] == DecimalSymbol;
 
         private void AppendNumberCharacter(char character) {
-            bool trySymbolValidation = DecimalSymbolMasksDotOperator ? character != DecimalSymbol : true;
-            if(trySymbolValidation && TryFlushSymbolOrOperator(character)) {
+            if(TryFlushSymbolOrOperator(character)) {
                 _buildMode = TokenBuildMode.Generic;
                 return;
             }
             if(!_digits.Contains(character)) {
-                if(!BuildContainsDotOperator) {
-                    throw CompilerErrorFactory.UnexpectedSymbolInNumber(_line,_column,character);
-                }
                 FlushTokenBuilder();
                 _buildMode = TokenBuildMode.Generic;
                 AppendGenericCharacter(character);
@@ -167,6 +204,7 @@ namespace ElfScript.Compiler {
                 case TokenBuildMode.String: AppendStringCharacter(character); break;
                 case TokenBuildMode.StringEscape: AppendEscapeSequenceCharacter(character); break;
                 case TokenBuildMode.Number: AppendNumberCharacter(character); break;
+                case TokenBuildMode.Operator: ApppendOperatorCharacter(character); break;
                 default: throw new NotImplementedException();
             }
         }

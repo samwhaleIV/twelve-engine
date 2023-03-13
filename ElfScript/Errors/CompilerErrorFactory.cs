@@ -30,5 +30,8 @@
         public static ElfScriptCompilerException IllegalTrailingDecimalSymbol(int line,int column) {
             return Create(nameof(IllegalTrailingDecimalSymbol),line,column,"A numerical constant cannot contain a trailing decimal symbol.");
         }
+        public static ElfScriptCompilerException UnknownOperator(int line,int column,string value) {
+            return Create(nameof(UnknownOperator),line,column,$"Unknown operator '{value}'.");
+        }
     }
 }

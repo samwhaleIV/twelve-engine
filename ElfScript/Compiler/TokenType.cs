@@ -8,13 +8,14 @@
         CloseArray,
         StatementEnd,
         String,
-        Operator,
         Integer,
         Decimal,
         Generic,
         /// <summary>
         /// Compiler internal token type.
         /// </summary>
-        BlockReference
+        BlockReference,
+        Operator,
+        Keyword
     }
 }
