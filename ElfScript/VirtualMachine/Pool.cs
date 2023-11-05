@@ -1,9 +1,7 @@
-﻿namespace ElfScript.VirtualMachine
-{
-    internal abstract class Pool<T> where T : IPoolItem
-    {
+﻿namespace ElfScript.VirtualMachine {
+    internal abstract class Pool<T> where T : IPoolItem {
 
-        private readonly Dictionary<int, T> _active = new();
+        private readonly Dictionary<int,T> _active = new();
         private readonly Stack<T> _inactive = new();
 
         private int _IDCounter = 0;
@@ -11,10 +9,8 @@
         protected abstract void Reset(T item);
         protected abstract T CreateNew();
 
-        public T Lease()
-        {
-            if (_IDCounter == int.MaxValue)
-            {
+        public T Lease() {
+            if(_IDCounter == int.MaxValue) {
                 _IDCounter = int.MinValue;
             }
             int ID = _IDCounter++;
@@ -24,11 +20,9 @@
             return item;
         }
 
-        public void Return(IPoolItem poolItem)
-        {
+        public void Return(IPoolItem poolItem) {
             int leaseID = poolItem.GetLeaseID();
-            if (!_active.TryGetValue(leaseID, out T? value))
-            {
+            if(!_active.TryGetValue(leaseID,out T? value)) {
                 throw new InvalidOperationException($"ID '{leaseID}' not contained in active pool.");
             }
             Reset(value);

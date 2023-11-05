@@ -3,7 +3,8 @@
 namespace ElfScriptConsole {
     internal class Program {
         static void Main() {
-            Test.CompilerTest();
+            //Test.GarbageCollectionTest();
+            Test.TokenDecoderTest("ElfScriptTest.txt");
             Console.ReadKey(true);
         }
     }

@@ -1,6 +1,6 @@
 ﻿using ElfScript.Errors;
 using ElfScript.VirtualMachine.Memory;
-using ElfScript.VirtualMachine.Operations;
+using ElfScript.VirtualMachine.Processor;
 
 namespace ElfScript.VirtualMachine {
     internal sealed class StateMachine {
@@ -10,9 +10,6 @@ namespace ElfScript.VirtualMachine {
             protected override StackFrame CreateNew() => new();
         }
 
-        /// <remarks>Don't give this to anyone else... This helps memory safety. </remarks>
-        private readonly ExecutionHandshake _executionHandshake;
-
         private readonly StackFrame _globalStackFrame = new();
 
         /// <remarks>Initialized to <see cref="_globalStackFrame"/>.</remarks>
@@ -21,19 +18,30 @@ namespace ElfScript.VirtualMachine {
         private readonly Stack<StackFrame> _stackFrames = new();
 
         public VirtualMemory Memory { get; private init; } = new();
+        public RegisterSet Registers { get; private init; } = new();
+        public OperationProcessor Processor { get; private init; }
 
         public StateMachine() {
             _stackFrames.Push(_globalStackFrame);
             _activeStackFrame = _globalStackFrame;
-            _executionHandshake = ExecutionHandshake.Create(this);
+            Processor = new(this);
         }
-
-        ~StateMachine() => ExecutionHandshake.Delete(_executionHandshake);
 
         private readonly StackFramePool _stackFramePool = new();
 
+        public int ReturnIndex { get; private set; } = -1;
+
+        public void SetReturnIndex(int value) {
+            ReturnIndex = value;
+        }
+
+        public void ClearReturnIndex() {
+            ReturnIndex = -1;
+        }
+
         public void CreateStackFrame() {
             var frame = _stackFramePool.Lease();
+            frame.ReturnIndex = ReturnIndex;
             _stackFrames.Push(frame);
             _activeStackFrame = frame;
         }
@@ -43,62 +51,61 @@ namespace ElfScript.VirtualMachine {
                 throw ErrorFactory.StackUnderflow();
             }
             var oldStackFrame = _stackFrames.Pop();
+            ReturnIndex = oldStackFrame.ReturnIndex;
             _stackFramePool.Return(oldStackFrame);
             _activeStackFrame = _stackFrames.Peek();
         }
 
-        public Value GetVariable(string variableName) {
-            if(!_activeStackFrame.TryGetValue(variableName,out Address address)) {
-                throw ErrorFactory.VariableReferenceError(variableName);
+        private readonly Queue<Address> _callingBuffer = new();
+
+        public void PushCallingBuffer(Address address) {
+            Memory.Reference(address);
+            _callingBuffer.Enqueue(address);
+        }
+
+        public Address ReadCallingBuffer() {
+            if(!_callingBuffer.TryDequeue(out Address address)) {
+                throw ErrorFactory.CallingBufferIsEmpty();
+            }
+            Memory.Dereference(address);
+            return address;
+        }
+
+        public Value GetVariable(int variableID) {
+            if(!_activeStackFrame.TryGetValue(variableID,out Address address)) {
+                throw ErrorFactory.VariableReferenceError(variableID);
             }
             return Memory.Get(address);
         }
 
-        public void DeleteVariable(string variableName) {
-            if(!_activeStackFrame.TryGetValue(variableName,out Address address)) {
-                throw ErrorFactory.VariableReferenceError(variableName);
-            }
-            Memory.Dereference(address);
-            _activeStackFrame.Remove(variableName);
+        public bool VariableExists(int variableID) {
+            return _activeStackFrame.ContainsKey(variableID);
         }
 
-        public void SetVariable(string variableName,Address address) {
-            if(_activeStackFrame.TryGetValue(variableName,out Address oldAddress)) {
+        public void DeleteVariable(int variableID) {
+            if(!_activeStackFrame.TryGetValue(variableID,out Address address)) {
+                throw ErrorFactory.VariableReferenceError(variableID);
+            }
+            Memory.Dereference(address);
+            _activeStackFrame.Remove(variableID);
+        }
+
+        public void SetVariable(int variableID,Address address) {
+            if(_activeStackFrame.TryGetValue(variableID,out Address oldAddress)) {
                 Memory.Dereference(oldAddress);
             }
             Memory.Reference(address);
-            _activeStackFrame[variableName] = address;
+            _activeStackFrame[variableID] = address;
         }
 
-        public async Task Execute(Operation operation) {
-            ShouldExitBlock = false;
-            await operation.Execute(_executionHandshake);
-            Memory.Sweep();
+        private readonly Dictionary<int,StaticRegister> _staticValues = new();
+
+        public void AddStaticValue(int ID,StaticRegister staticRegister) {
+            _staticValues[ID] = staticRegister;
         }
 
-        public async Task Execute(FunctionDeclaration function,Operation[] arguments) {
-            ShouldExitBlock = false;
-            await function.Invoke(this,arguments);
-            Memory.Sweep();
-        }
-
-        public bool ShouldExitBlock { get; set; } = false;
-
-        private Value? _valueRegister;
-        public Value ValueRegister {
-            get {
-                if(!_valueRegister.HasValue) {
-                    throw ErrorFactory.OperationResultNullReference();
-                }
-                return _valueRegister.Value;
-            }
-            set {
-                if(_valueRegister.HasValue) {
-                    Memory.Dereference(_valueRegister.Value.Address);
-                }
-                _valueRegister = value;
-                Memory.Reference(value.Address);
-            }
+        public StaticRegister GetStaticValue(int ID) {
+            return _staticValues[ID];
         }
     }
 }

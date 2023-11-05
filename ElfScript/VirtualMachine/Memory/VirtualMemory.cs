@@ -1,5 +1,6 @@
 ﻿using ElfScript.Errors;
 using ElfScript.VirtualMachine.Memory;
+using System.Text;
 
 namespace ElfScript.VirtualMachine {
     internal sealed partial class VirtualMemory {
@@ -8,7 +9,9 @@ namespace ElfScript.VirtualMachine {
         public VirtualMemory() {
             _typeContainers = new() {
                 { Type.String, _strings },
-                { Type.Number, _numbers },
+                { Type.Integer, _integers },
+                { Type.Decimal, _decimals },
+                { Type.Character, _characters },
                 { Type.Boolean, _booleans },
                 { Type.List, _lists },
                 { Type.Table, _tables },
@@ -44,7 +47,7 @@ namespace ElfScript.VirtualMachine {
             _typeContainers[value.Type].Delete(value.Address);
         }
 
-        public Value Get(Address address) {
+        public Value Get(Address address) { 
             if(!_references.Contains(address)) {
                 throw ErrorFactory.MemoryReferenceError(address);
             }
@@ -52,16 +55,16 @@ namespace ElfScript.VirtualMachine {
         }
 
         public T Get<T>(Address address,Type type,TypeContainer<T> container) {
-            if(!_references.TryGet(address,out ValueReference reference)) {
+            if(!_references.TryGet(address,out Type referenceType)) {
                 throw ErrorFactory.MemoryReferenceError(address);
-            } else if(reference.Type != Type.String) {
-                throw ErrorFactory.MemoryTypeError(address,type,reference.Type);
+            } else if(referenceType != type) {
+                throw ErrorFactory.MemoryTypeError(address,type,referenceType);
             }
             return container[address];
         }
 
         public Value Set<T>(Address address,T variableValue,Type type,TypeContainer<T> container) {
-            if(_references.TryGet(address,out var reference) && reference.Type != type) {
+            if(_references.TryGet(address,out Type referenceType) && referenceType != type) {
                 _typeContainers[type].Delete(address);
             }
             container[address] = variableValue;
@@ -86,6 +89,39 @@ namespace ElfScript.VirtualMachine {
 
         public void Sweep() {
             _references.SweepWeakReferences(this);
+        }
+
+        public Value CreateTable() {
+            Address address = _addressGenerator.GetNext();
+            VirtualTable table = _virtualTablePool.Lease();
+            table.Address = address;
+            return Set(address,table,Type.Table,_tables);
+        }
+
+        public Value CreateList() {
+            Address address = _addressGenerator.GetNext();
+            VirtualList list = _virtualListPool.Lease();
+            list.Address = address;
+            return Set(address,list,Type.List,_lists);
+        }
+
+        public IVirtualCollection GetCollection(Address address) {
+            if(!_references.TryGet(address,out Type referenceType)) {
+                throw ErrorFactory.MemoryReferenceError(address);
+            }
+            if(referenceType == Type.List) {
+                return Get(address,Type.List,_lists);
+            } else {
+                return Get(address,Type.Table,_tables);
+            }
+        }
+
+        public string GetDiagnostics() {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append($"{{ Weak References: {_references.WeakReferenceCount}, Strong References: {_references.StrongReferenceCount} }}");
+
+            return stringBuilder.ToString();
         }
     }
 }

@@ -3,27 +3,21 @@
 namespace ElfScript.VirtualMachine.Memory {
     internal sealed class ReferenceStateCache {
 
-        private const int MAX_SWEEP_ITERATIONS = 64;
-
         private readonly HashSet<Address> _strongReferences = new(), _weakReferences = new();
         private readonly Dictionary<Address,ValueReference> _referenceTable = new();
 
         private readonly Stack<Value> _deletionBuffer = new();
 
         public void SweepWeakReferences(VirtualMemory memory) {
-            int iterations = 0;
             while(_weakReferences.Count > 0) {
-                if(iterations >= MAX_SWEEP_ITERATIONS) {
-                    throw ErrorFactory.SweepCycleLimit();
-                }
                 foreach(Address address in _weakReferences) {
-                    _deletionBuffer.Push(new(address,_referenceTable[address].Type));
+                    var type = _referenceTable[address].Type;
+                    _deletionBuffer.Push(new(address,type));
                 }
-                while(_deletionBuffer.TryPop(out var reference)) {
-                    memory.Delete(reference);
-                    _weakReferences.Remove(reference.Address);
+                while(_deletionBuffer.TryPop(out Value value)) {
+                    memory.Delete(value);
+                    _weakReferences.Remove(value.Address);
                 }
-                iterations += 1;
             }
         }
 
@@ -43,8 +37,10 @@ namespace ElfScript.VirtualMachine.Memory {
             return _referenceTable.ContainsKey(address);
         }
 
-        public bool TryGet(Address address,out ValueReference reference) {
-            return _referenceTable.TryGetValue(address,out reference);
+        public bool TryGet(Address address,out Type referenceType) {
+            var result = _referenceTable.TryGetValue(address,out ValueReference reference);
+            referenceType = reference.Type;
+            return result;
         }
 
         public void Set(Address address,Type type) {
@@ -56,6 +52,7 @@ namespace ElfScript.VirtualMachine.Memory {
                 ReferenceCount = referenceCount
             };
             _referenceTable[address] = reference;
+            _weakReferences.Add(address);
         }
 
         public void IncreaseReferenceCounter(Address address) {
@@ -77,10 +74,13 @@ namespace ElfScript.VirtualMachine.Memory {
         }
 
         public Value GetValue(Address address) {
-            if(!TryGet(address,out ValueReference reference)) {
+            if(!TryGet(address,out Type referenceType)) {
                 throw ErrorFactory.MemoryReferenceError(address);
             }
-            return new(address,reference.Type);
+            return new(address,referenceType);
         }
+
+        public int StrongReferenceCount => _strongReferences.Count;
+        public int WeakReferenceCount => _weakReferences.Count; 
     }
 }
