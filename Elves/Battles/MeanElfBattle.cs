@@ -334,8 +334,6 @@ namespace Elves.Battles {
                 await Speech("Ha! You think you can beat me?","I've been training all my life for this day.");
                 return await Fight();
             }
-
-            return BattleResult.Stalemate;
         }
     }
 }

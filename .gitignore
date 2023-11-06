@@ -382,7 +382,5 @@ fmod*.cs
 *.bank
 
 # Logos - Not sure if these can legally be hosted in open source code
-Content/Elves/Logos/fmod.png
-Content/Elves/Logos/monogame.png
-
-/Elves/Scenes/Credits/GameCredits.cs
+# Content/Elves/Logos/fmod.png
+# Content/Elves/Logos/monogame.png

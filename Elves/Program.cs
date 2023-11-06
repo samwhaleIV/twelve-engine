@@ -103,6 +103,16 @@ namespace Elves {
             CustomCursor.Sources.Add(cursorState,data);
         }
 
+        private static void AddCursorState(
+            CursorState cursorState,Texture2D texture,bool centered = false
+        )
+        {
+            int originX = centered ? texture.Width / 2 : 0;
+            int originY = centered ? texture.Height / 2 : 0;
+            MouseCursorData data = new(texture,MouseCursor.FromTexture2D(texture,originX,originY));
+            CustomCursor.Sources.Add(cursorState,data);
+        }
+
         public static BankWrapper AudioBank { get; private set; }
         public static bool HasAudioBank { get; private set; }
 
@@ -127,10 +137,10 @@ namespace Elves {
         }
 
         private static void AddCustomCursors() {
-            AddCursorState(CursorState.Default,Textures.CursorDefault,32,32);
-            AddCursorState(CursorState.Interact,Textures.CursorAlt1,32,32);
-            AddCursorState(CursorState.Pressed,Textures.CursorAlt2,32,32);
-            AddCursorState(CursorState.None,Textures.CursorNone,32,32);
+            AddCursorState(CursorState.Default,Textures.CursorDefault,centered: true);
+            AddCursorState(CursorState.Interact,Textures.CursorAlt1,centered: true);
+            AddCursorState(CursorState.Pressed,Textures.CursorAlt2,centered: true);
+            AddCursorState(CursorState.None,Textures.CursorNone,centered: true);
         }
     }
 }
