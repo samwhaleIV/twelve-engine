@@ -8,6 +8,8 @@ namespace Elves.Battle {
         public string Name { get; private init; }
         public Color Color { get; private init; }
 
+        public string PossessiveName => $"{Name}'{(Name.EndsWith('c') ? "" : "s")}";
+
         public UserData(Elf elf) {
             Name = elf.Name;
             Color = elf.Color;

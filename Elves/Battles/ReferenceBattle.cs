@@ -4,7 +4,7 @@ using Elves.Battle.Scripting;
 using TwelveEngine;
 
 namespace Elves.Battles {
-    public sealed class MeanElfBattle:BattleScript {
+    public sealed class ReferenceBattle:BattleScript {
 
         private async Task<BattleResult> RockTrustTest() {
             await Speech(

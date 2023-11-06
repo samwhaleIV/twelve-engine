@@ -27,10 +27,10 @@ namespace Elves.ElfData {
 
         /* This should probably be information loaded from a data file, but C# is so expressive... I can't help myself. */
         static ElfManifest() {
-            Add(Elf.Create<MeanElfBattle>(
+            Add(Elf.Create<RebootElf>(
                 ID: AutoID,
-                name: "Mean Elf",
-                texture: "Elves/mean-elf",
+                name: "Reboot Elf",
+                texture: "Elves/reboot-elf",
                 color: Color.Red,
                 baseHeight: 47,
                 frameSets: new FrameSet[] {
