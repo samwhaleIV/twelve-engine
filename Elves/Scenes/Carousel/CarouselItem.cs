@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game3D.Entity.Types;
 using Microsoft.Xna.Framework;
-using Elves.ElfData;
 
 namespace Elves.Scenes.Carousel {
     public sealed class CarouselItem:TextureEntity {
@@ -17,7 +16,7 @@ namespace Elves.Scenes.Carousel {
 
         public int Index { get; set; } = -1;
 
-        public ElfID ElfID { get; set; }
+        public int ElfID { get; set; }
 
         public CarouselItem(Texture2D texture,Rectangle source) : base(texture) {
             Billboard = true;

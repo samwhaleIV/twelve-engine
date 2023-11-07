@@ -45,7 +45,6 @@ namespace Elves {
             public static readonly Rectangle MiniGameScreenInnerArea = new(100,3,128,96);
 
             public const float TagBackgroundScale = 2.4f;
-            public const float HealthImpactScale = 2;
             public const float ButtonScale = 1.25f;
 
             public const float NameTextScale = 1 / 2f;
@@ -64,10 +63,19 @@ namespace Elves {
             public static readonly TimeSpan TargetMovementDuration = TimeSpan.FromMilliseconds(250);
             public static readonly TimeSpan TagMovement = TimeSpan.FromMilliseconds(250);
             public static readonly TimeSpan TagTextMovement = TimeSpan.FromMilliseconds(350);
-
-            public static readonly TimeSpan HealthImpact = TimeSpan.FromMilliseconds(80);
-
             public static readonly TimeSpan MiniGameMovement = TimeSpan.FromMilliseconds(300);
+
+            public static readonly TimeSpan HurtImpactDuration = TimeSpan.FromMilliseconds(50);
+            public const float HurtImpactAccel = 15f;
+            public const float HurtImpactCounterAccel = 10f;
+
+            public static readonly TimeSpan HealImpactDuration = TimeSpan.FromMilliseconds(50);
+
+            public const float HealImpactAccel = 5f;
+            public const float HealImpactCounterAccel = 20f;
+
+            public static readonly TimeSpan DeadWobbleDuration = TimeSpan.FromMilliseconds(20);
+            public const float DeathWobbleStrength = 10f;
         }
 
         public static class UI {

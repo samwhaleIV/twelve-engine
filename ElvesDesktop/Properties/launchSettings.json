@@ -17,7 +17,7 @@
       "commandName": "Project",
       "commandLineArgs": "drawdebug nofailsafe console quickbattle",
       "environmentVariables": {
-        "quickbattle": "0"
+        "quickbattle": "1"
       },
       "nativeDebugging": false
     }

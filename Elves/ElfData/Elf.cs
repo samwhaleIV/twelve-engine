@@ -10,7 +10,7 @@ namespace Elves.ElfData {
     public readonly struct Elf {
 
         public readonly Texture2D Texture;
-        public readonly ElfID ID;
+        public readonly int ID;
         public readonly string Name;
         public readonly int BaseHeight;
         public readonly Dictionary<AnimationType,FrameSet> FrameSets;
@@ -37,7 +37,7 @@ namespace Elves.ElfData {
             return dictionary;
         }
 
-        private Elf(ElfID ID,string name,Func<BattleScript> scriptGenerator,string texture,Color color,int baseHeight,FrameSet[] frameSets) {
+        private Elf(int ID,string name,Func<BattleScript> scriptGenerator,string texture,Color color,int baseHeight,FrameSet[] frameSets) {
             ScriptGenerator = scriptGenerator;
             Texture = Program.Game.Content.Load<Texture2D>(texture);
             this.ID = ID;
@@ -48,11 +48,11 @@ namespace Elves.ElfData {
             PreviewSource = GetPreviewSource(frameSets,Texture.Bounds.Size);
         }
 
-        public static Elf Create<TBattleScript>(ElfID ID,string name,string texture,Color color,int baseHeight,FrameSet[] frameSets) where TBattleScript:BattleScript,new() {
+        public static Elf Create<TBattleScript>(int ID,string name,string texture,Color color,int baseHeight,FrameSet[] frameSets) where TBattleScript:BattleScript,new() {
             return new(ID,name,()=>new TBattleScript(),texture,color,baseHeight,frameSets);
         }
 
-        public static Elf Create(ElfID ID,string name,Func<BattleScript> scriptGenerator,string texture,Color color,int baseHeight,FrameSet[] frameSets) {
+        public static Elf Create(int ID,string name,Func<BattleScript> scriptGenerator,string texture,Color color,int baseHeight,FrameSet[] frameSets) {
             return new(ID,name,scriptGenerator,texture,color,baseHeight,frameSets);
         }
     }

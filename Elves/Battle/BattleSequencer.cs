@@ -4,7 +4,6 @@ using TwelveEngine;
 using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
 using TwelveEngine.Shell;
-using Elves.ElfData;
 using Elves.Battle.Scripting;
 
 namespace Elves.Battle {
@@ -14,10 +13,10 @@ namespace Elves.Battle {
          
         public BattleScript Script { get; private set; }
 
-        public event Action<GameState,BattleResult,ElfID> OnBattleEnd;
+        public event Action<GameState,BattleResult,int> OnBattleEnd;
 
         private void Initialize(BattleScript script) {
-            ElfID elfID = script.ElfSource.ID;
+            int elfID = script.ElfSource.ID;
             string elfName = script.ElfSource.Name;
             Name = $"{elfName} battle (ID: {(int)elfID})";
             script.SetSequencer(this);

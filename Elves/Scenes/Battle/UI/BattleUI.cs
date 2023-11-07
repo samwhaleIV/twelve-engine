@@ -116,19 +116,19 @@ namespace Elves.Scenes.Battle.UI {
         #endregion
         #region UPDATE, RENDER, & LAYOUT
 
-        private float _scale;
+        private float _scale, _margin;
 
         public void UpdateLayout(float scale) {
             _scale = scale;
-            //todo... verify that scale is being properly applied through the battle renderer
+            _margin = scale * Constants.BattleUI.MarginScale;
+
             FloatRectangle viewport = new(Viewport);
             TimeSpan now = Now;
 
-            float margin = scale * Constants.BattleUI.MarginScale;
             float halfMargin = scale;
 
-            UpdateActionButtons(viewport,now,scale,margin,halfMargin);
-            UpdateHealthBars(viewport,scale,margin);
+            UpdateActionButtons(viewport,now,scale,_margin,halfMargin);
+            UpdateHealthBars(viewport,scale,_margin);
             SpeechBox.Update(now,viewport,scale*Constants.BattleUI.SpeechBoxScale);
             Tagline.Update(now,viewport,scale);
 
@@ -152,17 +152,17 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         public void UpdateHealthBars(FloatRectangle viewport,float scale,float margin) {
+            TimeSpan now = Now;
+            float delta = (float)owner.FrameDelta.TotalSeconds;
+            playerHealthBar.Update(now,delta);
+            targetHealthBar.Update(now,delta);
             float width = viewport.Width * 0.5f - margin * 2;
-            float YOffset = scale * Constants.BattleUI.HealthImpactScale;
             playerHealthBar.ScreenArea = new(
-                viewport.Left + margin,YOffset * playerHealthBar.GetYOffset() + viewport.Top + margin,width,playerHealthBar.TextureSource.Height * scale
+                viewport.Left + margin,scale * playerHealthBar.GetYOffset() + viewport.Top + margin,width,playerHealthBar.TextureSource.Height * scale
             );
             targetHealthBar.ScreenArea = new(
-                viewport.Right - width - margin,YOffset * targetHealthBar.GetYOffset() + viewport.Top + margin,width,targetHealthBar.TextureSource.Height * scale
+                viewport.Right - width - margin,scale * targetHealthBar.GetYOffset() + viewport.Top + margin,width,targetHealthBar.TextureSource.Height * scale
             );
-            var now = Now;
-            playerHealthBar.Update(now);
-            targetHealthBar.Update(now);
         }
 
         private void SetHealthBarEffectRange(HealthBar healthBar) {
@@ -198,14 +198,14 @@ namespace Elves.Scenes.Battle.UI {
             if(playerData != null && playerData.Name != null) {
                 Fonts.Retro.Draw(
                     playerData.Name,
-                    new Vector2((int)playerHealthBar.ScreenArea.X,(int)(playerHealthBar.ScreenArea.Bottom + playerHealthBar.ScreenArea.Top)),
+                    new Vector2((int)playerHealthBar.ScreenArea.X,(int)(playerHealthBar.ScreenArea.Bottom + _margin)),
                     usernameScale,usernameColor
                 );
             }
             if(targetData != null && targetData.Name != null) {
                 Fonts.Retro.DrawRight(
                     targetData.Name,
-                    new Vector2((int)targetHealthBar.ScreenArea.Right,(int)(targetHealthBar.ScreenArea.Bottom + targetHealthBar.ScreenArea.Top)),
+                    new Vector2((int)targetHealthBar.ScreenArea.Right,(int)(targetHealthBar.ScreenArea.Bottom + _margin)),
                     usernameScale,usernameColor
                 );
             }

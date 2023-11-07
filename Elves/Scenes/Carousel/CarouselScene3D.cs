@@ -165,7 +165,7 @@ namespace Elves.Scenes.Carousel {
             UpdateIndex(index+(int)direction,direction);
         }
 
-        public event Action<GameState,bool,ElfID> OnSceneEnd;
+        public event Action<GameState,bool,int> OnSceneEnd;
 
         public void StartBattle() {
             if(!carouselRotation.IsFinished || centerItem.IsLocked) {
@@ -178,7 +178,7 @@ namespace Elves.Scenes.Carousel {
             if(!carouselRotation.IsFinished) {
                 return;
             }
-            OnSceneEnd?.Invoke(this,true,ElfID.None);
+            OnSceneEnd?.Invoke(this,true,-1);
         }
 
         private static int GetHighestCompletedBattle() {

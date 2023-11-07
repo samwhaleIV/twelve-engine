@@ -40,15 +40,14 @@ namespace Elves {
 
         private static bool TryGetQuickBattle(out GameState gameState) {
             var value = Environment.GetEnvironmentVariable("quickbattle",EnvironmentVariableTarget.Process);
-            if(!int.TryParse(value,out int battleID)) {
+            if(!int.TryParse(value,out int elfID)) {
                 Logger.WriteLine($"Could not {(value is null ? "find" : "parse")} 'quickbattle' process environment variable.");
                 gameState = null;
                 return false;
             }
             /* No guarantee that the battle ID was valid. If you're using flags, you do so at your own risk. It's a debug feature. */
-            ElfID ID = (ElfID)battleID;
             Program.Save = Program.Saves[0];
-            gameState = GetBattleScene(ID);
+            gameState = GetBattleScene(elfID);
             return true;
         }
 
@@ -189,7 +188,7 @@ namespace Elves {
             return GetCreditsSceneReturnToSplashScreen();
         }
 
-        public static GameState GetBattleScene(ElfID elfID) {
+        public static GameState GetBattleScene(int elfID) {
             Elf elf = ElfManifest.Get(elfID);
             BattleScript battleScript = elf.ScriptGenerator.Invoke();
             battleScript.ElfSource = elf;
@@ -198,25 +197,25 @@ namespace Elves {
             return battleSequencer;
         }
 
-        private static void BattleSequencerExit(GameState scene,BattleResult result,ElfID ID) {
+        private static void BattleSequencerExit(GameState scene,BattleResult result,int elfID) {
             bool animateProgress = false;
             var save = Program.Save;
             if(save is null) {
                 Logger.WriteLine("Cannot update save data because a save file is not referenced at this time.",LoggerLabel.Save);
                 animateProgress = true;
             } else {
-                save.SetValue(SaveKeys.LastCompletedBattle,(int)ID);
+                save.SetValue(SaveKeys.LastCompletedBattle,elfID);
                 if(result == BattleResult.PlayerWon) {
                     animateProgress = true;
                     save.TryGetInt(SaveKeys.HighestCompletedBattle,out int oldValue,-1);
-                    if((int)ID > oldValue) {
-                        save.SetValue(SaveKeys.HighestCompletedBattle,(int)ID);
+                    if(elfID > oldValue) {
+                        save.SetValue(SaveKeys.HighestCompletedBattle,elfID);
                     }
                 }
                 save.IncrementCounter(result == BattleResult.PlayerWon ? SaveKeys.WinCount : SaveKeys.LoseCount);
                 Program.Save.TrySave();
             }
-            bool beatGame = (int)ID == ElfManifest.Count - 1;
+            bool beatGame = elfID == ElfManifest.Count - 1;
             scene.TransitionOut(new() {
                 Generator = beatGame ? GetBeatGameScene : animateProgress ? GetCarouselMenuAnimatedProgress : GetCarouselMenu,
                 Data = StateData.FadeIn(TransitionDuration),
@@ -224,7 +223,7 @@ namespace Elves {
             });
         }
 
-        private static void CarouselMenuExit(GameState scene,bool backToMenu,ElfID elfID = ElfID.None) {
+        private static void CarouselMenuExit(GameState scene,bool backToMenu,int elfID = -1) {
             if(backToMenu) {
                 scene.TransitionOut(new TransitionData() {
                     Generator = GetModeSelectMenuScene,

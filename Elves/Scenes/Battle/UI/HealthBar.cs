@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using TwelveEngine;
+using static Elves.Constants.BattleUI;
 
 namespace Elves.Scenes.Battle.UI {
     public enum HealthBarAlignment { Left, Right };
@@ -24,7 +25,57 @@ namespace Elves.Scenes.Battle.UI {
             return new(textureSource.Location.ToVector2() / textureSize,textureSource.Size.ToVector2() / textureSize);
         }
 
-        private readonly Interpolator impactAnimator = new(Constants.BattleUI.HealthImpact);
+        private sealed class InertiaBody {
+
+            private float _acceleration = 0f, _velocity = 0f, _counterAcceleration = 0f;
+            private TimeSpan _accelerationDuration;
+
+            private TimeSpan? _accelerationStart = null;
+
+            public void Update(TimeSpan now,float delta) {
+                bool reset;
+                if(_acceleration == 0f) {
+                    reset = true;
+                } else {
+                    if(!_accelerationStart.HasValue) {
+                        _accelerationStart = now;
+                    }
+                    if(now - _accelerationStart < _accelerationDuration) {
+                        _velocity += delta * _acceleration;
+                        return;
+                    }
+                    _acceleration = 0f;
+                    reset = true;
+                }
+                /* The reset clause is amended to the bottom so there isn't a 1-frame delay when we start counter acceleration. */
+                if(!reset) {
+                    return;
+                }
+                _accelerationStart = null;
+
+                /* Restore zero velocity - can you make it bouncy? */
+                float startVelocity = _velocity;
+                _velocity += delta * MathF.Abs(_counterAcceleration) * -MathF.Sign(_velocity);
+                if(MathF.Sign(startVelocity) == MathF.Sign(_velocity)) {
+                    return;
+                }
+                _velocity = 0f;
+            }
+
+            public void SetAcceleration(TimeSpan duration,float acceleration,float? counterAcceleration = null) {
+                _accelerationStart = null; /* Recalcualte acceleration start in update */
+                _acceleration = acceleration;
+                _accelerationDuration = duration;
+                if(acceleration == 0f) {
+                    return;
+                }
+                _counterAcceleration = counterAcceleration ?? _acceleration;
+            }
+
+            public float Velocity => _velocity;
+        }
+
+        private readonly InertiaBody impactAnimator = new();
 
         private float _value;
 
@@ -32,7 +83,11 @@ namespace Elves.Scenes.Battle.UI {
             get => _value;
             set {
                 if(value < _value) {
-                    AnimateHealthDrop();
+                    /* Injure */
+                    impactAnimator.SetAcceleration(HurtImpactDuration,HurtImpactAccel,HurtImpactCounterAccel);
+                } else if(value > _value) {
+                    /* Heal */
+                    impactAnimator.SetAcceleration(HealImpactDuration,HealImpactAccel,HealImpactCounterAccel);
                 }
                 _value = value;
             }
@@ -41,14 +96,27 @@ namespace Elves.Scenes.Battle.UI {
         public bool IsDead => Value <= 0f;
 
         public float GetYOffset() {
-            var t = 1 - impactAnimator.Value;
-            return MathF.Sin(MathF.PI * t);
+            return impactAnimator.Velocity;
         }
 
-        public void Update(TimeSpan now) => impactAnimator.Update(now);
+        private void ApplyDeathWobble(TimeSpan now) {
+            /* Shake the bar when the owner's health is zero (aka, dead) */
+            int shakeStage = (int)(now / DeadWobbleDuration) % 4;
+            /* Needs empty stages so we are centered on the right spot */
+            (TimeSpan Duration, float Strength) impact = shakeStage switch {
+                0 => (DeadWobbleDuration, -DeathWobbleStrength),
+                2 => (DeadWobbleDuration, DeathWobbleStrength),
+                _ => (TimeSpan.Zero, 0), /* 1 or 3 */
+            };
 
-        private void AnimateHealthDrop() {
-            impactAnimator.Reset();
+            impactAnimator.SetAcceleration(impact.Duration,impact.Strength);
+        }
+
+        public void Update(TimeSpan now,float delta) {
+            if(_value <= 0) {
+                ApplyDeathWobble(now);
+            }
+            impactAnimator.Update(now,delta);
         }
 
         public (float Start, float End) GetOffColorRange() {

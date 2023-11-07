@@ -14,7 +14,7 @@ namespace Elves.Battles {
             int familiarity = 0;
             bool tookPills = false;
 
-            bool skipBlackout = false;
+            bool skipBlackout;
 
             await Tag($"You approach {Actor.Name}.",$"{Actor.Name} is alone.","There is a bottle of pills nearby.");
 
@@ -115,7 +115,7 @@ namespace Elves.Battles {
                     }
                 } else {
                     //neutral
-                    await Speech(familiar == 0 ? "Sorry, it takes me a few times to remember someone." : "Sorry, I'll try and forget you.");
+                    await Speech(familiar == 0 ? "Sorry, it takes me a few times to remember someone." : "Sorry, I'll try and forget you. Usually takes a few tries.");
                 }
 
                 if(!skipBlackout) {
