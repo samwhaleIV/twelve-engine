@@ -77,11 +77,15 @@ namespace Elves.Scenes.Battle.UI {
 
         private readonly InertiaBody impactAnimator = new();
 
-        private float _value;
+        private float _value = -1;
 
         public float Value {
             get => _value;
             set {
+                if(_value < 0) {
+                    _value = value;
+                    return;
+                }
                 if(value < _value) {
                     /* Injure */
                     impactAnimator.SetAcceleration(HurtImpactDuration,HurtImpactAccel,HurtImpactCounterAccel);

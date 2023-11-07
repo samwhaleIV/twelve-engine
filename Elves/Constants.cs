@@ -71,7 +71,7 @@ namespace Elves {
 
             public static readonly TimeSpan HealImpactDuration = TimeSpan.FromMilliseconds(50);
 
-            public const float HealImpactAccel = 5f;
+            public const float HealImpactAccel = -10f;
             public const float HealImpactCounterAccel = 20f;
 
             public static readonly TimeSpan DeadWobbleDuration = TimeSpan.FromMilliseconds(20);
