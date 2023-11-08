@@ -192,23 +192,45 @@ namespace Elves.Scenes.Battle.UI {
             spriteBatch.End();
         }
 
-        private void RenderNames(UserData playerData,UserData targetData) {
-            float usernameScale = _scale * Constants.BattleUI.NameTextScale;
-            Color usernameColor = Color.White;
-            if(playerData != null && playerData.Name != null) {
-                Fonts.Retro.Draw(
-                    playerData.Name,
-                    new Vector2((int)playerHealthBar.ScreenArea.X,(int)(playerHealthBar.ScreenArea.Bottom + _margin)),
-                    usernameScale,usernameColor
-                );
+        private void RenderNameAndInfo(UVSpriteFont font,UserData data,float scale,Color color,Vector2 position,bool drawRight) {
+            if(data == null) {
+                return;
             }
-            if(targetData != null && targetData.Name != null) {
-                Fonts.Retro.DrawRight(
-                    targetData.Name,
-                    new Vector2((int)targetHealthBar.ScreenArea.Right,(int)(targetHealthBar.ScreenArea.Bottom + _margin)),
-                    usernameScale,usernameColor
-                );
+            position = Vector2.Floor(position);
+            if(!string.IsNullOrEmpty(data.Name)) {
+                if(drawRight) {
+                    font.DrawRight(data.Name,position,scale,color);
+                } else {
+                    font.Draw(data.Name,position,scale,color);
+                }
+                position.Y = (int)(position.Y + _margin + MathF.Round(scale) * font.LineHeight);
             }
+            if(data.Info.Length > 0) {
+                return;
+            }
+            float infoScale = MathF.Max(MathF.Round(scale * Constants.BattleUI.InfoTextScale),1);
+            if(drawRight) {
+                font.DrawRight(data.Info,position,infoScale,color);
+            } else {
+                font.Draw(data.Info,position,infoScale,color);
+            }
+        }
+
+        private void RenderNamesAndInfo(SpriteBatch spriteBatch,UserData playerData,UserData targetData) {
+            Fonts.Retro.Begin(spriteBatch);
+            float scale = _scale * Constants.BattleUI.NameTextScale;
+            Color color = Color.White;
+            RenderNameAndInfo(
+                Fonts.Retro,playerData,scale,color,
+                new Vector2(playerHealthBar.ScreenArea.Left,playerHealthBar.ScreenArea.Bottom + _margin),
+                drawRight: false
+            );
+            RenderNameAndInfo(
+                Fonts.Retro,targetData,scale,color,
+                new Vector2(targetHealthBar.ScreenArea.Right,targetHealthBar.ScreenArea.Bottom + _margin),
+                drawRight: true
+            );
+            Fonts.Retro.End();
         }
 
         private void RenderActionButtonText() {
@@ -229,10 +251,7 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         public void Render(SpriteBatch spriteBatch,UserData playerData,UserData targetData) {
-
-            Fonts.Retro.Begin(spriteBatch);
-            RenderNames(playerData,targetData);
-            Fonts.Retro.End();
+            RenderNamesAndInfo(spriteBatch,playerData,targetData);
 
             spriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             SpeechBox.Draw(spriteBatch,targetData.Color);

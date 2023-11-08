@@ -1,12 +1,15 @@
 ﻿using Elves.ElfData;
 using Microsoft.Xna.Framework;
 using System;
+using System.Text;
 
 namespace Elves.Battle {
     public sealed class UserData {
  
         public string Name { get; private init; }
         public Color Color { get; private init; }
+
+        public StringBuilder Info { get; private init; } = new();
 
         public string PossessiveName => $"{Name}'{(Name.EndsWith('c') ? "" : "s")}";
 

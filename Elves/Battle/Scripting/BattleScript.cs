@@ -101,6 +101,7 @@ namespace Elves.Battle.Scripting {
         protected virtual void BindActorAnimations(BattleSprite sprite) {
             sprite.UserData.OnHurt += () => sprite.SetAnimation(AnimationType.Hurt);
             sprite.UserData.OnDied += () => sprite.SetAnimation(AnimationType.Dead);
+            sprite.UserData.OnHeal += () => sprite.SetAnimation(AnimationType.Idle);
         }
 
         private UserData SetActor(BattleSprite sprite) {

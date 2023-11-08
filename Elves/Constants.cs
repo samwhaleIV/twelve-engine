@@ -53,6 +53,7 @@ namespace Elves {
             public const float SpeechBoxTextScale = 1 / 3f;
             public const float SpeechBoxMarginScale = 6f;
             public const float SpeechBoxScale = 1.25f;
+            public const float InfoTextScale = 0.5f;
 
             public const float MiniGameScale = 0.75f;
 
