@@ -61,7 +61,7 @@ namespace Elves.Battles {
                                     ActorSprite.SetAnimation(Animation.AnimationType.Dead);
                                     await Tag($"{Actor.Name} fell over suddenly, hitting their head.");
                                     ActorSprite.SetAnimation(Animation.AnimationType.Idle);
-                                    await Tag($"{Actor.Name} Stood back up.");
+                                    await Tag($"{Actor.Name} stood back up.");
                                     tookPills = true;
                                     skipBlackout = true;
                                 }

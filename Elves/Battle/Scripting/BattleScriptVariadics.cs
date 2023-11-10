@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using TwelveEngine;
 
 namespace Elves.Battle.Scripting {
     public abstract partial class BattleScript {
@@ -213,43 +214,43 @@ namespace Elves.Battle.Scripting {
         }
 
         public async Task<int> Button(string option1) {
-            return await _sequencer.GetButton(false,new(option1));
+            return await _sequencer.GetButton(false,new LowMemoryList<string>(option1),1);
         }
 
         public async Task<int> Button(string option1,string option2) {
-            return await _sequencer.GetButton(false,new(option1,option2));
+            return await _sequencer.GetButton(false,new LowMemoryList<string>(option1,option2),2);
         }
 
         public async Task<int> Button(string option1,string option2,string option3) {
-            return await _sequencer.GetButton(false,new(option1,option2,option3));
+            return await _sequencer.GetButton(false,new LowMemoryList<string>(option1,option2,option3),3);
         }
 
         public async Task<int> Button(string option1,string option2,string option3,string option4) {
-            return await _sequencer.GetButton(false,new(option1,option2,option3,option4));
+            return await _sequencer.GetButton(false,new LowMemoryList<string>(option1,option2,option3,option4),4);
         }
 
         public async Task Button(ButtonTable<Action> buttonTable) {
-            buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke();
+            buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options,buttonTable.Options.Size)].Invoke();
         }
 
         public async Task Button<TParameter>(TParameter parameter,ButtonTable<Action<TParameter>> buttonTable) {
-            buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke(parameter);
+            buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options,buttonTable.Options.Size)].Invoke(parameter);
         }
 
         public async Task<TResult> Button<TResult>(ButtonTable<TResult> buttonTable) {
-            return buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)];
+            return buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options,buttonTable.Options.Size)];
         }
 
         public async Task Button(ButtonTable<Func<Task>> buttonTable) {
-            await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke();
+            await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options,buttonTable.Options.Size)].Invoke();
         }
 
         public async Task<TResult> Button<TResult>(ButtonTable<Func<Task<TResult>>> buttonTable) {
-            return await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke();
+            return await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options,buttonTable.Options.Size)].Invoke();
         }
 
         public async Task<TResult> Button<TParameter,TResult>(TParameter parameter,ButtonTable<Func<TParameter,Task<TResult>>> buttonTable) {
-            return await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options)].Invoke(parameter);
+            return await buttonTable.Values[await _sequencer.GetButton(false,buttonTable.Options,buttonTable.Options.Size)].Invoke(parameter);
         }
 
         public async Task<TResult> Button<TResult>(string option,Func<Task<TResult>> action) {

@@ -205,7 +205,7 @@ namespace Elves.Scenes.Battle.UI {
                 }
                 position.Y = (int)(position.Y + _margin + MathF.Round(scale) * font.LineHeight);
             }
-            if(data.Info.Length > 0) {
+            if(string.IsNullOrEmpty(data.Info)) {
                 return;
             }
             float infoScale = MathF.Max(MathF.Round(scale * Constants.BattleUI.InfoTextScale),1);

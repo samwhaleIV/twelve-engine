@@ -9,9 +9,9 @@ namespace Elves.Battle {
         public string Name { get; private init; }
         public Color Color { get; private init; }
 
-        public StringBuilder Info { get; private init; } = new();
+        public string Info { get; set; }
 
-        public string PossessiveName => $"{Name}'{(Name.EndsWith('c') ? "" : "s")}";
+        public string PossessiveName => $"{Name}'{(Name.EndsWith('s') ? "" : "s")}";
 
         public UserData(Elf elf) {
             Name = elf.Name;

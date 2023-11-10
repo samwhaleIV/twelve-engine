@@ -5,6 +5,8 @@ using Elves.Scenes.Battle.UI;
 using Elves.Scenes.Battle;
 using TwelveEngine.Shell;
 using Elves.Battle.Scripting;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Elves.Battle {
     public class BattleSequencer:BattleRendererScene {
@@ -111,10 +113,10 @@ namespace Elves.Battle {
 
         private static readonly LowMemoryList<string> DefaultOptions = new(Constants.Battle.ContinueText);
 
-        public async Task ContinueButton() => await GetButton(true,DefaultOptions);
+        public async Task ContinueButton() => await GetButton(true,DefaultOptions,DefaultOptions.Size);
 
-        public async Task<int> GetButton(bool isContinue,LowMemoryList<string> options) {
-            if(options.Size < 1) {
+        public async Task<int> GetButton(bool isContinue,IEnumerable<string> options,int optionCount) {
+            if(optionCount < 1 || optionCount > 4) {
                 /* Might want to handle this better if we ever create a opened battle API */
                 options = DefaultOptions;
             }
@@ -125,7 +127,7 @@ namespace Elves.Battle {
                 button.CanInteract = false;
             }
 
-            int end = Math.Min(options.Size,BUTTON_COUNT);
+            int end = Math.Min(optionCount,BUTTON_COUNT);
             int optionIndex = 0;
             foreach(var option in options) {
                 var button = UI.GetActionButton(optionIndex);
@@ -140,7 +142,7 @@ namespace Elves.Battle {
             }
 
             UI.ResetInteractionState();
-            switch(options.Size) {
+            switch(optionCount) {
                 case 1: ConfigSingleButton(isContinue); break;
                 case 2: ConfigDoubleButtons(); break;
                 case 3: ConfigTripleButtons(); break;

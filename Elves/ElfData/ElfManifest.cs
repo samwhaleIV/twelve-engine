@@ -35,7 +35,7 @@ namespace Elves.ElfData {
                     FrameSet.CreateStatic(AnimationType.NoHead,new(76,0,19,47))
                 }
             ));
-            Add(Elf.Create<AnimationTest>(
+            Add(Elf.Create<GreenElf>(
                 ID: AutoID,
                 name: "Green Elf",
                 texture: "Elves/green-elf",
