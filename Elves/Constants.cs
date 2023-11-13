@@ -87,7 +87,7 @@ namespace Elves {
             public const float MaxUIScale = 2f;
 
             public const float SplashMenuScaleModifier = 1.5f;
-            public const float BattleSceneScaleModifier = 1.15f;
+            public const float BattleSceneScaleModifier = 1f;
             public const float TerminalSceneScaleModifier = 1f;
             public const float UIScaleBaseDivisor = 0.008f;
 

@@ -51,7 +51,7 @@ namespace Elves.Battles {
         private const Affinity MaxPlayerAffinity = Affinity.SuperGood;
 
         private const Affinity MinElfAffinity = Affinity.Elf1;
-        private const Affinity MaxElfAffinity = Affinity.Elf3;
+        private const Affinity MaxElfAffinity = Affinity.Elf4;
 
         private void UpdatePlayerAffinity(Affinity affinity) {
             playerAffinity = affinity;
@@ -64,9 +64,9 @@ namespace Elves.Battles {
         }
 
         private Affinity UpdateAffinity(UserData target,Affinity affinity,Affinity min,Affinity max,AffinityChange change) {
-            if(affinity != MinPlayerAffinity && change == AffinityChange.Raise) {
+            if(affinity != min && change == AffinityChange.Raise) {
                 affinity += 1;
-            } else if(affinity != MaxPlayerAffinity && change == AffinityChange.Drop) {
+            } else if(affinity != max && change == AffinityChange.Drop) {
                 affinity -= 1;
             }
             target.Info = threatLevelDescriptions[affinity];
@@ -96,7 +96,7 @@ namespace Elves.Battles {
         }
 
         private readonly struct Quizlet {
-            public string ElfPrompt { get; init; }
+            public string[] ElfPrompt { get; init; }
             public string TagPrompt { get; init; }
             public QuizletOption[] Options { get; init; }
         }
@@ -119,9 +119,12 @@ namespace Elves.Battles {
             return BattleEndState.Continue;
         }
 
-        private async Task BroadcastAffinityModificationPlayer(AffinityChange affinityChange) {
+        private async Task BroadcastAffinityModificationPlayer(AffinityChange measuredChange,AffinityChange appliedChange) {
+            if(appliedChange == AffinityChange.None) {
+                return;
+            }
             Affinity affinity = playerAffinity;
-            if(affinityChange == AffinityChange.None) {
+            if(measuredChange == AffinityChange.None) {
                 if(affinity != MinPlayerAffinity && affinity != MaxPlayerAffinity) {
                     return;
                 }
@@ -132,7 +135,7 @@ namespace Elves.Battles {
                     await Threader.Tag(ThreadMode.Random,"Keep doing what you're doing.","You are a tree hugger.","Your eyes sparkle like a solar panel.","You eat kale for breakfast.","Your ancestors regale you.","Everyone is celebrating.");
                 }
                 return;
-            } else if(affinityChange == AffinityChange.Raise) {
+            } else if(measuredChange == AffinityChange.Raise) {
                 await Tag("Your Eco-Affinity improved.");
                 await Threader.Tag(ThreadMode.Random,"The climate thanks you.","You taste the fresh air.","The trees are happy.","Another car is taken off the road.","Your carbon footprint is lessening.");
             } else {
@@ -141,20 +144,7 @@ namespace Elves.Battles {
             }
         }
 
-        private async Task BroadcastAffinityModificationElf(AffinityChange affinityChange) {
-            if(affinityChange == AffinityChange.None) {
-                await Threader.Tag(ThreadMode.Random,$"{Actor.Name} can't take it much longer.",$"{Actor.Name} is ready to explode.",$"{Actor.Name} needs to save the planet.");
-                return;
-            } else if(affinityChange == AffinityChange.Raise) {
-                await Tag($"{Actor.PossessiveName} Eco-Affinity increased.");
-            } else {
-                await Tag($"{Actor.PossessiveName} Eco-Affinity decreased.");
-            }
-            await Threader.Tag(ThreadMode.Random,"This much rage is unhealthy.","The trees cower in fear.","The climate is changing.");
-        }
-
-        public override async Task<BattleResult> Main() {
-
+        private async Task<BattleResult> BattleIntro() {
             UpdateElfAffinity(MinElfAffinity);
 
             await Tag($"You approach {Actor.Name}.");
@@ -201,57 +191,268 @@ namespace Elves.Battles {
             }
 
             UpdatePlayerAffinity(Affinity.Unknown);
-            await Tag("Your Eco-Tracker is now active.","The Eco-Tracker is calculating your Eco-Affinity.");
+            await Tag("Your Eco-Tracker is now active.","Calculating your Eco-Affinity...");
 
             UpdatePlayerAffinity(Affinity.Neutral);
             await Tag("Your Eco-Affinity is neutral.");
 
-            await Speech("Now that the device is fully operational, let's ask you a few questions.","Think of this as a kind of practice for both of us.");
+
+            return BattleResult.Stalemate;
+        }
+
+        private async Task DoYouUnderstand() {
+            await Speech("Now that the device is fully operational, let's ask you a few questions.","Think of this as a kind of practice for both of us.","Do you understand?");
+            while(true) {
+                SetTag("Do you understand?");
+                if(await Button("Yes","No") == 0) {
+                    break;
+                } else {
+                    await Threader.Tag(ThreadMode.Repeat,$"{Actor.Name} rolls their eyes.",$"{Actor.Name} sighs.",$"{Actor.Name} blinks in annoyance.");
+                    await Threader.Speech(ThreadMode.HoldLast,
+                        "I'm going to ask you a series of questions to assess your allegiance to the environment, got it? The Eco-Tracker will evalulate you.",
+                        "Okay, forget the details. I ask questions, you answer them. Make sense?",
+                        "Oh my god, how many times do I have to explain this... Just say you understand.",
+                        "I'm sorry your brain is only functioning with one cell. Do. You. Under. Stand?",
+                        "I don't have all day... Do you understand?"
+                    );
+                }
+            }
+        }
+
+        public override async Task<BattleResult> Main() {
 
             List<Quizlet> quizlets = this.quizlets.ToList();
             List<string> buttonBuffer = new();
 
-            while(quizlets.Count > 0) {
+            //var introResult = await BattleIntro();
+            //if(introResult != BattleResult.Stalemate) {
+            //    return introResult;
+            //}
+
+            //await DoYouUnderstand();
+
+            await Speech("Okay, let's do this. First question.");
+
+            while(true) {
                 int quizletIndex = Random.Next(0,quizlets.Count);
                 Quizlet quizlet = quizlets[quizletIndex];
                 quizlets.RemoveAt(quizletIndex);
+
                 foreach(var option in quizlet.Options) {
                     buttonBuffer.Add(option.Text);
                 }
-                await Speech(quizlet.ElfPrompt);
+                foreach(var prompt in quizlet.ElfPrompt) {
+                    await Speech(prompt);
+                }
+
                 SetTag(quizlet.TagPrompt);
                 int optionIndex = await Button(buttonBuffer);
                 buttonBuffer.Clear();
                 QuizletOption selectedOption = quizlet.Options[optionIndex];
+
                 foreach(var speech in selectedOption.Speeches) {
                     await Speech(speech);
                 }
-                await BroadcastAffinityModificationPlayer(
-                    UpdateAffinityPlayer(selectedOption.PlayerAffinityChange)
-                );
-                await BroadcastAffinityModificationElf(
-                    UpdateAffinityElf(selectedOption.ElfAffinityChange)
-                );
+
+                var measuredChange = UpdateAffinityPlayer(selectedOption.PlayerAffinityChange);
+                await BroadcastAffinityModificationPlayer(measuredChange,selectedOption.PlayerAffinityChange);
+                UpdateAffinityElf(selectedOption.ElfAffinityChange);
+
+                if(quizlets.Count < 1) {
+                    break;
+                }
 
                 //todo
+                if(quizlets.Count == 1) {
+                    await Speech("We've reached the end of the evaulation. This is my last question before the final assessment.");
+                }
+                await Threader.Speech(ThreadMode.Repeat,"Next question.","Okay, next question.","Alright, next question.");
             }
 
             await Button("BOOB");
 
-            return BattleResult.PlayerWon;
+            return BattleResult.Stalemate;
         }
 
         private readonly Quizlet[] quizlets = {
             new Quizlet() {
-                ElfPrompt = "",
-                TagPrompt = "",
+                ElfPrompt = new string[] { "Suppose you need to travel a long distance, how will you get there?" },
+                TagPrompt = "How will you get there?",
                 Options = new QuizletOption[] {
                     new() {
-                        Text = "",
-                        Speeches = new string[] { },
+                        Text = "Car",
+                        Speeches = new string[] { "A car? Are you kidding me?", "A terribly inefficient way to travel.", "Shame on you." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new() {
+                        Text = "Feet",
+                        Speeches = new string[] { "Strong choice. While you are still using energy to travel, using your own body uses much less." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Raise
+                    },
+                    new() {
+                        Text = "Airplane",
+                        Speeches = new string[] { "Airplane?! That is the worst way you can travel. The emissions are far greater than other methods.", "I bet you take an airplane everywhere you go. You make me sick." },
+                        ElfAffinityChange = AffinityChange.Raise,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new() {
+                        Text = "Teleportation",
+                        Speeches = new string[] { "There's no conceivable way teleportation can be good for the environment.", "Violating the laws of physics is a recipe for disaster." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    }
+                }
+            },
+            new Quizlet() {
+                ElfPrompt = new string[] { "It's breakfast time, what are you eating?" },
+                TagPrompt = "What's for breakfast?",
+                Options = new QuizletOption[] {
+                    new() {
+                        Text = "Fresh Fruit",
+                        Speeches = new string[] { "Fresh fruit, air shipped from another continent. Terrible choice." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new() {
+                        Text = "Bacon",
+                        Speeches = new string[] { "Animal agriculture, sickening. You disgust me." },
+                        ElfAffinityChange = AffinityChange.Raise,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new() {
+                        Text = "Cereal",
+                        Speeches = new string[] { "Yawn, typical. Better than the alternatives, but not better than nothing." },
                         ElfAffinityChange = AffinityChange.None,
                         PlayerAffinityChange = AffinityChange.None
                     },
+                    new() {
+                        Text = "Nothing",
+                        Speeches = new string[] { "Good choice. The sooner you stop eating, the sooner you stop polluting the planet." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Raise
+                    }
+                }
+            },
+            new Quizlet() {
+                ElfPrompt = new string[] { "You have a large pile of garbage due to your bad consumer choices.", "Now you need to get rid of it. How do you do it?" },
+                TagPrompt = "Garbage disposal method?",
+                Options = new QuizletOption[] {
+                    new() {
+                        Text = "Recycle",
+                        Speeches = new string[] { "Recycling is a crux to a problem you shouldn't have created in the first place, but it's not the worst solution." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.None
+                    },
+                    new() {
+                        Text = "Burn It",
+                        Speeches = new string[] { "... You are the worst kind of person." },
+                        ElfAffinityChange = AffinityChange.Raise,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new() {
+                        Text = "Landfill",
+                        Speeches = new string[] { "How sophisticated. Just make it a problem for another generation to solve, huh?" },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new() {
+                        Text = "River",
+                        Speeches = new string[] { "You don't care about the environment at all, do you? A river is a fish's home!" },
+                        ElfAffinityChange = AffinityChange.Raise,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                }
+            },
+            new Quizlet() {
+                ElfPrompt = new string[] { "Your clothes are wet and you need to dry them, how will you dry them?" },
+                TagPrompt = "How will you dry your clothes?",
+                Options = new QuizletOption[] {
+                    new() {
+                        Text = "Dryer",
+                        Speeches = new string[] { "Great, even more carbon emissions. A machine to generate a bunch of waste heat and gases." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new() {
+                        Text = "Clothesline",
+                        Speeches = new string[] { "Solar energy is a fantastic way to dry your clothes, good decision. "},
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Raise
+                    },
+                    new() {
+                        Text = "Burn Them",
+                        Speeches = new string[] { "Are you stupid? How are you going to burn wet clothes? "},
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.None
+                    },
+                    new() {
+                        Text = "Buy New Ones",
+                        Speeches = new string[] { "Were you dropped on your head as a baby? You can't just consume endlessly to solve all your problems." },
+                        ElfAffinityChange = AffinityChange.Raise,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    }
+                }
+            },
+            new Quizlet() {
+                ElfPrompt = new string[] { "It's time to get groceries, how are you sourcing them?" },
+                TagPrompt = "Where are you getting groceries?",
+                Options = new QuizletOption[] {
+                    new QuizletOption() {
+                        Text = "My Garden",
+                        Speeches = new string[] { "Arguably the best choice. The closer your groceries are the less energy used in their cultivation and consumption." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Raise
+                    },
+                    new QuizletOption() {
+                        Text = "Big-Box Store",
+                        Speeches = new string[] { "Ugh, always taking the easy route, never stopping to ask yourself how this infrastructure operates." },
+                        ElfAffinityChange = AffinityChange.Raise,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new QuizletOption() {
+                        Text = "Local Farmers",
+                        Speeches = new string[] { "Large industrial farming practices are a recipe for disaster. Strong, eco-friendly practices are essential.", "You can have a pass, but be mindful in the future." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.None
+                    },
+                    new QuizletOption() {
+                        Text = "Local Business",
+                        Speeches = new string[] { "Not great, not terrible. Anything is better than a large chain store." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.None
+                    }
+                }
+            },
+            new Quizlet() {
+                ElfPrompt = new string[] { "It's time for dinner, what are you preparing?" },
+                TagPrompt = "What's for dinner?",
+                Options = new QuizletOption[] {
+                    new QuizletOption() {
+                        Text = "Beans",
+                        Speeches = new string[] { "Beans? Alright. Not very exciting for dinner, but a perfect, low environmental impact protein source." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Raise
+                    },
+                    new QuizletOption() {
+                        Text = "Steak",
+                        Speeches = new string[] { "Do you have any idea how inefficient raising a cow and then taking a few bites of it is?", "Not to mention how must sleep at night." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new QuizletOption() {
+                        Text = "Super Steak",
+                        Speeches = new string[] { "What is a super steak? A regular steak isn't good enough for you? Overconsumption at it's finest. You're a gross person." },
+                        ElfAffinityChange = AffinityChange.Raise,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new QuizletOption() {
+                        Text = "Salmon",
+                        Speeches = new string[] { "Fish isn't a great choice but is an order of magnitude less impactful on the environment.", "Fishing becomes a problem at industrial, mass-market scales." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.None
+                    }
                 }
             },
         };

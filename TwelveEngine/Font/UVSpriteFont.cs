@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using TwelveEngine.Shell;
-using static Microsoft.Xna.Framework.Graphics.SpriteFont;
 
 namespace TwelveEngine.Font {
     public sealed class UVSpriteFont {
@@ -8,37 +7,30 @@ namespace TwelveEngine.Font {
         private const int CHARACTER_QUEUE_SIZE = 16;
         private const int CHARACTER_QUEUE_COUNT = 64;
 
-        private readonly float lineHeight, letterSpacing, wordSpacing;
+        private readonly int lineHeight;
+        private readonly float letterSpacing, wordSpacing;
         private readonly Texture2D texture;
 
         private readonly Dictionary<char,Glyph> glyphs;
 
         private readonly int characterQueueStartSize;
 
-        public float LineHeight => lineHeight;
+        public int LineHeight => lineHeight;
         public float LetterSpacing => letterSpacing;
         public float WordSpacing => wordSpacing;
 
         private const char SPACE_CHARACTER = ' ';
 
         public float LineSpace { get; set; } = Constants.DefaultLineSpacing;
-
         public Color DefaultColor { get; set; } = Color.White;
 
-        private readonly Queue<Queue<char>> characterQueuePool = new();
-        private readonly Queue<Queue<char>> words = new();
+        private readonly Queue<Queue<char>> characterQueuePool = new(), words = new();
         private readonly Queue<char> wordBuffer = new();
 
         private SpriteBatch spriteBatch = null;
 
         public UVSpriteFont(
-            Texture2D texture,
-            float lineHeight,
-            float letterSpacing,
-            float wordSpacing,
-            Dictionary<char,Glyph> glyphs,
-            int? wordQueueSize = null,
-            int? wordQueuePoolSize = null
+            Texture2D texture,int lineHeight,float letterSpacing,float wordSpacing,Dictionary<char,Glyph> glyphs,int? wordQueueSize = null,int? wordQueuePoolSize = null
         ) {
             this.texture = texture;
             this.lineHeight = lineHeight;
@@ -63,27 +55,111 @@ namespace TwelveEngine.Font {
             return value;
         }
 
-        private void AssertSpriteBatch() {
-            if(spriteBatch == null) {
-                throw new InvalidOperationException("Cannot draw text before calling begin method!");
+        private float MeasureWordWidth(Queue<char> word,float scale,float letterSpacing) {
+            float width = 0;
+            foreach(var character in word) {
+                Glyph glyph = GlyphOrDefault(character);
+                width += glyph.Source.Width * scale + letterSpacing;
+            }
+            width -= letterSpacing;
+            return width;
+        }
+
+        private float DrawGlyph(char character,Vector2 destination,float scale,Color color) {
+            Glyph glyph = GlyphOrDefault(character);
+            if(glyph.Source.Width <= 0) {
+                return 0;
+            }
+            Rectangle glyphArea = glyph.Source;
+            destination.Y += glyph.YOffset*scale;
+            spriteBatch.Draw(texture,destination,glyphArea,color,0f,Vector2.Zero,scale,SpriteEffects.None,1f);
+            return glyphArea.Width * scale;
+        }
+
+        private void DrawLineBreaking(Vector2 destination,float scale,Color color,float maxWidth) {
+            float lineSpacing = GetLineSpacing(scale);
+            float wordSpacing = GetWordSpacing(scale), letterSpacing = GetLetterSpacing(scale);
+
+            float maxX = destination.X + maxWidth;
+
+            float xStart = destination.X;
+
+            if(maxWidth <= 0) {
+                foreach(var word in words) {
+                    foreach(var character in word) {
+                        destination.X += DrawGlyph(character,destination,scale,color) + letterSpacing;
+                    }
+                    destination.X = destination.X - letterSpacing + wordSpacing;
+                }
+            } else {
+                foreach(var word in words) {
+                    if(destination.X + MeasureWordWidth(word,scale,letterSpacing) > maxX) {
+                        destination.X = xStart;
+                        destination.Y += lineSpacing;
+                    }
+                    foreach(var character in word) {
+                        destination.X += DrawGlyph(character,destination,scale,color) + letterSpacing;
+                    }
+                    destination.X = destination.X - letterSpacing + wordSpacing;
+                }
             }
         }
 
-        public void Begin(SpriteBatch spriteBatch) {
-            if(this.spriteBatch != null) {
-                throw new InvalidOperationException("Cannot begin sprite font after having already called begin!");
+        private void DrawRight(Vector2 destination,float scale,Color color) {
+            float wordSpacing = GetWordSpacing(scale), letterSpacing = GetLetterSpacing(scale);
+
+            float totalWidth = 0;
+            foreach(var word in words) {
+                float width = MeasureWordWidth(word,scale,letterSpacing);
+                totalWidth += width + wordSpacing;
             }
-            spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
-            this.spriteBatch = spriteBatch;
+            totalWidth -= wordSpacing;
+
+            destination.X -= totalWidth;
+
+            foreach(var word in words) {
+                foreach(var character in word) {
+                    destination.X += DrawGlyph(character,destination,scale,color) + letterSpacing;
+                }
+                destination.X = destination.X - letterSpacing + wordSpacing;
+            }
         }
 
-        public void End() {
-            if(spriteBatch == null) {
-                throw new InvalidOperationException("Cannot end sprite font before calling begin method!");
+        private FloatRectangle DrawCentered(Vector2 destination,float scale,Color color) {
+            float wordSpacing = GetWordSpacing(scale), letterSpacing = GetLetterSpacing(scale);
+
+            float totalWidth = 0;
+            foreach(var word in words) {
+                float width = MeasureWordWidth(word,scale,letterSpacing);
+                totalWidth += width + wordSpacing;
             }
-            spriteBatch.End();
-            spriteBatch = null;
+            totalWidth -= wordSpacing;
+            if(totalWidth % 2 == 1) {
+                totalWidth += 1;
+            }
+
+            float characterHeight = lineHeight * scale; /* Scale is non-decimal. */
+
+            destination.X -= totalWidth * 0.5f;
+            destination.Y -= characterHeight * 0.5f;
+
+            FloatRectangle area = new(destination,totalWidth,characterHeight);
+
+            foreach(var word in words) {
+                foreach(var character in word) {
+                    destination.X += DrawGlyph(character,destination,scale,color) + letterSpacing;
+                }
+                destination.X = destination.X - letterSpacing + wordSpacing;
+            }
+
+            return area;
         }
+
+        private static float ValidateScale(ref float scale) => scale = MathF.Max(MathF.Round(scale),1f);
+
+        private float GetWordSpacing(float scale) => MathF.Max(MathF.Round(wordSpacing * scale),1f);
+        private float GetLetterSpacing(float scale) => MathF.Max(MathF.Round(letterSpacing * scale),1f);
+        private float GetLineSpacing(float scale) => MathF.Max(MathF.Round(LineSpace * lineHeight * scale),lineHeight + 1);
 
         private Queue<char> GetPooledCharacterQueue() {
             Queue<char> queue;
@@ -98,16 +174,6 @@ namespace TwelveEngine.Font {
         private void ReturnPooledCharacterQueue(Queue<char> characterQueue) {
             characterQueue.Clear();
             characterQueuePool.Enqueue(characterQueue);
-        }
-
-        private float MeasureWordWidth(Queue<char> word,float scale,float letterSpacing) {
-            float width = 0;
-            foreach(var character in word) {
-                Glyph glyph = GlyphOrDefault(character);
-                width += glyph.Source.Width * scale + letterSpacing;
-            }
-            width -= letterSpacing;
-            return width;
         }
 
         private void TryFlushWordBuffer() {
@@ -153,102 +219,27 @@ namespace TwelveEngine.Font {
             words.Clear();
         }
 
-        private float DrawGlyph(char character,float x,float y,float scale,Color color) {
-            Glyph glyph = GlyphOrDefault(character);
-            if(glyph.Source.Width <= 0) {
-                return 0;
-            }
-            Rectangle glyphArea = glyph.Source;
-            Vector2 position = new(x,y+glyph.YOffset*scale);
-            spriteBatch.Draw(texture,position,glyphArea,color,0f,Vector2.Zero,scale,SpriteEffects.None,1f);
-            return glyphArea.Width * scale;
-        }
-
-        private void DrawLineBreaking(Vector2 destination,float scale,Color color,float maxWidth) {
-            float x = destination.X, y = destination.Y;
-
-            float lineHeight = LineSpace * this.lineHeight * scale;
-
-            float wordSpacing = this.wordSpacing * scale;
-            float letterSpacing = this.letterSpacing * scale;
-
-            float maxX = destination.X + maxWidth;
-
-            if(maxWidth <= 0) {
-                foreach(var word in words) {
-                    foreach(var character in word) {
-                        x += DrawGlyph(character,x,y,scale,color) + letterSpacing;
-                    }
-                    x = x - letterSpacing + wordSpacing;
-                }
-            } else {
-                foreach(var word in words) {
-                    if(x + MeasureWordWidth(word,scale,letterSpacing) > maxX) {
-                        x = destination.X;
-                        y += lineHeight;
-                    }
-                    foreach(var character in word) {
-                        x += DrawGlyph(character,x,y,scale,color) + letterSpacing;
-                    }
-                    x = x - letterSpacing + wordSpacing;
-                }
+        private void AssertSpriteBatch() {
+            if(spriteBatch == null) {
+                throw new InvalidOperationException("Cannot draw text before calling begin method!");
             }
         }
 
-        private void DrawRight(Vector2 destination,float scale,Color color) {
-            float wordSpacing = this.wordSpacing * scale;
-            float letterSpacing = this.letterSpacing * scale;
-
-            float totalWidth = 0;
-            foreach(var word in words) {
-                float width = MeasureWordWidth(word,scale,letterSpacing);
-                totalWidth += width + wordSpacing;
+        public void Begin(SpriteBatch spriteBatch) {
+            if(this.spriteBatch != null) {
+                throw new InvalidOperationException("Cannot begin sprite font after having already called begin!");
             }
-            totalWidth -= wordSpacing;
-
-            float x = destination.X - totalWidth;
-            float y = destination.Y;
-
-            foreach(var word in words) {
-                foreach(var character in word) {
-                    x += DrawGlyph(character,x,y,scale,color) + letterSpacing;
-                }
-                x = x - letterSpacing + wordSpacing;
-            }
+            spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.NonPremultiplied,SamplerState.PointClamp);
+            this.spriteBatch = spriteBatch;
         }
 
-        private FloatRectangle DrawCentered(Vector2 center,float scale,Color color) {
-            float wordSpacing = this.wordSpacing * scale;
-            float letterSpacing = this.letterSpacing * scale;
-
-            float totalWidth = 0;
-            foreach(var word in words) {
-                float width = MeasureWordWidth(word,scale,letterSpacing);
-                totalWidth += width + wordSpacing;
+        public void End() {
+            if(spriteBatch == null) {
+                throw new InvalidOperationException("Cannot end sprite font before calling begin method!");
             }
-            totalWidth -= wordSpacing;
-            if(totalWidth % 2 == 1) {
-                totalWidth += 1;
-            }
-
-            float characterHeight = lineHeight * scale;
-
-            float x = center.X - totalWidth * 0.5f;
-            float y = center.Y - characterHeight * 0.5f;
-
-            FloatRectangle area = new(x,y,totalWidth,characterHeight);
-
-            foreach(var word in words) {
-                foreach(var character in word) {
-                    x += DrawGlyph(character,x,y,scale,color) + letterSpacing;
-                }
-                x = x - letterSpacing + wordSpacing;
-            }
-
-            return area;
+            spriteBatch.End();
+            spriteBatch = null;
         }
-
-        private static float ValidateScale(ref float scale) => scale = MathF.Round(scale);
 
         public void Draw(StringBuilder stringBuilder,Vector2 destination,float scale,Color? color = null,float maxWidth = 0) {
             ValidateScale(ref scale);

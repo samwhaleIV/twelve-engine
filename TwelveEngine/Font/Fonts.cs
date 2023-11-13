@@ -16,7 +16,7 @@ namespace TwelveEngine.Font {
             }
 
             Default = new UVSpriteFont(game.Content.Load<Texture2D>("Font/twelven-font"),34,1,8,GetUIFontData());
-            Retro = new UVSpriteFont(game.Content.Load<Texture2D>("Font/classic-font"),10,1,3,GetRetroFontData());
+            Retro = new UVSpriteFont(game.Content.Load<Texture2D>("Font/classic-font"),10,0.75f,3f,GetRetroFontData());
 
             RetroOutlined = new UVSpriteFont(game.Content.Load<Texture2D>("Font/classic-outline"),22,1,4,GetRetroFontOutlinedData());
             IsLoaded = true;
