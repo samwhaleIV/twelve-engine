@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestPlatform": {
+      "commandName": "Project",
+      "commandLineArgs": "nofailsafe"
+    }
+  }
+}

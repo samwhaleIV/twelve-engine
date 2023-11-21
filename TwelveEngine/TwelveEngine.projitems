@@ -20,6 +20,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Effects\DrawingFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\IEntitySorter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\PhysicsEntity2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TestSquare.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\EntityPriority.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\GameState2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\VirtualMouseProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LowMemoryList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LowMemorySortedSet.cs" />

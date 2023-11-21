@@ -145,8 +145,6 @@ namespace Elves.Battles {
         }
 
         private async Task<BattleResult> BattleIntro() {
-            UpdateElfAffinity(MinElfAffinity);
-
             await Tag($"You approach {Actor.Name}.");
             await Speech("Oh great, another person on this overpopulated rock.");
             await Tag($"{Actor.Name} looks annoyed.");
@@ -224,12 +222,16 @@ namespace Elves.Battles {
             List<Quizlet> quizlets = this.quizlets.ToList();
             List<string> buttonBuffer = new();
 
+            UpdateElfAffinity(MinElfAffinity);
+
             //var introResult = await BattleIntro();
             //if(introResult != BattleResult.Stalemate) {
             //    return introResult;
             //}
 
             //await DoYouUnderstand();
+
+            UpdatePlayerAffinity(Affinity.Neutral);//debug
 
             await Speech("Okay, let's do this. First question.");
 
@@ -262,11 +264,13 @@ namespace Elves.Battles {
                     break;
                 }
 
-                //todo
+                //todo - early termination?
                 if(quizlets.Count == 1) {
                     await Speech("We've reached the end of the evaulation. This is my last question before the final assessment.");
+                } else {
+                    await Threader.Speech(ThreadMode.Repeat,"Next question.","Okay, next question.","Alright, next question.");
                 }
-                await Threader.Speech(ThreadMode.Repeat,"Next question.","Okay, next question.","Alright, next question.");
+
             }
 
             await Button("BOOB");
@@ -366,7 +370,7 @@ namespace Elves.Battles {
                 }
             },
             new Quizlet() {
-                ElfPrompt = new string[] { "Your clothes are wet and you need to dry them, how will you dry them?" },
+                ElfPrompt = new string[] { "Suppose you were pushed into a lake for no particular reason.", "Now, your clothes are wet and you need to dry them. How will you dry them?" },
                 TagPrompt = "How will you dry your clothes?",
                 Options = new QuizletOption[] {
                     new() {
@@ -455,6 +459,36 @@ namespace Elves.Battles {
                     }
                 }
             },
+            new Quizlet() {
+                ElfPrompt = new string[] { "Pretend you are an aspiring parent, you will make the decision to have kids. How many will you have?" },
+                TagPrompt = "How many kids?",
+                Options = new QuizletOption[] {
+                    new QuizletOption() {
+                        Text = "0",
+                        Speeches = new string[] { "No kids? Not even one? I like your style."," Developing humans require so many calories, so going child free is probably for the best." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Raise
+                    },
+                    new QuizletOption() {
+                        Text = "1",
+                        Speeches = new string[] { "Having a child is the single most detrimental contribution to your carbon footprint.", "With less people alive there are less problems for alarm." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    },
+                    new QuizletOption() {
+                        Text = "2",
+                        Speeches = new string[] { "Two kids is going to harm your net carbon footprint, but two is an acceptable maximum.", "You are avoiding a more active contribution to overpopulation, though." },
+                        ElfAffinityChange = AffinityChange.None,
+                        PlayerAffinityChange = AffinityChange.None
+                    },
+                    new QuizletOption() {
+                        Text = "3+",
+                        Speeches = new string[] { "Three or more? Are you crazy? Not only is that irresponsible, it's gross! You humans disgust me." },
+                        ElfAffinityChange = AffinityChange.Raise,
+                        PlayerAffinityChange = AffinityChange.Drop
+                    }
+                }
+            }
         };
     }
 }
