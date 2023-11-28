@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using TwelveEngine.EntitySystem;
+using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game2D {
     public sealed class Camera {
 
         public Vector2 Position { get; set; } = Vector2.Zero;
-        public Vector2 PositionOffset { get; set; } = new Vector2(0.5f);
+        public Vector2 PositionOffset { get; set; } = new Vector2(-0.5f);
         public Vector2 UnboundPositionOffset { get; set; } = Vector2.Zero;
 
         public float MinX { get; set; } = float.NegativeInfinity;
@@ -16,39 +17,51 @@ namespace TwelveEngine.Game2D {
         public float MaxX { get; set; } = float.PositiveInfinity;
         public float MaxY { get; set; } = float.PositiveInfinity;
 
-        public float TileRenderSize => TileInputSize * Scale;
-        public float TileInputSize { get; set; } = 4f;
+        public float TileSize { get; private set; } = 0f;
+        public float TileInputSize { get; set; } = 1f;
         public float Scale { get; set; } = 10f;
 
-        public FloatRectangle TileBounds { get; private set; }
+        public Vector2 ScreenSize { get; private set; }
+
+        public Vector2 TileOrigin { get; private set; }
+        public Point TopLeftTileCoordinate { get; private set; }
+
+        public Vector2 ScreenCenter { get; private set; }
+
+        private Vector2 _constraintPosition;
+
+        private void UpdateConstraintPosition() {
+            _constraintPosition = Position + PositionOffset;
+        }
 
         internal void Update(Viewport viewport) {
+            UpdateConstraintPosition();
+            
+            TileSize = TileInputSize * Scale;
+
             Rectangle bounds = viewport.Bounds;
-            Vector2 _physicalScreenSize = bounds.Size.ToVector2();
 
-            Vector2 screenSize = _physicalScreenSize / TileRenderSize;
+            Vector2 screenSize = bounds.Size.ToVector2();
+            ScreenSize = screenSize;
 
-            Vector2 topLeft = Position + PositionOffset - screenSize * 0.5f;
-            Vector2 bottomRight = topLeft + screenSize;
+            if(screenSize.X % 2 == 1) screenSize.X += 1;
+            if(screenSize.Y % 2 == 1) screenSize.Y += 1;
 
-            Vector2 marginLimitOffset = Vector2.Zero;
+            ScreenCenter = screenSize * 0.5f;
 
-            if(topLeft.X < MinX) {
-                marginLimitOffset.X += MinX - topLeft.X;
-            } else if(bottomRight.X > MaxX) {
-                marginLimitOffset.X += MaxX - bottomRight.X;
-            }
-            if(topLeft.Y < MinY) {
-                marginLimitOffset.Y += MinY - topLeft.Y;
-            } else if(bottomRight.Y > MaxY) {
-                marginLimitOffset.Y += MaxY - bottomRight.Y;
-            }
+            Vector2 leftSideTileCount = Vector2.Ceiling(ScreenCenter / TileSize);
+            TileOrigin = ScreenCenter - leftSideTileCount * TileSize;
 
-            TileBounds = new FloatRectangle(topLeft + marginLimitOffset + UnboundPositionOffset,screenSize);
+            Vector2 tileOffset = _constraintPosition * TileSize;
+            tileOffset.X %= TileSize; tileOffset.Y %= TileSize;
+            TileOrigin -= Vector2.Round(tileOffset);
+
+            Vector2 topLeftTileCoordinate = Position - PositionOffset - leftSideTileCount;
+            TopLeftTileCoordinate = Vector2.Floor(topLeftTileCoordinate).ToPoint();
         }
 
         public Vector2 GetRenderLocation(Entity2D entity) {
-            return (entity.Position - TileBounds.TopLeft) * TileRenderSize;
+            return ScreenCenter - (entity.Position - _constraintPosition) * TileSize;
         }
     }
 }

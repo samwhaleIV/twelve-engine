@@ -2,88 +2,82 @@
 using System.Collections.Generic;
 using System.Text;
 using TwelveEngine.Game2D.Entities;
-using nkast.Aether.Physics2D.Dynamics;
 using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.Game2D {
     public sealed class TestGame2D:GameState2D {
 
-        private Texture2D texture;
+        private static class Constants {
+            public const float INPUT_TILE_SIZE = 16f;
+            public const float CAMERA_SCALE = 10f;
 
-        public TestGame2D() {
-            OnLoad.Add(LoadSpriteSheet,EventPriority.First);
-            OnLoad.Add(CreateEntities);
-            OnUpdate.Add(CameraTracking);
+            public const float GRAVITY = 200f;
 
-            OnWriteDebug.Add(DebugTestGame);
+            public const float SURFACE_FRICTION = 1f;
+            public const float SURFACE_MASS = 10f;
 
-            int width = 100;
-            int height = 32;
+            public const float PLAYER_FRICTION = 0f;
+            public const float PLAYER_LINEAR_DAMPING = 8f;
+            public const float PLAYER_MASS = 1f;
+            public const float PLAYER_RESTITUTION = 0f;
+            public const float PLAYER_IMPULSE_FORCE = 4f;
 
-            ushort brick = 1;
+            public const string TILEMAP_TEXTURE = "spritesheet";
+            public const string MAP_CSV_FILE = "testmap1.csv";
 
-            Camera.TileInputSize = 16f;
-            Camera.Scale = 10;
-
-            Camera.Position = Vector2.Zero;
-
-            TileDictionary[brick] = new TileData() {
-                Color = Color.White,
-                Source = new Rectangle(16,0,16,16),
-                SpriteEffects = SpriteEffects.None
-            };
-
-            TileDictionary[2] = new TileData() {
-                Color = Color.White,
-                Source = new Rectangle(64,16,16,16),
-                SpriteEffects = SpriteEffects.None
-            };
-
-            TileMap = new TileMap() { Width = width,Height = height,Data = new ushort[width*height] };
-            for(int x = 0;x<TileMap.Width;x++) {
-                TileMap.SetValue(x,height-1,brick);
-            }
-
-            Camera.MinX = 0;
-            Camera.MaxX = width;
-            Camera.MaxY = height;
-
-            PhysicsWorld.Gravity = new Vector2(0f,5f);
-
-            Body body = new Body() {
-                FixedRotation = true,
-                BodyType = BodyType.Static,
-                SleepingAllowed = true,
-                Mass = 100000,
-                LocalCenter = new Vector2(0,0)
-            };
-            var fixture = body.CreateRectangle(width,1,1,new Vector2(width * 0.5f - 0.5f,0f));
-            fixture.Friction = 20f;
-            body.Position = new Vector2(0,height-1);
-
-            PhysicsWorld.Add(body);
+            public const float PHYSICS_SIM_SCALE = 8f;
         }
 
-        private void DebugTestGame(DebugWriter writer) {
-            writer.ToTopLeft();
-            writer.Write(_player.Position,"Player Position");
+        public TestGame2D() {
+            OnLoad.Add(LoadGame);
+            OnUpdate.Add(FollowPlayerWithCamera);
+            PhysicsScale = Constants.PHYSICS_SIM_SCALE;
         }
 
         private Player _player;
 
-        private void CreateEntities() {
-            _player = new Player(texture,new Rectangle(64,0,16,16),Color.White) { Position = new Vector2(0,TileMap.Height-2) };
+
+        private void LoadGame() {
+            Camera.TileInputSize = Constants.INPUT_TILE_SIZE;
+            Camera.Scale = Constants.CAMERA_SCALE;
+
+            OnWriteDebug.Add(DrawPlayerPosition);
+
+            TileMapTexture = Content.Load<Texture2D>(Constants.TILEMAP_TEXTURE);
+            ImportTiledCSV(Constants.MAP_CSV_FILE,new HashSet<ushort> { 1 },setCameraBounds: true,surfaceFriction: Constants.SURFACE_FRICTION,surfaceMass: Constants.SURFACE_MASS);
+            TileDictionary.Add(1,new TileData() {
+                Color = Color.White,
+                Source = new Rectangle(16,0,16,16)
+            });
+            TileDictionary.Add(2,new TileData() {
+                Color = Color.White,
+                Source = new Rectangle(32,0,16,16)
+            });
+
+            _player = new Player(TileMapTexture,new TileData() {
+                Color = Color.White,
+                Source = new Rectangle(80,0,16,16)
+            }) {
+                Friction = Constants.PLAYER_FRICTION,
+                Restitution = Constants.PLAYER_RESTITUTION,
+                LinearDamping = Constants.PLAYER_LINEAR_DAMPING,
+                Mass = Constants.PLAYER_MASS,
+                ImpulseForce = Constants.PLAYER_IMPULSE_FORCE
+            };
             Entities.Add(_player);
-            //Entities.Add(new TestSquare(texture,new Rectangle(16,16,16,16),new Vector2(1,1),Color.White));
+            _player.Position = new Vector2(3,17);
+            PhysicsWorld.Gravity = new Vector2(0,Constants.GRAVITY);
         }
 
-        private void CameraTracking() {
+        private void FollowPlayerWithCamera() {
             Camera.Position = _player.Position;
         }
 
-        private void LoadSpriteSheet() {
-            texture = Content.Load<Texture2D>("spritesheet");
-            TileMapTexture = texture;
+        private void DrawPlayerPosition(DebugWriter writer) {
+            writer.ToTopLeft();
+            writer.Write(_player.Position,"Player Position");
+            writer.Write(Camera.GetRenderLocation(_player),"Player Render Position");
+            writer.Write(Camera.TileOrigin,"Tile Origin");
         }
     }
 }

@@ -32,4 +32,9 @@
   <ItemGroup>
     <MonoGameContentReference Include="..\Content\TestPlatform.mgcb" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="testmap1.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

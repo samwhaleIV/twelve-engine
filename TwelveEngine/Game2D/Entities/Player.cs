@@ -1,44 +1,32 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TwelveEngine.Game2D.Entities {
+﻿namespace TwelveEngine.Game2D.Entities {
     public sealed class Player:PhysicsEntity2D {
 
         private readonly Texture2D _texture;
-        private readonly Rectangle _textureSource;
-        private readonly Color _color;
+        private readonly TileData _tileData;
 
-        public Player(Texture2D texture,Rectangle textureSource,Color color) : base(new Vector2(1,1)) {
+        public Player(Texture2D texture,TileData tileData) : base(new Vector2(1,1)) {
             _texture = texture;
-            _textureSource = textureSource;
-            _color = color;
+            _tileData = tileData;
+
             OnUpdate += ApplyInput;
             OnRender += RenderSprite;
-            Fixture.Friction = 1f;
-            PhysicsBody.LinearDamping = 3f;
-            PhysicsBody.Mass = 10f;
         }
 
+        public float ImpulseForce { get; set; } = 1f;
+
         private void ApplyInput() {
-            var delta = Owner.Impulse.GetDelta2D() * 2f;
-            PhysicsBody.ApplyLinearImpulse(delta);
+            var delta = Owner.Impulse.GetDelta2D(allowSpeedModifiers: false) * ImpulseForce;
+            Body.ApplyLinearImpulse(delta);
         }
 
         private void RenderSprite() {
-            Rectangle sourceRectangle = _textureSource;
-
             Vector2 position = Owner.Camera.GetRenderLocation(this);
 
-            float rotation = 0f;
-            Vector2 origin = Vector2.Zero;
-
-            SpriteEffects effects = SpriteEffects.None;
-            float layerDepth = 0.5f;
+            float rotation = 0f; Vector2 origin = Vector2.Zero; float layerDepth = 0.5f;
 
             Vector2 scale = new Vector2(Owner.Camera.Scale);
-            Owner.SpriteBatch.Draw(_texture,position,sourceRectangle,_color,rotation,origin,scale,effects,layerDepth);
+
+            Owner.SpriteBatch.Draw(_texture,position,_tileData.Source,_tileData.Color,rotation,origin,scale,_tileData.SpriteEffects,layerDepth);
         }
     }
 }

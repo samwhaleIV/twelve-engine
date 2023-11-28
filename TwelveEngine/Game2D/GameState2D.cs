@@ -1,12 +1,15 @@
 ﻿using nkast.Aether.Physics2D.Dynamics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Shell;
+using System.IO;
 
 namespace TwelveEngine.Game2D {
     public class GameState2D:InputGameState, IEntitySorter<Entity2D,GameState2D> {
 
         private readonly World _physicsWorld = new World(Vector2.Zero);
+
         public World PhysicsWorld => _physicsWorld;
+        public float PhysicsScale { get; protected init; } = 1f;
 
         public Camera Camera { get; private init; } = new Camera() { Position = Vector2.Zero };
 
@@ -34,14 +37,10 @@ namespace TwelveEngine.Game2D {
                 return;
             }
 
-            FloatRectangle tileBounds = Camera.TileBounds;
-            Vector2 tileSize = new Vector2(Camera.TileRenderSize);
-
-            Point tileLocation = Vector2.Floor(tileBounds.TopLeft).ToPoint();
-            Vector2 renderOffset = tileLocation.ToVector2() - tileBounds.TopLeft;
-
-            Point tileStride = Vector2.Ceiling(tileBounds.Size - renderOffset).ToPoint();
-            Vector2 renderLocation = Vector2.Round(renderOffset * tileSize);
+            Vector2 tileSize = new Vector2(Camera.TileSize);
+            Vector2 renderLocation = Camera.TileOrigin;
+            Point tileStride = Vector2.Ceiling((Camera.ScreenSize - renderLocation) / tileSize).ToPoint();
+            Point tileLocation = Camera.TopLeftTileCoordinate;
 
             SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             for(int x = 0;x < tileStride.X;x++) {
@@ -97,5 +96,57 @@ namespace TwelveEngine.Game2D {
         }
 
         public IComparer<Entity2D> GetEntitySorter() => new EntityPrioritySorter();
+
+        public void AddCollisionRectangle(Vector2 location,Vector2 size,float friction,float mass) {
+            var body = PhysicsWorld.CreateBody(location * PhysicsScale,0f,BodyType.Static);
+            body.Mass = mass;
+            var fixture = body.CreateRectangle(size.X * PhysicsScale,size.Y * PhysicsScale,1f,Vector2.Zero);
+            fixture.Friction = friction;
+        }
+
+        public void ImportTiledCSV(string file,HashSet<ushort> collisionValues,bool setCameraBounds = true,float surfaceFriction = 1f,float surfaceMass = 10f) {
+            string[] lines = File.ReadAllLines(file);
+            int height = lines.Length;
+            int width = 1;
+            string firstLine = lines[0];
+            foreach(char character in firstLine) {
+                if(character == ',') width++;
+            }
+            ushort[] tileData = new ushort[width * height];
+
+            TileMap tileMap = new TileMap() {
+                Width = width,
+                Height = height,
+                Data = tileData
+            };
+
+            int y = 0;
+            foreach(var line in lines) {
+                string[] splitLine = line.Split(',',StringSplitOptions.TrimEntries);
+                if(splitLine.Length != width) {
+                    throw new IndexOutOfRangeException("This row does not contain the right number of values.");
+                }
+                for(int x = 0;x<width;x++) {
+                    if(!ushort.TryParse(splitLine[x],out ushort tileValue)) {
+                        continue;
+                    }
+                    if(collisionValues.Contains(tileValue)) {
+                        AddCollisionRectangle(new Vector2(x,y),Vector2.One,surfaceFriction,surfaceMass);
+                    }
+                    tileMap.SetValue(x,y,tileValue);
+                }
+                y++;
+            }
+
+            TileMap = tileMap;
+
+            if(!setCameraBounds) {
+                return;
+            }
+            Camera.MinX = 0;
+            Camera.MaxX = width;
+            Camera.MinY = 0;
+            Camera.MaxY = height;
+        }
     }
 }

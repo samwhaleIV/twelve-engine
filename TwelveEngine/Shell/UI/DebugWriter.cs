@@ -4,6 +4,7 @@ namespace TwelveEngine.Shell.UI {
     public sealed class DebugWriter {
 
         private const string NUMBER_FORMAT = "{0:0.00}";
+        private const string NUMBER_FORMAT_LONG = "{0:0.0000}";
 
         internal GameStateManager Game { get; private init; }
         internal DebugWriter(GameStateManager game) => Game = game;
@@ -187,6 +188,19 @@ namespace TwelveEngine.Shell.UI {
             sb.AppendFormat(NUMBER_FORMAT,vector.Y);
             sb.Append("  Z ");
             sb.AppendFormat(NUMBER_FORMAT,vector.Z);
+            DrawString();
+        }
+
+        public void Write(FloatRectangle rectangle,string label = null) {
+            WriteLabel(label);
+            sb.Append("X ");
+            sb.AppendFormat(NUMBER_FORMAT_LONG,rectangle.X);
+            sb.Append("  Y ");
+            sb.AppendFormat(NUMBER_FORMAT_LONG,rectangle.Y);
+            sb.Append("  W ");
+            sb.AppendFormat(NUMBER_FORMAT,rectangle.Width);
+            sb.Append("  H ");
+            sb.AppendFormat(NUMBER_FORMAT,rectangle.Height);
             DrawString();
         }
 

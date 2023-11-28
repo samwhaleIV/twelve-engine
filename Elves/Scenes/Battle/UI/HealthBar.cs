@@ -107,13 +107,12 @@ namespace Elves.Scenes.Battle.UI {
             /* Shake the bar when the owner's health is zero (aka, dead) */
             int shakeStage = (int)(now / DeadWobbleDuration) % 4;
             /* Needs empty stages so we are centered on the right spot */
-            (TimeSpan Duration, float Strength) impact = shakeStage switch {
+            (TimeSpan Duration, float Strength) = shakeStage switch {
                 0 => (DeadWobbleDuration, -DeathWobbleStrength),
                 2 => (DeadWobbleDuration, DeathWobbleStrength),
                 _ => (TimeSpan.Zero, 0), /* 1 or 3 */
             };
-
-            impactAnimator.SetAcceleration(impact.Duration,impact.Strength);
+            impactAnimator.SetAcceleration(Duration,Strength);
         }
 
         public void Update(TimeSpan now,float delta) {

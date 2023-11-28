@@ -1,55 +1,120 @@
 ﻿using nkast.Aether.Physics2D.Dynamics;
+using System.Drawing;
 
 namespace TwelveEngine.Game2D.Entities {
     public abstract class PhysicsEntity2D:Entity2D {
 
-        private readonly Body _physicsBody;
-        public Body PhysicsBody => _physicsBody;
+        protected Body Body { get; private set; }
+        private Fixture Fixture { get; set; }
 
-        public Vector2 Size { get; private init; }
-
-        protected Fixture Fixture { get; private set; }
+        private Vector2 _size;
 
         public PhysicsEntity2D(Vector2 size) {
-
-            Size = size;
-
-            Vector2 localCenter = Vector2.Zero;
-            Vector2 fixtureOffset = Vector2.Zero;
-
-            float fixtureDensity = 1f;
-            float bodyMass = 10f;
-
-            _physicsBody = new Body() {
-                Position = Vector2.Zero,
-                FixedRotation = true,
-                BodyType = BodyType.Dynamic,
-                SleepingAllowed = false,
-                Enabled = true,
-                Mass = bodyMass,
-                LocalCenter = localCenter
-            };
-
-            Fixture = _physicsBody.CreateRectangle(size.X,size.Y,fixtureDensity,fixtureOffset);
-
+            _size = size;
             OnLoad += PhysicsEntity2D_OnLoad;
             OnUnload += PhysicsEntity2D_OnUnload;
         }
 
         protected override Vector2 GetPosition() {
-            return _physicsBody.Position;
+            return Body.Position / Owner.PhysicsScale;
         }
 
         protected override void SetPosition(Vector2 position) {
-            _physicsBody.Position = position;
-        }
-
-        private void PhysicsEntity2D_OnUnload() {
-            Owner.PhysicsWorld.Remove(_physicsBody);
+            Body.Position = position * Owner.PhysicsScale;
         }
 
         private void PhysicsEntity2D_OnLoad() {
-            Owner.PhysicsWorld.Add(_physicsBody);
+
+            Body = new Body {
+                Position = Vector2.Zero,
+                BodyType = BodyType.Dynamic,
+                Rotation = 0f,
+                FixedRotation = true,
+                LocalCenter = Vector2.Zero,
+                SleepingAllowed = true,
+                Enabled = true,
+            };
+
+            float density = 1f;
+            Vector2 size = _size * Owner.PhysicsScale;
+            Fixture = Body.CreateRectangle(size.X,size.Y,density,Vector2.Zero);
+
+            Fixture.Friction = _friction;
+            Body.LinearDamping = _linearDamping;
+            Body.Mass = _mass;
+            Fixture.Restitution = _restitution;
+
+            Owner.PhysicsWorld.Add(Body);
+        }
+
+        private void PhysicsEntity2D_OnUnload() {
+            Owner.PhysicsWorld.Remove(Body);
+        }
+
+        public float _friction, _linearDamping, _mass, _restitution;
+
+        public float Friction {
+            get {
+                if(!IsLoaded) {
+                    return _friction;
+                }
+                return Fixture.Friction;
+            }
+            set {
+                if(!IsLoaded) {
+                    _friction = value;
+                    return;
+                }
+                Fixture.Friction = value;
+            }
+        }
+
+        public float LinearDamping {
+            get {
+                if(!IsLoaded) {
+                    return _linearDamping;
+                }
+                return Body.LinearDamping;
+            }
+            set {
+                if(!IsLoaded) {
+                    _linearDamping = value;
+                    return;
+                }
+                Body.LinearDamping = value;
+            }
+        }
+
+        public float Mass {
+            get {
+                if(!IsLoaded) {
+                    return _mass;
+                }
+                return Body.Mass;
+            }
+            set {
+                if(!IsLoaded) {
+                    _mass = value;
+                    return;
+                }
+                Body.Mass = value;
+            }
+        }
+
+        public float Restitution {
+            get {
+                if(!IsLoaded) {
+                    return _restitution;
+                }
+                return Fixture.Restitution;
+            }
+            set {
+                if(!IsLoaded) {
+                    _restitution = value;
+                    return;
+                }
+                Fixture.Restitution = value;
+            }
         }
     }
 }

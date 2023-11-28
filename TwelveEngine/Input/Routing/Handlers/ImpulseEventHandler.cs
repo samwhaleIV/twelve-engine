@@ -145,9 +145,12 @@ namespace TwelveEngine.Input.Routing {
             return delta;
         }
 
-        public Vector2 GetDelta2D() {
+        public Vector2 GetDelta2D(bool allowSpeedModifiers = true) {
             if(!TryGetThumbstick(out Vector2 delta)) {
                 delta = GetImpulseDelta2D();
+            }
+            if(!allowSpeedModifiers) {
+                return delta;
             }
             if(Method == InputMethod.GamePad) {
                 delta *= GetGamePadSpeedModifier();
