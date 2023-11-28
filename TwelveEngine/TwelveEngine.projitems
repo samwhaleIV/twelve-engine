@@ -26,6 +26,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\EntityPriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\GameState2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileData.cs" />
+    <Compile Include="..\TwelveEngine\Game2D\TileMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\VirtualMouseProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LowMemoryList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LowMemorySortedSet.cs" />

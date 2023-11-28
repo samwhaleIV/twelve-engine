@@ -17,16 +17,56 @@ namespace TestPlatform {
         }
 
         private sealed class GameState2DTest:GameState2D {
+
+            private Texture2D texture;
+
             public GameState2DTest() {
                 OnLoad.Add(LoadSpriteSheet,EventPriority.First);
                 OnLoad.Add(CreateEntities);
+
+                int width = 100;
+                int height = 100;
+
+                ushort brick = 1;
+
+                ushort[] tileMapData = new ushort[width * height];
+
+                for(int i = 0;i<tileMapData.Length;i++) {
+                    tileMapData[i] = brick;
+                }
+
+                tileMapData[0] = 2;
+
+                Camera.TileInputSize = 16f;
+                Camera.Scale = 4;
+
+                Camera.Position = Vector2.Zero;
+
+                TileDictionary[brick] = new TileData() {
+                    Color = Color.White,
+                    Source = new Rectangle(16,0,16,16),
+                    SpriteEffects = SpriteEffects.None
+                };
+
+                TileDictionary[2] = new TileData() {
+                    Color = Color.White,
+                    Source = new Rectangle(64,16,16,16),
+                    SpriteEffects = SpriteEffects.None
+                };
+
+                TileMap = new TileMap() { Width = width,Height = height,Data = tileMapData };
+
+                Camera.MinX = 0;
+                Camera.MinY = 0;
             }
+
+            private void CreateEntities() { 
+                //Entities.Add(new TestSquare(texture,new Rectangle(16,16,16,16),new Vector2(1,1),Color.White));
+            }
+
             private void LoadSpriteSheet() {
-                SpriteSheet = Content.Load<Texture2D>("spritesheet");
-            }
-            private void CreateEntities() {
-                Entities.Add(new TestSquare(new Rectangle(0,0,64,64),new Vector2(16),Color.White));
-                Entities.Add(new TestSquare(new Rectangle(4,0,4,4),new Vector2(1,1),Color.Red));
+                texture = Content.Load<Texture2D>("spritesheet");
+                TileMapTexture = texture;
             }
         }
 

@@ -7,8 +7,11 @@ namespace TwelveEngine.Game2D.Entities {
 
         private readonly Rectangle _textureSource;
         private readonly Color _color;
+        private readonly Texture2D _texture;
 
-        public TestSquare(Rectangle textureSource,Vector2 size,Color color) {      
+
+        public TestSquare(Texture2D texture,Rectangle textureSource,Vector2 size,Color color) {     
+            _texture = texture;
             _textureSource = textureSource;
             //OnUpdate += TestCube_OnUpdate;
             OnRender += TestCube_OnRender;
@@ -20,10 +23,9 @@ namespace TwelveEngine.Game2D.Entities {
         }
 
         private void TestCube_OnRender() {
-            Texture2D texture = Owner.SpriteSheet;
             Rectangle sourceRectangle = _textureSource;
 
-            Vector2 position = Owner.Camera.GetScreenPosition(this);
+            Vector2 position = Owner.Camera.GetRenderLocation(this);
 
             float rotation = 0f;
             Vector2 origin = Vector2.Zero;
@@ -31,9 +33,8 @@ namespace TwelveEngine.Game2D.Entities {
             SpriteEffects effects = SpriteEffects.None;
             float layerDepth = 0.5f;
 
-            Vector2 scale = Owner.Camera.SpriteScale;
-
-            Owner.SpriteBatch.Draw(texture,position,sourceRectangle,_color,rotation,origin,scale,effects,layerDepth);
+            Vector2 scale = new Vector2(Owner.Camera.Scale);
+            Owner.SpriteBatch.Draw(_texture,position,sourceRectangle,_color,rotation,origin,scale,effects,layerDepth);
         }
 
         private Vector2 position;
