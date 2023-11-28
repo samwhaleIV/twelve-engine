@@ -118,7 +118,7 @@ namespace TwelveEngine.Input.Routing {
                 speedModifier += 1;
             }
             if(snail) {
-                speedModifier /= 2;
+                speedModifier *= 0.5f;
             }
             return speedModifier;
         }

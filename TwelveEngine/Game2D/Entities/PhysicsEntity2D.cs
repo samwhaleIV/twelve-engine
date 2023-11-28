@@ -6,8 +6,9 @@ namespace TwelveEngine.Game2D.Entities {
         private readonly Body _physicsBody;
         public Body PhysicsBody => _physicsBody;
 
-        private Fixture _bodyFixture;
         public Vector2 Size { get; private init; }
+
+        protected Fixture Fixture { get; private set; }
 
         public PhysicsEntity2D(Vector2 size) {
 
@@ -23,13 +24,13 @@ namespace TwelveEngine.Game2D.Entities {
                 Position = Vector2.Zero,
                 FixedRotation = true,
                 BodyType = BodyType.Dynamic,
-                SleepingAllowed = true,
+                SleepingAllowed = false,
                 Enabled = true,
                 Mass = bodyMass,
                 LocalCenter = localCenter
             };
 
-            _bodyFixture = _physicsBody.CreateRectangle(size.X,size.Y,fixtureDensity,fixtureOffset);
+            Fixture = _physicsBody.CreateRectangle(size.X,size.Y,fixtureDensity,fixtureOffset);
 
             OnLoad += PhysicsEntity2D_OnLoad;
             OnUnload += PhysicsEntity2D_OnUnload;

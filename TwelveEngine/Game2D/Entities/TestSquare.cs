@@ -25,7 +25,7 @@ namespace TwelveEngine.Game2D.Entities {
         private void TestCube_OnRender() {
             Rectangle sourceRectangle = _textureSource;
 
-            Vector2 position = Owner.Camera.GetRenderLocation(this);
+            Vector2 location = Owner.Camera.GetRenderLocation(this);
 
             float rotation = 0f;
             Vector2 origin = Vector2.Zero;
@@ -34,7 +34,7 @@ namespace TwelveEngine.Game2D.Entities {
             float layerDepth = 0.5f;
 
             Vector2 scale = new Vector2(Owner.Camera.Scale);
-            Owner.SpriteBatch.Draw(_texture,position,sourceRectangle,_color,rotation,origin,scale,effects,layerDepth);
+            Owner.SpriteBatch.Draw(_texture,location,sourceRectangle,_color,rotation,origin,scale,effects,layerDepth);
         }
 
         private Vector2 position;

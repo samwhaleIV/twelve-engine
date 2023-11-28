@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using nkast.Aether.Physics2D.Dynamics;
+﻿using nkast.Aether.Physics2D.Dynamics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Shell;
 
@@ -16,7 +15,7 @@ namespace TwelveEngine.Game2D {
 
             OnUpdate.Add(UpdateEntities);
             OnUpdate.Add(UpdatePhysics);
-            OnUpdate.Add(UpdateCamera);
+            OnUpdate.Add(UpdateCamera,EventPriority.Last);
 
             OnPreRender.Add(PreRenderEntities);
 
@@ -37,8 +36,10 @@ namespace TwelveEngine.Game2D {
 
             FloatRectangle tileBounds = Camera.TileBounds;
             Vector2 tileSize = new Vector2(Camera.TileRenderSize);
-            Vector2 renderOffset = Vector2.Subtract(Vector2.Floor(tileBounds.TopLeft),tileBounds.TopLeft);
-            Point tileLocation = (Vector2.Ceiling(renderOffset) + tileBounds.Position).ToPoint();
+
+            Point tileLocation = Vector2.Floor(tileBounds.TopLeft).ToPoint();
+            Vector2 renderOffset = tileLocation.ToVector2() - tileBounds.TopLeft;
+
             Point tileStride = Vector2.Ceiling(tileBounds.Size - renderOffset).ToPoint();
             Vector2 renderLocation = Vector2.Round(renderOffset * tileSize);
 

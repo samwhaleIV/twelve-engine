@@ -2,7 +2,7 @@
   "profiles": {
     "TestPlatform": {
       "commandName": "Project",
-      "commandLineArgs": "nofailsafe"
+      "commandLineArgs": "nofailsafe drawdebug console"
     }
   }
 }
