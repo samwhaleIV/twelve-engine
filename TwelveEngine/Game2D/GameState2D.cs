@@ -46,9 +46,30 @@ namespace TwelveEngine.Game2D {
             for(int x = 0;x < tileStride.X;x++) {
                 float yStart = renderLocation.Y;
                 for(int y = 0;y < tileStride.Y;y++) {
-                    if(TileMap.TryGetValue(tileLocation.X + x,tileLocation.Y + y,out ushort value) && TileDictionary.TryGetValue(value, out TileData tileData)) {
-                        float rotation = 0f;
-                        float layerDepth = 1f;
+                    float rotation = 0f;
+                    float layerDepth = 1f;
+
+                    TileData tileData = new();
+                    bool hasTileData = false;
+
+                    if(x == 0 && y == 0) {
+                        tileData = new TileData() {
+                            Color = Color.Red,
+                            Source = new Rectangle(16,0,16,16)
+                        };
+                        hasTileData = true;
+                    } else if(x == tileStride.X - 1 && y == tileStride.Y - 1) {
+                        tileData = new TileData() {
+                            Color = Color.Blue,
+                            Source = new Rectangle(16,0,16,16)
+                        };
+                        hasTileData = true;
+                    }
+                    if(!hasTileData) {
+                        hasTileData = TileMap.TryGetValue(tileLocation.X + x,tileLocation.Y + y,out ushort value) && TileDictionary.TryGetValue(value,out tileData);
+                    }
+                  
+                    if(hasTileData) {
                         SpriteBatch.Draw(TileMapTexture,renderLocation,tileData.Source,tileData.Color,rotation,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,layerDepth);
                     }
                     renderLocation.Y += tileSize.Y;
