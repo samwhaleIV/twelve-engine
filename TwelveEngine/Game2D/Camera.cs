@@ -17,7 +17,7 @@ namespace TwelveEngine.Game2D {
         public float MaxX { get; set; } = float.PositiveInfinity;
         public float MaxY { get; set; } = float.PositiveInfinity;
 
-        public float TileSize { get; private set; } = 0f;
+        public float TileSize { get; private set; } = 1f;
         public float TileInputSize { get; set; } = 1f;
         public float Scale { get; set; } = 10f;
 
