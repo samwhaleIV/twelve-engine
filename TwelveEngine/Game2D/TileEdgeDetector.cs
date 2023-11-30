@@ -1,9 +1,4 @@
-﻿using nkast.Aether.Physics2D.Dynamics;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TwelveEngine.Game2D {
+﻿namespace TwelveEngine.Game2D {
     internal sealed class TileEdgeDetector {
 
         private const byte OPEN = 0, SOLID = 1;
@@ -22,8 +17,7 @@ namespace TwelveEngine.Game2D {
         private readonly int _width, _height;
 
         public TileEdgeDetector(int width,int height) {
-            _width = width;
-            _height = height;
+            _width = width; _height = height;
 
             _collisionMap = new byte[width,height];
 
@@ -88,50 +82,36 @@ namespace TwelveEngine.Game2D {
 
             Dictionary<Point,EdgeState> openTileSet = GetOpenTileSet();
 
-            List<(Vector2,Vector2)> edges = new();
+            (Point,Point) ReadEdge(Point start,Point scan,EdgeState edgeType) {
+                openTileSet[start] = openTileSet[start] & edgeType;
+                Point head = start + scan;
 
-            (Point,Point) ReadEdge(Point start,Point scanDirection,EdgeState matchType) {
-                openTileSet[start] = openTileSet[start] & matchType;
-                Point head = start + scanDirection;
-
-                while(openTileSet.TryGetValue(head,out EdgeState edgeState) && edgeState.HasFlag(matchType)) {
-                    openTileSet[head] = openTileSet[head] & matchType;
-                    head += scanDirection;
+                while(openTileSet.TryGetValue(head,out EdgeState headType) && (headType & edgeType) != 0) {
+                    openTileSet[head] = openTileSet[head] & edgeType;
+                    head += scan;
                 }
 
-                return (start, head - scanDirection);
+                return (start, head - scan);
             }
 
-            foreach(var tile in openTileSet) {
-
-                var surroundingState = tile.Value;
-                var point = tile.Key;
-
-                (Point, Point) edge;
-
-                if(surroundingState.HasFlag(EdgeState.Left)) {
-                    edge = ReadEdge(point,new Point(0,1),EdgeState.Left);
-                    edges.Add((edge.Item1.ToVector2(), edge.Item2.ToVector2() + new Vector2(0,1)));
+            foreach(var (tile,edgeState) in openTileSet) {
+                if((edgeState & EdgeState.Left) != 0) {
+                    var edge = ReadEdge(tile,new Point(0,1),EdgeState.Left);
+                    yield return (edge.Item1.ToVector2(), edge.Item2.ToVector2() + new Vector2(0,1));
                 }
-
-                if(surroundingState.HasFlag(EdgeState.Right)) {
-                    edge = ReadEdge(point,new Point(0,1),EdgeState.Right);
-                    edges.Add((edge.Item1.ToVector2() + new Vector2(1,0), edge.Item2.ToVector2() + new Vector2(1,1)));
+                if((edgeState & EdgeState.Right) != 0) {
+                    var edge = ReadEdge(tile,new Point(0,1),EdgeState.Right);
+                    yield return (edge.Item1.ToVector2() + new Vector2(1,0), edge.Item2.ToVector2() + new Vector2(1,1));
                 }
-
-                if(surroundingState.HasFlag(EdgeState.Up)) {
-                    edge = ReadEdge(point,new Point(1,0),EdgeState.Up);
-                    edges.Add((edge.Item1.ToVector2(), edge.Item2.ToVector2() + new Vector2(1,0)));
+                if((edgeState & EdgeState.Up) != 0) {
+                    var edge = ReadEdge(tile,new Point(1,0),EdgeState.Up);
+                    yield return (edge.Item1.ToVector2(), edge.Item2.ToVector2() + new Vector2(1,0));
                 }
-
-                if(surroundingState.HasFlag(EdgeState.Down)) {
-                    edge = ReadEdge(point,new Point(1,0),EdgeState.Down);
-                    edges.Add((edge.Item1.ToVector2() + new Vector2(0,1), edge.Item2.ToVector2() + new Vector2(1,1)));
+                if((edgeState & EdgeState.Down) != 0) {
+                    var edge = ReadEdge(tile,new Point(1,0),EdgeState.Down);
+                    yield return (edge.Item1.ToVector2() + new Vector2(0,1), edge.Item2.ToVector2() + new Vector2(1,1));
                 }
-
             }
-
-            return edges;
         }
     }
 }
