@@ -2,14 +2,14 @@
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Shell;
 using System.IO;
+using nkast.Aether.Physics2D.Common.TextureTools;
+using nkast.Aether.Physics2D.Collision;
 
 namespace TwelveEngine.Game2D {
     public class GameState2D:InputGameState, IEntitySorter<Entity2D,GameState2D> {
 
-        private readonly World _physicsWorld = new World(Vector2.Zero);
-
-        public World PhysicsWorld => _physicsWorld;
         public float PhysicsScale { get; protected init; } = 1f;
+        public World PhysicsWorld { get; private init; } = new World(Vector2.Zero);
 
         public Camera Camera { get; private init; } = new Camera() { Position = Vector2.Zero };
 
@@ -25,6 +25,8 @@ namespace TwelveEngine.Game2D {
             OnRender.Add(RenderMapBackground);
             OnRender.Add(RenderEntities);
             //OnRender.Add(RenderMapForeground);
+
+
         }
 
         public TileMap TileMap { get; set; } = new TileMap() { Width = 0, Height = 0, Data = null };
@@ -104,7 +106,7 @@ namespace TwelveEngine.Game2D {
         }
 
         private void UpdatePhysics() {
-            _physicsWorld.Step(FrameDelta);
+            PhysicsWorld.Step(FrameDelta);
         }
 
         public sealed class EntityPrioritySorter:IComparer<Entity2D> {
@@ -119,11 +121,8 @@ namespace TwelveEngine.Game2D {
 
         public IComparer<Entity2D> GetEntitySorter() => new EntityPrioritySorter();
 
-        public void AddCollisionRectangle(Vector2 location,Vector2 size,float friction,float mass) {
-            var body = PhysicsWorld.CreateBody(location * PhysicsScale,0f,BodyType.Static);
-            body.Mass = mass;
-            var fixture = body.CreateRectangle(size.X * PhysicsScale,size.Y * PhysicsScale,1f,Vector2.Zero);
-            fixture.Friction = friction;
+        public void SetTerrain(Vector2 location) {
+
         }
 
         public void ImportTiledCSV(string file,HashSet<ushort> collisionValues,bool setCameraBounds = true,float surfaceFriction = 1f,float surfaceMass = 10f) {
@@ -136,28 +135,35 @@ namespace TwelveEngine.Game2D {
             }
             ushort[] tileData = new ushort[width * height];
 
-            TileMap tileMap = new TileMap() {
-                Width = width,
-                Height = height,
-                Data = tileData
-            };
+            TileMap tileMap = new TileMap() { Width = width, Height = height, Data = tileData };
 
             int y = 0;
+
+            var tileEdgeDetector = new TileEdgeDetector(width,height);
+
             foreach(var line in lines) {
                 string[] splitLine = line.Split(',',StringSplitOptions.TrimEntries);
                 if(splitLine.Length != width) {
-                    throw new IndexOutOfRangeException("This row does not contain the right number of values.");
+                    throw new IndexOutOfRangeException("Row does not contain the correct quantity of values.");
                 }
                 for(int x = 0;x<width;x++) {
                     if(!ushort.TryParse(splitLine[x],out ushort tileValue)) {
                         continue;
                     }
                     if(collisionValues.Contains(tileValue)) {
-                        AddCollisionRectangle(new Vector2(x,y),Vector2.One,surfaceFriction,surfaceMass);
+                        tileEdgeDetector.AddCollision(x,y);
                     }
                     tileMap.SetValue(x,y,tileValue);
                 }
                 y++;
+            }
+
+            var terrainBody = PhysicsWorld.CreateBody(new Vector2(-0.5f*PhysicsScale,-0.5f*PhysicsScale),0f,BodyType.Static);
+            terrainBody.Mass = surfaceMass;
+
+            foreach(var edge in tileEdgeDetector.CreateEdges()) {
+                var fixture = terrainBody.CreateEdge(edge.Item1 * PhysicsScale,edge.Item2 * PhysicsScale);
+                fixture.Friction = surfaceFriction;
             }
 
             TileMap = tileMap;

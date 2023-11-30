@@ -65,7 +65,7 @@ namespace TwelveEngine.Game2D {
                 ImpulseForce = Constants.PLAYER_IMPULSE_FORCE
             };
             Entities.Add(_player);
-            _player.Position = new Vector2(3,17);
+            _player.Position = new Vector2(5,17);
             PhysicsWorld.Gravity = new Vector2(0,Constants.GRAVITY);
         }
 

@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\GameState2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TestGame2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileEdgeDetector.cs" />
     <Compile Include="..\TwelveEngine\Game2D\TileMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\VirtualMouseProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LowMemoryList.cs" />
