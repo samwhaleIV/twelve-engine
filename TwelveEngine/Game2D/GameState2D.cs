@@ -31,51 +31,52 @@ namespace TwelveEngine.Game2D {
         public Texture2D TileMapTexture { get; set; }
         public readonly Dictionary<ushort,TileData> TileDictionary = new Dictionary<ushort,TileData>();
 
+        private readonly TileData DebugRedTile = new TileData() { Color = Color.Red,Source = new Rectangle(16,0,16,16) };
+        private readonly TileData DebugBlueTile = new TileData() { Color = Color.Blue,Source = new Rectangle(16,0,16,16) };
+
         private void RenderMapBackground() {
 
             if(TileMap.Data == null || TileMapTexture == null) {
                 return;
             }
 
-            Vector2 tileSize = new Vector2(Camera.TileSize);
-            Vector2 renderLocation = Camera.TileOrigin;
-            Point tileStride = Vector2.Ceiling((Camera.ScreenSize - renderLocation) / tileSize).ToPoint();
-            Point tileLocation = Camera.TopLeftTileCoordinate;
+            Vector2 tileSize = Camera.TileSize, renderOrigin = Camera.RenderOrigin;
+            Point tileStride = Camera.TileStride, tileStart = Camera.TileStart;
+
+            TileData tileData = new();
+            float rotation = 0f, layerDepth = 1f;
+
+            bool drawThisTile = false;
+
+            float yStart;
 
             SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
             for(int x = 0;x < tileStride.X;x++) {
-                float yStart = renderLocation.Y;
-                for(int y = 0;y < tileStride.Y;y++) {
-                    float rotation = 0f;
-                    float layerDepth = 1f;
 
-                    TileData tileData = new();
-                    bool hasTileData = false;
+                yStart = renderOrigin.Y;
+
+                for(int y = 0;y < tileStride.Y;y++) {
+
+                    drawThisTile = false;
 
                     if(x == 0 && y == 0) {
-                        tileData = new TileData() {
-                            Color = Color.Red,
-                            Source = new Rectangle(16,0,16,16)
-                        };
-                        hasTileData = true;
+                        tileData = DebugRedTile;
+                        drawThisTile = true;
                     } else if(x == tileStride.X - 1 && y == tileStride.Y - 1) {
-                        tileData = new TileData() {
-                            Color = Color.Blue,
-                            Source = new Rectangle(16,0,16,16)
-                        };
-                        hasTileData = true;
+                        tileData = DebugBlueTile;
+                        drawThisTile = true;
                     }
-                    if(!hasTileData) {
-                        hasTileData = TileMap.TryGetValue(tileLocation.X + x,tileLocation.Y + y,out ushort value) && TileDictionary.TryGetValue(value,out tileData);
+
+                    drawThisTile = drawThisTile || TileMap.TryGetValue(tileStart.X + x,tileStart.Y + y,out ushort value) && TileDictionary.TryGetValue(value,out tileData);
+
+                    if(drawThisTile) {
+                        SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,rotation,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,layerDepth);
                     }
-                  
-                    if(hasTileData) {
-                        SpriteBatch.Draw(TileMapTexture,renderLocation,tileData.Source,tileData.Color,rotation,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,layerDepth);
-                    }
-                    renderLocation.Y += tileSize.Y;
+
+                    renderOrigin.Y += tileSize.Y;
                 }
-                renderLocation.Y = yStart;
-                renderLocation.X += tileSize.X;
+                renderOrigin.Y = yStart;
+                renderOrigin.X += tileSize.X;
             }
             SpriteBatch.End();
         }

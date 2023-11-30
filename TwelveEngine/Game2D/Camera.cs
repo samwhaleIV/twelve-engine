@@ -9,7 +9,6 @@ namespace TwelveEngine.Game2D {
 
         public Vector2 Position { get; set; } = Vector2.Zero;
         public Vector2 PositionOffset { get; set; } = new Vector2(-0.5f);
-        public Vector2 UnboundPositionOffset { get; set; } = Vector2.Zero;
 
         public float MinX { get; set; } = float.NegativeInfinity;
         public float MinY { get; set; } = float.NegativeInfinity;
@@ -17,15 +16,17 @@ namespace TwelveEngine.Game2D {
         public float MaxX { get; set; } = float.PositiveInfinity;
         public float MaxY { get; set; } = float.PositiveInfinity;
 
-        public float TileSize { get; private set; } = 1f;
+        public Vector2 TileSize { get; private set; } = Vector2.One;
         public float TileInputSize { get; set; } = 1f;
         public float Scale { get; set; } = 10f;
 
         public Vector2 ScreenSize { get; private set; }
         public Vector2 ScreenCenter { get; private set; }
 
-        public Vector2 TileOrigin { get; private set; }
-        public Point TopLeftTileCoordinate { get; private set; }
+        public Vector2 RenderOrigin { get; private set; }
+        public Point TileStart { get; private set; }
+
+        public Point TileStride { get; private set; }
 
         private Vector2 _constraintOffset;
 
@@ -52,7 +53,7 @@ namespace TwelveEngine.Game2D {
         }
 
         internal void Update(Viewport viewport) {
-            TileSize = TileInputSize * Scale;
+            TileSize = new Vector2(TileInputSize * Scale);
 
             Vector2 screenSize = viewport.Bounds.Size.ToVector2();
             if(screenSize.X % 2 == 1) screenSize.X += 1;
@@ -64,17 +65,19 @@ namespace TwelveEngine.Game2D {
             UpdateConstraintOffset();
 
             Vector2 tileOffset = (Position + PositionOffset + _constraintOffset) * TileSize;
-            tileOffset.X %= TileSize; tileOffset.Y %= TileSize;
+            tileOffset.X %= TileSize.X; tileOffset.Y %= TileSize.Y;
 
             tileOffset = Vector2.Round(tileOffset);
 
             Vector2 leftSideTileCount = Vector2.Ceiling((ScreenCenter - tileOffset) / TileSize);
-            TileOrigin = ScreenCenter - leftSideTileCount * TileSize;
+            RenderOrigin = ScreenCenter - leftSideTileCount * TileSize;
 
-            TileOrigin -= tileOffset;
+            RenderOrigin -= tileOffset;
 
             Vector2 topLeftTileCoordinate = Position - PositionOffset - leftSideTileCount + _constraintOffset;
-            TopLeftTileCoordinate = Vector2.Floor(topLeftTileCoordinate).ToPoint();
+            TileStart = Vector2.Floor(topLeftTileCoordinate).ToPoint();
+
+            TileStride = Vector2.Ceiling((ScreenSize - RenderOrigin) / TileSize).ToPoint();
         }
 
         public Vector2 GetRenderLocation(Entity2D entity) {

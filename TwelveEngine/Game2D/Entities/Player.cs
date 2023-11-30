@@ -14,31 +14,31 @@
 
         public float ImpulseForce { get; set; } = 1f;
 
-        //private void ApplyInput() {
-        //    var delta = Owner.Impulse.GetDelta2D(allowSpeedModifiers: false) * ImpulseForce;
-        //    Body.ApplyLinearImpulse(delta);
-        //}
-
-        private bool wasDown = false;
         private void ApplyInput() {
-            Body.Enabled = false;
-            var delta = Owner.Impulse.GetDelta2D(allowSpeedModifiers: true);
-            if(wasDown && delta == Vector2.Zero) {
-                wasDown = false;
-                return;
-            }
-            if(wasDown && !Owner.Impulse.IsImpulseDown(Input.Impulse.Focus)) {
-                return;
-            }
-            if(delta == Vector2.Zero) {
-                return;
-            }
-            var change = delta * (1 / Owner.Camera.TileSize);
-            if(!float.IsNaN(change.X) && !float.IsNaN(change.Y)) {
-                Position += change;
-            }
-            wasDown = true;
+            var delta = Owner.Impulse.GetDelta2D(allowSpeedModifiers: false) * ImpulseForce;
+            Body.ApplyLinearImpulse(delta);
         }
+
+        //private bool wasDown = false;
+        //private void ApplyInput() {
+        //    Body.Enabled = false;
+        //    var delta = Owner.Impulse.GetDelta2D(allowSpeedModifiers: true);
+        //    if(wasDown && delta == Vector2.Zero) {
+        //        wasDown = false;
+        //        return;
+        //    }
+        //    if(wasDown && !Owner.Impulse.IsImpulseDown(Input.Impulse.Focus)) {
+        //        return;
+        //    }
+        //    if(delta == Vector2.Zero) {
+        //        return;
+        //    }
+        //    var change = delta * (1 / Owner.Camera.TileSize);
+        //    if(!float.IsNaN(change.X) && !float.IsNaN(change.Y)) {
+        //        Position += change;
+        //    }
+        //    wasDown = true;
+        //}
 
         private void RenderSprite() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);

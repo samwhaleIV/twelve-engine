@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "John": {
+      "commandName": "Project",
+      "commandLineArgs": "nofailsafe console drawdebug"
+    }
+  }
+}

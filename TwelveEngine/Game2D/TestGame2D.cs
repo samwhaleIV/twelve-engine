@@ -77,7 +77,7 @@ namespace TwelveEngine.Game2D {
             writer.ToTopLeft();
             writer.Write(_player.Position,"Player Position");
             writer.Write(Camera.GetRenderLocation(_player),"Player Render Position");
-            writer.Write(Camera.TileOrigin,"Tile Origin");
+            writer.Write(Camera.RenderOrigin,"Tile Origin");
         }
     }
 }
