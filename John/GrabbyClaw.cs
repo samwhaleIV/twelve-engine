@@ -70,12 +70,12 @@ namespace John {
         private void GrabbyClaw_OnRender() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);
 
-            float rotation = 0f; Vector2 origin = new Vector2(16,30); float layerDepth = 0.5f;
+            float rotation = 0f; Vector2 origin = new Vector2(16,30);
 
             Vector2 scale = new Vector2(Owner.Camera.Scale);
 
             Rectangle textureSource = IsGripping ? ClosedClawSource : OpenClawSource;
-            Owner.SpriteBatch.Draw(Owner.TileMapTexture,position,textureSource,Color.White,rotation,origin,scale,SpriteEffects.None,layerDepth);
+            Owner.SpriteBatch.Draw(Owner.TileMapTexture,position,textureSource,Color.White,rotation,origin,scale,SpriteEffects.None,0.8f);
 
             float distance = (position.Y - origin.Y * scale.Y) / scale.Y / RopeSource.Height;
             origin = new Vector2(16,0);
@@ -88,7 +88,7 @@ namespace John {
 
             position.Y = 0;
 
-            Owner.SpriteBatch.Draw(Owner.TileMapTexture,position,RopeSource,Color.White,rotation,origin,scale,SpriteEffects.None,layerDepth);
+            Owner.SpriteBatch.Draw(Owner.TileMapTexture,position,RopeSource,Color.White,rotation,origin,scale,SpriteEffects.None,0.8f);
         }
 
         private Vector2 _position;

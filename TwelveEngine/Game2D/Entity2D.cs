@@ -18,5 +18,7 @@ namespace TwelveEngine.Game2D {
         protected abstract void SetPosition(Vector2 position);
 
         public Vector2 Position { get => GetPosition(); set => SetPosition(value); }
+
+        public float LayerDepth { get; set; } = 0.5f;
     }
 }

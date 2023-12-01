@@ -8,6 +8,7 @@ namespace TwelveEngine.Game2D.Entities {
 
         public DebugDot() {
             OnRender += DebugDot_OnRender;
+            LayerDepth = 1f;
         }
 
         private Vector2 _position;

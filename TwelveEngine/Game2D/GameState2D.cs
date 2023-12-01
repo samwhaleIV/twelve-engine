@@ -69,7 +69,7 @@ namespace TwelveEngine.Game2D {
         private void UpdateEntities() => Entities.Update();
 
         private void RenderEntities() {
-            SpriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointClamp);
+            SpriteBatch.Begin(SpriteSortMode.FrontToBack,null,SamplerState.PointClamp);
             Entities.Render();
             SpriteBatch.End();
         }

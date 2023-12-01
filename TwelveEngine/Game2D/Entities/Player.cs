@@ -4,7 +4,7 @@
         private readonly Texture2D _texture;
         private readonly TileData _tileData;
 
-        public Player(Texture2D texture,TileData tileData) : base(new Vector2(1,1)) {
+        public Player(Texture2D texture,TileData tileData) : base(new Vector2(1,1),Vector2.Zero) {
             _texture = texture;
             _tileData = tileData;
 
@@ -43,11 +43,11 @@
         private void RenderSprite() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);
 
-            float rotation = 0f; Vector2 origin = Vector2.Zero; float layerDepth = 0.5f;
+            float rotation = 0f; Vector2 origin = Vector2.Zero;
 
             Vector2 scale = new Vector2(Owner.Camera.Scale);
 
-            Owner.SpriteBatch.Draw(_texture,position,_tileData.Source,_tileData.Color,rotation,origin,scale,_tileData.SpriteEffects,layerDepth);
+            Owner.SpriteBatch.Draw(_texture,position,_tileData.Source,_tileData.Color,rotation,origin,scale,_tileData.SpriteEffects,LayerDepth);
         }
     }
 }

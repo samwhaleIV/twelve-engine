@@ -8,9 +8,11 @@ namespace TwelveEngine.Game2D.Entities {
         private Fixture Fixture { get; set; }
 
         public Vector2 Size { get; private init; }
+        public Vector2 Origin { get; private init; }
 
-        public PhysicsEntity2D(Vector2 size) {
+        public PhysicsEntity2D(Vector2 size,Vector2 origin) {
             Size = size;
+            Origin = origin;
             OnLoad += PhysicsEntity2D_OnLoad;
             OnUnload += PhysicsEntity2D_OnUnload;
         }
@@ -47,7 +49,7 @@ namespace TwelveEngine.Game2D.Entities {
 
             float density = 1f;
 
-            Vector2 offset = new Vector2(-0.5f) * Owner.PhysicsScale;
+            Vector2 offset = -Origin * Owner.PhysicsScale;
             Fixture = Body.CreateRectangle(size.X,size.Y,density,offset);
 
             Fixture.Friction = _friction;
