@@ -1,4 +1,5 @@
 ﻿using nkast.Aether.Physics2D.Dynamics;
+using System.Collections.Immutable;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Shell;
 
@@ -51,7 +52,7 @@ namespace TwelveEngine.Game2D {
                     if(TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,BACKGROUND_LAYER),out tileData)) {
                         SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,0f,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,BACKGROUND_DEPTH);
                     }
-                    if(TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,FOREGROUND_LAYER),out tileData)) {
+                    if(TileMap.LayerCount > 1 && TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,FOREGROUND_LAYER),out tileData)) {
                         SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,0f,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,FOREGROUND_DEPTH);
                     }
                     renderOrigin.Y += tileSize.Y;
@@ -112,7 +113,8 @@ namespace TwelveEngine.Game2D {
                 }
             }
             var terrainBody = PhysicsWorld.CreateBody(new Vector2(-0.5f*PhysicsScale,-0.5f*PhysicsScale),0f,BodyType.Static);
-            foreach(var edge in tileEdgeDetector.CreateEdges()) {
+            var edges = tileEdgeDetector.CreateEdges().ToImmutableList();
+            foreach(var edge in edges) {
                 var fixture = terrainBody.CreateEdge(edge.Item1 * PhysicsScale,edge.Item2 * PhysicsScale);
                 fixture.Friction = surfaceFriction;
             }

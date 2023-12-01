@@ -7,23 +7,33 @@ namespace TwelveEngine.Game2D.Entities {
         protected Body Body { get; private set; }
         private Fixture Fixture { get; set; }
 
-        private Vector2 _size;
+        public Vector2 Size { get; private init; }
 
         public PhysicsEntity2D(Vector2 size) {
-            _size = size;
+            Size = size;
             OnLoad += PhysicsEntity2D_OnLoad;
             OnUnload += PhysicsEntity2D_OnUnload;
         }
 
+        private Vector2 _position;
+
         protected override Vector2 GetPosition() {
+            if(!IsLoaded) {
+                return _position;
+            }
             return Body.Position / Owner.PhysicsScale;
         }
 
         protected override void SetPosition(Vector2 position) {
+            if(!IsLoaded) {
+                _position = position;
+                return;
+            }
             Body.Position = position * Owner.PhysicsScale;
         }
 
         private void PhysicsEntity2D_OnLoad() {
+            Vector2 size = Size * Owner.PhysicsScale;
 
             Body = new Body {
                 Position = Vector2.Zero,
@@ -36,13 +46,15 @@ namespace TwelveEngine.Game2D.Entities {
             };
 
             float density = 1f;
-            Vector2 size = _size * Owner.PhysicsScale;
-            Fixture = Body.CreateRectangle(size.X,size.Y,density,Vector2.Zero);
+
+            Vector2 offset = new Vector2(-0.5f) * Owner.PhysicsScale;
+            Fixture = Body.CreateRectangle(size.X,size.Y,density,offset);
 
             Fixture.Friction = _friction;
             Body.LinearDamping = _linearDamping;
             Body.Mass = _mass;
             Fixture.Restitution = _restitution;
+            Body.Position = _position * Owner.PhysicsScale;
 
             Owner.PhysicsWorld.Add(Body);
         }

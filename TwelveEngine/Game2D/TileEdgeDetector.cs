@@ -83,11 +83,11 @@
             Dictionary<Point,EdgeState> openTileSet = GetOpenTileSet();
 
             (Point,Point) ReadEdge(Point start,Point scan,EdgeState edgeType) {
-                openTileSet[start] = openTileSet[start] & edgeType;
+                openTileSet[start] &= ~edgeType;
                 Point head = start + scan;
 
                 while(openTileSet.TryGetValue(head,out EdgeState headType) && (headType & edgeType) != 0) {
-                    openTileSet[head] = openTileSet[head] & edgeType;
+                    openTileSet[head] &= ~edgeType;
                     head += scan;
                 }
 

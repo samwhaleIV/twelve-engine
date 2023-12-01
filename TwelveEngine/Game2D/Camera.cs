@@ -97,7 +97,9 @@ namespace TwelveEngine.Game2D {
         }
 
         public Vector2 GetRenderLocation(Entity2D entity) {
-            return ScreenCenter - (Position - entity.Position + _constraintOffset) * TileSize;
+            Vector2 renderLocation = RenderOrigin + (entity.Position - TileStart.ToVector2()) * TileSize;
+            renderLocation.Round();
+            return renderLocation;
         }
     }
 }

@@ -30,9 +30,14 @@ namespace John {
 
         private void CameraTracking() {
             Camera.Position = grabbyClaw.Position;
+            dot.Position = john.Position;
         }
 
         private GrabbyClaw grabbyClaw;
+
+        private DebugDot dot;
+
+        private WalkingJohn john;
 
         private void LoadGame() {
             Camera.TileInputSize = Constants.INPUT_TILE_SIZE;
@@ -68,6 +73,17 @@ namespace John {
             Entities.Add(new DebugDot() {
                 Position = new Vector2(13f,19f)
             });
+
+            john = new WalkingJohn() {
+                Position = new Vector2(7,14)
+            };
+
+            dot = new DebugDot() {
+                Position = new Vector2(7,14)
+            };
+
+            Entities.Add(john);
+            Entities.Add(dot);
         }
 
         private void DrawPlayerPosition(DebugWriter writer) {

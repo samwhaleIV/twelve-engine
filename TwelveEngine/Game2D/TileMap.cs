@@ -8,6 +8,8 @@ namespace TwelveEngine.Game2D {
 
         public readonly short[,] Data { get; init; }
 
+        public readonly int LayerCount { get; init; }
+
         public bool InRange(int x,int y) {
             return !(x < 0 || y < 0 || x >= Width || y >= Height);
         }
@@ -46,7 +48,7 @@ namespace TwelveEngine.Game2D {
             /* Single layer */
             short[,] tileData = new short[1,width * height];
 
-            TileMap tileMap = new TileMap() { Width = width,Height = height,Data = tileData };
+            TileMap tileMap = new TileMap() { Width = width,Height = height,Data = tileData, LayerCount = 1 };
 
             int y = 0;
 
@@ -90,7 +92,7 @@ namespace TwelveEngine.Game2D {
                 }
             }
 
-            return new TileMap() { Width = mapData.width, Height = mapData.height, Data = tileData };
+            return new TileMap() { Width = mapData.width, Height = mapData.height, Data = tileData, LayerCount = mapData.layers.Length };
         }
     }
 }

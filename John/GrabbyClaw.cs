@@ -47,7 +47,7 @@ namespace John {
         private void GrabbyClaw_OnUpdate() {
             var delta = Owner.Impulse.GetDelta2D();
 
-            _position += delta * 0.04f;
+            _position += delta * 0.01f;
 
             if(_position.X < MinX) {
                 _position.X = MinX;
