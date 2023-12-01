@@ -8,7 +8,6 @@ namespace TwelveEngine.Game2D {
     public sealed class Camera {
 
         public Vector2 Position { get; set; } = Vector2.Zero;
-        public Vector2 PositionOffset { get; set; } = new Vector2(-0.5f);
 
         public float MinX { get; set; } = float.NegativeInfinity;
         public float MinY { get; set; } = float.NegativeInfinity;
@@ -17,7 +16,7 @@ namespace TwelveEngine.Game2D {
         public float MaxY { get; set; } = float.PositiveInfinity;
 
         public Vector2 TileSize { get; private set; } = Vector2.One;
-        public float TileInputSize { get; set; } = 1f;
+        public int TileInputSize { get; set; } = 1;
         public float Scale { get; set; } = 10f;
 
         public Vector2 ScreenSize { get; private set; }
@@ -32,8 +31,8 @@ namespace TwelveEngine.Game2D {
 
         private void UpdateConstraintOffset() {
             _constraintOffset = Vector2.Zero;
-
-            Vector2 screenCenter = Position - PositionOffset;
+            //return;
+            Vector2 screenCenter = Position;
 
             Vector2 topLeft = screenCenter - ScreenCenter / TileSize;
             Vector2 bottomRight = topLeft + ScreenSize / TileSize;
@@ -64,24 +63,41 @@ namespace TwelveEngine.Game2D {
 
             UpdateConstraintOffset();
 
-            Vector2 tileOffset = (Position + PositionOffset + _constraintOffset) * TileSize;
-            tileOffset.X %= TileSize.X; tileOffset.Y %= TileSize.Y;
+            Vector2 cameraPosition = Position + _constraintOffset;
 
-            tileOffset = Vector2.Round(tileOffset);
+            Vector2 tileOffset = cameraPosition;
+            tileOffset.X %= 1; tileOffset.Y %= 1;
+
+            tileOffset = Vector2.Round(tileOffset * TileSize);
 
             Vector2 leftSideTileCount = Vector2.Ceiling((ScreenCenter - tileOffset) / TileSize);
             RenderOrigin = ScreenCenter - leftSideTileCount * TileSize;
 
             RenderOrigin -= tileOffset;
 
-            Vector2 topLeftTileCoordinate = Position - PositionOffset - leftSideTileCount + _constraintOffset;
-            TileStart = Vector2.Floor(topLeftTileCoordinate).ToPoint();
+            Vector2 topLeftTileCoordinate = cameraPosition - leftSideTileCount;
+
+            Vector2 tileStart = topLeftTileCoordinate;
+
+            if(cameraPosition.X > 0) {
+                tileStart.X = MathF.Floor(tileStart.X);
+            } else {
+                tileStart.X = MathF.Ceiling(tileStart.X);
+            }
+
+            if(cameraPosition.Y > 0) {
+                tileStart.Y = MathF.Floor(tileStart.Y);
+            } else {
+                tileStart.Y = MathF.Ceiling(tileStart.Y);
+            }
+
+            TileStart = tileStart.ToPoint();
 
             TileStride = Vector2.Ceiling((ScreenSize - RenderOrigin) / TileSize).ToPoint();
         }
 
         public Vector2 GetRenderLocation(Entity2D entity) {
-            return ScreenCenter - (entity.Position - (Position + PositionOffset - _constraintOffset)) * TileSize;
+            return ScreenCenter - (Position - entity.Position + _constraintOffset) * TileSize;
         }
     }
 }

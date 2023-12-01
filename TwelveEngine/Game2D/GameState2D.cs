@@ -1,9 +1,6 @@
 ﻿using nkast.Aether.Physics2D.Dynamics;
 using TwelveEngine.EntitySystem;
 using TwelveEngine.Shell;
-using System.IO;
-using nkast.Aether.Physics2D.Common.TextureTools;
-using nkast.Aether.Physics2D.Collision;
 
 namespace TwelveEngine.Game2D {
     public class GameState2D:InputGameState, IEntitySorter<Entity2D,GameState2D> {
@@ -20,21 +17,17 @@ namespace TwelveEngine.Game2D {
             OnUpdate.Add(UpdatePhysics);
             OnUpdate.Add(UpdateCamera,EventPriority.Last);
 
-            OnPreRender.Add(PreRenderEntities);
-
             OnRender.Add(RenderMapBackground);
             OnRender.Add(RenderEntities);
-            //OnRender.Add(RenderMapForeground);
-
-
         }
 
         public TileMap TileMap { get; set; } = new TileMap() { Width = 0, Height = 0, Data = null };
         public Texture2D TileMapTexture { get; set; }
-        public readonly Dictionary<ushort,TileData> TileDictionary = new Dictionary<ushort,TileData>();
+        public readonly Dictionary<short,TileData> TileDictionary = new Dictionary<short,TileData>();
 
-        private readonly TileData DebugRedTile = new TileData() { Color = Color.Red,Source = new Rectangle(16,0,16,16) };
-        private readonly TileData DebugBlueTile = new TileData() { Color = Color.Blue,Source = new Rectangle(16,0,16,16) };
+        private const float BACKGROUND_DEPTH = 0.5f, FOREGROUND_DEPTH = 0.75f;
+
+        private const int BACKGROUND_LAYER = 0, FOREGROUND_LAYER = 1;
 
         private void RenderMapBackground() {
 
@@ -45,36 +38,22 @@ namespace TwelveEngine.Game2D {
             Vector2 tileSize = Camera.TileSize, renderOrigin = Camera.RenderOrigin;
             Point tileStride = Camera.TileStride, tileStart = Camera.TileStart;
 
-            TileData tileData = new();
-            float rotation = 0f, layerDepth = 1f;
-
-            bool drawThisTile = false;
-
-            float yStart;
-
-            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            SpriteBatch.Begin(SpriteSortMode.FrontToBack,null,SamplerState.PointClamp);
             for(int x = 0;x < tileStride.X;x++) {
-
-                yStart = renderOrigin.Y;
-
+                float yStart = renderOrigin.Y;
                 for(int y = 0;y < tileStride.Y;y++) {
-
-                    drawThisTile = false;
-
-                    if(x == 0 && y == 0) {
-                        tileData = DebugRedTile;
-                        drawThisTile = true;
-                    } else if(x == tileStride.X - 1 && y == tileStride.Y - 1) {
-                        tileData = DebugBlueTile;
-                        drawThisTile = true;
+                    Point tileIndex = new Point(tileStart.X + x,tileStart.Y + y);
+                    if(!TileMap.InRange(tileIndex)) {
+                        renderOrigin.Y += tileSize.Y;
+                        continue;
                     }
-
-                    drawThisTile = drawThisTile || TileMap.TryGetValue(tileStart.X + x,tileStart.Y + y,out ushort value) && TileDictionary.TryGetValue(value,out tileData);
-
-                    if(drawThisTile) {
-                        SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,rotation,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,layerDepth);
+                    TileData tileData;
+                    if(TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,BACKGROUND_LAYER),out tileData)) {
+                        SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,0f,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,BACKGROUND_DEPTH);
                     }
-
+                    if(TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,FOREGROUND_LAYER),out tileData)) {
+                        SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,0f,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,FOREGROUND_DEPTH);
+                    }
                     renderOrigin.Y += tileSize.Y;
                 }
                 renderOrigin.Y = yStart;
@@ -83,17 +62,10 @@ namespace TwelveEngine.Game2D {
             SpriteBatch.End();
         }
 
-        private void RenderMapForeground() {
-            throw new NotImplementedException();
-        }
-
         public EntityManager<Entity2D,GameState2D> Entities { get; private set; }
+
         private void LoadEntities() => Entities = new EntityManager<Entity2D,GameState2D>(this);
-
         private void UpdateEntities() => Entities.Update();
-
-        //todo: possibly remove, who knows
-        private void PreRenderEntities() => Entities.PreRender();
 
         private void RenderEntities() {
             SpriteBatch.Begin(SpriteSortMode.BackToFront,null,SamplerState.PointClamp);
@@ -121,60 +93,48 @@ namespace TwelveEngine.Game2D {
 
         public IComparer<Entity2D> GetEntitySorter() => new EntityPrioritySorter();
 
-        public void SetTerrain(Vector2 location) {
-
+        public void SetCameraBounds() {
+            Camera.MinX = 0;
+            Camera.MaxX = TileMap.Width;
+            Camera.MinY = 0;
+            Camera.MaxY = TileMap.Height;
         }
 
-        public void ImportTiledCSV(string file,HashSet<ushort> collisionValues,bool setCameraBounds = true,float surfaceFriction = 1f,float surfaceMass = 10f) {
-            string[] lines = File.ReadAllLines(file);
-            int height = lines.Length;
-            int width = 1;
-            string firstLine = lines[0];
-            foreach(char character in firstLine) {
-                if(character == ',') width++;
-            }
-            ushort[] tileData = new ushort[width * height];
-
-            TileMap tileMap = new TileMap() { Width = width, Height = height, Data = tileData };
-
-            int y = 0;
-
-            var tileEdgeDetector = new TileEdgeDetector(width,height);
-
-            foreach(var line in lines) {
-                string[] splitLine = line.Split(',',StringSplitOptions.TrimEntries);
-                if(splitLine.Length != width) {
-                    throw new IndexOutOfRangeException("Row does not contain the correct quantity of values.");
-                }
-                for(int x = 0;x<width;x++) {
-                    if(!ushort.TryParse(splitLine[x],out ushort tileValue)) {
+        public void GenerateWorldCollision(Func<short,bool> isCollision,float surfaceFriction = 1f) {
+            var tileEdgeDetector = new TileEdgeDetector(TileMap.Width,TileMap.Height);
+            for(int x = 0;x<TileMap.Width;x++) {
+                for(int y = 0;y<TileMap.Height;y++) {
+                    short tileValue = TileMap.GetValue(x,y);
+                    if(!isCollision(tileValue)) {
                         continue;
                     }
-                    if(collisionValues.Contains(tileValue)) {
-                        tileEdgeDetector.AddCollision(x,y);
-                    }
-                    tileMap.SetValue(x,y,tileValue);
+                    tileEdgeDetector.AddCollision(x,y);
                 }
-                y++;
             }
-
             var terrainBody = PhysicsWorld.CreateBody(new Vector2(-0.5f*PhysicsScale,-0.5f*PhysicsScale),0f,BodyType.Static);
-            terrainBody.Mass = surfaceMass;
-
             foreach(var edge in tileEdgeDetector.CreateEdges()) {
                 var fixture = terrainBody.CreateEdge(edge.Item1 * PhysicsScale,edge.Item2 * PhysicsScale);
                 fixture.Friction = surfaceFriction;
             }
+        }
 
-            TileMap = tileMap;
-
-            if(!setCameraBounds) {
-                return;
+        public void GenerateGenericTileDictionary(int tileSize,int spriteSheetColumns,int spriteSheetRows) {
+            for(int x = 0;x<spriteSheetColumns;x++) {
+                for(int y = 0;y<spriteSheetRows;y++) {
+                    TileDictionary.Add((short)(y * spriteSheetColumns + x),new TileData() {
+                        Source = new Rectangle(x*tileSize,y*tileSize,tileSize,tileSize),
+                        Color = Color.White,
+                        SpriteEffects = SpriteEffects.None
+                    });
+                }
             }
-            Camera.MinX = 0;
-            Camera.MaxX = width;
-            Camera.MinY = 0;
-            Camera.MaxY = height;
+        }
+
+        public void GenerateGenericTileDictionary() {
+            int tileSize = Camera.TileInputSize;
+            int spriteSheetColumns = TileMapTexture.Width / tileSize;
+            int spriteSheetRows = TileMapTexture.Height / tileSize;
+            GenerateGenericTileDictionary(tileSize,spriteSheetColumns,spriteSheetRows);
         }
     }
 }

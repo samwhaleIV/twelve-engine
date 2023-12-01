@@ -8,7 +8,7 @@ namespace TwelveEngine.Game2D {
     public sealed class TestGame2D:GameState2D {
 
         private static class Constants {
-            public const float INPUT_TILE_SIZE = 16f;
+            public const int INPUT_TILE_SIZE = 16;
             public const float CAMERA_SCALE = 10f;
 
             public const float GRAVITY = 200f;
@@ -44,7 +44,10 @@ namespace TwelveEngine.Game2D {
             OnWriteDebug.Add(DrawPlayerPosition);
 
             TileMapTexture = Content.Load<Texture2D>(Constants.TILEMAP_TEXTURE);
-            ImportTiledCSV(Constants.MAP_CSV_FILE,new HashSet<ushort> { 1 },setCameraBounds: true,surfaceFriction: Constants.SURFACE_FRICTION,surfaceMass: Constants.SURFACE_MASS);
+            TileMap = TileMap.CreateFromCSV(Constants.MAP_CSV_FILE);
+            SetCameraBounds();
+            GenerateWorldCollision(tileValue => tileValue == 1);
+
             TileDictionary.Add(1,new TileData() {
                 Color = Color.White,
                 Source = new Rectangle(16,0,16,16)

@@ -17,11 +17,11 @@ namespace John {
         }
 
         private static GameState GetStartState() {
-            return new TestGame2D();
+            return new JohnCollectionGame();
         }
 
         private void StartEngine(string[] args) {
-            string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"TwelveEngineTest");
+            string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"JohnCollectionGame");
             EngineMain(saveDirectory,args);
         }
 

@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManagerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\IEntitySorter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\DebugDot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\PhysicsEntity2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TestSquare.cs" />

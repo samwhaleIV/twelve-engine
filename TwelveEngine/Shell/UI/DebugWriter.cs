@@ -174,9 +174,9 @@ namespace TwelveEngine.Shell.UI {
 
         public void Write(Vector2 vector,string label = null) {
             WriteLabel(label);
-            sb.AppendFormat(NUMBER_FORMAT,vector.X);
+            sb.AppendFormat(NUMBER_FORMAT_LONG,vector.X);
             sb.Append(", ");
-            sb.AppendFormat(NUMBER_FORMAT,vector.Y);
+            sb.AppendFormat(NUMBER_FORMAT_LONG,vector.Y);
             DrawString();
         }
 

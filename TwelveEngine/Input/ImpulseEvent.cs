@@ -2,7 +2,7 @@
     public readonly struct ImpulseEvent {
         public readonly Impulse Impulse;
 
-        public readonly bool Pressed;
+        public readonly bool Pressed { get; private init; }
         public readonly bool Released => !Pressed;
 
         private ImpulseEvent(Impulse impulse,bool pressed) {
