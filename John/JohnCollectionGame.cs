@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TwelveEngine;
 using TwelveEngine.Game2D;
 using TwelveEngine.Game2D.Entities;
 using TwelveEngine.Shell.UI;
@@ -10,83 +11,61 @@ using TwelveEngine.Shell.UI;
 namespace John {
     public sealed class JohnCollectionGame:GameState2D {
 
-        private static class Constants {
-            public const int INPUT_TILE_SIZE = 16;
-            public const float CAMERA_SCALE = 10f;
-
-            public const float GRAVITY = 200f;
-
-            public const string TILEMAP_TEXTURE = "spritesheet";
-            public const string MAP_FILE = "john-collection.json";
-
-            public const float PHYSICS_SIM_SCALE = 8f;
-        }
+        private GrabbyClaw grabbyClaw;
+        private readonly PoolOfJohns _johnPool;
+        public JohnDecorator JohnDecorator { get; private set; }
 
         public JohnCollectionGame() {
             OnLoad.Add(LoadGame);
             OnUpdate.Add(CameraTracking);
+            OnUnload.Add(UnloadGame);
             PhysicsScale = Constants.PHYSICS_SIM_SCALE;
+            _johnPool = new PoolOfJohns(this);
         }
 
         private void CameraTracking() {
             Camera.Position = grabbyClaw.Position;
-            dot.Position = john.Position;
         }
-
-        private GrabbyClaw grabbyClaw;
-
-        private DebugDot dot;
-
-        private WalkingJohn john;
 
         private void LoadGame() {
             Camera.TileInputSize = Constants.INPUT_TILE_SIZE;
             Camera.Scale = Constants.CAMERA_SCALE;
 
-            OnWriteDebug.Add(DrawPlayerPosition);
+            OnWriteDebug.Add(DrawDebugText);
 
             TileMapTexture = Content.Load<Texture2D>(Constants.TILEMAP_TEXTURE);
+            JohnDecorator = new JohnDecorator(GraphicsDevice,TileMapTexture,Constants.JOHN_ANIMATION_SOURCE);
             TileMap = TileMap.CreateFromJSON(Constants.MAP_FILE);
 
-            SetCameraBounds();
-            Camera.MaxY -= 0.75f;
-            Camera.MinX += 0.25F;
-            Camera.MaxX -= 0.25f;
-
-            GenerateGenericTileDictionary();
-
-            HashSet<short> nonCollidingTiles = new() { 81, 97, 113 };
-            GenerateWorldCollision(tileValue => !nonCollidingTiles.Contains(tileValue));
+            GenerateWorldCollision(tileValue => !Constants.NON_COLLIDING_TILES.Contains(tileValue));
 
             PhysicsWorld.Gravity = new Vector2(0,Constants.GRAVITY);
 
+            SetCameraBounds();
+            Camera.MinX += Constants.CAM_OFFSET_MIN_X;
+            Camera.MaxX += Constants.CAM_OFFSET_MAX_X;
+            Camera.MinY += Constants.CAM_OFFSET_MIN_Y;
+            Camera.MaxY += Constants.CAM_OFFSET_MAX_Y;
+
+            GenerateGenericTileDictionary();
+
             grabbyClaw = new GrabbyClaw() {
-                MinX = 22 / 16f,
-                MaxX = TileMap.Width - 22 / 16F,
-                MinY = 0.5f,
-                MaxY = TileMap.Height - 20 / 16f
+                MinX = Constants.CLAW_OFFSET_MIN_X,
+                MaxX = TileMap.Width + Constants.CLAW_OFFSET_MIN_X,
+                MinY = Constants.CLAW_OFFSET_MIN_Y,
+                MaxY = TileMap.Height - Constants.CLAW_OFFSET_MAX_Y,
+                Position = Constants.GRABBY_CLAW_START_POS
             };
 
-            grabbyClaw.Position = new Vector2(13f,19f);
             Entities.Add(grabbyClaw);
-
-            Entities.Add(new DebugDot() {
-                Position = new Vector2(13f,19f)
-            });
-
-            john = new WalkingJohn() {
-                Position = new Vector2(7,14)
-            };
-
-            dot = new DebugDot() {
-                Position = new Vector2(7,14)
-            };
-
-            Entities.Add(john);
-            Entities.Add(dot);
         }
 
-        private void DrawPlayerPosition(DebugWriter writer) {
+        private void UnloadGame() {
+            JohnDecorator?.Unload();
+            JohnDecorator = null;
+        }
+
+        private void DrawDebugText(DebugWriter writer) {
             writer.ToTopLeft();
             writer.Write(Camera.Position,"Camera Position");
             writer.Write(Camera.TileStart,"Tile Start");

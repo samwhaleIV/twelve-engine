@@ -15,7 +15,7 @@ namespace John {
         public GrabbyClaw() {
             OnRender += GrabbyClaw_OnRender;
             OnUpdate += GrabbyClaw_OnUpdate;
-            OnLoad +=GrabbyClaw_OnLoad;
+            OnLoad += GrabbyClaw_OnLoad;
             OnUnload +=GrabbyClaw_OnUnload;
         }
 
