@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,23 +65,32 @@ namespace John {
             return colorChannel;
         }
 
-        private void DrawConfig(int originX,int originY,(int ID,JohnConfig Value) config) {
+        private static Color MultiplyPreserveAlpha(Color value,float scale) {
+            return new Color((int)(value.R * scale),(int)(value.G * scale),(int)(value.B * scale),value.A);
+        }
 
-            Color red = config.Value.Color1, green = config.Value.Color2, blue = config.Value.Color3;
+        private static Color ChannelShading(Color color,byte gradient) {
+            return MultiplyPreserveAlpha(color,(float)gradient / byte.MaxValue);
+        }
+
+        private void DrawConfig(Point origin,JohnConfig config) {
+            /* Shaded colors */
+            Color r = config.Color1, g = config.Color2, b = config.Color3;
 
             for(int x = 0;x<_sourceDataSize.X;x++) {
                 for(int y = 0;y<_sourceDataSize.Y;y++) {
                     Color color = GetSourceColor(x,y);
-                    color = GetColorChannel(color) switch {
-                        ColorChannel.Red => red * color.R, ColorChannel.Green => green * color.G, ColorChannel.Blue => blue * color.B,
+                    color = GetColorChannel(GetSourceColor(x,y)) switch {
+                        ColorChannel.Red => ChannelShading(r,color.R), ColorChannel.Green => ChannelShading(g,color.G), ColorChannel.Blue => ChannelShading(b,color.B),
                         _ => color
                     };
-                    SetOutputColor(originX+x,originY+y,color);
+                    SetOutputColor(origin.X+x,origin.Y+y,color);
                 }
             }
         }
 
-        public void RegenerateTexture() {
+        public void GenerateTexture() {
+            spriteOrigins.Clear();
 
             int horizontalBlocks = _renderTarget.Width / JOHN_BLOCK_SIZE, verticalBlocks = _renderTarget.Height / JOHN_BLOCK_SIZE;
 
@@ -92,16 +102,25 @@ namespace John {
                         breakLoop = true;
                         break;
                     }
-                    DrawConfig(x*horizontalBlocks,y * verticalBlocks,config);
+                    Point origin = new Point(x * JOHN_BLOCK_SIZE,y * JOHN_BLOCK_SIZE);
+                    DrawConfig(origin,config.Value);
+                    spriteOrigins.Add(config.ID,origin);
+
                     if(!johnConfigs.TryDequeue(out config)) {
                         breakLoop = true;
                         break;
                     }
-                    DrawConfig(x*horizontalBlocks,y * verticalBlocks + JOHN_HEIGHT,config);
+                    origin.Y += JOHN_HEIGHT;
+                    DrawConfig(origin,config.Value);
+                    spriteOrigins.Add(config.ID,origin);
                 }
             }
 
             _renderTarget.SetData(_outputData);
+
+            using(Stream file = File.Create("decorator_debug.png")) {
+                _renderTarget.SaveAsPng(file,_renderTarget.Width,_renderTarget.Height);
+            }
         }
 
         public Point GetTextureOrigin(int configID) {

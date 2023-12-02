@@ -13,7 +13,7 @@ namespace John {
 
         private readonly JohnDecorator _decorator;
 
-        public WalkingJohn(JohnDecorator johnDecorator) : base(new Vector2(14/16f),new Vector2(0.5f)) {
+        public WalkingJohn(JohnDecorator johnDecorator) : base(new Vector2(9/16f,1f),new Vector2(0.5f)) {
             _decorator = johnDecorator;
             OnRender += WalkingJohn_OnRender;
             OnUpdate += WalkingJohn_OnUpdate;
@@ -46,7 +46,7 @@ namespace John {
             int frameNumber = (int)Math.Floor(now / Constants.WALKING_ANIMATION_FRAME_LENGTH);
 
             /* Staggered animation pattern: { 0, 1, 0, 2 } */
-            return frameNumber % Constants.WALKING_ANIMATION_FRAME_COUNT switch { 0 => 0, 1 => 1, 2 => 0, 3 => 2, _ => 0 };
+            return (frameNumber % Constants.WALKING_ANIMATION_FRAME_COUNT) switch { 0 => 0, 1 => 1, 2 => 0, 3 => 2, _ => 0 };
         }
 
         private TimeSpan _walkingStart = TimeSpan.Zero; //TODO: Set to time when walking starts
@@ -72,7 +72,7 @@ namespace John {
             Vector2 scale = new Vector2(Owner.Camera.Scale);
 
             Rectangle textureSource = GetTextureSource();
-            SpriteEffects spriteEffects = SpriteEffects.None;
+            SpriteEffects spriteEffects = GetSpriteEffects();
 
             Vector2 origin = textureSource.Size.ToVector2() * Origin;
 

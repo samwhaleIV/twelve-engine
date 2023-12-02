@@ -15,6 +15,8 @@ namespace John {
         private readonly PoolOfJohns _johnPool;
         public JohnDecorator JohnDecorator { get; private set; }
 
+        public Random Random { get; private init; } = new Random(0);
+
         public JohnCollectionGame() {
             OnLoad.Add(LoadGame);
             OnUpdate.Add(CameraTracking);
@@ -58,6 +60,14 @@ namespace John {
             };
 
             Entities.Add(grabbyClaw);
+
+            for(int i = 0;i<32;i++) {
+                JohnDecorator.AddConfig(i,JohnConfig.CreateRandom(Random));
+            }
+
+            JohnDecorator.GenerateTexture();
+
+            var testJohn = _johnPool.LeaseJohn(new Vector2(8,13),0);
         }
 
         private void UnloadGame() {
