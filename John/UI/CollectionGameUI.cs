@@ -35,9 +35,9 @@ namespace John.UI {
         }
 
         public override BookElement Open() {
-            _book.TestElement.Scale = 1;
-            _book.TestElement.Flags = ElementFlags.Update;
-            return _book.TestElement;
+            //_book.TestElement.Scale = 1;
+            //_book.TestElement.Flags = ElementFlags.Update;
+            return null;
         }
 
         public override void Update() {

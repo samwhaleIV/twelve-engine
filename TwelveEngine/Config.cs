@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace TwelveEngine {
+﻿namespace TwelveEngine {
 
     public static class Config {
 

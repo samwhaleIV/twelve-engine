@@ -159,7 +159,7 @@ namespace John {
                 return false;
             }
 
-            Vector2 summoningLocation = JOHN_SPAWN_LOCATIONS[Random.Next(0,JOHN_SPAWN_LOCATIONS.Length)];
+            var startPosition = JOHN_SPAWN_LOCATIONS[Random.Next(0,JOHN_SPAWN_LOCATIONS.Length)];
 
             int configID;
             
@@ -170,8 +170,7 @@ namespace John {
                 configID = Random.Next(1,JOHN_CONFIG_COUNT);
             }
 
-            bool movementPolarity = GetRandomBool();
-            WalkingJohn john = _johnPool.LeaseJohn(summoningLocation,configID,movementPolarity);
+            WalkingJohn john = _johnPool.LeaseJohn(configID,startPosition);
             activeJohns.Add(john);
 
             _lastSummoning = Now + JOHN_SUMMON_VARIABILITY * Random.NextDouble();

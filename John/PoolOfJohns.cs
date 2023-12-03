@@ -7,9 +7,9 @@ namespace John {
 
         private JohnCollectionGame _game;
 
-        public WalkingJohn LeaseJohn(Vector2 position,int configID,bool movementPolarity) {
+        public WalkingJohn LeaseJohn(int configID,JohnStartPosition startPosition) {
             int poolID = Lease(out WalkingJohn john);
-            john.Enable(poolID,position,movementPolarity);
+            john.Enable(poolID,startPosition);
             john.ConfigID = configID;
             return john;
         }
@@ -26,6 +26,7 @@ namespace John {
         protected override WalkingJohn CreateNew() {
             var john = new WalkingJohn(_game);
             _game.Entities.Add(john);
+            john.Disable();
             return john;
         }
 

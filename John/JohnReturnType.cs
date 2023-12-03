@@ -5,5 +5,5 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace John {
-    public enum JohnReturnType { PitOfDoom, JohnBin, NotJohnBin }
+    public enum JohnReturnType { Default, JohnBin, NotJohnBin }
 }

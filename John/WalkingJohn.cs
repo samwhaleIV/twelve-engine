@@ -14,21 +14,15 @@ namespace John {
 
         private readonly JohnCollectionGame _game;
 
-        private readonly float _johnMinX = JOHN_EDGE_LIMIT, _johnMaxX, _johnMaxY, _leftResetX = JOHN_EDGE_LIMIT + JOHN_EDGE_SWAP_MARGIN, _rightResetX;
-
         public WalkingJohn(JohnCollectionGame johnCollectionGame) : base(new Vector2(9/16f,1f),new Vector2(0.5f)) {
             _game = johnCollectionGame;
             OnRender += WalkingJohn_OnRender;
             OnUpdate += WalkingJohn_OnUpdate;
             OnLoad += WalkingJohn_OnLoad;
 
-            LinearDamping = JOHN_LINEAR_DAMPING;
             Restitution = 0f;
+            LinearDamping = JOHN_LINEAR_DAMPING;
             Friction = JOHN_FRICTION;
-
-            _johnMaxX =  _game.TileMap.Width - JOHN_EDGE_LIMIT;
-            _johnMaxY =  _game.TileMap.Height - JOHN_EDGE_LIMIT;
-            _rightResetX = _johnMaxX - JOHN_EDGE_SWAP_MARGIN;
         }
 
         private void WalkingJohn_OnLoad() {
@@ -43,13 +37,34 @@ namespace John {
             _collisionList.Remove(other);
         }
 
+        private void LandedOnSurface() {
+            if(_game.GetRandomBool()) {
+                return;
+            }
+            ChangeDirection();
+        }
+
+        private bool _hasCollisionWithWorld = false;
+
         private bool Body_OnCollision(Fixture sender,Fixture other,Contact contact) {
             _collisionList.Add(other);
+
+            bool hadCollisionWithWorld = _hasCollisionWithWorld;
+            _hasCollisionWithWorld = false;
+            foreach(var fixture in _collisionList) {
+                if(fixture.CollisionCategories == Category.Cat1) {
+                    _hasCollisionWithWorld = true;
+                }
+            }
+
+            if(!hadCollisionWithWorld && _hasCollisionWithWorld) {
+                LandedOnSurface();
+            }
             return true;
         }
 
         private TimeSpan _lastDirectionChangeTime = TimeSpan.Zero;
-        private static readonly TimeSpan _directionChangeTimeout = TimeSpan.FromSeconds(0.2f);
+        private static readonly TimeSpan _directionChangeTimeout = TimeSpan.FromSeconds(0.3f);
 
         private void ChangeDirection() {
             if(Now - _lastDirectionChangeTime >  _directionChangeTimeout) {
@@ -59,29 +74,6 @@ namespace John {
         }
 
         private float _movementForceModifier = 1f;
-
-        private TimeSpan _lastWalkingTime = TimeSpan.Zero, _lastWalkingResetTime = TimeSpan.Zero;
-
-        private TimeSpan _stuckTimeout = _stuckTimeoutBase;
-
-        private static readonly TimeSpan _stuckTimeoutBase = TimeSpan.FromSeconds(1f), _stuckTimeoutVariability = TimeSpan.FromSeconds(0.8f);
-
-        private TimeSpan GetRandomDirectionSwapTimeout() {
-            return _stuckTimeoutBase + _stuckTimeoutVariability * _game.Random.NextDouble() * 2 - _stuckTimeoutVariability;
-        }
-
-        private void NotMovingDetection() {
-            if(!ShouldApplyForce) {
-                return;
-            }
-            if(IsMoving) {
-                _lastWalkingTime = Now;
-                _stuckTimeout = GetRandomDirectionSwapTimeout();
-            } else if(Now - _lastWalkingTime > _stuckTimeout && Now - _lastWalkingResetTime > _stuckTimeout) {
-                _lastWalkingResetTime = Now;
-                ChangeDirection();
-            }
-        }
 
         private void SetDirectionForFinalDestination() {
             if(Position.Y < SCORING_Y_LIMIT) {
@@ -98,13 +90,20 @@ namespace John {
             }
         }
 
-        private void WalkingJohn_OnUpdate() {
-            NotMovingDetection();
+        private TimeSpan _notBeingPushedStart = TimeSpan.Zero;
+        private static readonly TimeSpan _pushingHoldDuration = TimeSpan.FromSeconds(0.125f);
 
+        private void WalkingJohn_OnUpdate() {
+            if(!Body.Enabled) {
+                return;
+            }
             SetDirectionForFinalDestination();
 
-            if(Position.Y < SCORING_Y_LIMIT && BeingPushed) {
+            if(!(BeingPushed || ShouldApplyForce && !IsMovingReasonably)) {
+                _notBeingPushedStart = Now;
+            } else if(Now - _notBeingPushedStart > _pushingHoldDuration) {
                 ChangeDirection();
+                _notBeingPushedStart = Now;
             }
 
             if(ShouldApplyForce) {
@@ -115,42 +114,35 @@ namespace John {
         }
 
         private void LimitPosition() {
-            if(Position.X < _johnMinX) {
+            if(Position.X < 1) {
                 if(Position.Y > SCORING_Y_LIMIT) {
                     _game.ReturnJohn(this,JohnReturnType.JohnBin);
-                    return;
+                } else {
+                    _game.ReturnJohn(this,JohnReturnType.Default);
                 }
-                Vector2 position = Position;
-                position.X = _rightResetX;
-                Position = position;
-                _movementForceModifier = -MathF.Abs(_movementForceModifier);
-            } else if(Position.X > _johnMaxX) {
+            } else if(Position.X > _game.TileMap.Width - 1) {
                 if(Position.Y > SCORING_Y_LIMIT) {
                     _game.ReturnJohn(this,JohnReturnType.NotJohnBin);
-                    return;
+                } else {
+                    _game.ReturnJohn(this,JohnReturnType.Default);
                 }
-                Vector2 position = Position;
-                position.X = _leftResetX;
-                Position = position;
-                _movementForceModifier = MathF.Abs(_movementForceModifier);
-            }
-            if(Position.Y > _johnMaxY) {
-                _game.ReturnJohn(this,JohnReturnType.PitOfDoom);
+            } else if(Position.Y > _game.TileMap.Height - 1) {
+                _game.ReturnJohn(this,JohnReturnType.Default);
             }
         }
 
         private bool ShouldApplyForce {
             get {
                 if(_collisionList.Count > 0) {
-                    /* If I am only colliding with category 2 fixtures, don't apply force. */
+                    /* If I am colliding with only Cat2 fixtures who are below me, do not apply force. */
                     foreach(var fixture in _collisionList) {
-                        if(!fixture.CollisionCategories.HasFlag(Category.Cat2)) {
+                        if(!(fixture.CollisionCategories.HasFlag(Category.Cat2) && fixture.Body.Position.Y > Position.Y)) {
                             return true;
                         }
                     }
                     return false;
                 } else {
-                    /* If I am midair, do not apply movement force. */
+                    /* If I am midair, do not apply force. */
                     return false;
                 }
             }
@@ -158,12 +150,18 @@ namespace John {
 
         public int PoolID { get; private set; } = -1;
 
-        public void Enable(int poolID,Vector2 position,bool movementPolarity) {
+        public void Enable(int poolID,JohnStartPosition startPosition) {
             PoolID = poolID;
-            Position = position;
+            Position = startPosition.Value;
             Body.Enabled = true;
             Body.LinearVelocity = Vector2.Zero;
-            _movementForceModifier = movementPolarity ? 1 : -1;
+            float movementPolarity = startPosition.Direction switch {
+                JohnStartPositionDirection.FacingLeft => -1,
+                JohnStartPositionDirection.FacingRight => 1,
+                _ => _game.GetRandomBool() ? 1 : -1,
+            };
+            _movementForceModifier = MathF.Abs(_movementForceModifier) * movementPolarity;
+            _lastDirectionChangeTime = Now + _directionChangeTimeout;
         }
 
         public void Disable() {
@@ -172,22 +170,32 @@ namespace John {
             PoolID = -1;
         }
 
-        public bool IsMoving {
+        public bool IsMovingReasonably {
             get {
-                float velocityX = Math.Abs(Body.LinearVelocity.X);
-                return velocityX > WALKING_ANIMATION_VELOCITY_THRESHIOLD;
+                return Math.Abs(Body.LinearVelocity.X) > WALKING_VELOCITY_DETECTION_THRESHOLD;
+            }
+        }
+
+        public bool OnGround {
+            get {
+                foreach(var fixture in _collisionList) {
+                    if(fixture.CollisionCategories == Category.Cat1) {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
 
         public bool BeingPushed {
             get {
-                return ShouldApplyForce && MathF.Sign(Body.LinearVelocity.X) != MathF.Sign(_movementForceModifier);
+                return IsMovingReasonably && OnGround && MathF.Sign(Body.LinearVelocity.X) != MathF.Sign(_movementForceModifier);
             }
         }
 
-        public bool AnimateWalking {
+        public bool ShowWalkingAnimation {
             get {
-                return ShouldApplyForce && IsMoving && _collisionList.Count > 0 && !BeingPushed;
+                return ShouldApplyForce && IsMovingReasonably && _collisionList.Count > 0 && !BeingPushed;
             }
         }
 
@@ -208,7 +216,7 @@ namespace John {
             Point location = _game.Decorator.GetTextureOrigin(ConfigID);
             Point size = (Size * Owner.Camera.TileInputSize).ToPoint();
 
-            if(AnimateWalking) {
+            if(ShowWalkingAnimation) {
                 location.X += GetAnimationFrameOffset(Owner.Now - _walkingStart) * size.X;
             }
 
