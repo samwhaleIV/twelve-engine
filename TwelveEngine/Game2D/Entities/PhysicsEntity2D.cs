@@ -1,11 +1,10 @@
 ﻿using nkast.Aether.Physics2D.Dynamics;
-using System.Drawing;
 
 namespace TwelveEngine.Game2D.Entities {
     public abstract class PhysicsEntity2D:Entity2D {
 
-        protected Body Body { get; private set; }
-        private Fixture Fixture { get; set; }
+        public Body Body { get; private set; }
+        public Fixture Fixture { get; private set; }
 
         public Vector2 Size { get; private init; }
         public Vector2 Origin { get; private init; }

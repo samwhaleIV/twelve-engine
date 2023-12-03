@@ -3,23 +3,21 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace John {
+
+    using static Constants;
+
     public sealed class JohnDecorator {
 
         public Texture2D Texture => _renderTarget;
         private RenderTarget2D _renderTarget;
 
-        private const int MAX_CONFIGS = 32, JOHN_BLOCK_SIZE = 32, JOHN_HEIGHT = 16;
-
         private readonly Color[] _outputData, _inputData;
         private readonly Point _sourceDataSize;
 
         public JohnDecorator(GraphicsDevice graphicsDevice,Texture2D texture,Rectangle textureSource) {
-            int size = (int)Math.Sqrt(MAX_CONFIGS / 2) * JOHN_BLOCK_SIZE;
+            int size = (int)Math.Sqrt(JOHN_CONFIG_COUNT / 2) * JOHN_BLOCK_SIZE;
             _renderTarget = new RenderTarget2D(graphicsDevice,size,size,false,SurfaceFormat.Color,DepthFormat.None,0,RenderTargetUsage.PreserveContents);
             _outputData = new Color[size*size];
 
@@ -38,7 +36,7 @@ namespace John {
         }
 
         public void AddConfig(int ID,JohnConfig johnConfig) {
-            if(johnConfigs.Count >= MAX_CONFIGS) {
+            if(johnConfigs.Count >= JOHN_CONFIG_COUNT) {
                 throw new IndexOutOfRangeException("Too many John configs! The texture will overflow!");
             }
             johnConfigs.Enqueue((ID,johnConfig));
@@ -117,7 +115,9 @@ namespace John {
             }
 
             _renderTarget.SetData(_outputData);
+        }
 
+        public void WriteTextureToFile() {
             using(Stream file = File.Create("decorator_debug.png")) {
                 _renderTarget.SaveAsPng(file,_renderTarget.Width,_renderTarget.Height);
             }

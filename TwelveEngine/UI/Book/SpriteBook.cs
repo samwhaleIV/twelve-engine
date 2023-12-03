@@ -1,4 +1,5 @@
 ﻿using TwelveEngine.Shell;
+using TwelveEngine.Shell.UI;
 
 namespace TwelveEngine.UI.Book {
     public abstract class SpriteBook:Book<SpriteElement> {
@@ -31,6 +32,14 @@ namespace TwelveEngine.UI.Book {
 
         protected override bool GetRightMouseButtonIsCaptured() {
             return owner?.Mouse.CapturingRight ?? false;
+        }
+
+        protected override TimeSpan GetCurrentTime() {
+            return owner?.Now ?? TimeSpan.Zero;
+        }
+
+        protected override FloatRectangle GetViewport() {
+            return new FloatRectangle(owner?.Viewport ?? new Viewport());
         }
     }
 }

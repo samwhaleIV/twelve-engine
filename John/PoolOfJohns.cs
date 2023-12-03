@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using TwelveEngine;
 
 namespace John {
@@ -6,9 +7,9 @@ namespace John {
 
         private JohnCollectionGame _game;
 
-        public WalkingJohn LeaseJohn(Vector2 position,int configID) {
+        public WalkingJohn LeaseJohn(Vector2 position,int configID,bool movementPolarity) {
             int poolID = Lease(out WalkingJohn john);
-            john.Enable(poolID,position);
+            john.Enable(poolID,position,movementPolarity);
             john.ConfigID = configID;
             return john;
         }
@@ -23,7 +24,7 @@ namespace John {
         }
 
         protected override WalkingJohn CreateNew() {
-            var john = new WalkingJohn(_game.JohnDecorator);
+            var john = new WalkingJohn(_game);
             _game.Entities.Add(john);
             return john;
         }

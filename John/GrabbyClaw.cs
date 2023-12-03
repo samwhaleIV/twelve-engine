@@ -16,7 +16,7 @@ namespace John {
             OnRender += GrabbyClaw_OnRender;
             OnUpdate += GrabbyClaw_OnUpdate;
             OnLoad += GrabbyClaw_OnLoad;
-            OnUnload +=GrabbyClaw_OnUnload;
+            OnUnload += GrabbyClaw_OnUnload;
         }
 
         private void GrabbyClaw_OnUnload() {
@@ -47,7 +47,7 @@ namespace John {
         private void GrabbyClaw_OnUpdate() {
             var delta = Owner.Impulse.GetDelta2D();
 
-            _position += delta * 0.01f;
+            _position += delta * Constants.CLAW_SPEED;
 
             if(_position.X < MinX) {
                 _position.X = MinX;
