@@ -1,9 +1,11 @@
 ﻿using John.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.Collections.Generic;
 using TwelveEngine.Game2D;
+using TwelveEngine.Game2D.Entities;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.UI.Book;
@@ -14,11 +16,13 @@ namespace John {
 
     public sealed class JohnCollectionGame:GameState2D {
 
-        private GrabbyClaw grabbyClaw;
-        private readonly PoolOfJohns _johnPool;
+        public GrabbyClaw GrabbyClaw { get; private set; }
+        public PoolOfJohns JohnPool { get; private init; }
         public JohnDecorator Decorator { get; private set; }
 
         public Random Random { get; private init; } = new Random(0);
+
+        private DebugDot dot;
 
         public JohnCollectionGame() {
             Name = "John Collection Game";
@@ -33,11 +37,12 @@ namespace John {
             OnRender.Add(RenderUI);
 
             PhysicsScale = PHYSICS_SIM_SCALE;
-            _johnPool = new PoolOfJohns(this);
+            JohnPool = new PoolOfJohns(this);
         }
 
         private void CameraTracking() {
-            Camera.Position = grabbyClaw.Position;
+            Camera.Position = GrabbyClaw.Position;
+            dot.Position = GrabbyClaw.Position;
         }
 
         private void LoadGame() {
@@ -63,18 +68,22 @@ namespace John {
                 Camera.MaxY += CAM_OFFSET_MAX_Y;
             }
 
-            grabbyClaw = new GrabbyClaw() {
+            GrabbyClaw = new GrabbyClaw(this) {
                 MinX = CLAW_OFFSET_MIN_X,
                 MaxX = TileMap.Width + CLAW_OFFSET_MAX_X,
                 MinY = CLAW_OFFSET_MIN_Y,
                 MaxY = TileMap.Height + CLAW_OFFSET_MAX_Y,
-                Position = GRABBY_CLAW_START_POS
+                Position = GRABBY_CLAW_START_POS,
+                Priority = EntityPriority.Low
             };
 
-            Entities.Add(grabbyClaw);
+            Entities.Add(GrabbyClaw);
             UI = new CollectionGameUI(TileMapTexture,this);
 
             StartGame(); //TODO: MAKE USER INITIATED THROUGH UI
+
+            dot = new DebugDot();
+            Entities.Add(dot);
         }
 
         private void UnloadGame() {
@@ -170,7 +179,7 @@ namespace John {
                 configID = Random.Next(1,JOHN_CONFIG_COUNT);
             }
 
-            WalkingJohn john = _johnPool.LeaseJohn(configID,startPosition);
+            WalkingJohn john = JohnPool.LeaseJohn(configID,startPosition);
             activeJohns.Add(john);
 
             _lastSummoning = Now + JOHN_SUMMON_VARIABILITY * Random.NextDouble();
@@ -198,7 +207,11 @@ namespace John {
             }
 
             activeJohns.Remove(john);
-            _johnPool.ReturnJohn(john);
+            JohnPool.ReturnJohn(john);
+        }
+
+        public Fixture TestPoint(Vector2 point) {
+            return PhysicsWorld.TestPoint(point * PhysicsScale);
         }
 
         private void UpdateGame() {

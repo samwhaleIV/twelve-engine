@@ -26,6 +26,15 @@ namespace TwelveEngine.Game2D {
             return Data[layer,point.Y * Width + point.X];
         }
 
+        public bool TryGetValue(Point point,out short value,int layer = 0) {
+            if(!InRange(point)) {
+                value = 0;
+                return false;
+            }
+            value = Data[layer,point.Y * Width + point.X];
+            return true;
+        }
+
         public void SetValue(int x,int y,short value,int layer = 0) {
             Data[layer,y * Width + x] = value;
         }

@@ -170,13 +170,13 @@ namespace John {
             PoolID = -1;
         }
 
-        public bool IsMovingReasonably {
+        private  bool IsMovingReasonably {
             get {
                 return Math.Abs(Body.LinearVelocity.X) > WALKING_VELOCITY_DETECTION_THRESHOLD;
             }
         }
 
-        public bool OnGround {
+        private bool OnGround {
             get {
                 foreach(var fixture in _collisionList) {
                     if(fixture.CollisionCategories == Category.Cat1) {
@@ -187,19 +187,19 @@ namespace John {
             }
         }
 
-        public bool BeingPushed {
+        private bool BeingPushed {
             get {
                 return IsMovingReasonably && OnGround && MathF.Sign(Body.LinearVelocity.X) != MathF.Sign(_movementForceModifier);
             }
         }
 
-        public bool ShowWalkingAnimation {
+        private bool ShowWalkingAnimation {
             get {
                 return ShouldApplyForce && IsMovingReasonably && _collisionList.Count > 0 && !BeingPushed;
             }
         }
 
-        public bool FacingRight => MathF.Sign(_movementForceModifier) >= 0;
+        private bool FacingRight => MathF.Sign(_movementForceModifier) >= 0;
 
         public int ConfigID { get; set; } = -1;
 
@@ -226,10 +226,12 @@ namespace John {
         public SpriteEffects GetSpriteEffects() {
             return FacingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
         }
+        
+        public bool IsGrabbed { get; set; }
 
         private void WalkingJohn_OnRender() {
             //TODO: Offscreen filtering
-            if(!Body.Enabled) {
+            if(!Body.Enabled && !IsGrabbed) {
                 return;
             }
             Vector2 position = Owner.Camera.GetRenderLocation(this);

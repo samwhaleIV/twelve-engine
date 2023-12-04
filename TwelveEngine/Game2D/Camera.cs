@@ -101,5 +101,11 @@ namespace TwelveEngine.Game2D {
             renderLocation.Round();
             return renderLocation;
         }
+
+        public Vector2 GetRenderLocation(Vector2 point) {
+            Vector2 renderLocation = RenderOrigin + (point - TileStart.ToVector2()) * TileSize;
+            renderLocation.Round();
+            return renderLocation;
+        }
     }
 }

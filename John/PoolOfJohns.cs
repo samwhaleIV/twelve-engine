@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+﻿using nkast.Aether.Physics2D.Dynamics;
 using System.Collections.Generic;
 using TwelveEngine;
 
@@ -23,11 +23,18 @@ namespace John {
             _game = game;
         }
 
+        private Dictionary<Fixture,WalkingJohn> _fixtureTable = new Dictionary<Fixture,WalkingJohn>();
+
         protected override WalkingJohn CreateNew() {
             var john = new WalkingJohn(_game);
             _game.Entities.Add(john);
+            _fixtureTable[john.Fixture] = john;
             john.Disable();
             return john;
+        }
+
+        public bool TryGetJohn(Fixture fixture,out WalkingJohn john) {
+            return _fixtureTable.TryGetValue(fixture, out john);
         }
 
         protected override void Reset(WalkingJohn item) {

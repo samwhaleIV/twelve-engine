@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace John {
     public static class Constants {
         public const int INPUT_TILE_SIZE = 16;
-        public const float CAMERA_SCALE = 8f;
+        public const float CAMERA_SCALE = 10f;
 
         public const float GRAVITY = 600f;
 

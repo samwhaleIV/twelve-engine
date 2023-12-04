@@ -7,12 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using TwelveEngine.Game2D;
 using TwelveEngine.Input;
+using nkast.Aether.Physics2D.Dynamics;
 
 namespace John {
     public sealed class GrabbyClaw:Entity2D {
 
+        private readonly JohnCollectionGame _game;
 
-        public GrabbyClaw() {
+        public GrabbyClaw(JohnCollectionGame game) {
+            _game = game;
             OnRender += GrabbyClaw_OnRender;
             OnUpdate += GrabbyClaw_OnUpdate;
             OnLoad += GrabbyClaw_OnLoad;
@@ -38,10 +41,58 @@ namespace John {
         public float MaxX { get; set; } = float.PositiveInfinity;
         public float MaxY { get; set; } = float.PositiveInfinity;
 
-        public bool IsGripping { get; set; }
+        public bool IsGripping { get; private set; } = false;
+
 
         private void ToggleGrip() {
-            IsGripping = !IsGripping;
+            if(IsGripping) {
+                Release();
+            } else {
+                Grab();
+            }
+        }
+
+        private WalkingJohn _heldJohn = null;
+
+        public void Release() {
+            if(!IsGripping) {
+                return;
+            }
+
+            if(_heldJohn == null) {
+                IsGripping = false;
+                return;
+            }
+
+            if(!_game.TileMap.TryGetValue(Vector2.Floor(_position).ToPoint(),out short value) || !Constants.NON_COLLIDING_TILES.Contains(value)) {
+                return;
+            }
+
+            _heldJohn.Body.Enabled = true;
+            _heldJohn.IsGrabbed = false;
+            _heldJohn = null;
+            IsGripping = false;
+        }
+
+        public void Grab() {
+            if(IsGripping) {
+                return;
+            }
+            IsGripping = true;
+            var fixture = _game.TestPoint(_position - new Vector2(0.5f,0.5f));
+            if(fixture == null) {
+                return;
+            }
+            if(!fixture.CollisionCategories.HasFlag(Category.Cat2)) {
+                return;
+            }
+            if(!_game.JohnPool.TryGetJohn(fixture,out WalkingJohn john)) {
+                return;
+            }
+            john.Body.Enabled = false;
+            john.IsGrabbed = true;
+            _game.Camera.GetRenderLocation(john);
+            _heldJohn = john;
         }
 
         private void GrabbyClaw_OnUpdate() {
@@ -60,11 +111,16 @@ namespace John {
             } else if(_position.Y >= MaxY) {
                 _position.Y = MaxY;
             }
+
+            if(_heldJohn == null) {
+                return;
+            }
+
+            _heldJohn.Position = _position;
         }
 
         private readonly Rectangle ClosedClawSource = new Rectangle(80,16,32,32);
         private readonly Rectangle OpenClawSource = new Rectangle(112,16,32,32);
-
         private readonly Rectangle RopeSource = new Rectangle(80,0,32,16);
 
         private void GrabbyClaw_OnRender() {
