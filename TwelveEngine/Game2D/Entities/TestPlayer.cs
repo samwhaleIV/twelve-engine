@@ -1,10 +1,10 @@
 ﻿namespace TwelveEngine.Game2D.Entities {
-    public sealed class Player:PhysicsEntity2D {
+    public sealed class TestPlayer:PhysicsEntity2D {
 
         private readonly Texture2D _texture;
         private readonly TileData _tileData;
 
-        public Player(Texture2D texture,TileData tileData) : base(new Vector2(1,1),Vector2.Zero) {
+        public TestPlayer(Texture2D texture,TileData tileData) : base(new Vector2(1,1),Vector2.Zero) {
             _texture = texture;
             _tileData = tileData;
 
@@ -18,27 +18,6 @@
             var delta = Owner.Impulse.GetDelta2D(allowSpeedModifiers: false) * ImpulseForce;
             Body.ApplyLinearImpulse(delta);
         }
-
-        //private bool wasDown = false;
-        //private void ApplyInput() {
-        //    Body.Enabled = false;
-        //    var delta = Owner.Impulse.GetDelta2D(allowSpeedModifiers: true);
-        //    if(wasDown && delta == Vector2.Zero) {
-        //        wasDown = false;
-        //        return;
-        //    }
-        //    if(wasDown && !Owner.Impulse.IsImpulseDown(Input.Impulse.Focus)) {
-        //        return;
-        //    }
-        //    if(delta == Vector2.Zero) {
-        //        return;
-        //    }
-        //    var change = delta * (1 / Owner.Camera.TileSize);
-        //    if(!float.IsNaN(change.X) && !float.IsNaN(change.Y)) {
-        //        Position += change;
-        //    }
-        //    wasDown = true;
-        //}
 
         private void RenderSprite() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);

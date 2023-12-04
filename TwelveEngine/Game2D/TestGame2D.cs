@@ -34,7 +34,7 @@ namespace TwelveEngine.Game2D {
             PhysicsScale = Constants.PHYSICS_SIM_SCALE;
         }
 
-        private Player _player;
+        private TestPlayer _player;
 
 
         private void LoadGame() {
@@ -57,7 +57,7 @@ namespace TwelveEngine.Game2D {
                 Source = new Rectangle(32,0,16,16)
             });
 
-            _player = new Player(TileMapTexture,new TileData() {
+            _player = new TestPlayer(TileMapTexture,new TileData() {
                 Color = Color.White,
                 Source = new Rectangle(80,0,16,16)
             }) {

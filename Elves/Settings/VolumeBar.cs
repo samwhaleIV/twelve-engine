@@ -34,7 +34,11 @@ namespace Elves.Settings {
             _value = value;
             Texture = Program.Textures.SettingsPhone;
             TextureSource = new(200,61,54,12);
-            OnRender += RenderVolumeDots;
+        }
+
+        protected override void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
+            base.Draw(spriteBatch,texture,sourceArea);
+            RenderVolumeDots(spriteBatch);
         }
 
         private Vector2 _destination;

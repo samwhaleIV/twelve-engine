@@ -23,10 +23,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\DebugDot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\PhysicsEntity2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\Player.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entities\TestSquare.cs" />
+    <Compile Include="..\TwelveEngine\Game2D\Entities\TestPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\Entity2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game2D\EntityPriority.cs" />
+    <Compile Include="..\TwelveEngine\Game2D\EntityUpdatePriority.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\GameState2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TestGame2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game2D\TileData.cs" />

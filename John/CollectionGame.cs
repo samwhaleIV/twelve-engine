@@ -69,7 +69,7 @@ namespace John {
                 MinY = CLAW_OFFSET_MIN_Y,
                 MaxY = TileMap.Height + CLAW_OFFSET_MAX_Y,
                 Position = GRABBY_CLAW_START_POS,
-                Priority = EntityPriority.Low
+                UpdatePriority = EntityUpdatePriority.Low
             };
 
             Entities.Add(GrabbyClaw);

@@ -84,11 +84,11 @@ namespace TwelveEngine.Game2D {
 
         public sealed class EntityPrioritySorter:IComparer<Entity2D> {
             public int Compare(Entity2D entityA,Entity2D entityB) {
-                EntityPriority priorityA = entityA.Priority, priorityB = entityB.Priority;
+                EntityUpdatePriority priorityA = entityA.UpdatePriority, priorityB = entityB.UpdatePriority;
                 if(priorityA == priorityB) {
                     return entityA.ID.CompareTo(entityB.ID);
                 }
-                return entityA.Priority.CompareTo(entityB.Priority);
+                return entityA.UpdatePriority.CompareTo(entityB.UpdatePriority);
             }
         }
 

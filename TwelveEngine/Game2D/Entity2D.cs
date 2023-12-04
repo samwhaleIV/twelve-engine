@@ -2,8 +2,8 @@
 
 namespace TwelveEngine.Game2D {
     public abstract class Entity2D:Entity<GameState2D> {
-        private EntityPriority _priority = EntityPriority.Neutral;
-        public EntityPriority Priority {
+        private EntityUpdatePriority _priority = EntityUpdatePriority.Neutral;
+        public EntityUpdatePriority UpdatePriority {
             get => _priority;
             set {
                 if(value == _priority) {

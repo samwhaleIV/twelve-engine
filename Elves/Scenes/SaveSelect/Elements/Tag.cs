@@ -50,8 +50,6 @@ namespace Elves.Scenes.SaveSelect {
 
             PositionMode = CoordinateMode.Relative;
 
-            OnRender += Draw;
-
             Endpoint = new Endpoint<Tag>(this);
         }
 
@@ -80,7 +78,8 @@ namespace Elves.Scenes.SaveSelect {
             blipAnimator.Reset(now);
         }
 
-        public void Draw(SpriteBatch spriteBatch) {
+        protected override void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
+            base.Draw(spriteBatch,texture,sourceArea);
             if(Display != TagDisplay.Custom || DrawingFrame is null) {
                 return;
             }

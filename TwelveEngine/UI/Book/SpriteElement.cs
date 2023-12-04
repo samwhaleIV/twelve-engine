@@ -6,7 +6,7 @@
 
         public float Depth { get; set; } = 0.5f;
 
-        public Action<SpriteBatch> OnRender;
+        //public Action<SpriteBatch> OnRender;
 
         public float HeightToWidth {
             get {
@@ -73,7 +73,6 @@
 
         public void Render(SpriteBatch spriteBatch) {
             Draw(spriteBatch,Texture,TextureSource);
-            OnRender?.Invoke(spriteBatch);
         }
 
         public Point GetComputedCenterPoint() {
