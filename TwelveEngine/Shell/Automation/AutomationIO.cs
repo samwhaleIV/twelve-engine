@@ -87,13 +87,17 @@ namespace TwelveEngine.Shell.Automation {
             if(File.Exists(defaultFile)) {
                 return defaultFile;
             }
-
-            var file = Directory.EnumerateFiles(
-                Directory.GetCurrentDirectory(),$"{Constants.PlaybackFolder}\\*.{Constants.PlaybackFileExt}"
-            ).OrderByDescending(name => name).FirstOrDefault();
-
+            string file;
+            try {
+                file = Directory.EnumerateFiles(
+                    Directory.GetCurrentDirectory(),$"{Constants.PlaybackFolder}\\*.{Constants.PlaybackFileExt}"
+                ).OrderByDescending(name => name).FirstOrDefault();
+            } catch(DirectoryNotFoundException) {
+                return null;
+            }
             return file;
         }
+
         internal static string PrepareOutputPath() {
             var folder = Constants.PlaybackFolder;
             var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExt}";

@@ -7,9 +7,9 @@ using nkast.Aether.Physics2D.Dynamics;
 namespace John {
     public sealed class GrabbyClaw:Entity2D {
 
-        private readonly JohnCollectionGame _game;
+        private readonly CollectionGame _game;
 
-        public GrabbyClaw(JohnCollectionGame game) {
+        public GrabbyClaw(CollectionGame game) {
             _game = game;
             OnRender += GrabbyClaw_OnRender;
             OnUpdate += GrabbyClaw_OnUpdate;

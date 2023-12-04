@@ -21,7 +21,7 @@ namespace John {
         public const float CLAW_SPEED = 0.02f;
 
         public const float CAM_OFFSET_MIN_X = 2.5f, CAM_OFFSET_MAX_X = -2.5F, CAM_OFFSET_MIN_Y = 2.5f, CAM_OFFSET_MAX_Y = -2.5F;
-        public const float CLAW_OFFSET_MIN_X = 3f, CLAW_OFFSET_MAX_X = -3f, CLAW_OFFSET_MIN_Y = 3.25f, CLAW_OFFSET_MAX_Y = -3.5f;
+        public const float CLAW_OFFSET_MIN_X = 3.25f, CLAW_OFFSET_MAX_X = -3.25f, CLAW_OFFSET_MIN_Y = 3.5f, CLAW_OFFSET_MAX_Y = -3.5f;
 
         public static readonly HashSet<short> NON_COLLIDING_TILES = new() { 81,97,113,16 };
 
@@ -49,7 +49,6 @@ namespace John {
         };
 
         public const int MAX_ARENA_JOHNS = 64;
-        public const float REAL_JOHN_PROBABILITY = 0.12f;
 
         public static readonly TimeSpan JOHN_SUMMON_COOLDOWN = TimeSpan.FromSeconds(0.5f);
         public static readonly TimeSpan JOHN_SUMMON_VARIABILITY = TimeSpan.FromSeconds(0);
@@ -68,8 +67,10 @@ namespace John {
 
         public const int MASK_TYPE_COUNT = 32;
 
-        public const float KILL_IMPOSTER_JOHN_PROBABILITY = 0.5f;
+        public const float KILL_IMPOSTER_JOHN_PROBABILITY = 0.75f, REAL_JOHN_PROBABILITY = 0.1f;
 
         public const int ROUND_COMPLETION_COUNT = 5;
+
+        public const float SCORING_MARGIN_OFFSET_X = 3f, SCORING_MARGIN_OFFSET_Y = 1.5f, RESET_MARGIN_OFFSET = 1;
     }
 }

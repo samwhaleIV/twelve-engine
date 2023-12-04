@@ -5,7 +5,7 @@ using TwelveEngine;
 namespace John {
     public sealed class PoolOfJohns:PoolSet<WalkingJohn> {
 
-        private JohnCollectionGame _game;
+        private CollectionGame _game;
 
         public WalkingJohn LeaseJohn(int configID,JohnStartPosition startPosition) {
             int poolID = Lease(out WalkingJohn john);
@@ -19,7 +19,7 @@ namespace John {
             john.Disable();
         }
 
-        public PoolOfJohns(JohnCollectionGame game) {
+        public PoolOfJohns(CollectionGame game) {
             _game = game;
         }
 

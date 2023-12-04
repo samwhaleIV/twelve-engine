@@ -17,7 +17,7 @@ namespace John {
         }
 
         private static GameState GetStartState() {
-            return new JohnCollectionGame();
+            return new CollectionGame();
         }
 
         private void StartEngine(string[] args) {

@@ -12,7 +12,7 @@ namespace John {
 
     using static Constants;
 
-    public sealed class JohnCollectionGame:GameState2D {
+    public sealed class CollectionGame:GameState2D {
 
         public GrabbyClaw GrabbyClaw { get; private set; }
         public PoolOfJohns JohnPool { get; private init; }
@@ -20,7 +20,7 @@ namespace John {
 
         public Random Random { get; private init; } = new Random(0);
 
-        public JohnCollectionGame() {
+        public CollectionGame() {
             Name = "John Collection Game";
             OnLoad.Add(LoadGame);
 
@@ -124,6 +124,9 @@ namespace John {
 
         private readonly List<List<int>> _maskTable = new();
         private readonly List<JohnTypeMask> _maskTypes = new();
+        private int _maskTypeIndex = 0;
+
+        private readonly JohnMatchType FirstMatchType = JohnMatchType.Pants;
 
         public void StartGame() {
             _configDictionary.Clear();
@@ -134,7 +137,11 @@ namespace John {
             _maskTable.Clear();
 
             for(int maskID = 0;maskID<MASK_TYPE_COUNT;maskID++) {
-                _maskTypes.Add(JohnTypeMask.GetRandom(Random,maskID));
+                _maskTypes.Add(new JohnTypeMask() {
+                    Color = JohnConfig.GetRandomColor(Random),
+                    ID = maskID,
+                    Type = (JohnMatchType)(((int)FirstMatchType + maskID) % 3)
+                });
                 _maskTable.Add(new List<int>());
             }
 
@@ -147,13 +154,15 @@ namespace John {
                 _configDictionary[configID] = config;
             }
 
-            SelectRandomJohnType();
+            _maskTypeIndex = 0;
+            RealJohnMask = _maskTypes[_maskTypeIndex++];
             FindRealJohnMode = true;
             Decorator.GenerateTexture();
         }
 
-        private void SelectRandomJohnType() {
-            RealJohnMask = _maskTypes[Random.Next(0,_maskTypes.Count)];
+        private void SelectNextJohnType() {
+            RealJohnMask = _maskTypes[_maskTypeIndex];
+            _maskTypeIndex = (_maskTypeIndex + 1) % _maskTypes.Count;
         }
 
         private HashSet<WalkingJohn> activeJohns = new();
@@ -196,7 +205,7 @@ namespace John {
             return true;
         }
 
-        public List<JohnConfig> BinBuffer { get; private init; } = new();
+        public List<int> BinBuffer { get; private init; } = new();
 
         public bool JohnMatchesConfig(WalkingJohn john) {
             var config = _configDictionary[john.ConfigID];
@@ -240,7 +249,7 @@ namespace John {
                 if(FindRealJohnMode) {
                     if(johnIsJohn) {
                         Score++;
-                        BinBuffer.Add(_configDictionary[john.ConfigID]);
+                        BinBuffer.Add(john.ConfigID);
                         JohnSaved?.Invoke();
                     } else {
                         Score--;
@@ -259,7 +268,7 @@ namespace John {
                     }
                 } else {
                     Score++;
-                    BinBuffer.Add(_configDictionary[john.ConfigID]);
+                    BinBuffer.Add(john.ConfigID);
                     ImposterKilled?.Invoke();
                 }
             }
@@ -269,7 +278,7 @@ namespace John {
                 Score += 5;
                 FindRealJohnMode = !FindRealJohnMode;
                 if(FindRealJohnMode) {
-                    SelectRandomJohnType();
+                    SelectNextJohnType();
                 }
             }
 

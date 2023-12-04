@@ -12,9 +12,9 @@ namespace John {
 
     public sealed class WalkingJohn:PhysicsEntity2D {
 
-        private readonly JohnCollectionGame _game;
+        private readonly CollectionGame _game;
 
-        public WalkingJohn(JohnCollectionGame johnCollectionGame) : base(new Vector2(9/16f,1f),new Vector2(0.5f)) {
+        public WalkingJohn(CollectionGame johnCollectionGame) : base(new Vector2(9/16f,1f),new Vector2(0.5f)) {
             _game = johnCollectionGame;
             OnRender += WalkingJohn_OnRender;
             OnUpdate += WalkingJohn_OnUpdate;
@@ -114,19 +114,15 @@ namespace John {
         }
 
         private void LimitPosition() {
-            if(Position.X < 1) {
-                if(Position.Y > SCORING_Y_LIMIT) {
+            if(Position.Y > SCORING_Y_LIMIT) {
+                if(Position.X < SCORING_MARGIN_OFFSET_X) {
                     _game.ReturnJohn(this,JohnReturnType.JohnBin);
-                } else {
-                    _game.ReturnJohn(this,JohnReturnType.Default);
-                }
-            } else if(Position.X > _game.TileMap.Width - 1) {
-                if(Position.Y > SCORING_Y_LIMIT) {
+                } else if(Position.X > _game.TileMap.Width - SCORING_MARGIN_OFFSET_X) {
                     _game.ReturnJohn(this,JohnReturnType.NotJohnBin);
-                } else {
+                } else if(Position.Y >  _game.TileMap.Height - SCORING_MARGIN_OFFSET_Y) {
                     _game.ReturnJohn(this,JohnReturnType.Default);
                 }
-            } else if(Position.Y > _game.TileMap.Height - 1) {
+            } else if(Position.X < RESET_MARGIN_OFFSET || Position.X > _game.TileMap.Width - RESET_MARGIN_OFFSET) {
                 _game.ReturnJohn(this,JohnReturnType.Default);
             }
         }

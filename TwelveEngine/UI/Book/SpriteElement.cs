@@ -58,7 +58,7 @@
             Scale = newScale;
         }
 
-        protected void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
+        protected virtual void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
             FloatRectangle destination = ComputedArea;
 
             //destination.Position = Vector2.Round(Position);
