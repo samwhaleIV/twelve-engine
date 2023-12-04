@@ -117,37 +117,43 @@ namespace John {
 
         private void RenderUI() => UI?.Render(SpriteBatch);
 
-        public bool GameActive { get; private set; }
-
-        public JohnMatchType MatchType { get; private set; }
-        public Color MatchColor { get; private set; }
+        public JohnTypeMask RealJohnMask { get; private set; }
+        public bool FindRealJohnMode { get; private set; } = true;
 
         private readonly Dictionary<int,JohnConfig> _configDictionary = new();
 
+        private readonly List<List<int>> _maskTable = new();
+        private readonly List<JohnTypeMask> _maskTypes = new();
+
         public void StartGame() {
-            if(GameActive) {
-                throw new InvalidOperationException("Game already active.");
-            }
             _configDictionary.Clear();
-            Score.Reset();
+            Score = 0;
             Decorator.ResetConfigs();
 
-            /* There is a very small possibility for a randomly generated john to surpass `REAL_JOHN_COUNT` */
+            _maskTypes.Clear();
+            _maskTable.Clear();
 
-            MatchColor = JohnConfig.GetRandomColor(Random);
-            MatchType = (JohnMatchType)Random.Next(0,3);
-
-            for(int i = 0;i<JOHN_CONFIG_COUNT;i++) {
-                var config = JohnConfig.CreateRandom(Random);
-                if(i < REAL_JOHN_COUNT) {
-                    config = config.Mask(MatchType,MatchColor);
-                }
-                Decorator.AddConfig(i,config);
-                _configDictionary[i] = config;
+            for(int maskID = 0;maskID<MASK_TYPE_COUNT;maskID++) {
+                _maskTypes.Add(JohnTypeMask.GetRandom(Random,maskID));
+                _maskTable.Add(new List<int>());
             }
 
+            for(int configID = 0;configID<JOHN_CONFIG_COUNT;configID++) {
+                var config = JohnConfig.CreateRandom(Random);
+                var mask = _maskTypes[configID % _maskTypes.Count];
+                config = config.ApplyMask(mask);
+                Decorator.RegisterConfig(configID,config);
+                _maskTable[mask.ID].Add(configID);
+                _configDictionary[configID] = config;
+            }
+
+            SelectRandomJohnType();
+            FindRealJohnMode = true;
             Decorator.GenerateTexture();
-            GameActive = true;
+        }
+
+        private void SelectRandomJohnType() {
+            RealJohnMask = _maskTypes[Random.Next(0,_maskTypes.Count)];
         }
 
         private HashSet<WalkingJohn> activeJohns = new();
@@ -156,6 +162,14 @@ namespace John {
 
         public bool GetRandomBool() {
             return Random.Next() > int.MaxValue / 2;
+        }
+
+        private float GetRealJohnProbability() {
+            if(FindRealJohnMode) {
+                return REAL_JOHN_PROBABILITY;
+            } else {
+                return KILL_IMPOSTER_JOHN_PROBABILITY;
+            }
         }
 
         private bool TrySummonJohn() {
@@ -167,10 +181,11 @@ namespace John {
 
             int configID;
             
-            if(Random.NextSingle() < REAL_JOHN_PROBABILITY) {
-                configID = Random.Next(0,REAL_JOHN_COUNT);
+            if(Random.NextSingle() < GetRealJohnProbability()) {
+                var configList = _maskTable[RealJohnMask.ID];
+                configID = configList[Random.Next(0,configList.Count)];
             } else {
-                configID = Random.Next(REAL_JOHN_COUNT,JOHN_CONFIG_COUNT);
+                configID = Random.Next(0,JOHN_CONFIG_COUNT);
             }
 
             WalkingJohn john = JohnPool.LeaseJohn(configID,startPosition);
@@ -181,33 +196,80 @@ namespace John {
             return true;
         }
 
-        public ScoreCard Score { get; private init; } = new ScoreCard();
-
-        public List<JohnConfig> CorrectJohnBinBuffer { get; private init; } = new();
+        public List<JohnConfig> BinBuffer { get; private init; } = new();
 
         public bool JohnMatchesConfig(WalkingJohn john) {
             var config = _configDictionary[john.ConfigID];
-            return MatchType switch {
-                JohnMatchType.Hair => config.Color1, JohnMatchType.Shirt => config.Color2, JohnMatchType.Pants => config.Color3,
+            return RealJohnMask.Type switch {
+                JohnMatchType.Hair => config.Color1,
+                JohnMatchType.Shirt => config.Color2,
+                JohnMatchType.Pants => config.Color3,
                 _ => Color.Transparent
-            } == MatchColor;
+            } ==  RealJohnMask.Color;
         }
 
+        private int _score = 0;
+        public int Score {
+            get => _score;
+            set {
+                if(_score == value) {
+                    return;
+                }
+                if(value > _score) {
+                    _score = value;
+                    ScoreIncreased?.Invoke();
+                } else {
+                    _score = value;
+                    ScoreDecreased?.Invoke();
+                }
+            }
+        }
+
+        public event Action JohnSaved, IncorrectJohnSaved, ImposterKilled, RealJohnKilled, WrongBin, ScoreIncreased, ScoreDecreased;
+
         public void ReturnJohn(WalkingJohn john,JohnReturnType johnReturnType) {
+            if(johnReturnType == JohnReturnType.Default) {
+                activeJohns.Remove(john);
+                JohnPool.ReturnJohn(john);
+                return;
+            }
+
             bool johnIsJohn = JohnMatchesConfig(john);
 
             if(johnReturnType == JohnReturnType.JohnBin) {
-                if(johnIsJohn) {
-                    Score.JohnInJohnBin++;
+                if(FindRealJohnMode) {
+                    if(johnIsJohn) {
+                        Score++;
+                        BinBuffer.Add(_configDictionary[john.ConfigID]);
+                        JohnSaved?.Invoke();
+                    } else {
+                        Score--;
+                        IncorrectJohnSaved?.Invoke();
+                    }
                 } else {
-                    Score.NotJohnInJohnBin++;
+                    WrongBin?.Invoke();
                 }
-                CorrectJohnBinBuffer.Add(_configDictionary[john.ConfigID]);
-            } else if(johnReturnType == JohnReturnType.NotJohnBin) {
-                if(johnIsJohn) {
-                    Score.JohnInNotJohnBin++;
+            } else {
+                if(FindRealJohnMode) {
+                    if(johnIsJohn) {
+                        Score--;
+                        RealJohnKilled?.Invoke();
+                    } else {
+                        WrongBin?.Invoke();
+                    }
                 } else {
-                    Score.NotJohnInNotJohnBin++;
+                    Score++;
+                    BinBuffer.Add(_configDictionary[john.ConfigID]);
+                    ImposterKilled?.Invoke();
+                }
+            }
+
+            if(BinBuffer.Count == ROUND_COMPLETION_COUNT) {
+                BinBuffer.Clear();
+                Score += 5;
+                FindRealJohnMode = !FindRealJohnMode;
+                if(FindRealJohnMode) {
+                    SelectRandomJohnType();
                 }
             }
 
@@ -215,17 +277,11 @@ namespace John {
             JohnPool.ReturnJohn(john);
         }
 
-        public Fixture TestPoint(Vector2 point) {
-            return PhysicsWorld.TestPoint(point * PhysicsScale);
-        }
-
         private void UpdateGame() {
-            if(!GameActive) {
+            if(!(activeJohns.Count < MAX_ARENA_JOHNS)) {
                 return;
             }
-            if(activeJohns.Count < MAX_ARENA_JOHNS) {
-                TrySummonJohn();
-            }
+            TrySummonJohn();
         }
     }
 }

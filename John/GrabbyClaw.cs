@@ -1,10 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TwelveEngine.Game2D;
 using TwelveEngine.Input;
 using nkast.Aether.Physics2D.Dynamics;
@@ -79,7 +74,10 @@ namespace John {
                 return;
             }
             IsGripping = true;
-            var fixture = _game.TestPoint(_position - new Vector2(0.5f,0.5f));
+
+            /* I am absolutely baffled why this offset is required. I have no idea why it needs one. */
+            var fixture = _game.TestPoint(_position - new Vector2(0.5f));
+
             if(fixture == null) {
                 return;
             }

@@ -32,7 +32,7 @@ namespace John {
 
         public static readonly Rectangle JOHN_ANIMATION_SOURCE = new Rectangle(16,16,27,16);
 
-        public const int JOHN_SPRITESHEET_SIZE = 256, JOHN_BLOCK_SIZE = 32, JOHN_HEIGHT = 16;
+        public const int JOHN_SPRITESHEET_SIZE = 512, JOHN_BLOCK_SIZE = 32, JOHN_HEIGHT = 16;
 
         public const int JOHN_CONFIG_COUNT = (JOHN_SPRITESHEET_SIZE / JOHN_BLOCK_SIZE) * (JOHN_SPRITESHEET_SIZE / JOHN_BLOCK_SIZE) * 2;
 
@@ -49,7 +49,7 @@ namespace John {
         };
 
         public const int MAX_ARENA_JOHNS = 64;
-        public const float REAL_JOHN_PROBABILITY = 0.1f;
+        public const float REAL_JOHN_PROBABILITY = 0.12f;
 
         public static readonly TimeSpan JOHN_SUMMON_COOLDOWN = TimeSpan.FromSeconds(0.5f);
         public static readonly TimeSpan JOHN_SUMMON_VARIABILITY = TimeSpan.FromSeconds(0);
@@ -66,6 +66,10 @@ namespace John {
 
         public const float GOOD_BIN_X = 8, BAD_BIN_X = 22, FREEDOM_HOLE_X = 15;
 
-        public const int REAL_JOHN_COUNT = 16;
+        public const int MASK_TYPE_COUNT = 32;
+
+        public const float KILL_IMPOSTER_JOHN_PROBABILITY = 0.5f;
+
+        public const int ROUND_COMPLETION_COUNT = 5;
     }
 }

@@ -13,25 +13,18 @@ namespace John {
         public Texture2D Texture => Game.TileMapTexture;
         public JohnCollectionGame Game { get; private init; }
 
-        public SpriteElement TestElement { get; private init; }
         public SpriteElement GameTitle { get; private init; }
         public SpriteElement JohnWearsLabel { get; private init; }
         public SpriteElement JohnClothingGuide {  get; private init; }
 
+
         public static readonly Rectangle ShirtSource = new Rectangle(32,240,16,16), PantsSource = new Rectangle(49,240,14,16), HairSource = new Rectangle(64,240,16,16);
+        public static readonly Rectangle FindJohnTextSource = new Rectangle(48,208,64,12), KillFakesTextSource = new Rectangle(112,208,58,12);
 
         public CollectionGameUI(JohnCollectionGame game) : base(game) {
             Game = game;
-            TestElement = AddElement(new SpriteElement() {
-                Texture = Texture,
-                TextureSource = new Rectangle(0,16,16,16),
-                PositionMode = CoordinateMode.Relative,
-                SizeMode = CoordinateMode.Absolute,
-                Offset = new Vector2(-0.5f)
-            });
             GameTitle = AddElement(new SpriteElement() {
                 Texture = Texture,
-                TextureSource = new Rectangle(48,208,64,12),
 
                 PositionModeX = CoordinateMode.Relative,
                 PositionModeY = CoordinateMode.Absolute,
@@ -73,12 +66,10 @@ namespace John {
         }
 
         public override void Close() {
-
+            throw new NotImplementedException();
         }
 
         public override BookElement Open() {
-            //_book.TestElement.Scale = 1;
-            //_book.TestElement.Flags = ElementFlags.Update;
             var title = _book.GameTitle;
             var johnWearsLabel = _book.JohnWearsLabel;
             var clothingGuide = _book.JohnClothingGuide;
@@ -97,8 +88,8 @@ namespace John {
 
         private void UpdateClothingGuide() {
             var clothingGuide = _book.JohnClothingGuide;
-            clothingGuide.Color = Game.MatchColor;
-            clothingGuide.TextureSource = Game.MatchType switch {
+            clothingGuide.Color = Game.RealJohnMask.Color;
+            clothingGuide.TextureSource = Game.RealJohnMask.Type switch {
                 JohnMatchType.Hair => HairSource,
                 JohnMatchType.Shirt => ShirtSource,
                 JohnMatchType.Pants => PantsSource,
@@ -106,7 +97,12 @@ namespace John {
             };
         }
 
+        private void UpdateGameTitle() {
+            _book.GameTitle.TextureSource = Game.FindRealJohnMode ? FindJohnTextSource : KillFakesTextSource;
+        }
+
         public override void Update() {
+            UpdateGameTitle();
             UpdateClothingGuide();
             var title = _book.GameTitle;
             var johnWearsLabel = _book.JohnWearsLabel;

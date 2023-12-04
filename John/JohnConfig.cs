@@ -15,22 +15,22 @@ namespace John {
             Color1 = GetRandomColor(random), Color2 = GetRandomColor(random), Color3 = GetRandomColor(random)
         };
 
-        public JohnConfig Mask(JohnMatchType matchType,Color color) {
-            return matchType switch {
+        public JohnConfig ApplyMask(JohnTypeMask mask) {
+            return mask.Type switch {
                 JohnMatchType.Hair => new JohnConfig() {
-                    Color1 = color,
+                    Color1 = mask.Color,
                     Color2 = Color2,
                     Color3 = Color3
                 },
                 JohnMatchType.Shirt => new JohnConfig() {
                     Color1 = Color1,
-                    Color2 = color,
+                    Color2 = mask.Color,
                     Color3 = Color3
                 },
                 JohnMatchType.Pants => new JohnConfig() {
                     Color1 = Color1,
                     Color2 = Color2,
-                    Color3 = color
+                    Color3 = mask.Color
                 },
                 _ => throw new NotImplementedException()
             };

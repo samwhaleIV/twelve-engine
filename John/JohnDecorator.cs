@@ -35,7 +35,7 @@ namespace John {
             _renderTarget = null;
         }
 
-        public void AddConfig(int ID,JohnConfig johnConfig) {
+        public void RegisterConfig(int ID,JohnConfig johnConfig) {
             if(johnConfigs.Count >= JOHN_CONFIG_COUNT) {
                 throw new IndexOutOfRangeException("Too many John configs! The texture will overflow!");
             }
@@ -79,7 +79,9 @@ namespace John {
                 for(int y = 0;y<_sourceDataSize.Y;y++) {
                     Color color = GetSourceColor(x,y);
                     color = GetColorChannel(GetSourceColor(x,y)) switch {
-                        ColorChannel.Red => ChannelShading(r,color.R), ColorChannel.Green => ChannelShading(g,color.G), ColorChannel.Blue => ChannelShading(b,color.B),
+                        ColorChannel.Red => ChannelShading(r,color.R),
+                        ColorChannel.Green => ChannelShading(g,color.G),
+                        ColorChannel.Blue => ChannelShading(b,color.B),
                         _ => color
                     };
                     SetOutputColor(origin.X+x,origin.Y+y,color);

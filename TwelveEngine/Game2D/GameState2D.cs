@@ -138,5 +138,9 @@ namespace TwelveEngine.Game2D {
             int spriteSheetRows = TileMapTexture.Height / tileSize;
             GenerateGenericTileDictionary(tileSize,spriteSheetColumns,spriteSheetRows);
         }
+
+        public Fixture TestPoint(Vector2 point) {
+            return PhysicsWorld.TestPoint(point * PhysicsScale);
+        }
     }
 }
