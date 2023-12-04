@@ -21,7 +21,7 @@ namespace John {
         public const float CLAW_SPEED = 0.02f;
 
         public const float CAM_OFFSET_MIN_X = 2.5f, CAM_OFFSET_MAX_X = -2.5F, CAM_OFFSET_MIN_Y = 2.5f, CAM_OFFSET_MAX_Y = -2.5F;
-        public const float CLAW_OFFSET_MIN_X = 3f, CLAW_OFFSET_MAX_X = -3f, CLAW_OFFSET_MIN_Y = 3.25f, CLAW_OFFSET_MAX_Y = -3.25f;
+        public const float CLAW_OFFSET_MIN_X = 3f, CLAW_OFFSET_MAX_X = -3f, CLAW_OFFSET_MIN_Y = 3.25f, CLAW_OFFSET_MAX_Y = -3.5f;
 
         public static readonly HashSet<short> NON_COLLIDING_TILES = new() { 81,97,113,16 };
 
@@ -32,9 +32,9 @@ namespace John {
 
         public static readonly Rectangle JOHN_ANIMATION_SOURCE = new Rectangle(16,16,27,16);
 
-        public static readonly TimeSpan JOHN_GAME_DURATION = TimeSpan.FromMinutes(2);
+        public const int JOHN_SPRITESHEET_SIZE = 256, JOHN_BLOCK_SIZE = 32, JOHN_HEIGHT = 16;
 
-        public const int JOHN_CONFIG_COUNT = 32, JOHN_BLOCK_SIZE = 32, JOHN_HEIGHT = 16;
+        public const int JOHN_CONFIG_COUNT = (JOHN_SPRITESHEET_SIZE / JOHN_BLOCK_SIZE) * (JOHN_SPRITESHEET_SIZE / JOHN_BLOCK_SIZE) * 2;
 
         public static readonly JohnStartPosition[] JOHN_SPAWN_LOCATIONS = new JohnStartPosition[] {
             new JohnStartPosition() { Value = new Vector2(15,1.5f), Direction = JohnStartPositionDirection.Random },
@@ -65,5 +65,7 @@ namespace John {
         public const float WALKING_VELOCITY_DETECTION_THRESHOLD = 0.5f;
 
         public const float GOOD_BIN_X = 8, BAD_BIN_X = 22, FREEDOM_HOLE_X = 15;
+
+        public const int REAL_JOHN_COUNT = 16;
     }
 }

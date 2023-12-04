@@ -243,7 +243,9 @@ namespace John {
 
             Vector2 origin = textureSource.Size.ToVector2() * Origin;
 
-            Owner.SpriteBatch.Draw(_game.Decorator.Texture,position,textureSource,Color.White,0f,origin,scale,spriteEffects,LayerDepth);
+            float layerDepth = IsGrabbed ? LayerDepth + 0.1f : LayerDepth;
+
+            Owner.SpriteBatch.Draw(_game.Decorator.Texture,position,textureSource,Color.White,0f,origin,scale,spriteEffects,layerDepth);
         }
     }
 }

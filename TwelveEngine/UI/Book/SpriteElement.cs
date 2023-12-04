@@ -60,9 +60,14 @@
 
         protected void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
             FloatRectangle destination = ComputedArea;
+
+            //destination.Position = Vector2.Round(Position);
+            destination.Size = Vector2.Round(Size);
+
             destination.Position += destination.Size * 0.5f;
 
             Vector2 origin = sourceArea.Size.ToVector2() * 0.5f;
+
             spriteBatch.Draw(texture,(Rectangle)destination,sourceArea,ComputedColor,MathHelper.ToRadians(ComputedRotation),origin,SpriteEffects.None,Depth);
         }
 

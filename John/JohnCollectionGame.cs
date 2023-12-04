@@ -1,11 +1,9 @@
-﻿using John.UI;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.Collections.Generic;
 using TwelveEngine.Game2D;
-using TwelveEngine.Game2D.Entities;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.UI.Book;
@@ -21,8 +19,6 @@ namespace John {
         public JohnDecorator Decorator { get; private set; }
 
         public Random Random { get; private init; } = new Random(0);
-
-        private DebugDot dot;
 
         public JohnCollectionGame() {
             Name = "John Collection Game";
@@ -42,7 +38,6 @@ namespace John {
 
         private void CameraTracking() {
             Camera.Position = GrabbyClaw.Position;
-            dot.Position = GrabbyClaw.Position;
         }
 
         private void LoadGame() {
@@ -78,12 +73,13 @@ namespace John {
             };
 
             Entities.Add(GrabbyClaw);
-            UI = new CollectionGameUI(TileMapTexture,this);
+            UI = new CollectionGameUI(this);
 
-            StartGame(); //TODO: MAKE USER INITIATED THROUGH UI
+            StartGame(); //TODO: MAKE USER INITIATED THROUGH UI ?? (maybe)
+        }
 
-            dot = new DebugDot();
-            Entities.Add(dot);
+        public float GetUIScale() {
+            return 10; //TODO: RETURN REALTIME VALUE
         }
 
         private void UnloadGame() {
@@ -121,38 +117,37 @@ namespace John {
 
         private void RenderUI() => UI?.Render(SpriteBatch);
 
-        public TimeSpan GameStart { get; private set; }
-        public TimeSpan RemainingTime => JOHN_GAME_DURATION - GameStart;
-
         public bool GameActive { get; private set; }
 
-        public int RealJohnID { get; private set; }
+        public JohnMatchType MatchType { get; private set; }
+        public Color MatchColor { get; private set; }
+
+        private readonly Dictionary<int,JohnConfig> _configDictionary = new();
 
         public void StartGame() {
             if(GameActive) {
                 throw new InvalidOperationException("Game already active.");
             }
+            _configDictionary.Clear();
             Score.Reset();
             Decorator.ResetConfigs();
+
+            /* There is a very small possibility for a randomly generated john to surpass `REAL_JOHN_COUNT` */
+
+            MatchColor = JohnConfig.GetRandomColor(Random);
+            MatchType = (JohnMatchType)Random.Next(0,3);
+
             for(int i = 0;i<JOHN_CONFIG_COUNT;i++) {
-                Decorator.AddConfig(i,JohnConfig.CreateRandom(Random));
+                var config = JohnConfig.CreateRandom(Random);
+                if(i < REAL_JOHN_COUNT) {
+                    config = config.Mask(MatchType,MatchColor);
+                }
+                Decorator.AddConfig(i,config);
+                _configDictionary[i] = config;
             }
+
             Decorator.GenerateTexture();
-
-            GameStart = RealTime;
             GameActive = true;
-
-            RealJohnID = 0;
-        }
-
-        private void EndGame() {
-            if(!GameActive) {
-                throw new InvalidOperationException("Game already inactive.");
-            }
-
-            //TODO: User interface prompts
-
-            GameActive = false;
         }
 
         private HashSet<WalkingJohn> activeJohns = new();
@@ -173,10 +168,9 @@ namespace John {
             int configID;
             
             if(Random.NextSingle() < REAL_JOHN_PROBABILITY) {
-                configID = RealJohnID;
+                configID = Random.Next(0,REAL_JOHN_COUNT);
             } else {
-                /* Warning: Assumption that RealJohnID is always zero so we don't include it in random chance or spike the odds of another value */
-                configID = Random.Next(1,JOHN_CONFIG_COUNT);
+                configID = Random.Next(REAL_JOHN_COUNT,JOHN_CONFIG_COUNT);
             }
 
             WalkingJohn john = JohnPool.LeaseJohn(configID,startPosition);
@@ -189,8 +183,18 @@ namespace John {
 
         public ScoreCard Score { get; private init; } = new ScoreCard();
 
+        public List<JohnConfig> CorrectJohnBinBuffer { get; private init; } = new();
+
+        public bool JohnMatchesConfig(WalkingJohn john) {
+            var config = _configDictionary[john.ConfigID];
+            return MatchType switch {
+                JohnMatchType.Hair => config.Color1, JohnMatchType.Shirt => config.Color2, JohnMatchType.Pants => config.Color3,
+                _ => Color.Transparent
+            } == MatchColor;
+        }
+
         public void ReturnJohn(WalkingJohn john,JohnReturnType johnReturnType) {
-            bool johnIsJohn = john.ConfigID == RealJohnID;
+            bool johnIsJohn = JohnMatchesConfig(john);
 
             if(johnReturnType == JohnReturnType.JohnBin) {
                 if(johnIsJohn) {
@@ -198,6 +202,7 @@ namespace John {
                 } else {
                     Score.NotJohnInJohnBin++;
                 }
+                CorrectJohnBinBuffer.Add(_configDictionary[john.ConfigID]);
             } else if(johnReturnType == JohnReturnType.NotJohnBin) {
                 if(johnIsJohn) {
                     Score.JohnInNotJohnBin++;
@@ -216,10 +221,6 @@ namespace John {
 
         private void UpdateGame() {
             if(!GameActive) {
-                return;
-            }
-            if(RemainingTime < TimeSpan.Zero) {
-                EndGame();
                 return;
             }
             if(activeJohns.Count < MAX_ARENA_JOHNS) {

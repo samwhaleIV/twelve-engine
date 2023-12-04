@@ -17,7 +17,7 @@ namespace John {
         private readonly Point _sourceDataSize;
 
         public JohnDecorator(GraphicsDevice graphicsDevice,Texture2D texture,Rectangle textureSource) {
-            int size = (int)Math.Sqrt(JOHN_CONFIG_COUNT / 2) * JOHN_BLOCK_SIZE;
+            int size = JOHN_SPRITESHEET_SIZE;
             _renderTarget = new RenderTarget2D(graphicsDevice,size,size,false,SurfaceFormat.Color,DepthFormat.None,0,RenderTargetUsage.PreserveContents);
             _outputData = new Color[size*size];
 
