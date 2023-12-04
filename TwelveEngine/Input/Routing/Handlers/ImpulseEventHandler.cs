@@ -97,22 +97,9 @@ namespace TwelveEngine.Input.Routing {
         public bool IsImpulseDown(Impulse impulse) => impulseStates[impulse] == KeyState.Down;
         public bool IsImpulseUp(Impulse impulse) => impulseStates[impulse] == KeyState.Up;
 
-        private bool TryGetThumbstick(out Vector2 value) {
-            if(Method != InputMethod.GamePad) {
-                value = Vector2.Zero;
-                return false;
-            }
-            Vector2 leftThumbStick = GamePad.ThumbSticks.Left;
-            if(leftThumbStick == Vector2.Zero) {
-                value = Vector2.Zero;
-                return false;
-            }
-            leftThumbStick.Y = -leftThumbStick.Y;
-            value = leftThumbStick;
-            return true;
-        }
-
-        private static float GetSpeedModifier(bool turbo,bool snail) {
+        private float GetGenericVelocityModifier() {
+            bool turbo = Keyboard.IsKeyDown(Keys.LeftShift) || GamePad.Buttons.RightShoulder == ButtonState.Pressed;
+            bool snail = Keyboard.IsKeyDown(Keys.LeftAlt) || GamePad.Buttons.LeftShoulder == ButtonState.Pressed;
             float speedModifier = 1;
             if(turbo) {
                 speedModifier += 1;
@@ -123,44 +110,39 @@ namespace TwelveEngine.Input.Routing {
             return speedModifier;
         }
 
-        private float GetGamePadSpeedModifier() => GetSpeedModifier(
-            GamePad.Buttons.RightShoulder == ButtonState.Pressed,GamePad.Buttons.LeftShoulder == ButtonState.Pressed
-        );
-
-        private float GetKeyboardSpeedModifier() => GetSpeedModifier(
-            Keyboard.IsKeyDown(Keys.LeftShift),Keyboard.IsKeyDown(Keys.LeftAlt)
-        );
-
-        private Vector2 GetImpulseDelta2D() {
+        private Vector2 GetDigitalDelta2D(bool useVelocityModifier) {
             int x = 0, y = 0;
+
             if(IsImpulseDown(Impulse.Up)) y--;
             if(IsImpulseDown(Impulse.Down)) y++;
             if(IsImpulseDown(Impulse.Left)) x--;
             if(IsImpulseDown(Impulse.Right)) x++;
 
             var delta = new Vector2(x,y);
-            if(MathF.Abs(x) == MathF.Abs(y) && MathF.Abs(x) > 0) {
+            if(x != 0 && y != 0) {
                 delta *= 0.75f;
             }
+
+            if(useVelocityModifier) {
+                delta *= GetGenericVelocityModifier();
+            }
+
             return delta;
         }
 
-        public Vector2 GetDelta2D(bool allowSpeedModifiers = true) {
-            if(!TryGetThumbstick(out Vector2 delta)) {
-                delta = GetImpulseDelta2D();
-            }
-            if(!allowSpeedModifiers) {
-                return delta;
-            }
-            if(Method == InputMethod.GamePad) {
-                delta *= GetGamePadSpeedModifier();
-            } else {
-                delta *= GetKeyboardSpeedModifier();
-            }
-            return delta;
+        public Vector2 GetDigitalDelta2D() {
+            return GetDigitalDelta2D(useVelocityModifier: false);
         }
 
-        public Vector3 GetDelta3D() {
+        public Vector2 GetDigitalDelta2DWithModifier() {
+            return GetDigitalDelta2D(useVelocityModifier: true);
+        }
+
+        public Vector2 GetDelta2DAnalog() {
+            throw new NotImplementedException();
+        }
+
+        public Vector3 GetDelta3DDigital() {
             int x = 0, y = 0, z = 0;
             if(IsImpulseDown(Impulse.Left)) x--; //Strafe Left
             if(IsImpulseDown(Impulse.Right)) x++; //Strafe Right
@@ -169,6 +151,10 @@ namespace TwelveEngine.Input.Routing {
             if(IsImpulseDown(Impulse.Up)) z--; //Forward
             if(IsImpulseDown(Impulse.Down)) z++; //Backwards
             return new Vector3(x,y,z);
+        }
+
+        public Vector3 GetDelta3DAnalog() {
+            throw new NotImplementedException();
         }
     }
 }

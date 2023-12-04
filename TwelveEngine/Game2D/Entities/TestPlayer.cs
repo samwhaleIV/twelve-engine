@@ -12,7 +12,7 @@
         public float ImpulseForce { get; set; } = 1f;
 
         protected override void Update() {
-            var delta = Owner.Impulse.GetDelta2D(allowSpeedModifiers: false) * ImpulseForce;
+            var delta = Owner.Impulse.GetDigitalDelta2D() * ImpulseForce;
             Body.ApplyLinearImpulse(delta);
         }
 

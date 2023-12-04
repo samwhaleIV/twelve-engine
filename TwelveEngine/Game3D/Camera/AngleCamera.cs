@@ -120,7 +120,7 @@ namespace TwelveEngine.Game3D {
                 mouseDelta.Y = -mouseDelta.Y;
                 AddAngle(mouseDelta.ToVector2() * lookSpeed);
             }
-            var delta = gameState.Impulse.GetDelta3D();
+            var delta = gameState.Impulse.GetDelta3DDigital();
             if(delta.X != 0) {
                 MoveLeftRight(delta.X * moveSpeed);
             }

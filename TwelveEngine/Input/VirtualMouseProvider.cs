@@ -152,7 +152,7 @@ namespace TwelveEngine.Input {
         public Rectangle? Bounds { get; set; } = null;
 
         private Vector2 GetVirtualPositionDelta() {
-            return _gameState.Impulse.GetDelta2D() * (float)_gameState.FrameDelta.TotalSeconds * PIXELS_PER_SECOND;
+            return _gameState.Impulse.GetDelta2DAnalog() * (float)_gameState.FrameDelta.TotalSeconds * PIXELS_PER_SECOND;
         }
 
         private Vector2 GetVirtualPosition() {

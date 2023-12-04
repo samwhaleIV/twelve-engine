@@ -87,7 +87,7 @@ namespace John {
         }
 
         protected override void Update() {
-            var delta = Owner.Impulse.GetDelta2D();
+            var delta = Owner.Impulse.GetDigitalDelta2DWithModifier();
 
             _position += delta * Constants.CLAW_SPEED;
 

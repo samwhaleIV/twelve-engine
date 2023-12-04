@@ -13,15 +13,15 @@ namespace John {
         public const float GRAVITY = 600f;
 
         public const string TILEMAP_TEXTURE = "spritesheet";
-        public const string MAP_FILE = "john-collection.json";
+        public const string MAP_FILE = "clawmachinemap.json";
 
         public const float PHYSICS_SIM_SCALE = 8f;
 
         public const bool USE_CAM_BOUNDS = true;
         public const float CLAW_SPEED = 0.02f;
 
-        public const float CAM_OFFSET_MIN_X = 2.5f, CAM_OFFSET_MAX_X = -2.5F, CAM_OFFSET_MIN_Y = 2.5f, CAM_OFFSET_MAX_Y = -2.5F;
-        public const float CLAW_OFFSET_MIN_X = 3.25f, CLAW_OFFSET_MAX_X = -3.25f, CLAW_OFFSET_MIN_Y = 3.5f, CLAW_OFFSET_MAX_Y = -3.5f;
+        public const float CAM_OFFSET_MIN_X = 2.5f, CAM_OFFSET_MAX_X = -2.5F, CAM_OFFSET_MIN_Y = 2.5f, CAM_OFFSET_MAX_Y = -(2.5f + 3f / 16f);
+        public const float CLAW_OFFSET_MIN_X = 3.25f, CLAW_OFFSET_MAX_X = -3.25f, CLAW_OFFSET_MIN_Y = 3.5f, CLAW_OFFSET_MAX_Y = -4.5f;
 
         public static readonly HashSet<short> NON_COLLIDING_TILES = new() { 81,97,113,16 };
 
