@@ -79,7 +79,7 @@ namespace John {
         }
 
         public float GetUIScale() {
-            return 10; //TODO: RETURN REALTIME VALUE
+            return Camera.Scale;
         }
 
         private void UnloadGame() {
@@ -165,7 +165,7 @@ namespace John {
             _maskTypeIndex = (_maskTypeIndex + 1) % _maskTypes.Count;
         }
 
-        private HashSet<WalkingJohn> activeJohns = new();
+        private readonly HashSet<WalkingJohn> _activeJohns = new();
 
         private TimeSpan _lastSummoning = -TimeSpan.FromHours(1);
 
@@ -198,7 +198,7 @@ namespace John {
             }
 
             WalkingJohn john = JohnPool.LeaseJohn(configID,startPosition);
-            activeJohns.Add(john);
+            _activeJohns.Add(john);
 
             _lastSummoning = Now + JOHN_SUMMON_VARIABILITY * Random.NextDouble();
 
@@ -238,7 +238,7 @@ namespace John {
 
         public void ReturnJohn(WalkingJohn john,JohnReturnType johnReturnType) {
             if(johnReturnType == JohnReturnType.Default) {
-                activeJohns.Remove(john);
+                _activeJohns.Remove(john);
                 JohnPool.ReturnJohn(john);
                 return;
             }
@@ -282,12 +282,12 @@ namespace John {
                 }
             }
 
-            activeJohns.Remove(john);
+            _activeJohns.Remove(john);
             JohnPool.ReturnJohn(john);
         }
 
         private void UpdateGame() {
-            if(!(activeJohns.Count < MAX_ARENA_JOHNS)) {
+            if(!(_activeJohns.Count < MAX_ARENA_JOHNS)) {
                 return;
             }
             TrySummonJohn();

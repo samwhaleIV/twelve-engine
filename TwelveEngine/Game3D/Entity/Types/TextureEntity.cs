@@ -1,18 +1,14 @@
 ﻿namespace TwelveEngine.Game3D.Entity.Types {
     public class TextureEntity:TextureRectangle {
 
-        private void BindEvents() => OnLoad += LoadTexture;
-
         private Texture2D pendingTexture = null;
 
         public TextureEntity(string textureName) {
             TextureName = textureName;
-            BindEvents();
         }
 
         public TextureEntity(Texture2D texture) {
             pendingTexture = texture;
-            BindEvents();
         }
 
         public void SetUVArea(int x,int y,int width,int height) {
@@ -39,8 +35,6 @@
             UVBottomRight = new Vector2(textureArea.Right / textureWidth,textureArea.Bottom / textureHeight);
         }
 
-        public TextureEntity() => BindEvents();
-
         private string _textureName = null;
         public string TextureName {
             get => _textureName;
@@ -52,7 +46,8 @@
             }
         }
 
-        private void LoadTexture() {
+        protected override void Load() {
+            base.Load();
             if(_textureName != null) {
                 Texture = Content.Load<Texture2D>(TextureName);
             } else if(pendingTexture != null) {

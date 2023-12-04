@@ -25,17 +25,19 @@ namespace Elves.Scenes.Carousel {
             Position = new Vector3(0f,0f,Constants.Depth.Middle);
             Scale = new Vector3(width,1f,1f);
             PixelSmoothing = false;
-            OnUpdate += UpdateColor;
-            OnLoad += CreateLockItem;
         }
 
-        private void CreateLockItem() {
-            Owner.Entities.Add(new LockIcon(this));
+        private LockIcon _lock;
+
+        protected override void Load() {
+            base.Load();
+            _lock = new LockIcon();
+            Owner.Entities.Add(_lock);
         }
 
-        private void UpdateColor() {
+        protected override void Update() {
             Color = IsLocked ? Color.Black : Color.White;
+            _lock.UpdatePosition(this);
         }
     }
-
 }

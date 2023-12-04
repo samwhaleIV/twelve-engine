@@ -2,12 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using TwelveEngine;
-using TwelveEngine.Shell;
 using TwelveEngine.UI.Book;
 
 namespace John {
 
     using static CollectionGameUI;
+    using static Constants;
 
     public sealed class CollectionGameUI:SpriteBook {
 
@@ -66,7 +66,7 @@ namespace John {
                 Offset = new Vector2(0,-0.5f)          
             });
 
-            ScoreBufferContainer = new ScoreBufferCell[Constants.ROUND_COMPLETION_COUNT];
+            ScoreBufferContainer = new ScoreBufferCell[ROUND_COMPLETION_COUNT];
             for(int i = 0;i<ScoreBufferContainer.Length;i++) {
                 ScoreBufferContainer[i] = GetScoreBufferCell();
             }
@@ -120,10 +120,10 @@ namespace John {
             if(!JohnConfig.HasValue) {
                 return;
             }
-            Rectangle source = new Rectangle(JohnDecorator.GetTextureOrigin(JohnConfig.Value),new Point(9,16));
+            Rectangle source = new Rectangle(JohnDecorator.GetTextureOrigin(JohnConfig.Value),new Point(JOHN_WIDTH,JOHN_HEIGHT));
 
-            destination.Position = destination.Position + new Vector2(PixelSize);
-            destination.Size = destination.Size - new Vector2(PixelSize * 2);
+            destination.Position += new Vector2(PixelSize);
+            destination.Size -= new Vector2(PixelSize * 2);
 
             spriteBatch.Draw(JohnDecorator.Texture,(Rectangle)destination,source,ComputedColor,rotation,origin,SpriteEffects.None,Depth + 0.1f);
         }
@@ -190,7 +190,7 @@ namespace John {
             var johnWearsLabel = _book.JohnWearsLabel;
             var clothingGuide = _book.JohnClothingGuide;
 
-            float pixelScale = Game.GetUIScale();
+            float pixelScale = Game.Camera.Scale;
 
             float screenMargin = pixelScale * 1f;
 

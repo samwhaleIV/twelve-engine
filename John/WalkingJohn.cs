@@ -14,18 +14,15 @@ namespace John {
 
         private readonly CollectionGame _game;
 
-        public WalkingJohn(CollectionGame johnCollectionGame) : base(new Vector2(9/16f,1f),new Vector2(0.5f)) {
+        public WalkingJohn(CollectionGame johnCollectionGame) : base(new Vector2((float)JOHN_WIDTH/johnCollectionGame.Camera.TileInputSize,1f),new Vector2(0.5f)) {
             _game = johnCollectionGame;
-            OnRender += WalkingJohn_OnRender;
-            OnUpdate += WalkingJohn_OnUpdate;
-            OnLoad += WalkingJohn_OnLoad;
-
             Restitution = 0f;
             LinearDamping = JOHN_LINEAR_DAMPING;
             Friction = JOHN_FRICTION;
         }
 
-        private void WalkingJohn_OnLoad() {
+        protected override void Load() {
+            base.Load();
             Body.OnCollision += Body_OnCollision;
             Body.OnSeparation += Body_OnSeparation;
             Fixture.CollisionCategories = Category.Cat1 | Category.Cat2;
@@ -93,7 +90,7 @@ namespace John {
         private TimeSpan _notBeingPushedStart = TimeSpan.Zero;
         private static readonly TimeSpan _pushingHoldDuration = TimeSpan.FromSeconds(0.125f);
 
-        private void WalkingJohn_OnUpdate() {
+        protected override void Update() {
             if(!Body.Enabled) {
                 return;
             }
@@ -206,14 +203,12 @@ namespace John {
             return (frameNumber % WALKING_ANIMATION_FRAME_COUNT) switch { 0 => 0, 1 => 1, 2 => 0, 3 => 2, _ => 0 };
         }
 
-        private TimeSpan _walkingStart = TimeSpan.Zero; //TODO: Set to time when walking starts
-
         public Rectangle GetTextureSource() {
             Point location = _game.Decorator.GetTextureOrigin(ConfigID);
             Point size = (Size * Owner.Camera.TileInputSize).ToPoint();
 
             if(ShowWalkingAnimation) {
-                location.X += GetAnimationFrameOffset(Owner.Now - _walkingStart) * size.X;
+                location.X += GetAnimationFrameOffset(Owner.Now) * size.X;
             }
 
             return new Rectangle(location,size);
@@ -225,7 +220,7 @@ namespace John {
         
         public bool IsGrabbed { get; set; }
 
-        private void WalkingJohn_OnRender() {
+        protected override void Render() {
             //TODO: Offscreen filtering
             if(!Body.Enabled && !IsGrabbed) {
                 return;

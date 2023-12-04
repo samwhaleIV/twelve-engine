@@ -86,7 +86,7 @@ namespace TwelveEngine.EntitySystem {
                 if(entity.Value.ID != entity.RegisteredID) {
                     continue;
                 }
-                entity.Value.Update();
+                entity.Value.Internal_Update();
                 if(IsUnloaded) {
                     IsIterating = false;
                     return;
@@ -99,7 +99,7 @@ namespace TwelveEngine.EntitySystem {
                     continue;
                 }
                 /* This loop is effectively recursive, if this action happens to add new entities */
-                entity.Value.Update();
+                entity.Value.Internal_Update();
             }
             IsIterating = false;
         }
@@ -114,7 +114,7 @@ namespace TwelveEngine.EntitySystem {
             EntityListIsLocked = true;
             IsIterating = true;
             for(int i = 0;i<Entities.Count;i++) {
-                Entities.List[i].Render();
+                Entities.List[i].Internal_Render();
             }
             EntityListIsLocked = false;
             IsIterating = false;
@@ -130,7 +130,7 @@ namespace TwelveEngine.EntitySystem {
             EntityListIsLocked = true;
             IsIterating = true;
             for(int i = 0;i<Entities.Count;i++) {
-                Entities.List[i].PreRender();
+                Entities.List[i].Internal_PreRender();
             }
             EntityListIsLocked = false;
             IsIterating = false;
@@ -151,7 +151,7 @@ namespace TwelveEngine.EntitySystem {
             }
             entity.Register(GetNextID(),Owner,this);
             Container.Writer.AddEntity(entity);
-            entity.Load();
+            entity.Internal_Load();
             Entities.Add(entity.ID,entity);
             entity.OnSortedOrderChange += EntityDepthChanged;
             _bufferNeedsUpdate = true;
@@ -178,7 +178,7 @@ namespace TwelveEngine.EntitySystem {
                 );
             }
             Container.Writer.RemoveEntity(entity);
-            entity.Unload();
+            entity.Internal_Unload();
             entity.OnSortedOrderChange -= EntityDepthChanged;
             Entities.Remove(entity.ID);
             _bufferNeedsUpdate = true;
@@ -222,7 +222,7 @@ namespace TwelveEngine.EntitySystem {
             while(entitiesCopy.TryDequeue(out var entity)) {
                 Container.Writer.RemoveEntity(entity);
                 entity.OnSortedOrderChange -= EntityDepthChanged;
-                entity.Unload();
+                entity.Internal_Unload();
             }
 
             Entities.Clear();

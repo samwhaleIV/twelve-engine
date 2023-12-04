@@ -37,7 +37,9 @@ namespace TwelveEngine.Shell.Automation {
                 throw new InvalidOperationException("Cannot stop recording, we never started!");
             }
             var path = IO.PrepareOutputPath();
-
+            if(string.IsNullOrWhiteSpace(path)) {
+                return;
+            }
             InputFrame[] frames = outputBuffer.ToArray();
             outputBuffer.Clear();
             outputBuffer = null;

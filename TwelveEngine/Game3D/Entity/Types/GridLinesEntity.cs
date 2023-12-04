@@ -16,12 +16,9 @@
             this.cellSize = cellSize;
             this.gridSize = gridSize;
 
-            OnLoad += LoadEffect;
-            OnUnload += UnloadEffect;
-            OnRender += RenderEffect;
         }
 
-        private void LoadEffect() {
+        protected override void Load() {
             bufferSet = Owner.CreateBufferSet(GetVertices(cellSize,gridSize));
             effect = new BasicEffect(GraphicsDevice) {
                 TextureEnabled = false,
@@ -30,7 +27,7 @@
             };
         }
 
-        private void UnloadEffect() {
+        protected override void Unload() {
             effect?.Dispose();
             effect = null;
 
@@ -48,7 +45,7 @@
             effect.Projection = projectionMatrix;
         }
 
-        private void RenderEffect() {
+        protected override void Render() {
             bufferSet.Apply();
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();

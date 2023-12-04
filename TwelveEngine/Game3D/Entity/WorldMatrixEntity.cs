@@ -1,14 +1,21 @@
 ﻿namespace TwelveEngine.Game3D.Entity {
     public abstract class WorldMatrixEntity:Entity3D {
 
-        public WorldMatrixEntity() => OnPreRender += FirstPreRender;
-
         private void FirstPreRender() {
             UpdateWorldMatrix();
             ApplyViewMatrix(ref Owner.ViewMatrix);
             ApplyProjectionMatrix(ref Owner.ProjectionMatrix);
-            OnPreRender -= FirstPreRender;
-            OnPreRender += UpdateMatrices;
+        }
+
+        private bool _firstPreRender = true;
+
+        protected override void PreRender() {
+            if(_firstPreRender) {
+                FirstPreRender();
+                _firstPreRender = false;
+                return;
+            }
+            UpdateMatrices();
         }
 
         private void UpdateMatrices() {

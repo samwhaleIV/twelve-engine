@@ -24,13 +24,9 @@
         public ParticleSystem(int count) {
             particleCount = count;
             p_position = new Vector3[count];
-
-            OnRender += RenderEffect;
-            OnLoad += LoadEffect;
-            OnUnload += UnloadEffect;
         }
 
-        private void UnloadEffect() {
+        protected override void Unload() {
             effect?.Dispose();
             effect = null;
         }
@@ -81,7 +77,7 @@
         private EffectParameter worldViewProjectionMatrixParameter;
         private EffectParameter textureSamplerParameter;
 
-        private void LoadEffect() {
+        protected override void Load() {
             effect = Content.Load<Effect>("Shaders/ParticleSystemEffect");
             worldViewProjectionMatrixParameter = effect.Parameters["WorldViewProjection"];
             textureSamplerParameter = effect.Parameters["TextureSampler"];
@@ -91,7 +87,7 @@
 
         public SamplerState SamplerState { get; set; } = null;
 
-        private void RenderEffect() {
+        protected override void Render() {
             Matrix scaleMatrix = Matrix.CreateScale(Scale);
             Matrix translationMatrix = Matrix.CreateWorld(Position + new Vector3(-0.5f,-0.5f,0),Vector3.Forward,Vector3.Up);
             worldViewProjectionMatrixParameter.SetValue(scaleMatrix * translationMatrix * Owner.ViewMatrix * Owner.ProjectionMatrix);

@@ -15,7 +15,7 @@ namespace TwelveEngine.Game2D {
             OnLoad.Add(LoadEntities);
 
             OnUpdate.Add(UpdateEntities);
-            OnUpdate.Add(UpdatePhysics);
+            OnUpdate.Add(UpdatePhysics,EventPriority.SecondToLast);
             OnUpdate.Add(UpdateCamera,EventPriority.Last);
 
             OnRender.Add(RenderMapBackground);
@@ -24,7 +24,7 @@ namespace TwelveEngine.Game2D {
 
         public TileMap TileMap { get; set; } = new TileMap() { Width = 0, Height = 0, Data = null };
         public Texture2D TileMapTexture { get; set; }
-        public readonly Dictionary<short,TileData> TileDictionary = new Dictionary<short,TileData>();
+        public readonly Dictionary<short,TileData> TileDictionary = new();
 
         private const float BACKGROUND_DEPTH = 0.5f, FOREGROUND_DEPTH = 0.75f;
 
@@ -43,13 +43,12 @@ namespace TwelveEngine.Game2D {
             for(int x = 0;x < tileStride.X;x++) {
                 float yStart = renderOrigin.Y;
                 for(int y = 0;y < tileStride.Y;y++) {
-                    Point tileIndex = new Point(tileStart.X + x,tileStart.Y + y);
+                    Point tileIndex = new(tileStart.X + x,tileStart.Y + y);
                     if(!TileMap.InRange(tileIndex)) {
                         renderOrigin.Y += tileSize.Y;
                         continue;
                     }
-                    TileData tileData;
-                    if(TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,BACKGROUND_LAYER),out tileData)) {
+                    if(TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,BACKGROUND_LAYER),out TileData tileData)) {
                         SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,0f,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,BACKGROUND_DEPTH);
                     }
                     if(TileMap.LayerCount > 1 && TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,FOREGROUND_LAYER),out tileData)) {

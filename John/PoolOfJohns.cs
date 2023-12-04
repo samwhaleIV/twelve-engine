@@ -5,7 +5,7 @@ using TwelveEngine;
 namespace John {
     public sealed class PoolOfJohns:PoolSet<WalkingJohn> {
 
-        private CollectionGame _game;
+        private readonly CollectionGame _game;
 
         public WalkingJohn LeaseJohn(int configID,JohnStartPosition startPosition) {
             int poolID = Lease(out WalkingJohn john);
@@ -23,7 +23,7 @@ namespace John {
             _game = game;
         }
 
-        private Dictionary<Fixture,WalkingJohn> _fixtureTable = new Dictionary<Fixture,WalkingJohn>();
+        private readonly Dictionary<Fixture,WalkingJohn> _fixtureTable = new Dictionary<Fixture,WalkingJohn>();
 
         protected override WalkingJohn CreateNew() {
             var john = new WalkingJohn(_game);

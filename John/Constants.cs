@@ -25,14 +25,14 @@ namespace John {
 
         public static readonly HashSet<short> NON_COLLIDING_TILES = new() { 81,97,113,16 };
 
-        public static readonly Vector2 GRABBY_CLAW_START_POS = new Vector2(15,26); //TODO: Set real value
+        public static readonly Vector2 GRABBY_CLAW_START_POS = new Vector2(15,26);
 
         public static readonly TimeSpan WALKING_ANIMATION_FRAME_LENGTH = TimeSpan.FromMilliseconds(100);
         public static readonly int WALKING_ANIMATION_FRAME_COUNT = 4;
 
         public static readonly Rectangle JOHN_ANIMATION_SOURCE = new Rectangle(16,16,27,16);
 
-        public const int JOHN_SPRITESHEET_SIZE = 512, JOHN_BLOCK_SIZE = 32, JOHN_HEIGHT = 16;
+        public const int JOHN_SPRITESHEET_SIZE = 512, JOHN_BLOCK_SIZE = 32, JOHN_HEIGHT = 16, JOHN_WIDTH = 9;
 
         public const int JOHN_CONFIG_COUNT = (JOHN_SPRITESHEET_SIZE / JOHN_BLOCK_SIZE) * (JOHN_SPRITESHEET_SIZE / JOHN_BLOCK_SIZE) * 2;
 

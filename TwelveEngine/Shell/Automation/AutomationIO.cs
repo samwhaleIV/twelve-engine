@@ -92,7 +92,8 @@ namespace TwelveEngine.Shell.Automation {
                 file = Directory.EnumerateFiles(
                     Directory.GetCurrentDirectory(),$"{Constants.PlaybackFolder}\\*.{Constants.PlaybackFileExt}"
                 ).OrderByDescending(name => name).FirstOrDefault();
-            } catch(DirectoryNotFoundException) {
+            } catch(Exception exception) {
+                Logger.WriteLine($"Could not locate a playback file: {exception.Message}",LoggerLabel.GameManager);
                 return null;
             }
             return file;
@@ -102,7 +103,12 @@ namespace TwelveEngine.Shell.Automation {
             var folder = Constants.PlaybackFolder;
             var path = $"{folder}\\{DateTime.Now.ToFileTimeUtc()}.{Constants.PlaybackFileExt}";
             if(!Directory.Exists(folder)) {
-                Directory.CreateDirectory(folder);
+                try {
+                    Directory.CreateDirectory(folder);
+                } catch(Exception exception) {
+                    Logger.WriteLine($"Could prepare output path for playback file: {exception.Message}",LoggerLabel.GameManager);
+                    return null;
+                }
             }
             return path;
         }

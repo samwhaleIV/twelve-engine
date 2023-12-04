@@ -2,7 +2,7 @@
 using System;
 
 namespace John {
-    public struct JohnConfig {
+    public readonly struct JohnConfig {
         public Color Color1 { get; init; }
         public Color Color2 { get; init; }
         public Color Color3 { get; init; }

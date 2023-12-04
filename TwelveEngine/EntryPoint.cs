@@ -57,7 +57,8 @@ namespace TwelveEngine {
             fullscreen: Flags.Get(Constants.Flags.Fullscreen),
             hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
             verticalSync: !Flags.Get(Constants.Flags.NoVsync),
-            drawDebug: Flags.Get(Constants.Flags.DrawDebug)
+            drawDebug: Flags.Get(Constants.Flags.DrawDebug),
+            devControls: Flags.Get(Constants.Flags.DevControls)
         ) { SyncContext = new() };
 
         private void InitializeGameManager() {

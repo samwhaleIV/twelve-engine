@@ -97,8 +97,7 @@ namespace John {
             bool breakLoop = false;
             for(int y = 0;y<verticalBlocks && !breakLoop;y++) {
                 for(int x = 0;x<horizontalBlocks;x++) {
-                    (int ID, JohnConfig Value) config;
-                    if(!johnConfigs.TryDequeue(out config)) {
+                    if(!johnConfigs.TryDequeue(out (int ID, JohnConfig Value) config)) {
                         breakLoop = true;
                         break;
                     }

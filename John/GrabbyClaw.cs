@@ -8,21 +8,14 @@ namespace John {
     public sealed class GrabbyClaw:Entity2D {
 
         private readonly CollectionGame _game;
+        public GrabbyClaw(CollectionGame game) => _game = game;
 
-        public GrabbyClaw(CollectionGame game) {
-            _game = game;
-            OnRender += GrabbyClaw_OnRender;
-            OnUpdate += GrabbyClaw_OnUpdate;
-            OnLoad += GrabbyClaw_OnLoad;
-            OnUnload += GrabbyClaw_OnUnload;
-        }
-
-        private void GrabbyClaw_OnUnload() {
-            Owner.Impulse.OnEvent -= Impulse_OnEvent;
-        }
-
-        private void GrabbyClaw_OnLoad() {
+        protected override void Load() {
             Owner.Impulse.OnEvent += Impulse_OnEvent;
+        }
+
+        protected override void Unload() {
+            Owner.Impulse.OnEvent -= Impulse_OnEvent;
         }
 
         private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
@@ -93,7 +86,7 @@ namespace John {
             _heldJohn = john;
         }
 
-        private void GrabbyClaw_OnUpdate() {
+        protected override void Update() {
             var delta = Owner.Impulse.GetDelta2D();
 
             _position += delta * Constants.CLAW_SPEED;
@@ -117,14 +110,13 @@ namespace John {
             _heldJohn.Position = _position;
         }
 
-        private readonly Rectangle ClosedClawSource = new Rectangle(80,16,32,32);
-        private readonly Rectangle OpenClawSource = new Rectangle(112,16,32,32);
-        private readonly Rectangle RopeSource = new Rectangle(80,0,32,16);
+        private readonly Rectangle ClosedClawSource = new(80,16,32,32), OpenClawSource = new(112,16,32,32), RopeSource = new(80,0,32,16);
 
-        private void GrabbyClaw_OnRender() {
+        protected override void Render() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);
 
-            float rotation = 0f; Vector2 origin = new Vector2(16,30);
+            float rotation = 0f;
+            Vector2 origin = new Vector2(16,30);
 
             Vector2 scale = new Vector2(Owner.Camera.Scale);
 

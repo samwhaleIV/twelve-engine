@@ -18,12 +18,6 @@
         public Vector3 TopLeft { get; set; } = new Vector3(-0.5f,0.5f,0f);
         public Vector3 BottomRight { get; set; } = new Vector3(0.5f,-0.5f,0f);
 
-        public TextureRectangle() {
-            OnRender += RenderVertices;
-            OnLoad += LoadEffect;
-            OnUnload += UnloadEffect;
-        }
-
         private BufferSet bufferSet;
 
         public Vector2 UVOffset = Vector2.Zero;
@@ -101,7 +95,7 @@
             vertices[5] = vertices[2];
         }
 
-        private void LoadEffect() {
+        protected override void Load() {
             bufferSet = Owner.CreateBufferSet(vertices);
             
             effect = new BasicEffect(GraphicsDevice) {
@@ -111,7 +105,7 @@
             };
         }
 
-        private void UnloadEffect() {
+        protected override void Unload() {
             bufferSet?.Dispose();
             bufferSet = null;
 

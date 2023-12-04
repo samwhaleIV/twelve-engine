@@ -37,9 +37,6 @@ namespace Elves.Battle {
 
             frameController = new FrameController(this,elf.FrameSets);
             positionController = new PositionController(this);
-
-            OnLoad += LoadBattleSprite;
-            OnUpdate += UpdateBattleSprite;
         }
 
         public BattleSprite(string name,Color color,Texture2D texture,int baseHeight,Dictionary<AnimationType,FrameSet> frameSets):base(texture) {
@@ -50,9 +47,6 @@ namespace Elves.Battle {
 
             frameController = new FrameController(this,frameSets);
             positionController = new PositionController(this);
-
-            OnLoad += LoadBattleSprite;
-            OnUpdate += UpdateBattleSprite;
         }
 
         public BattleSprite(UserData userData,Texture2D texture,int baseHeight,Dictionary<AnimationType,FrameSet> frameSets) :base(texture) {
@@ -63,17 +57,14 @@ namespace Elves.Battle {
 
             frameController = new FrameController(this,frameSets);
             positionController = new PositionController(this);
-
-            OnLoad += LoadBattleSprite;
-            OnUpdate += UpdateBattleSprite;
         }
 
-        private void UpdateBattleSprite() {
+        protected override void Update() {
             positionController.UpdateScreenPosition(Now);
             frameController.Update(Now);
         }
 
-        private void LoadBattleSprite() {
+        protected override void Load() {
             float baseSize = BaseHeight;
             float width = frameController.Width / baseSize, height = frameController.Height / baseSize;
             float halfWidth = width * 0.5f, halfHeight = height * 0.5f;

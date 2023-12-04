@@ -45,7 +45,6 @@ namespace Elves.Scenes.SplashMenu {
         public FloatingItem(SplashMenuState menu,Random random,Texture2D texture) : base(texture) {
             this.menu = menu;
             this.random = random;
-            OnUpdate += UpdateArea;
             PixelSmoothing = false;
             Depth = (Constants.Depth.MiddleClose - Constants.Depth.MiddleFar) * random.NextSingle() + Constants.Depth.MiddleFar;
         }
@@ -75,7 +74,7 @@ namespace Elves.Scenes.SplashMenu {
 
         private bool needsReset = true;
 
-        private void UpdateArea() {
+        protected override void Update() {
             if(needsReset) {
                 Reset();
                 needsReset = false;

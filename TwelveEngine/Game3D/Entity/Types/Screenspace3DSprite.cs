@@ -1,19 +1,15 @@
 ﻿namespace TwelveEngine.Game3D.Entity.Types {
     public class Screenspace3DSprite:TextureEntity {
 
-        public Screenspace3DSprite() => Initialize();
-
-        public Screenspace3DSprite(string textureName) : base(textureName) => Initialize();
-        public Screenspace3DSprite(Texture2D texture) : base(texture) => Initialize();
+        public Screenspace3DSprite(string textureName) : base(textureName) { }
+        public Screenspace3DSprite(Texture2D texture) : base(texture) { }
 
         public FloatRectangle Area { get; set; } = FloatRectangle.Empty; /* Space in pixels */
         public Rectangle TextureSource { get; set; }
 
-        private void Initialize() => OnPreRender += UpdateVerticesArea;
-
         public Vector2 RotationOrigin { get; set; } = new Vector2(0.5f,0.5f);
 
-        private void UpdateVerticesArea() {
+        protected override void PreRender() {
             /* This took 5 hours. I suck at math, apparently */
             SetUVArea(TextureSource);
 

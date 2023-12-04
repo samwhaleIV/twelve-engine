@@ -29,6 +29,9 @@
     <ProjectReference Include="..\TwelveEngineLibrary\TwelveEngineLibrary.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="clawmachinemap.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="john-collection.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

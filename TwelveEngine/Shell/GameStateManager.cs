@@ -46,14 +46,14 @@ namespace TwelveEngine.Shell {
         internal Exception ReroutedException { get; set; }
 
         internal GameStateManager(
-            bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool drawDebug = false
+            bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool drawDebug = false,bool devControls = false
         ) {
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
 
             Logger.WriteBooleanSet("Context settings",new string[] {
-                "Fullscreen","HardwareModeSwitch","VerticalSync","DrawDebug"
+                "Fullscreen","HardwareModeSwitch","VerticalSync","DrawDebug","DevControls"
             },new bool[] {
-                fullscreen, hardwareModeSwitch, verticalSync, drawDebug
+                fullscreen, hardwareModeSwitch, verticalSync, drawDebug, devControls
             },LoggerLabel.GameManager);
 
             DrawDebug = drawDebug;
@@ -83,7 +83,9 @@ namespace TwelveEngine.Shell {
 
             AddAutomationAgentEventHandlers();
 
-            KeyWatcherSet = new HotkeySet(GetDebugControls());
+            if(devControls) {
+                KeyWatcherSet = new HotkeySet(GetDebugControls());
+            }
             DebugWriter = new(this);
         }
 
@@ -314,7 +316,7 @@ namespace TwelveEngine.Shell {
             }
 
             KeyboardState vanillaKeyboardState = Keyboard.GetState();
-            KeyWatcherSet.Update(vanillaKeyboardState);
+            KeyWatcherSet?.Update(vanillaKeyboardState);
             if(_advanceFrameIsQueued) {
                 AdvanceFrame(vanillaKeyboardState,gameTime);
                 _advanceFrameIsQueued = false;

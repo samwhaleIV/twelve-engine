@@ -2,10 +2,6 @@
 using System.IO;
 using TwelveEngine.Shell;
 using TwelveEngine;
-using TwelveEngine.Game2D;
-using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Game2D.Entities;
-using Microsoft.Xna.Framework;
 
 namespace John {
     public sealed class Program:EntryPoint {
@@ -16,24 +12,17 @@ namespace John {
             program.StartEngine(args);
         }
 
-        private static GameState GetStartState() {
-            return new CollectionGame();
-        }
-
         private void StartEngine(string[] args) {
             string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"JohnCollectionGame");
-            Config.SetBool(Config.Keys.LimitFrameDelta,true);
+            Config.SetBool(Config.Keys.LimitFrameDelta,false);
             EngineMain(saveDirectory,args);
         }
 
         protected override void OnGameLoad(GameStateManager game,string saveDirectory) {
-            //TODO: load save data
-            //TODO: load audio banks
-            game.SetState(GetStartState());
+            game.SetState(new CollectionGame());
         }
 
         protected override void OnGameCrashed() {
-            //TODO: Save data
         }
     }
 }

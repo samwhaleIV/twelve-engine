@@ -2,7 +2,6 @@
     public sealed class DebugDot:Entity2D {
 
         public DebugDot() {
-            OnRender += DebugDot_OnRender;
             LayerDepth = 1f;
         }
 
@@ -16,7 +15,7 @@
             _position = position;
         }
 
-        private void DebugDot_OnRender() {
+        protected override void Render() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);
             float rotation = 0f; Vector2 origin = Vector2.Zero;
             Vector2 scale = new Vector2(1);

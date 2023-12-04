@@ -10,12 +10,15 @@ namespace TwelveEngine.EntitySystem {
         public SpriteBatch SpriteBatch => Owner.SpriteBatch;
         public RenderTargetStack RenderTarget => Owner.RenderTarget;
         public GraphicsDevice GraphicsDevice => Owner.GraphicsDevice;
+
         public Viewport Viewport => Owner.RenderTarget.GetViewport();
+
         public TimeSpan Now => Owner.Now;
         public TimeSpan RealTime => Owner.RealTime;
         public TimeSpan FrameDelta => Owner.FrameDelta;
         public TimeSpan LocalNow => Owner.LocalNow;
         public TimeSpan LocalRealTime => Owner.LocalRealTime;
+
         public bool GameIsActive => Owner.GameIsActive;
         public bool GameIsPaused => Owner.GameIsPaused;
 
@@ -51,20 +54,18 @@ namespace TwelveEngine.EntitySystem {
             EntityManager = entityManager;
         }
 
-        protected event Action OnLoad, OnUnload;
-
         internal event Action<Entity<TOwner>> OnSortedOrderChange;
         protected void NotifySortedOrderChange() => OnSortedOrderChange?.Invoke(this);
 
-        internal void Load() {
+        internal void Internal_Load() {
             IsLoading = true;
-            OnLoad?.Invoke();
+            Load();
             IsLoaded = true;
             IsLoading = false;
         }
 
-        internal void Unload() {
-            OnUnload?.Invoke();
+        internal void Internal_Unload() {
+            Unload();
             ID = DEFAULT_ID;
             Owner = null;
             IsLoaded = false;
@@ -72,22 +73,28 @@ namespace TwelveEngine.EntitySystem {
 
         public bool IsVisible { get; set; } = true;
 
-        public event Action OnUpdate, OnRender, OnPreRender;
+        internal void Internal_Update() {
+            Update();
+        }
 
-        public void Update() => OnUpdate?.Invoke();
-
-        public void PreRender() {
+        internal void Internal_PreRender() {
             if(!IsVisible) {
                 return;
             }
-            OnPreRender?.Invoke();
+            PreRender();
         }
 
-        public void Render() {
+        internal void Internal_Render() {
             if(!IsVisible) {
                 return;
             }
-            OnRender?.Invoke();
+            Render();
         }
+
+        protected virtual void Update() { }
+        protected virtual void Render() { }
+        protected virtual void PreRender() { }
+        protected virtual void Load() { }
+        protected virtual void Unload() { }
     }
 }

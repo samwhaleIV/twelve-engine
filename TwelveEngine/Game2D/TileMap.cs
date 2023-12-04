@@ -57,7 +57,7 @@ namespace TwelveEngine.Game2D {
             /* Single layer */
             short[,] tileData = new short[1,width * height];
 
-            TileMap tileMap = new TileMap() { Width = width,Height = height,Data = tileData, LayerCount = 1 };
+            TileMap tileMap = new() { Width = width,Height = height,Data = tileData, LayerCount = 1 };
 
             int y = 0;
 
@@ -89,7 +89,15 @@ namespace TwelveEngine.Game2D {
         }
 
         public static TileMap CreateFromJSON(string file,short tileValueOffset = -1) {
-            var text = File.ReadAllText(file);
+
+            string text;
+            try {
+                text = File.ReadAllText(file);
+            } catch(Exception exception) {
+                Logger.WriteLine($"Could not open JSON map file '{file}'. {exception.Message}",LoggerLabel.None);
+                throw;
+            }
+
             var mapData = JsonSerializer.Deserialize<TiledJSONSchema>(text);
 
             short[,] tileData = new short[mapData.layers.Length,mapData.width * mapData.height];
