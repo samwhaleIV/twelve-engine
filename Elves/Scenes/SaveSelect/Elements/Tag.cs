@@ -79,12 +79,12 @@ namespace Elves.Scenes.SaveSelect {
         }
 
         protected override void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
-            base.Draw(spriteBatch,texture,sourceArea);
+            DrawDefault(spriteBatch,texture,sourceArea);
             if(Display != TagDisplay.Custom || DrawingFrame is null) {
                 return;
             }
             var renderTarget = DrawingFrame.RenderTarget;
-            Draw(spriteBatch,renderTarget,renderTarget.Bounds);
+            DrawDefault(spriteBatch,renderTarget,renderTarget.Bounds);
         }
 
         public int ID { get; set; } = -1;

@@ -67,7 +67,7 @@ namespace John {
 
         public const int MASK_TYPE_COUNT = 32;
 
-        public const float KILL_IMPOSTER_JOHN_PROBABILITY = 0.75f, REAL_JOHN_PROBABILITY = 0.1f;
+        public const float FAKE_JOHN_PROBABILITY = 0.75f, REAL_JOHN_PROBABILITY = 0.1f;
 
         public const int ROUND_COMPLETION_COUNT = 5;
 

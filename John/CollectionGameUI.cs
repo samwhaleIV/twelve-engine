@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using TwelveEngine;
+using TwelveEngine.Shell;
+using TwelveEngine.UI;
 using TwelveEngine.UI.Book;
 
 namespace John {
@@ -19,6 +21,8 @@ namespace John {
         public SpriteElement JohnClothingGuide {  get; private init; }
 
         public ScoreBufferCell[] ScoreBufferContainer { get; private init; }
+
+        public VirtualDPad VirtualDPad { get; private init; }
 
         public static readonly Rectangle ShirtSource = new Rectangle(32,240,16,16), PantsSource = new Rectangle(49,240,14,16), HairSource = new Rectangle(64,240,16,16);
         public static readonly Rectangle FindJohnTextSource = new Rectangle(48,208,64,12), KillFakesTextSource = new Rectangle(112,208,58,12);
@@ -66,38 +70,22 @@ namespace John {
                 Offset = new Vector2(0,-0.5f)          
             });
 
+            VirtualDPad = new VirtualDPad() {
+                GameState = game,
+                Texture = Texture,
+                PositionMode = CoordinateMode.Absolute,
+                SizeMode = CoordinateMode.Absolute,
+                TextureSource = new Rectangle(0,160,48,48)
+            };
+
+            AddElement(VirtualDPad);
+
             ScoreBufferContainer = new ScoreBufferCell[ROUND_COMPLETION_COUNT];
             for(int i = 0;i<ScoreBufferContainer.Length;i++) {
                 ScoreBufferContainer[i] = GetScoreBufferCell();
             }
 
             SetFirstPage(new CollectionGamePage(this));
-
-            game.JohnSaved += Game_JohnSaved;
-            game.IncorrectJohnSaved += Game_IncorrectJohnSaved;
-            game.RealJohnKilled += Game_RealJohnKilled;
-            game.ImposterKilled += Game_ImposterKilled;
-            game.WrongBin += Game_WrongBin; 
-        }
-
-        private void Game_WrongBin() {
-
-        }
-
-        private void Game_ImposterKilled() {
-            
-        }
-
-        private void Game_RealJohnKilled() {
-            
-        }
-
-        private void Game_IncorrectJohnSaved() {
-            
-        }
-
-        private void Game_JohnSaved() {
-            
         }
     }
 
@@ -132,6 +120,43 @@ namespace John {
         public float PixelSize { get; set; }
     }
 
+    public sealed class VirtualDPad:SpriteElement {
+        public InputGameState GameState { get; set; }
+
+        protected override void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
+            FloatRectangle destination = ComputedArea;
+
+            destination.Size = Vector2.Round(Size);
+            destination.Position += destination.Size * 0.5f;
+
+            Vector2 origin = sourceArea.Size.ToVector2() * 0.5f;
+
+            float rotation = MathHelper.ToRadians(ComputedRotation);
+
+            spriteBatch.Draw(texture,(Rectangle)destination,sourceArea,ComputedColor,rotation,origin,SpriteEffects.None,Depth);
+
+            sourceArea.Size = new Point(16,16);
+            sourceArea.Location += new Point(64,0);
+            destination.Size *= (float)1 / 3;
+
+            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Up)) {
+                spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(destination.Size.X,0),destination.Size),new Rectangle(64,160,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
+            }
+            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Left)) {
+                spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(0,destination.Size.Y),destination.Size),new Rectangle(48,176,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
+            }
+            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Down)) {
+                spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(destination.Size.X,destination.Size.Y*2),destination.Size),new Rectangle(64,192,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
+            }
+            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Right)) {
+                spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(destination.Size.X*2,destination.Size.Y),destination.Size),new Rectangle(80,176,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
+            }
+            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Accept)) {
+                spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(destination.Size.X,destination.Size.Y),destination.Size),new Rectangle(64,176,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
+            }
+        }
+    }
+
     public sealed class CollectionGamePage:BookPage<SpriteElement> {
 
         private readonly CollectionGameUI _book;
@@ -164,6 +189,10 @@ namespace John {
                 cell.Scale = 1;
                 cell.Flags = ElementFlags.Update;
             }
+
+            var virtualDPad = _book.VirtualDPad;
+            virtualDPad.Scale = 1;
+            virtualDPad.Flags = ElementFlags.Update;
 
             return null;
         }
@@ -224,6 +253,10 @@ namespace John {
                 cell.PixelSize = pixelScale;
                 cell.JohnConfig = i < Game.BinBuffer.Count ? Game.BinBuffer[i] : null;
             }
+
+            var virtualDPad = _book.VirtualDPad;
+            virtualDPad.Size = virtualDPad.SourceSize * pixelScale;
+            virtualDPad.Position = Viewport.Size - new Vector2(screenMargin) - virtualDPad.Size;
         }
     }
 }

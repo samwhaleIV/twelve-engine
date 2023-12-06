@@ -15,10 +15,12 @@
         public GridLinesEntity(float cellSize = 1f,int gridSize = 40) {
             this.cellSize = cellSize;
             this.gridSize = gridSize;
-
+            OnLoad += Load;
+            OnUnload += Unload;
+            OnRender += Render;
         }
 
-        protected override void Load() {
+        private void Load() {
             bufferSet = Owner.CreateBufferSet(GetVertices(cellSize,gridSize));
             effect = new BasicEffect(GraphicsDevice) {
                 TextureEnabled = false,
@@ -27,7 +29,7 @@
             };
         }
 
-        protected override void Unload() {
+        private void Unload() {
             effect?.Dispose();
             effect = null;
 
@@ -45,7 +47,7 @@
             effect.Projection = projectionMatrix;
         }
 
-        protected override void Render() {
+        private void Render() {
             bufferSet.Apply();
             foreach(var pass in effect.CurrentTechnique.Passes) {
                 pass.Apply();

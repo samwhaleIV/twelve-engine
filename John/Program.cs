@@ -15,8 +15,6 @@ namespace John {
         private void StartEngine(string[] args) {
             string saveDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"JohnCollectionGame");
             Config.SetBool(Config.Keys.LimitFrameDelta,false);
-            Config.SetIntNullable(Config.Keys.WindowWidth,1200);
-            Config.SetIntNullable(Config.Keys.WindowHeight,800);
             EngineMain(saveDirectory,args);
         }
 

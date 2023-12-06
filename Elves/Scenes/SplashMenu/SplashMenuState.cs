@@ -115,17 +115,29 @@ namespace Elves.Scenes.SplashMenu {
     }
 
     public sealed class FallingElf:SplashMenuItem {
-        public FallingElf(SplashMenuState splashMenuState,Texture2D texture) : base(splashMenuState,texture) {}
-        protected override void Update() => MenuState.UpdateFallingElfArea();
+        public FallingElf(SplashMenuState splashMenuState,Texture2D texture) : base(splashMenuState,texture) {
+            OnUpdate += Update;
+        }
+        private void Update() {
+            MenuState.UpdateFallingElfArea();
+        }
     }
 
     public sealed class NameBadge:SplashMenuItem {
-        public NameBadge(SplashMenuState splashMenuState,Texture2D texture) : base(splashMenuState,texture) { }
-        protected override void Update() => MenuState.UpdateNameBadgeArea();
+        public NameBadge(SplashMenuState splashMenuState,Texture2D texture) : base(splashMenuState,texture) {
+            OnUpdate += Update;
+        }
+        private void Update() {
+            MenuState.UpdateNameBadgeArea();
+        }
     }
 
     public sealed class PlayButton:SplashMenuItem {
-        public PlayButton(SplashMenuState splashMenuState,Texture2D texture) : base(splashMenuState,texture) {}
-        protected override void Update() => MenuState.UpdatePlayButtonArea();
+        public PlayButton(SplashMenuState splashMenuState,Texture2D texture) : base(splashMenuState,texture) {
+            OnUpdate += Update;
+        }
+        private void Update() {
+            MenuState.UpdatePlayButtonArea();
+        }
     }
 }

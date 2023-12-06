@@ -1,6 +1,12 @@
 ﻿namespace TwelveEngine.Game3D.Entity {
     public abstract class TextureRectangle:WorldMatrixEntity {
 
+        public TextureRectangle() {
+            OnRender += Render;
+            OnLoad += Load;
+            OnUnload += Unload;
+        }
+
         private Texture2D _texture;
         public Texture2D Texture {
             get => _texture;
@@ -44,8 +50,7 @@
             BottomRightColor = colors[3];
         }
 
-        public Vector2 UVTopLeft = Vector2.Zero;
-        public Vector2 UVBottomRight = Vector2.One;
+        public Vector2 UVTopLeft = Vector2.Zero, UVBottomRight = Vector2.One;
 
         public void SetColor(Color color) {
             TopLeftColor = color;
@@ -95,7 +100,7 @@
             vertices[5] = vertices[2];
         }
 
-        protected override void Load() {
+        private void Load() {
             bufferSet = Owner.CreateBufferSet(vertices);
             
             effect = new BasicEffect(GraphicsDevice) {
@@ -105,7 +110,7 @@
             };
         }
 
-        protected override void Unload() {
+        private void Unload() {
             bufferSet?.Dispose();
             bufferSet = null;
 
@@ -127,7 +132,7 @@
 
         public float Alpha { get; set; } = 1f;
 
-        protected void RenderVertices() {
+        private void Render() {
             UpdateVertices(TopLeft,BottomRight);
             bufferSet.VertexBuffer.SetData(vertices);
             bufferSet.Apply();

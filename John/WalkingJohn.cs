@@ -19,10 +19,12 @@ namespace John {
             Restitution = 0f;
             LinearDamping = JOHN_LINEAR_DAMPING;
             Friction = JOHN_FRICTION;
+            OnUpdate += Update;
+            OnRender += Render;
+            OnLoad += Load;
         }
 
-        protected override void Load() {
-            base.Load();
+        private void Load() {
             Body.OnCollision += Body_OnCollision;
             Body.OnSeparation += Body_OnSeparation;
             Fixture.CollisionCategories = Category.Cat1 | Category.Cat2;
@@ -90,7 +92,7 @@ namespace John {
         private TimeSpan _notBeingPushedStart = TimeSpan.Zero;
         private static readonly TimeSpan _pushingHoldDuration = TimeSpan.FromSeconds(0.125f);
 
-        protected override void Update() {
+        private void Update() {
             if(!Body.Enabled) {
                 return;
             }
@@ -220,7 +222,7 @@ namespace John {
         
         public bool IsGrabbed { get; set; }
 
-        protected override void Render() {
+        private void Render() {
             //TODO: Offscreen filtering
             if(!Body.Enabled && !IsGrabbed) {
                 return;

@@ -59,13 +59,13 @@ namespace TwelveEngine.EntitySystem {
 
         internal void Internal_Load() {
             IsLoading = true;
-            Load();
+            OnLoad?.Invoke();
             IsLoaded = true;
             IsLoading = false;
         }
 
         internal void Internal_Unload() {
-            Unload();
+            OnUnload?.Invoke();
             ID = DEFAULT_ID;
             Owner = null;
             IsLoaded = false;
@@ -74,27 +74,23 @@ namespace TwelveEngine.EntitySystem {
         public bool IsVisible { get; set; } = true;
 
         internal void Internal_Update() {
-            Update();
+            OnUpdate?.Invoke();
         }
 
         internal void Internal_PreRender() {
             if(!IsVisible) {
                 return;
             }
-            PreRender();
+            OnPreRender?.Invoke();
         }
 
         internal void Internal_Render() {
             if(!IsVisible) {
                 return;
             }
-            Render();
+            OnRender?.Invoke();
         }
 
-        protected virtual void Update() { }
-        protected virtual void Render() { }
-        protected virtual void PreRender() { }
-        protected virtual void Load() { }
-        protected virtual void Unload() { }
+        protected event Action OnUpdate, OnRender, OnPreRender, OnLoad, OnUnload;
     }
 }

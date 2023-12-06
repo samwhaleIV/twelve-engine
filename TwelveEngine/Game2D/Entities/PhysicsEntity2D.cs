@@ -12,6 +12,8 @@ namespace TwelveEngine.Game2D.Entities {
         public PhysicsEntity2D(Vector2 size,Vector2 origin) {
             Size = size;
             Origin = origin;
+            OnLoad += Load;
+            OnUnload += Unload;
         }
 
         private Vector2 _position;
@@ -31,7 +33,7 @@ namespace TwelveEngine.Game2D.Entities {
             Body.Position = position * Owner.PhysicsScale;
         }
 
-        protected override void Load() {
+        private void Load() {
             Vector2 size = Size * Owner.PhysicsScale;
 
             Body = new Body {
@@ -58,7 +60,7 @@ namespace TwelveEngine.Game2D.Entities {
             Owner.PhysicsWorld.Add(Body);
         }
 
-        protected override void Unload() {
+        private void Unload() {
             Owner.PhysicsWorld.Remove(Body);
         }
 

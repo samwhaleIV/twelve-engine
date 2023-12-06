@@ -7,16 +7,18 @@
         public TestPlayer(Texture2D texture,TileData tileData) : base(new Vector2(1,1),Vector2.Zero) {
             _texture = texture;
             _tileData = tileData;
+            OnUpdate += Update;
+            OnRender += Render;
         }
 
         public float ImpulseForce { get; set; } = 1f;
 
-        protected override void Update() {
+        private void Update() {
             var delta = Owner.Impulse.GetDigitalDelta2D() * ImpulseForce;
             Body.ApplyLinearImpulse(delta);
         }
 
-        protected override void Render() {
+        private void Render() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);
 
             float rotation = 0f; Vector2 origin = Vector2.Zero;

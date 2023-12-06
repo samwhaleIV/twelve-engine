@@ -1,6 +1,10 @@
 ﻿namespace TwelveEngine.Game3D.Entity {
     public abstract class WorldMatrixEntity:Entity3D {
 
+        public WorldMatrixEntity() {
+            OnPreRender += PreRender;
+        }
+
         private void FirstPreRender() {
             UpdateWorldMatrix();
             ApplyViewMatrix(ref Owner.ViewMatrix);
@@ -9,7 +13,7 @@
 
         private bool _firstPreRender = true;
 
-        protected override void PreRender() {
+        private void PreRender() {
             if(_firstPreRender) {
                 FirstPreRender();
                 _firstPreRender = false;

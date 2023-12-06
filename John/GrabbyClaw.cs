@@ -1,30 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TwelveEngine.Game2D;
-using TwelveEngine.Input;
 using nkast.Aether.Physics2D.Dynamics;
 
 namespace John {
     public sealed class GrabbyClaw:Entity2D {
 
         private readonly CollectionGame _game;
-        public GrabbyClaw(CollectionGame game) => _game = game;
-
-        protected override void Load() {
-            Owner.Impulse.OnEvent += Impulse_OnEvent;
-        }
-
-        protected override void Unload() {
-            Owner.Impulse.OnEvent -= Impulse_OnEvent;
-        }
-
-        private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
-            if(_game.ShowingStartScreen) {
-                return;
-            }
-            if(impulseEvent.Impulse == Impulse.Accept && impulseEvent.Pressed) {
-                ToggleGrip();
-            }
+        public GrabbyClaw(CollectionGame game) {
+            _game = game;
+            OnRender += Render;
+            OnUpdate += Update;
         }
 
         public float MinX { get; set; } = float.NegativeInfinity;
@@ -34,7 +20,10 @@ namespace John {
 
         public bool IsGripping { get; private set; } = false;
 
-        private void ToggleGrip() {
+        private WalkingJohn _heldJohn = null;
+        private Vector2 _position;
+
+        public void ToggleGrip() {
             if(IsGripping) {
                 Release();
             } else {
@@ -42,9 +31,7 @@ namespace John {
             }
         }
 
-        private WalkingJohn _heldJohn = null;
-
-        public void Release() {
+       private void Release() {
             if(!IsGripping) {
                 return;
             }
@@ -64,7 +51,7 @@ namespace John {
             IsGripping = false;
         }
 
-        public void Grab() {
+        private void Grab() {
             if(IsGripping) {
                 return;
             }
@@ -88,8 +75,8 @@ namespace John {
             _heldJohn = john;
         }
 
-        protected override void Update() {
-            Vector2 delta = !_game.ShowingStartScreen ? Owner.Impulse.GetDigitalDelta2DWithModifier() : Vector2.Zero;
+        private void Update() {
+            Vector2 delta = _game.GetMovementDelta();
             _position += delta * Constants.CLAW_SPEED;
 
             if(_position.X < MinX) {
@@ -113,7 +100,7 @@ namespace John {
 
         private readonly Rectangle ClosedClawSource = new(80,16,32,32), OpenClawSource = new(112,16,32,32), RopeSource = new(80,0,32,16);
 
-        protected override void Render() {
+        private void Render() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);
 
             float rotation = 0f;
@@ -137,8 +124,6 @@ namespace John {
 
             Owner.SpriteBatch.Draw(Owner.TileMapTexture,position,RopeSource,Color.White,rotation,origin,scale,SpriteEffects.None,0.8f);
         }
-
-        private Vector2 _position;
 
         protected override Vector2 GetPosition() {
             return _position;

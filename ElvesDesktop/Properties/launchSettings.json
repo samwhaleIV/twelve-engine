@@ -6,7 +6,7 @@
     },
     "Dev": {
       "commandName": "Project",
-      "commandLineArgs": "drawdebug nofailsafe console skiptocarousel",
+      "commandLineArgs": "drawdebug nofailsafe console devcontrols skiptocarousel",
       "nativeDebugging": false
     },
     "No Flags": {

@@ -58,11 +58,8 @@
             Scale = newScale;
         }
 
-        protected virtual void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
+        protected void DrawDefault(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
             FloatRectangle destination = ComputedArea;
-
-            //destination.Position = Vector2.Round(Position);
-            destination.Size = Vector2.Round(Size);
 
             destination.Position += destination.Size * 0.5f;
 
@@ -71,7 +68,11 @@
             spriteBatch.Draw(texture,(Rectangle)destination,sourceArea,ComputedColor,MathHelper.ToRadians(ComputedRotation),origin,SpriteEffects.None,Depth);
         }
 
-        public void Render(SpriteBatch spriteBatch) {
+        protected virtual void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
+            DrawDefault(spriteBatch,texture,sourceArea);
+        }
+
+        internal void Render(SpriteBatch spriteBatch) {
             Draw(spriteBatch,Texture,TextureSource);
         }
 

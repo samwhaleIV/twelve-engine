@@ -5,7 +5,6 @@ using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Hotkeys;
 using TwelveEngine.Input;
 using TwelveEngine.Audio;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Shell {
     public sealed class GameStateManager:Game {
@@ -47,14 +46,14 @@ namespace TwelveEngine.Shell {
         internal Exception ReroutedException { get; set; }
 
         internal GameStateManager(
-            bool fullscreen = false,bool hardwareModeSwitch = false,bool verticalSync = true,bool drawDebug = false,bool devControls = false
+            bool startFullscreen = false,bool verticalSync = true,bool drawDebug = false,bool devControls = false
         ) {
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
 
             Logger.WriteBooleanSet("Context settings",new string[] {
-                "Fullscreen","HardwareModeSwitch","VerticalSync","DrawDebug","DevControls"
+                "StartFullscreen", "VerticalSync","DrawDebug","DevControls"
             },new bool[] {
-                fullscreen, hardwareModeSwitch, verticalSync, drawDebug, devControls
+                startFullscreen, verticalSync, drawDebug, devControls
             },LoggerLabel.GameManager);
 
             DrawDebug = drawDebug;
@@ -65,16 +64,14 @@ namespace TwelveEngine.Shell {
 
             GraphicsDeviceManager.SynchronizeWithVerticalRetrace = verticalSync;
 
-            GraphicsDeviceManager.IsFullScreen = fullscreen;
-            GraphicsDeviceManager.HardwareModeSwitch = hardwareModeSwitch;
-
-            DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+            GraphicsDeviceManager.IsFullScreen = startFullscreen;
+            GraphicsDeviceManager.HardwareModeSwitch = false;
 
             int? width = Config.GetIntNullable(Config.Keys.WindowWidth);
             int? height = Config.GetIntNullable(Config.Keys.WindowHeight);
 
-            GraphicsDeviceManager.PreferredBackBufferWidth = width ?? displayMode.Width;
-            GraphicsDeviceManager.PreferredBackBufferHeight = height ?? displayMode.Height;
+            GraphicsDeviceManager.PreferredBackBufferWidth = width ?? Constants.DefaultWidth;
+            GraphicsDeviceManager.PreferredBackBufferHeight = height ?? Constants.DefaultHeight;
 
             IsFixedTimeStep = false;
 

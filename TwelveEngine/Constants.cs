@@ -50,6 +50,9 @@ namespace TwelveEngine {
         public const Keys AdvanceFrameKey = Keys.F6;
         public const Keys FullscreenKey = Keys.F11;
 
+        public const int DefaultWidth = 1200;
+        public const int DefaultHeight = 800;
+
         /// <summary>
         /// Smoothing rate limit for the debug presentation of frame times and FPS.
         /// </summary>
@@ -57,9 +60,8 @@ namespace TwelveEngine {
 
         public static class Flags {
             public const string NoFailSafe = "nofailsafe";
-            public const string HardwareFullscreen = "hwfullscreen";
             public const string NoVsync = "novsync";
-            public const string Fullscreen = "fullscreen";
+            public const string StartFullscreen = "startfullscreen";
             public const string DrawDebug = "drawdebug";
             public const string Console = "console";
             public const string FMODProfile = "fmodprofile";

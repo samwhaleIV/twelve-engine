@@ -54,8 +54,7 @@ namespace TwelveEngine {
         }
 
         private static GameStateManager CreateGameStateManager() => new(
-            fullscreen: Flags.Get(Constants.Flags.Fullscreen),
-            hardwareModeSwitch: Flags.Get(Constants.Flags.HardwareFullscreen),
+            startFullscreen: Flags.Get(Constants.Flags.StartFullscreen),
             verticalSync: !Flags.Get(Constants.Flags.NoVsync),
             drawDebug: Flags.Get(Constants.Flags.DrawDebug),
             devControls: Flags.Get(Constants.Flags.DevControls)

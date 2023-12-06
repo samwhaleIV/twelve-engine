@@ -47,6 +47,7 @@ namespace Elves.Scenes.SplashMenu {
             this.random = random;
             PixelSmoothing = false;
             Depth = (Constants.Depth.MiddleClose - Constants.Depth.MiddleFar) * random.NextSingle() + Constants.Depth.MiddleFar;
+            OnUpdate += Update;
         }
 
         private bool firstTime = true;
@@ -74,7 +75,7 @@ namespace Elves.Scenes.SplashMenu {
 
         private bool needsReset = true;
 
-        protected override void Update() {
+        private void Update() {
             if(needsReset) {
                 Reset();
                 needsReset = false;

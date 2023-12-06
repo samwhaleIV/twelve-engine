@@ -3,6 +3,7 @@
 
         public DebugDot() {
             LayerDepth = 1f;
+            OnRender += Render;
         }
 
         private Vector2 _position;
@@ -15,7 +16,7 @@
             _position = position;
         }
 
-        protected override void Render() {
+        private void Render() {
             Vector2 position = Owner.Camera.GetRenderLocation(this);
             float rotation = 0f; Vector2 origin = Vector2.Zero;
             Vector2 scale = new Vector2(1);

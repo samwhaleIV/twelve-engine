@@ -10,6 +10,7 @@ using TwelveEngine.UI.Book;
 using TwelveEngine;
 using TwelveEngine.Input;
 using TwelveEngine.Font;
+using System.Xml.Linq;
 
 namespace John {
 
@@ -38,15 +39,42 @@ namespace John {
             OnRender.Add(RenderUI);
 
             Impulse.OnEvent += Impulse_OnEvent;
+            Mouse.OnEvent += Mouse_OnEvent;
 
             PhysicsScale = PHYSICS_SIM_SCALE;
             JohnPool = new PoolOfJohns(this);
         }
 
-        private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
-            if(impulseEvent.Impulse == TwelveEngine.Input.Impulse.Accept && impulseEvent.Pressed) {
-                AdvanceStartScreen();
+        public Vector2 GetMovementDelta() {
+            return !ShowingStartScreen ? Impulse.GetDigitalDelta2DWithModifier() : Vector2.Zero;
+        }
+
+        private void Mouse_OnEvent(MouseEvent mouseEvent) {
+            if(ShowingStartScreen) {
+                if(mouseEvent.Type == MouseEventType.LeftClickPressed) {
+                    AdvanceStartScreen();
+                }
+                return;
             }
+        }
+
+        private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
+            if(ShowingStartScreen) {
+                AdvanceStartScreen();
+                return;
+            }
+            if(impulseEvent.Impulse == TwelveEngine.Input.Impulse.Accept && impulseEvent.Pressed) {
+                GrabbyClaw.ToggleGrip();
+            }
+        }
+
+        private void AdvanceStartScreen() {
+            if(++_textPageIndex < _textPages.Length) {
+                return;
+            }
+            _textPageIndex--;
+            ShowingStartScreen = false;
+            _startScreenEndStart = Now;
         }
 
         private void CameraTracking() {
@@ -98,7 +126,7 @@ namespace John {
 
             _nineGridBackground = new NineGrid(TileMapTexture,16,new Point(160,0));
 
-            StartGame(); //TODO: MAKE USER INITIATED THROUGH UI ?? (maybe)
+            StartGame();
         }
 
         private void UnloadGame() {
@@ -140,18 +168,7 @@ namespace John {
             "John has splintered into a endless stream of facsimiles, each but a sliver of his true form. Now, unsure of his individuality, John needs your help to regain his identity.",
             //todo
         };
-
         private int _textPageIndex = 0;
-
-        private void AdvanceStartScreen() {
-            if(++_textPageIndex < _textPages.Length) {
-                return;
-            }
-            _textPageIndex--;
-            ShowingStartScreen = false;
-            Impulse.OnEvent -= Impulse_OnEvent;
-            _startScreenEndStart = Now;
-        }
 
         private TimeSpan _startScreenEndStart = TimeSpan.Zero;
         private static readonly TimeSpan _startScreenEndDuration = TimeSpan.FromSeconds(0.5f);
@@ -267,7 +284,7 @@ namespace John {
             if(FindRealJohnMode) {
                 return REAL_JOHN_PROBABILITY;
             } else {
-                return KILL_IMPOSTER_JOHN_PROBABILITY;
+                return FAKE_JOHN_PROBABILITY;
             }
         }
 

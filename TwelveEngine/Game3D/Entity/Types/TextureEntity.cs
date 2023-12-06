@@ -5,10 +5,12 @@
 
         public TextureEntity(string textureName) {
             TextureName = textureName;
+            OnLoad += Load;
         }
 
         public TextureEntity(Texture2D texture) {
             pendingTexture = texture;
+            OnLoad += Load;
         }
 
         public void SetUVArea(int x,int y,int width,int height) {
@@ -46,8 +48,7 @@
             }
         }
 
-        protected override void Load() {
-            base.Load();
+        private void Load() {
             if(_textureName != null) {
                 Texture = Content.Load<Texture2D>(TextureName);
             } else if(pendingTexture != null) {
