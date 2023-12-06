@@ -45,7 +45,7 @@ namespace John {
 
         private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
             if(impulseEvent.Impulse == TwelveEngine.Input.Impulse.Accept && impulseEvent.Pressed) {
-                StartGame();
+                AdvanceStartScreen();
             }
         }
 
@@ -136,41 +136,75 @@ namespace John {
 
         public bool ShowingStartScreen { get; set; } = true;
 
-        private void RenderUI() {
-            if(ShowingStartScreen) {
+        private string[] _textPages = new[] {
+            "John has splintered into a endless stream of facsimiles, each but a sliver of his true form. Now, unsure of his individuality, John needs your help to regain his identity.",
+            //todo
+        };
 
-                float margin = 0.25f;
+        private int _textPageIndex = 0;
 
-                var backgroundSize = Viewport.Bounds.Size.ToVector2() - Camera.TileSize * margin;
-                FloatRectangle backgroundArea = new(Camera.TileSize * margin * 0.5f,backgroundSize);
-
-                float maxWidth = backgroundArea.Height * 0.8f;
-
-                if(backgroundArea.Width > maxWidth) {
-                    var centerX = backgroundArea.CenterX;
-                    backgroundArea.Width = maxWidth;
-                    backgroundArea.Position = new Vector2(centerX-backgroundArea.Width*0.5f,backgroundArea.Position.Y);
-                }
-
-                backgroundArea.Position = Vector2.Round(backgroundArea.Position);
-
-                SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
-                _nineGridBackground.Draw(SpriteBatch,Camera.Scale,backgroundArea);
-                SpriteBatch.End();
-
-                Fonts.Retro.Begin(SpriteBatch);
-
-                Fonts.Retro.Draw("Hello, world!",backgroundArea.Position + new Vector2(Camera.Scale * 6),Camera.Scale / 2,Color.White);
-
-                Fonts.Retro.End();
-            } else {
-                UI?.Render(SpriteBatch);
+        private void AdvanceStartScreen() {
+            if(++_textPageIndex < _textPages.Length) {
+                return;
             }
-        }
-
-        private void EnableInput() {
+            _textPageIndex--;
             ShowingStartScreen = false;
             Impulse.OnEvent -= Impulse_OnEvent;
+            _startScreenEndStart = Now;
+        }
+
+        private TimeSpan _startScreenEndStart = TimeSpan.Zero;
+        private static readonly TimeSpan _startScreenEndDuration = TimeSpan.FromSeconds(0.5f);
+
+        private void DrawStartScreen() {
+            float startScreenOffset = ShowingStartScreen ? 0 : MathF.Min((float)((Now - _startScreenEndStart) /  _startScreenEndDuration),1f);
+            if(startScreenOffset >= 1) {
+                return;
+            }
+
+            float margin = 0.25f;
+
+            var screenSize = Viewport.Bounds.Size.ToVector2();
+
+            var backgroundSize = screenSize - Camera.TileSize * margin;
+            FloatRectangle backgroundArea = new(Camera.TileSize * margin * 0.5f,backgroundSize);
+
+            float maxWidth = backgroundArea.Height * 0.8f;
+
+            if(backgroundArea.Width > maxWidth) {
+                var centerX = backgroundArea.CenterX;
+                backgroundArea.Width = maxWidth;
+                backgroundArea.Position = new Vector2(centerX-backgroundArea.Width*0.5f,backgroundArea.Position.Y);
+            }
+
+            Vector2 offset = new(0,(screenSize.Y - backgroundArea.Top) * startScreenOffset);
+
+            backgroundArea.Position = Vector2.Floor(backgroundArea.Position + offset);
+
+            SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+            _nineGridBackground.Draw(SpriteBatch,Camera.Scale,backgroundArea);
+            SpriteBatch.End();
+
+            Fonts.Retro.Begin(SpriteBatch);
+
+            Vector2 textMargin = new Vector2(Camera.Scale * 6);
+
+            float textScale = Camera.Scale / 2;
+            Color textColor = Color.White;
+
+            Fonts.Retro.Draw(_textPages[_textPageIndex],backgroundArea.Position + textMargin,textScale,textColor,backgroundArea.Width - textMargin.X * 2);
+
+            float y = MathF.Floor(backgroundArea.Bottom - textMargin.Y - textScale * Fonts.Retro.LineHeight * 0.5f);
+            Fonts.Retro.DrawCentered("Press Any Key to Continue",new Vector2(MathF.Floor(backgroundArea.CenterX),y),textScale,textColor);
+
+            Fonts.Retro.End();
+        }
+
+        private void RenderUI() {
+            if(!ShowingStartScreen) {
+                UI?.Render(SpriteBatch);
+            }
+            DrawStartScreen();
         }
 
         public JohnTypeMask RealJohnMask { get; private set; }
