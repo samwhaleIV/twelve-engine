@@ -71,7 +71,7 @@ namespace John {
             });
 
             VirtualDPad = new VirtualDPad() {
-                GameState = game,
+                Game = game,
                 Texture = Texture,
                 PositionMode = CoordinateMode.Absolute,
                 SizeMode = CoordinateMode.Absolute,
@@ -121,7 +121,7 @@ namespace John {
     }
 
     public sealed class VirtualDPad:SpriteElement {
-        public InputGameState GameState { get; set; }
+        public CollectionGame Game { get; set; }
 
         protected override void Draw(SpriteBatch spriteBatch,Texture2D texture,Rectangle sourceArea) {
             FloatRectangle destination = ComputedArea;
@@ -139,19 +139,19 @@ namespace John {
             sourceArea.Location += new Point(64,0);
             destination.Size *= (float)1 / 3;
 
-            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Up)) {
+            if(Game.VirtualDPad.Up) {
                 spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(destination.Size.X,0),destination.Size),new Rectangle(64,160,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
             }
-            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Left)) {
+            if(Game.VirtualDPad.Left) {
                 spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(0,destination.Size.Y),destination.Size),new Rectangle(48,176,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
             }
-            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Down)) {
+            if(Game.VirtualDPad.Down) {
                 spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(destination.Size.X,destination.Size.Y*2),destination.Size),new Rectangle(64,192,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
             }
-            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Right)) {
+            if(Game.VirtualDPad.Right) {
                 spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(destination.Size.X*2,destination.Size.Y),destination.Size),new Rectangle(80,176,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
             }
-            if(GameState.Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Accept)) {
+            if(Game.VirtualDPad.Action) {
                 spriteBatch.Draw(texture,(Rectangle)new FloatRectangle(destination.Position+new Vector2(destination.Size.X,destination.Size.Y),destination.Size),new Rectangle(64,176,16,16),ComputedColor,rotation,origin,SpriteEffects.None,Depth);
             }
         }

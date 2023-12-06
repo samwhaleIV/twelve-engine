@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace John {
         public const float PHYSICS_SIM_SCALE = 8f;
 
         public const bool USE_CAM_BOUNDS = true;
-        public const float CLAW_SPEED = 0.02f;
+        public const float CLAW_SPEED = 0.028f;
 
         public const float CAM_OFFSET_MIN_X = 2.5f, CAM_OFFSET_MAX_X = -2.5F, CAM_OFFSET_MIN_Y = 2.5f, CAM_OFFSET_MAX_Y = -(2.5f + 3f / 16f);
         public const float CLAW_OFFSET_MIN_X = 3.25f, CLAW_OFFSET_MAX_X = -3.25f, CLAW_OFFSET_MIN_Y = 3.5f, CLAW_OFFSET_MAX_Y = -4.5f;
@@ -76,5 +77,12 @@ namespace John {
         public const string NO_RANDOM_SEED_FLAG = "startseeded";
 
         public const float DPI_SCALE_CONSTANT = 0.008f;
+
+        public const string PRESS_ANY_KEY_TEXT = "Press Any Key to Help";
+
+        public static readonly string[] START_SCREEN_TEXT = new[] {
+            "John has splintered into an endless stream of facsimiles, each but a sliver of his true form. Now, unsure of his identity, John needs your help to regain his individuality.",
+            "Changing appearance in pants, shirt, and hair color, you must be able to differentiate the real Johns from the fakes. Good luck."
+        };
     }
 }

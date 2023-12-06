@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.Collections.Generic;
 using TwelveEngine.Game2D;
@@ -10,7 +9,7 @@ using TwelveEngine.UI.Book;
 using TwelveEngine;
 using TwelveEngine.Input;
 using TwelveEngine.Font;
-using System.Xml.Linq;
+using Microsoft.Xna.Framework.Input;
 
 namespace John {
 
@@ -29,6 +28,7 @@ namespace John {
             OnLoad.Add(LoadGame);
 
             OnUpdate.Add(UpdateDPI,EventPriority.First);
+            OnUpdate.Add(UpdateVirtualDPad,EventPriority.Second);
 
             OnUpdate.Add(UpdateGame);
 
@@ -45,9 +45,7 @@ namespace John {
             JohnPool = new PoolOfJohns(this);
         }
 
-        public Vector2 GetMovementDelta() {
-            return !ShowingStartScreen ? Impulse.GetDigitalDelta2DWithModifier() : Vector2.Zero;
-        }
+        public VirtualDPadProvider VirtualDPad { get; private init; } = new();
 
         private void Mouse_OnEvent(MouseEvent mouseEvent) {
             if(ShowingStartScreen) {
@@ -58,18 +56,86 @@ namespace John {
             }
         }
 
+        private bool _capturingMouse = false;
+        Point _mouseCaptureStart = new Point(-1);
+
+        private Point GetMouseDPadGridLocation() {
+            if(!UI.VirtualDPad.ComputedArea.Contains(Mouse.Position)) {
+                return new Point(-1);
+            }
+            Vector2 relativeMouseLocation = (Mouse.Position.ToVector2() - UI.VirtualDPad.ComputedArea.Position) / UI.VirtualDPad.ComputedArea.Size;
+            relativeMouseLocation *= 3;
+            return Vector2.Floor(relativeMouseLocation).ToPoint();
+        }
+
+        private void UpdateVirtualDPad() {
+            if(!InputEnabled) {
+                return;
+            }
+            VirtualDPad.Up = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Up);
+            VirtualDPad.Down = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Down);
+            VirtualDPad.Left = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Left);
+            VirtualDPad.Right = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Right);
+            VirtualDPad.Action = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Accept);
+
+            bool wasCapturing = _capturingMouse;
+            _capturingMouse = Mouse.CapturingLeft;
+
+            if(!_capturingMouse) {
+                _mouseCaptureStart = new Point(-1);
+                return;
+            }
+            Point gridLocation = GetMouseDPadGridLocation();
+            if(!wasCapturing) {
+                _mouseCaptureStart = gridLocation;
+            }
+
+            if(!wasCapturing && gridLocation == new Point(1,1)) {
+                GrabbyClaw.ToggleGrip();
+            }
+
+            VirtualDPad.Action |= gridLocation == new Point(1,1);
+            if(_mouseCaptureStart != gridLocation) {
+                return;
+            }
+
+            VirtualDPad.Up |= gridLocation == new Point(1,0);
+            VirtualDPad.Down |= gridLocation == new Point(1,2);
+            VirtualDPad.Left |= gridLocation == new Point(0,1);
+            VirtualDPad.Right |= gridLocation == new Point(2,1);
+
+        }
+
+        private Vector2 GetDigitalDelta2D() {
+            int x = 0, y = 0;
+
+            if(VirtualDPad.Up) y--;
+            if(VirtualDPad.Down) y++;
+            if(VirtualDPad.Left) x--;
+            if(VirtualDPad.Right) x++;
+
+            return new Vector2(x,y);
+        }
+
+        public Vector2 GetMovementDelta() {
+            return !ShowingStartScreen ? GetDigitalDelta2D() : Vector2.Zero;
+        }
+
         private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
+            if(!impulseEvent.Pressed) {
+                return;
+            }
             if(ShowingStartScreen) {
                 AdvanceStartScreen();
                 return;
             }
-            if(impulseEvent.Impulse == TwelveEngine.Input.Impulse.Accept && impulseEvent.Pressed) {
+            if(impulseEvent.Impulse == TwelveEngine.Input.Impulse.Accept) {
                 GrabbyClaw.ToggleGrip();
             }
         }
 
         private void AdvanceStartScreen() {
-            if(++_textPageIndex < _textPages.Length) {
+            if(++_textPageIndex < START_SCREEN_TEXT.Length) {
                 return;
             }
             _textPageIndex--;
@@ -141,8 +207,8 @@ namespace John {
             writer.Write(Camera.RenderOrigin,"Render Origin");
         }
 
-        private SpriteBook _uiBook;
-        public SpriteBook UI {
+        private CollectionGameUI _uiBook;
+        public CollectionGameUI UI {
             get => _uiBook;
             set {
                 if(value == _uiBook) {
@@ -164,10 +230,6 @@ namespace John {
 
         public bool ShowingStartScreen { get; set; } = true;
 
-        private string[] _textPages = new[] {
-            "John has splintered into a endless stream of facsimiles, each but a sliver of his true form. Now, unsure of his individuality, John needs your help to regain his identity.",
-            //todo
-        };
         private int _textPageIndex = 0;
 
         private TimeSpan _startScreenEndStart = TimeSpan.Zero;
@@ -209,10 +271,10 @@ namespace John {
             float textScale = Camera.Scale / 2;
             Color textColor = Color.White;
 
-            Fonts.Retro.Draw(_textPages[_textPageIndex],backgroundArea.Position + textMargin,textScale,textColor,backgroundArea.Width - textMargin.X * 2);
+            Fonts.Retro.Draw(START_SCREEN_TEXT[_textPageIndex],backgroundArea.Position + textMargin,textScale,textColor,backgroundArea.Width - textMargin.X * 2);
 
             float y = MathF.Floor(backgroundArea.Bottom - textMargin.Y - textScale * Fonts.Retro.LineHeight * 0.5f);
-            Fonts.Retro.DrawCentered("Press Any Key to Continue",new Vector2(MathF.Floor(backgroundArea.CenterX),y),textScale,textColor);
+            Fonts.Retro.DrawCentered(PRESS_ANY_KEY_TEXT,new Vector2(MathF.Floor(backgroundArea.CenterX),y),textScale,textColor);
 
             Fonts.Retro.End();
         }
@@ -340,6 +402,7 @@ namespace John {
             }
         }
 
+        /* For debugging. These most likely aren't wired to any special or effects or UI because I had no more time. There is even a score that is not rendered. */
         public event Action JohnSaved, IncorrectJohnSaved, ImposterKilled, RealJohnKilled, WrongBin, ScoreIncreased, ScoreDecreased;
 
         public void ReturnJohn(WalkingJohn john,JohnReturnType johnReturnType) {
