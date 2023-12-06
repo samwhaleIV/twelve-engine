@@ -1,19 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TwelveEngine.EntitySystem;
-using TwelveEngine.Shell.UI;
-
-namespace TwelveEngine.Game2D {
+﻿namespace TwelveEngine.Game2D {
     public sealed class Camera {
 
         public Vector2 Position { get; set; } = Vector2.Zero;
 
-        public float MinX { get; set; } = float.NegativeInfinity;
-        public float MinY { get; set; } = float.NegativeInfinity;
+        public Vector2 MinBound { get; set; } = new(float.NegativeInfinity);
+        public Vector2 MaxBound { get; set; } = new(float.PositiveInfinity);
 
-        public float MaxX { get; set; } = float.PositiveInfinity;
-        public float MaxY { get; set; } = float.PositiveInfinity;
+        public float MinX {
+            get {
+                return MinBound.X;
+            }
+            set {
+                var minBound = MinBound;
+                minBound.X = value;
+                MinBound = minBound;
+            }
+        }
+        public float MinY {
+            get {
+                return MinBound.Y;
+            }
+            set {
+                var minBound = MinBound;
+                minBound.Y = value;
+                MinBound = minBound;
+            }
+        }
+
+        public float MaxX {
+            get {
+                return MaxBound.X;
+            }
+            set {
+                var maxBound = MaxBound;
+                maxBound.X = value;
+                MaxBound = maxBound;
+            }
+        }
+
+        public float MaxY {
+            get {
+                return MaxBound.Y;
+            }
+            set {
+                var maxBound = MaxBound;
+                maxBound.Y = value;
+                MaxBound = maxBound;
+            }
+        }
+
+        /// <summary>
+        /// The camera needs to know the physical bounds of the world to calculate <see cref="_constraintOffset"/>.
+        /// </summary>
+        public Vector2 MaxSize { get; set; } = new(float.PositiveInfinity);
 
         public Vector2 TileSize { get; private set; } = Vector2.One;
         public int TileInputSize { get; set; } = 1;
@@ -29,29 +68,35 @@ namespace TwelveEngine.Game2D {
 
         private Vector2 _constraintOffset;
 
-        private void UpdateConstraintOffset() {
+        private void UpdateConstraintOffset(bool allowX,bool allowY) {
             _constraintOffset = Vector2.Zero;
-            //return;
             Vector2 screenCenter = Position;
 
             Vector2 topLeft = screenCenter - ScreenCenter / TileSize;
             Vector2 bottomRight = topLeft + ScreenSize / TileSize;
 
-            if(topLeft.X < MinX) {
-                _constraintOffset.X += MinX - topLeft.X;
-            } else if(bottomRight.X > MaxX) {
-                _constraintOffset.X += MaxX - bottomRight.X;
-            }
-            if(topLeft.Y < MinY) {
-                _constraintOffset.Y += MinY - topLeft.Y;
-            } else if(bottomRight.Y > MaxY) {
-                _constraintOffset.Y += MaxY - bottomRight.Y;
+            if(allowX) {
+                if(topLeft.X < MinX) {
+                    _constraintOffset.X += MinX - topLeft.X;
+                } else if(bottomRight.X > MaxX) {
+                    _constraintOffset.X += MaxX - bottomRight.X;
+                }
             }
 
-            return;
+            if(allowY) {
+                if(topLeft.Y < MinY) {
+                    _constraintOffset.Y += MinY - topLeft.Y;
+                } else if(bottomRight.Y > MaxY) {
+                    _constraintOffset.Y += MaxY - bottomRight.Y;
+                }
+            }
         }
 
         internal void Update(Viewport viewport) {
+            Update(viewport,true,true);
+        }
+
+        private void Update(Viewport viewport,bool allowConstraintX,bool allowConstraintY) {
             TileSize = new Vector2(TileInputSize * Scale);
 
             Vector2 screenSize = viewport.Bounds.Size.ToVector2();
@@ -61,7 +106,7 @@ namespace TwelveEngine.Game2D {
             ScreenSize = screenSize;
             ScreenCenter = screenSize * 0.5f;
 
-            UpdateConstraintOffset();
+            UpdateConstraintOffset(allowConstraintX,allowConstraintY);
 
             Vector2 cameraPosition = Position + _constraintOffset;
 
@@ -94,6 +139,23 @@ namespace TwelveEngine.Game2D {
             TileStart = tileStart.ToPoint();
 
             TileStride = Vector2.Ceiling((ScreenSize - RenderOrigin) / TileSize).ToPoint();
+
+            if(!allowConstraintX || !allowConstraintY) {
+                return;
+            }
+            /* This is so fucking stupid. */
+            var limitPosition = GetRenderLocation(MaxSize);
+            if(limitPosition.X < screenSize.X) {
+                allowConstraintX = false;
+            }
+            if(limitPosition.Y < screenSize.Y) {
+                allowConstraintY = false;
+            }
+            if(allowConstraintX && allowConstraintY) {
+                return;
+            }
+            /* I guess you could say this is a weird edge case, but it's still stupid. */
+            Update(viewport,allowConstraintX,allowConstraintY);
         }
 
         public Vector2 GetRenderLocation(Entity2D entity) {

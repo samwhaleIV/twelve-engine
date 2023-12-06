@@ -19,6 +19,9 @@ namespace John {
         }
 
         private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
+            if(_game.ShowingStartScreen) {
+                return;
+            }
             if(impulseEvent.Impulse == Impulse.Accept && impulseEvent.Pressed) {
                 ToggleGrip();
             }
@@ -30,7 +33,6 @@ namespace John {
         public float MaxY { get; set; } = float.PositiveInfinity;
 
         public bool IsGripping { get; private set; } = false;
-
 
         private void ToggleGrip() {
             if(IsGripping) {
@@ -87,8 +89,7 @@ namespace John {
         }
 
         protected override void Update() {
-            var delta = Owner.Impulse.GetDigitalDelta2DWithModifier();
-
+            Vector2 delta = !_game.ShowingStartScreen ? Owner.Impulse.GetDigitalDelta2DWithModifier() : Vector2.Zero;
             _position += delta * Constants.CLAW_SPEED;
 
             if(_position.X < MinX) {

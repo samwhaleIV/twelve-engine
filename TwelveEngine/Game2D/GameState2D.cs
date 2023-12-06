@@ -98,6 +98,7 @@ namespace TwelveEngine.Game2D {
             Camera.MaxX = TileMap.Width;
             Camera.MinY = 0;
             Camera.MaxY = TileMap.Height;
+            Camera.MaxSize = new Vector2(TileMap.Width,TileMap.Height);
         }
 
         public void GenerateWorldCollision(Func<short,bool> isCollision,float surfaceFriction = 1f) {

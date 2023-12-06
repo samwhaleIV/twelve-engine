@@ -72,5 +72,9 @@ namespace John {
         public const int ROUND_COMPLETION_COUNT = 5;
 
         public const float SCORING_MARGIN_OFFSET_X = 3f, SCORING_MARGIN_OFFSET_Y = 1.5f, RESET_MARGIN_OFFSET = 1;
+
+        public const string NO_RANDOM_SEED_FLAG = "startseeded";
+
+        public const float DPI_SCALE_CONSTANT = 0.008f;
     }
 }

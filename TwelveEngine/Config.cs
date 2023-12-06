@@ -4,8 +4,8 @@
 
         public enum Keys {
             Flags,
-            HWFullScreenWidth,
-            HWFullScreenHeight,
+            WindowWidth,
+            WindowHeight,
             BenchmarkStateSwap,
             StateCleanUpGC,
             GamePadIndex,
@@ -20,8 +20,8 @@
 
         private static Dictionary<string,(ConfigValueType Type, object Value)> GetConfigValues() => new() {
             { GetKey(Keys.Flags), (ConfigValueType.StringArray, null) },
-            { GetKey(Keys.HWFullScreenWidth), (ConfigValueType.IntNullable, null) },
-            { GetKey(Keys.HWFullScreenHeight), (ConfigValueType.IntNullable, null) },
+            { GetKey(Keys.WindowWidth), (ConfigValueType.IntNullable, null) },
+            { GetKey(Keys.WindowHeight), (ConfigValueType.IntNullable, null) },
             { GetKey(Keys.BenchmarkStateSwap), (ConfigValueType.Bool, false) },
             { GetKey(Keys.StateCleanUpGC), (ConfigValueType.Bool, false) },
             { GetKey(Keys.GamePadIndex), (ConfigValueType.Int, 0) },

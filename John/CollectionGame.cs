@@ -7,6 +7,9 @@ using TwelveEngine.Game2D;
 using TwelveEngine.Shell;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.UI.Book;
+using TwelveEngine;
+using TwelveEngine.Input;
+using TwelveEngine.Font;
 
 namespace John {
 
@@ -18,11 +21,13 @@ namespace John {
         public PoolOfJohns JohnPool { get; private init; }
         public JohnDecorator Decorator { get; private set; }
 
-        public Random Random { get; private init; } = new Random(0);
+        public Random Random { get; private init; } = Flags.Get(NO_RANDOM_SEED_FLAG) ? new Random(0) : new Random();
 
         public CollectionGame() {
             Name = "John Collection Game";
             OnLoad.Add(LoadGame);
+
+            OnUpdate.Add(UpdateDPI,EventPriority.First);
 
             OnUpdate.Add(UpdateGame);
 
@@ -32,13 +37,29 @@ namespace John {
             OnUpdate.Add(UpdateUI);
             OnRender.Add(RenderUI);
 
+            Impulse.OnEvent += Impulse_OnEvent;
+
             PhysicsScale = PHYSICS_SIM_SCALE;
             JohnPool = new PoolOfJohns(this);
+        }
+
+        private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
+            if(impulseEvent.Impulse == TwelveEngine.Input.Impulse.Accept && impulseEvent.Pressed) {
+                StartGame();
+            }
         }
 
         private void CameraTracking() {
             Camera.Position = GrabbyClaw.Position;
         }
+
+        private void UpdateDPI() {
+            var scale = Viewport.Bounds.Height * DPI_SCALE_CONSTANT;
+            scale = MathF.Max(MathF.Floor(scale),1);
+            Camera.Scale = scale;
+        }
+
+        private NineGrid _nineGridBackground;
 
         private void LoadGame() {
             Camera.TileInputSize = INPUT_TILE_SIZE;
@@ -75,11 +96,9 @@ namespace John {
             Entities.Add(GrabbyClaw);
             UI = new CollectionGameUI(this);
 
-            StartGame(); //TODO: MAKE USER INITIATED THROUGH UI ?? (maybe)
-        }
+            _nineGridBackground = new NineGrid(TileMapTexture,16,new Point(160,0));
 
-        public float GetUIScale() {
-            return Camera.Scale;
+            StartGame(); //TODO: MAKE USER INITIATED THROUGH UI ?? (maybe)
         }
 
         private void UnloadGame() {
@@ -115,7 +134,44 @@ namespace John {
             CustomCursor.State = UI.CursorState;
         }
 
-        private void RenderUI() => UI?.Render(SpriteBatch);
+        public bool ShowingStartScreen { get; set; } = true;
+
+        private void RenderUI() {
+            if(ShowingStartScreen) {
+
+                float margin = 0.25f;
+
+                var backgroundSize = Viewport.Bounds.Size.ToVector2() - Camera.TileSize * margin;
+                FloatRectangle backgroundArea = new(Camera.TileSize * margin * 0.5f,backgroundSize);
+
+                float maxWidth = backgroundArea.Height * 0.8f;
+
+                if(backgroundArea.Width > maxWidth) {
+                    var centerX = backgroundArea.CenterX;
+                    backgroundArea.Width = maxWidth;
+                    backgroundArea.Position = new Vector2(centerX-backgroundArea.Width*0.5f,backgroundArea.Position.Y);
+                }
+
+                backgroundArea.Position = Vector2.Round(backgroundArea.Position);
+
+                SpriteBatch.Begin(SpriteSortMode.Deferred,null,SamplerState.PointClamp);
+                _nineGridBackground.Draw(SpriteBatch,Camera.Scale,backgroundArea);
+                SpriteBatch.End();
+
+                Fonts.Retro.Begin(SpriteBatch);
+
+                Fonts.Retro.Draw("Hello, world!",backgroundArea.Position + new Vector2(Camera.Scale * 6),Camera.Scale / 2,Color.White);
+
+                Fonts.Retro.End();
+            } else {
+                UI?.Render(SpriteBatch);
+            }
+        }
+
+        private void EnableInput() {
+            ShowingStartScreen = false;
+            Impulse.OnEvent -= Impulse_OnEvent;
+        }
 
         public JohnTypeMask RealJohnMask { get; private set; }
         public bool FindRealJohnMode { get; private set; } = true;
@@ -167,7 +223,7 @@ namespace John {
 
         private readonly HashSet<WalkingJohn> _activeJohns = new();
 
-        private TimeSpan _lastSummoning = -TimeSpan.FromHours(1);
+        private TimeSpan _lastJohnSummonTime = -TimeSpan.FromHours(1);
 
         public bool GetRandomBool() {
             return Random.Next() > int.MaxValue / 2;
@@ -181,11 +237,13 @@ namespace John {
             }
         }
 
-        private bool TrySummonJohn() {
-            if(Now - _lastSummoning < JOHN_SUMMON_COOLDOWN) {
-                return false;
+        private void UpdateGame() {
+            if(!(_activeJohns.Count < MAX_ARENA_JOHNS)) {
+                return;
             }
-
+            if(Now - _lastJohnSummonTime < JOHN_SUMMON_COOLDOWN) {
+                return;
+            }
             var startPosition = JOHN_SPAWN_LOCATIONS[Random.Next(0,JOHN_SPAWN_LOCATIONS.Length)];
 
             int configID;
@@ -199,10 +257,7 @@ namespace John {
 
             WalkingJohn john = JohnPool.LeaseJohn(configID,startPosition);
             _activeJohns.Add(john);
-
-            _lastSummoning = Now + JOHN_SUMMON_VARIABILITY * Random.NextDouble();
-
-            return true;
+            _lastJohnSummonTime = Now + JOHN_SUMMON_VARIABILITY * Random.NextDouble();
         }
 
         public List<int> BinBuffer { get; private init; } = new();
@@ -284,13 +339,6 @@ namespace John {
 
             _activeJohns.Remove(john);
             JohnPool.ReturnJohn(john);
-        }
-
-        private void UpdateGame() {
-            if(!(_activeJohns.Count < MAX_ARENA_JOHNS)) {
-                return;
-            }
-            TrySummonJohn();
         }
     }
 }

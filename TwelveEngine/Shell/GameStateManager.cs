@@ -5,6 +5,7 @@ using TwelveEngine.Shell.UI;
 using TwelveEngine.Shell.Hotkeys;
 using TwelveEngine.Input;
 using TwelveEngine.Audio;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TwelveEngine.Shell {
     public sealed class GameStateManager:Game {
@@ -67,15 +68,13 @@ namespace TwelveEngine.Shell {
             GraphicsDeviceManager.IsFullScreen = fullscreen;
             GraphicsDeviceManager.HardwareModeSwitch = hardwareModeSwitch;
 
-            if(hardwareModeSwitch) {
-                DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+            DisplayMode displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 
-                int? width = Config.GetIntNullable(Config.Keys.HWFullScreenWidth);
-                int? height = Config.GetIntNullable(Config.Keys.HWFullScreenHeight);
+            int? width = Config.GetIntNullable(Config.Keys.WindowWidth);
+            int? height = Config.GetIntNullable(Config.Keys.WindowHeight);
 
-                GraphicsDeviceManager.PreferredBackBufferWidth = width ?? displayMode.Width;
-                GraphicsDeviceManager.PreferredBackBufferHeight = height ?? displayMode.Height;
-            }
+            GraphicsDeviceManager.PreferredBackBufferWidth = width ?? displayMode.Width;
+            GraphicsDeviceManager.PreferredBackBufferHeight = height ?? displayMode.Height;
 
             IsFixedTimeStep = false;
 
