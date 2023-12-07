@@ -281,8 +281,9 @@ namespace John {
 
             var screenSize = Viewport.Bounds.Size.ToVector2();
 
-            var backgroundSize = screenSize - Camera.TileSize * margin;
-            FloatRectangle backgroundArea = new(Camera.TileSize * margin * 0.5f,backgroundSize);
+            var tileSize = new Vector2(Camera.TileSize);
+            var backgroundSize = screenSize - tileSize * margin;
+            FloatRectangle backgroundArea = new(tileSize * margin * 0.5f,backgroundSize);
 
             float maxWidth = backgroundArea.Height * 0.8f;
 

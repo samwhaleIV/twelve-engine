@@ -2,7 +2,7 @@
   "profiles": {
     "John": {
       "commandName": "Project",
-      "commandLineArgs": "nofailsafe console drawdebug devcontrols startseeded debuginput"
+      "commandLineArgs": "nofailsafe console drawdebug devcontrols startseeded"
     },
     "John Release": {
       "commandName": "Project"
