@@ -264,7 +264,7 @@ namespace John {
             CustomCursor.State = UI.CursorState;
         }
 
-        public bool ShowingStartScreen { get; set; } = true;
+        public bool ShowingStartScreen { get; set; } = false;
 
         private int _textPageIndex = 0;
 
@@ -324,7 +324,8 @@ namespace John {
         }
 
         public JohnTypeMask RealJohnMask { get; private set; }
-        public bool FindRealJohnMode { get; private set; } = true;
+
+        public bool FindRealJohnMode { get; private set; } = false;
 
         private readonly Dictionary<int,JohnConfig> _configDictionary = new();
 
@@ -362,7 +363,6 @@ namespace John {
 
             _maskTypeIndex = 0;
             RealJohnMask = _maskTypes[_maskTypeIndex++];
-            FindRealJohnMode = true;
             Decorator.GenerateTexture();
         }
 
@@ -465,7 +465,7 @@ namespace John {
                     WrongBin?.Invoke();
                 }
             } else {
-                if(FindRealJohnMode) {
+                if(!FindRealJohnMode) {
                     if(johnIsJohn) {
                         Score--;
                         RealJohnKilled?.Invoke();
