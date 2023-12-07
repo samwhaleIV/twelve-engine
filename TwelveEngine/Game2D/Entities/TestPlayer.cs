@@ -13,19 +13,35 @@
 
         public float ImpulseForce { get; set; } = 1f;
 
+        private bool _wasDown = false;
+
         private void Update() {
-            var delta = Owner.Impulse.GetDigitalDelta2D() * ImpulseForce;
-            Body.ApplyLinearImpulse(delta);
+            Body.Enabled = false;
+            var delta = Owner.Impulse.GetDigitalDelta2DWithModifier();
+            delta *= 1;
+            if(_wasDown && delta == Vector2.Zero) {
+                _wasDown = false;
+                return;
+            }
+            if(_wasDown && !Owner.Impulse.IsImpulseDown(Input.Impulse.Focus)) {
+                return;
+            }
+            if(delta == Vector2.Zero) {
+                return;
+            }
+            var change = delta * (1 / Owner.Camera.TileSize);
+            if(!float.IsNaN(change.X) && !float.IsNaN(change.Y)) {
+                Position += change;
+            }
+            _wasDown = true;
         }
 
         private void Render() {
-            Vector2 position = Owner.Camera.GetRenderLocation(this);
-
-            float rotation = 0f; Vector2 origin = Vector2.Zero;
-
+            if(!Owner.Camera.TryGetRenderLocation(this,out var position)) {
+                return;
+            }
             Vector2 scale = new Vector2(Owner.Camera.Scale);
-
-            Owner.SpriteBatch.Draw(_texture,position,_tileData.Source,_tileData.Color,rotation,origin,scale,_tileData.SpriteEffects,LayerDepth);
+            Owner.SpriteBatch.Draw(_texture,position,_tileData.Source,_tileData.Color,0f,Vector2.Zero,scale,_tileData.SpriteEffects,LayerDepth);
         }
     }
 }

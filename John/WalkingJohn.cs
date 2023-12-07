@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using nkast.Aether.Physics2D.Dynamics.Contacts;
 using nkast.Aether.Physics2D.Dynamics;
 using System.Collections.Generic;
+using TwelveEngine;
 
 namespace John {
 
@@ -205,7 +206,7 @@ namespace John {
             return (frameNumber % WALKING_ANIMATION_FRAME_COUNT) switch { 0 => 0, 1 => 1, 2 => 0, 3 => 2, _ => 0 };
         }
 
-        public Rectangle GetTextureSource() {
+        private Rectangle GetTextureSource() {
             Point location = _game.Decorator.GetTextureOrigin(ConfigID);
             Point size = (Size * Owner.Camera.TileInputSize).ToPoint();
 
@@ -216,29 +217,25 @@ namespace John {
             return new Rectangle(location,size);
         }
 
-        public SpriteEffects GetSpriteEffects() {
+        private SpriteEffects GetSpriteEffects() {
             return FacingRight ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
         }
         
         public bool IsGrabbed { get; set; }
 
         private void Render() {
-            //TODO: Offscreen filtering
             if(!Body.Enabled && !IsGrabbed) {
                 return;
             }
-            Vector2 position = Owner.Camera.GetRenderLocation(this);
 
-            Vector2 scale = new Vector2(Owner.Camera.Scale);
-
+            if(!Owner.Camera.TryGetRenderLocation(this,out var position)) {
+                return;
+            }
             Rectangle textureSource = GetTextureSource();
             SpriteEffects spriteEffects = GetSpriteEffects();
-
-            Vector2 origin = textureSource.Size.ToVector2() * Origin;
-
+            //Vector2 origin = textureSource.Size.ToVector2() * Origin;
             float layerDepth = IsGrabbed ? LayerDepth + 0.1f : LayerDepth;
-
-            Owner.SpriteBatch.Draw(_game.Decorator.Texture,position,textureSource,Color.White,0f,origin,scale,spriteEffects,layerDepth);
+            Owner.SpriteBatch.Draw(_game.Decorator.Texture,position,textureSource,Color.White,0f,Vector2.Zero,Owner.Camera.Scale,spriteEffects,layerDepth);
         }
     }
 }

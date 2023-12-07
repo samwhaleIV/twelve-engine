@@ -6,9 +6,6 @@ namespace TwelveEngine.Game2D.Entities {
         public Body Body { get; private set; }
         public Fixture Fixture { get; private set; }
 
-        public Vector2 Size { get; private init; }
-        public Vector2 Origin { get; private init; }
-
         public PhysicsEntity2D(Vector2 size,Vector2 origin) {
             Size = size;
             Origin = origin;

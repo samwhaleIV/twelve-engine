@@ -36,7 +36,8 @@ namespace TwelveEngine.Game2D {
                 return;
             }
 
-            Vector2 tileSize = Camera.TileSize, renderOrigin = Camera.RenderOrigin;
+            float tileSize = Camera.TileSize;
+            Vector2 renderOrigin = Camera.RenderOrigin;
             Point tileStride = Camera.TileStride, tileStart = Camera.TileStart;
 
             SpriteBatch.Begin(SpriteSortMode.FrontToBack,null,SamplerState.PointClamp);
@@ -45,7 +46,7 @@ namespace TwelveEngine.Game2D {
                 for(int y = 0;y < tileStride.Y;y++) {
                     Point tileIndex = new(tileStart.X + x,tileStart.Y + y);
                     if(!TileMap.InRange(tileIndex)) {
-                        renderOrigin.Y += tileSize.Y;
+                        renderOrigin.Y += tileSize;
                         continue;
                     }
                     if(TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,BACKGROUND_LAYER),out TileData tileData)) {
@@ -54,10 +55,10 @@ namespace TwelveEngine.Game2D {
                     if(TileMap.LayerCount > 1 && TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,FOREGROUND_LAYER),out tileData)) {
                         SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,0f,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,FOREGROUND_DEPTH);
                     }
-                    renderOrigin.Y += tileSize.Y;
+                    renderOrigin.Y += tileSize;
                 }
                 renderOrigin.Y = yStart;
-                renderOrigin.X += tileSize.X;
+                renderOrigin.X += tileSize;
             }
             SpriteBatch.End();
         }

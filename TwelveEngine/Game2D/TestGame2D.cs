@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TwelveEngine.Game2D.Entities;
 using TwelveEngine.Shell.UI;
+using TwelveEngine.Input;
 
 namespace TwelveEngine.Game2D {
     public sealed class TestGame2D:GameState2D {
@@ -32,10 +33,18 @@ namespace TwelveEngine.Game2D {
             OnLoad.Add(LoadGame);
             OnUpdate.Add(FollowPlayerWithCamera);
             PhysicsScale = Constants.PHYSICS_SIM_SCALE;
+            Impulse.OnEvent += Impulse_OnEvent;
+        }
+
+        private bool _cameraFollowActive = false;
+
+        private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
+            if(impulseEvent.Impulse == Input.Impulse.Accept && impulseEvent.Pressed) {
+                _cameraFollowActive = !_cameraFollowActive;
+            }
         }
 
         private TestPlayer _player;
-
 
         private void LoadGame() {
             Camera.TileInputSize = Constants.INPUT_TILE_SIZE;
@@ -73,7 +82,9 @@ namespace TwelveEngine.Game2D {
         }
 
         private void FollowPlayerWithCamera() {
-            Camera.Position = _player.Position;
+            if(_cameraFollowActive) {
+                Camera.Position = _player.Position;
+            }
         }
 
         private void DrawPlayerPosition(DebugWriter writer) {
@@ -81,6 +92,7 @@ namespace TwelveEngine.Game2D {
             writer.Write(_player.Position,"Player Position");
             writer.Write(Camera.GetRenderLocation(_player),"Player Render Position");
             writer.Write(Camera.RenderOrigin,"Tile Origin");
+            writer.Write(_cameraFollowActive ? "Camera Following Player" : "Camera Not Following Player");
         }
     }
 }

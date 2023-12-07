@@ -54,12 +54,14 @@
         /// </summary>
         public Vector2 MaxSize { get; set; } = new(float.PositiveInfinity);
 
-        public Vector2 TileSize { get; private set; } = Vector2.One;
+        public float TileSize { get; private set; } = 1f;
         public int TileInputSize { get; set; } = 1;
         public float Scale { get; set; } = 10f;
 
         public Vector2 ScreenSize { get; private set; }
         public Vector2 ScreenCenter { get; private set; }
+
+        private Rectangle ScreenArea { get; set; }
 
         public Vector2 RenderOrigin { get; private set; }
         public Point TileStart { get; private set; }
@@ -97,9 +99,10 @@
         }
 
         private void Update(Viewport viewport,bool allowConstraintX,bool allowConstraintY) {
-            TileSize = new Vector2(TileInputSize * Scale);
+            TileSize = TileInputSize * Scale;
 
-            Vector2 screenSize = viewport.Bounds.Size.ToVector2();
+            ScreenArea = viewport.Bounds;
+            Vector2 screenSize = ScreenArea.Size.ToVector2();
             if(screenSize.X % 2 == 1) screenSize.X += 1;
             if(screenSize.Y % 2 == 1) screenSize.Y += 1;
 
@@ -162,6 +165,20 @@
             Vector2 renderLocation = RenderOrigin + (entity.Position - TileStart.ToVector2()) * TileSize;
             renderLocation.Round();
             return renderLocation;
+        }
+
+        /// <summary>
+        /// Get render location filtered with object offscreen detection.
+        /// </summary>
+        /// <param name="entity">The entity being rendered.</param>
+        /// <param name="textureSourceSize">The texture source size of the rendered entity.</param>
+        /// <param name="renderLocation">The top left corner of the object being rendered.</param>
+        /// <returns>A <see cref="bool"/> indicating whether the entity is offscreen.</returns>
+        public bool TryGetRenderLocation(Entity2D entity,out Vector2 renderLocation) {
+            renderLocation = GetRenderLocation(entity.Position - entity.Origin * entity.Size);
+            Vector2 size = Vector2.Floor(entity.Size * TileSize);
+            var renderArea = new Rectangle(renderLocation.ToPoint(),size.ToPoint());
+            return renderArea.Intersects(ScreenArea);
         }
 
         public Vector2 GetRenderLocation(Vector2 point) {
