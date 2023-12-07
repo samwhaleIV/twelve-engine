@@ -19,7 +19,6 @@ namespace Elves {
         public readonly Texture2D Mountains = Load("mountains");
         public readonly Texture2D SaveSelect = Load("save-select");
         public readonly Texture2D GiftPattern = Load("gift-pattern");
-        public readonly Texture2D QuadColor = Load("quad-color");
         public readonly Texture2D CircleBrush = Load("circle");
 
         public readonly Texture2D Static = Load("static");
@@ -30,8 +29,6 @@ namespace Elves {
         public readonly Texture2D SettingsPhone = Load("settings-phone");
 
         public readonly Texture2D MiniGameTablet = Load("minigame-tablet");
-
-        public readonly Texture2D TestingTestingCat = Load("testing-testing-cat");
         public readonly Texture2D CRTStencil = Load("crt-stencil");
 
         public readonly Texture2D ElvesLogo = Load("Logos/elves");
