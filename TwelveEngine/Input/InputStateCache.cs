@@ -30,6 +30,8 @@ namespace TwelveEngine.Input {
         public static bool KeyboardChanged { get; private set; }
         public static bool GamePadChanged { get; private set; }
 
+        public static ImpulseInputType RecentImpulseType { get; private set; } = ImpulseInputType.Unknown;
+
         /* A little bit expensive... but powerful. */
         public static void Update(bool gameIsActive) {
             /* States are filtered by the automation agent. State cannot be changed while the game is paused or waiting. */
@@ -41,13 +43,6 @@ namespace TwelveEngine.Input {
             KeyboardChanged = keyboardState != LastKeyboard;
             GamePadChanged = gamePadState != LastGamePad;
 
-            if(gameIsActive && (KeyboardChanged || GamePadChanged)) {
-                LastInputEventWasFromMouse = false;
-            }
-            if(gameIsActive && MouseChanged) {
-                LastInputEventWasFromMouse = true;
-            }
-
             LastMouse = mouseState;
             LastKeyboard = keyboardState;
             LastGamePad = gamePadState;
@@ -55,6 +50,21 @@ namespace TwelveEngine.Input {
             Keyboard = keyboardState;
             Mouse = mouseState;
             GamePad = gamePadState;
+
+            if(!gameIsActive) {
+                return;
+            }
+            if(GamePadChanged) {
+                RecentImpulseType = ImpulseInputType.GamePad;
+            } else if(KeyboardChanged) {
+                RecentImpulseType = ImpulseInputType.Keyboard;
+            }
+            if(KeyboardChanged || GamePadChanged) {
+                LastInputEventWasFromMouse = false;
+            }
+            if(MouseChanged) {
+                LastInputEventWasFromMouse = true;
+            }
         }
     }
 }

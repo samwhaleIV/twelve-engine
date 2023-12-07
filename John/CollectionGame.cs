@@ -98,9 +98,10 @@ namespace John {
         }
 
         private void UpdateVirtualDPad() {
-            if(!InputEnabled) {
+            if(ShowingStartScreen) {
                 return;
             }
+
             VirtualDPad.Up = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Up);
             VirtualDPad.Down = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Down);
             VirtualDPad.Left = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Left);

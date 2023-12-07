@@ -31,9 +31,6 @@ namespace TwelveEngine.Input.Routing {
             return key;
         }
 
-        public static InputMethod Method { get; private set; } = InputMethod.Unknown;
-        public static GamePadType GamePadType { get; private set; } = GamePadType.Default;
-
 
         public KeyboardState Keyboard { get; private set; }
         public GamePadState GamePad { get; private set; }
@@ -73,29 +70,44 @@ namespace TwelveEngine.Input.Routing {
             return true;
         }
 
+        public void Release() {
+            foreach(var impulse in impulses) {
+                if(!IsImpulseDown(impulse)) {
+                    continue;
+                }
+                impulseStates[impulse] = KeyState.Up;
+                SendEvent(ImpulseEvent.Create(impulse,false));
+            }
+        }
+
         public void Update(bool eventsAreAllowed) {
             OldKeyboard = Keyboard;
-            Keyboard = InputStateCache.Keyboard;
-
             OldGamePad = GamePad;
+
+            if(!eventsAreAllowed) {
+                Keyboard = new KeyboardState();
+                GamePad = GamePadState.Default;
+                return;
+            }
+  
+            Keyboard = InputStateCache.Keyboard;
             GamePad = InputStateCache.GamePad;
 
             foreach(Impulse impulse in impulses) {
-                if(!UpdateKeyState(impulse,out KeyState keyState) || !eventsAreAllowed) {
+                if(!UpdateKeyState(impulse,out KeyState keyState)) {
                     continue;
                 }
                 SendEvent(ImpulseEvent.Create(impulse,keyState == KeyState.Down));
             }
-
-            if(GamePad != OldGamePad) {
-                Method = InputMethod.GamePad;
-            } else if(Keyboard != OldKeyboard) {
-                Method = InputMethod.Keyboard;
-            }
         }
 
-        public bool IsImpulseDown(Impulse impulse) => impulseStates[impulse] == KeyState.Down;
-        public bool IsImpulseUp(Impulse impulse) => impulseStates[impulse] == KeyState.Up;
+        public bool IsImpulseDown(Impulse impulse) {
+            return impulseStates[impulse] == KeyState.Down;
+        }
+
+        public bool IsImpulseUp(Impulse impulse) {
+            return impulseStates[impulse] == KeyState.Up;
+        }
 
         private float GetGenericVelocityModifier() {
             bool turbo = Keyboard.IsKeyDown(Keys.LeftShift) || GamePad.Buttons.RightShoulder == ButtonState.Pressed;

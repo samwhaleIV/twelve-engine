@@ -18,6 +18,22 @@ namespace TwelveEngine.Shell {
             OnUnload.Add(SetOldHandlers);
             VirtualMouseProvider = new(this);
             OnRender.Add(RenderVirtualMouse,EventPriority.Last);
+
+            if(Flags.Get(Constants.Flags.DebugInputEvents)) {
+                Impulse.OnEvent += DebugImpulseEvents;
+                Mouse.OnEvent += DebugMouseEvents;
+            }
+        }
+
+        private void DebugImpulseEvents(ImpulseEvent impulseEvent) {
+            Console.WriteLine($"Impulse: {impulseEvent.Impulse}, Pressed: {impulseEvent.Pressed}");
+        }
+
+        private void DebugMouseEvents(MouseEvent mouseEvent) {
+            if(mouseEvent.Type == MouseEventType.Update || mouseEvent.Type == MouseEventType.PositionChanged) {
+                return;
+            }
+            Console.WriteLine($"Mouse Event: {mouseEvent.Type}, Position: {mouseEvent.Position}");
         }
 
         private void RenderVirtualMouse() {
@@ -40,26 +56,31 @@ namespace TwelveEngine.Shell {
             oldMouseHandler = null;
         }
 
-        protected bool InputEnabled {
-            get {
-                return GameIsActive && !IsTransitioning;
-            }
-        }
-
-        private bool _inputActivated = false;
-
+        /// <summary>
+        /// Activated on the first frame that a transition ends.
+        /// </summary>
         public event Action OnInputActivated;
+
+        private bool _inputActivated = false, _lastUpdateSentEvents = false;
 
         private void UpdateInputs() {
             if(!IsTransitioning && !_inputActivated) {
                 _inputActivated = true;
                 OnInputActivated?.Invoke();
             }
-            bool inputEnabled = InputEnabled && _inputActivated;
+
+            bool eventsAreAllowed = GameIsActive && !IsTransitioning && _inputActivated;
+
+            if(!eventsAreAllowed && _lastUpdateSentEvents) {
+                Impulse.Release();
+                Mouse.Release();
+            }
+            _lastUpdateSentEvents = eventsAreAllowed;
+
+            Mouse.Update(eventsAreAllowed);
+            Impulse.Update(eventsAreAllowed);
 
             VirtualMouseProvider.Update();
-            Mouse.Update(inputEnabled,GameIsActive);
-            Impulse.Update(inputEnabled);
         }
 
         internal override bool GetCustomCursorHiddenState() {

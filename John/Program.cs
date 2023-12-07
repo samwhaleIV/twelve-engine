@@ -3,6 +3,7 @@ using System.IO;
 using TwelveEngine.Shell;
 using TwelveEngine;
 using TwelveEngine.Audio;
+using Microsoft.Xna.Framework;
 
 namespace John {
     public sealed class Program:EntryPoint {
@@ -23,6 +24,8 @@ namespace John {
         public static BankWrapper AudioBank { get; private set; }
 
         protected override void OnGameLoad(GameStateManager game,string saveDirectory) {
+            game.Window.Title = "Where's John?";
+
             AudioSystem.TryLoadBank(Config.GetString(Config.Keys.FMODStrings),out _);
             AudioSystem.TryLoadBank(Config.GetString(Config.Keys.FMODMaster),out _);
 
@@ -30,8 +33,6 @@ namespace John {
             AudioBank = HasAudioBank ? audioBank : default;
 
             AudioSystem.BindVCAs();
-
-            AudioSystem.MusicVolume = 0.33f;
 
             game.SetState(new CollectionGame());
         }

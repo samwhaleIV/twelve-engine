@@ -7,21 +7,17 @@ namespace TwelveEngine.Input.Routing {
 
         public Point Position { get; private set; }
         public Point Delta { get; private set; }
-
-        private bool _lastUpdateHadInactiveWindow = false;
-
         public bool Capturing { get; private set; }
-
         public bool CapturingLeft { get; private set; }
-
         public bool CapturingRight { get; private set; }
 
         public void Import(MouseEventHandler oldHandler) {
+            lastState = oldHandler.lastState;
             Position = oldHandler.Position;
             Delta = oldHandler.Delta;
-            lastState = oldHandler.lastState;
             Capturing = oldHandler.Capturing;
-            _lastUpdateHadInactiveWindow = oldHandler._lastUpdateHadInactiveWindow;
+            CapturingLeft = oldHandler.CapturingLeft;
+            CapturingRight = oldHandler.CapturingRight;
         }
 
         private void UpdateLeftClick(MouseState mouseState,MouseState lastState) {
@@ -46,13 +42,30 @@ namespace TwelveEngine.Input.Routing {
             }
         }
 
-        public void Update(bool eventsAreAllowed,bool gameIsActive) {
+        public void Release() {
+            Delta = Point.Zero;
+            Point position = InputStateCache.Mouse.Position;
+            if(CapturingLeft) {
+                SendEvent(MouseEvent.LeftClickRelease(position));
+            }
+            if(CapturingRight) {
+                SendEvent(MouseEvent.RightClickRelease(position));
+            }
+            CapturingLeft = false;
+            CapturingRight = false;
+            Capturing = false;
+        }
+
+        /// <summary>
+        ///  Update event based mouse inputs for the current frame.
+        /// </summary>
+        /// <param name="eventsAreAllowed">Whether or not to send mouse events for this update cycle. <see cref="MouseEventType.Update"/> is always sent.</param>
+        public void Update(bool eventsAreAllowed) {
             MouseState mouseState = InputStateCache.Mouse;
 
             if(!this.lastState.HasValue) {
                 this.lastState = mouseState;
             }
-
             var lastState = this.lastState.Value;
             Position = mouseState.Position;
             this.lastState = mouseState;
@@ -60,12 +73,6 @@ namespace TwelveEngine.Input.Routing {
             SendEvent(MouseEvent.Update(Position));
 
             if(!eventsAreAllowed) {
-                Delta = Point.Zero;
-                Capturing = false;
-                CapturingLeft = false;
-                CapturingRight = false;
-                /* Hint for the mouse button change processor to fire an extra OnPress event so we don't get a release event without a press event */
-                _lastUpdateHadInactiveWindow = !gameIsActive;
                 return;
             }
 
@@ -74,23 +81,13 @@ namespace TwelveEngine.Input.Routing {
             bool leftButtonPressed = mouseState.LeftButton == ButtonState.Pressed;
             bool rightButtonPressed = mouseState.RightButton == ButtonState.Pressed;
 
-            Capturing = gameIsActive && (leftButtonPressed || rightButtonPressed);
+            CapturingLeft = leftButtonPressed;
+            CapturingRight = rightButtonPressed;
 
-            CapturingLeft = gameIsActive && leftButtonPressed;
-            CapturingRight = gameIsActive && rightButtonPressed;
+            Capturing = CapturingLeft || CapturingRight;
 
-            if(gameIsActive && _lastUpdateHadInactiveWindow && (leftButtonPressed || rightButtonPressed)) {
-                if(leftButtonPressed) {
-                    SendEvent(MouseEvent.LeftClickPress(mouseState.Position));
-                }
-                if(rightButtonPressed) {
-                    SendEvent(MouseEvent.RightClickPress(mouseState.Position));
-                }
-            } else {
-                UpdateLeftClick(mouseState,lastState);
-                UpdateRightClick(mouseState,lastState);
-            }
-            _lastUpdateHadInactiveWindow = !gameIsActive;
+            UpdateLeftClick(mouseState,lastState);
+            UpdateRightClick(mouseState,lastState);
 
             int scrollDelta = mouseState.ScrollWheelValue - lastState.ScrollWheelValue;
 

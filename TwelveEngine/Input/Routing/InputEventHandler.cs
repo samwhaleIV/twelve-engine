@@ -1,7 +1,7 @@
 ﻿namespace TwelveEngine.Input.Routing {
     public abstract class InputEventHandler<TEvent,TRouter>:IHandler<TEvent> where TRouter:IIRouter<TEvent>, new() {
         public event Action<TEvent> OnEvent;
-        public void SendEvent(TEvent @event) => OnEvent?.Invoke(@event);
+        public void SendEvent(TEvent inputEvent) => OnEvent?.Invoke(inputEvent);
 
         private TRouter CreateRouter() {
             var router = new TRouter();

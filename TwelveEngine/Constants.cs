@@ -67,6 +67,7 @@ namespace TwelveEngine {
             public const string FMODProfile = "fmodprofile";
             public const string InteractionAgentDiagnostics = "intagentdiag";
             public const string DevControls = "devcontrols";
+            public const string DebugInputEvents = "debuginput";
         }
 
         public static class UI {

@@ -125,8 +125,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Direction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntitySystem\EntityManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\GamePadType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Input\InputMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Input\ImpulseInputType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Impulse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Binding\KeyBindSet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Input\Routing\Handlers\ImpulseEventHandler.cs" />
