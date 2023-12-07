@@ -264,7 +264,7 @@ namespace John {
             CustomCursor.State = UI.CursorState;
         }
 
-        public bool ShowingStartScreen { get; set; } = false;
+        public bool ShowingStartScreen { get; set; } = true;
 
         private int _textPageIndex = 0;
 
@@ -325,7 +325,7 @@ namespace John {
 
         public JohnTypeMask RealJohnMask { get; private set; }
 
-        public bool FindRealJohnMode { get; private set; } = false;
+        public bool FindRealJohnMode { get; private set; } = true;
 
         private readonly Dictionary<int,JohnConfig> _configDictionary = new();
 
