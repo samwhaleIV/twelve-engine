@@ -470,12 +470,12 @@ namespace John {
                         Score--;
                         RealJohnKilled?.Invoke();
                     } else {
-                        WrongBin?.Invoke();
+                        Score++;
+                        BinBuffer.Add(john.ConfigID);
+                        ImposterKilled?.Invoke();
                     }
                 } else {
-                    Score++;
-                    BinBuffer.Add(john.ConfigID);
-                    ImposterKilled?.Invoke();
+                    WrongBin?.Invoke();
                 }
             }
 
