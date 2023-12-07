@@ -10,6 +10,8 @@ using TwelveEngine;
 using TwelveEngine.Input;
 using TwelveEngine.Font;
 using Microsoft.Xna.Framework.Input;
+using TwelveEngine.Audio;
+using FMOD.Studio;
 
 namespace John {
 
@@ -23,8 +25,45 @@ namespace John {
 
         public Random Random { get; private init; } = Flags.Get(NO_RANDOM_SEED_FLAG) ? new Random(0) : new Random();
 
+        private EventInstance? _songInstance;
+
+        private void StartSong() {
+            if(!Program.HasAudioBank) {
+                return;
+            }
+            if(!Program.AudioBank.Events.TryGetValue("JohnSong",out var value)) {
+                return;
+            }
+            value.Description.createInstance(out var instance);
+            _songInstance = instance;
+            instance.start();
+            UpdateSong();
+        }
+
+        private void UpdateSong() {
+            if(_songInstance == null) {
+                return;
+            }
+            var result = _songInstance.Value.setParameterByName("TrackToggle",FindRealJohnMode ? 0 : 1);
+            if(result != FMOD.RESULT.OK && Flags.Get(TwelveEngine.Constants.Flags.NoFailSafe)) {
+                throw new Exception("Failure to set parameter song.");
+            }
+        }
+
+        private void EndSong() {
+            if(_songInstance == null) {
+                return;
+            }
+            _songInstance?.stop(STOP_MODE.IMMEDIATE);
+            _songInstance?.release();
+            _songInstance = null;
+        }
+
         public CollectionGame() {
             Name = "John Collection Game";
+
+            StartSong();
+
             OnLoad.Add(LoadGame);
 
             OnUpdate.Add(UpdateDPI,EventPriority.First);
@@ -39,22 +78,12 @@ namespace John {
             OnRender.Add(RenderUI);
 
             Impulse.OnEvent += Impulse_OnEvent;
-            Mouse.OnEvent += Mouse_OnEvent;
 
             PhysicsScale = PHYSICS_SIM_SCALE;
             JohnPool = new PoolOfJohns(this);
         }
 
         public VirtualDPadProvider VirtualDPad { get; private init; } = new();
-
-        private void Mouse_OnEvent(MouseEvent mouseEvent) {
-            if(ShowingStartScreen) {
-                if(mouseEvent.Type == MouseEventType.LeftClickPressed) {
-                    AdvanceStartScreen();
-                }
-                return;
-            }
-        }
 
         private bool _capturingMouse = false;
         Point _mouseCaptureStart = new Point(-1);
@@ -94,16 +123,15 @@ namespace John {
                 GrabbyClaw.ToggleGrip();
             }
 
-            VirtualDPad.Action |= gridLocation == new Point(1,1);
             if(_mouseCaptureStart != gridLocation) {
-                return;
+                gridLocation = _mouseCaptureStart;
             }
 
+            VirtualDPad.Action |= gridLocation == new Point(1,1);
             VirtualDPad.Up |= gridLocation == new Point(1,0);
             VirtualDPad.Down |= gridLocation == new Point(1,2);
             VirtualDPad.Left |= gridLocation == new Point(0,1);
             VirtualDPad.Right |= gridLocation == new Point(2,1);
-
         }
 
         private Vector2 GetDigitalDelta2D() {
@@ -114,7 +142,12 @@ namespace John {
             if(VirtualDPad.Left) x--;
             if(VirtualDPad.Right) x++;
 
-            return new Vector2(x,y);
+            var delta = new Vector2(x,y);
+            if(x != 0 && y != 0) {
+                delta *= 0.75f;
+            }
+
+            return delta;
         }
 
         public Vector2 GetMovementDelta() {
@@ -125,11 +158,12 @@ namespace John {
             if(!impulseEvent.Pressed) {
                 return;
             }
-            if(ShowingStartScreen) {
-                AdvanceStartScreen();
+            if(impulseEvent.Impulse != TwelveEngine.Input.Impulse.Accept) {
                 return;
             }
-            if(impulseEvent.Impulse == TwelveEngine.Input.Impulse.Accept) {
+            if(ShowingStartScreen) {
+                AdvanceStartScreen();
+            } else {
                 GrabbyClaw.ToggleGrip();
             }
         }
@@ -198,6 +232,7 @@ namespace John {
         private void UnloadGame() {
             Decorator?.Unload();
             Decorator = null;
+            EndSong();
         }
 
         private void DrawDebugText(DebugWriter writer) {
@@ -274,7 +309,7 @@ namespace John {
             Fonts.Retro.Draw(START_SCREEN_TEXT[_textPageIndex],backgroundArea.Position + textMargin,textScale,textColor,backgroundArea.Width - textMargin.X * 2);
 
             float y = MathF.Floor(backgroundArea.Bottom - textMargin.Y - textScale * Fonts.Retro.LineHeight * 0.5f);
-            Fonts.Retro.DrawCentered(PRESS_ANY_KEY_TEXT,new Vector2(MathF.Floor(backgroundArea.CenterX),y),textScale,textColor);
+            Fonts.Retro.DrawCentered(PRESS_E_TEXT,new Vector2(MathF.Floor(backgroundArea.CenterX),y),textScale,textColor);
 
             Fonts.Retro.End();
         }
@@ -446,6 +481,7 @@ namespace John {
                 BinBuffer.Clear();
                 Score += 5;
                 FindRealJohnMode = !FindRealJohnMode;
+                UpdateSong();
                 if(FindRealJohnMode) {
                     SelectNextJohnType();
                 }

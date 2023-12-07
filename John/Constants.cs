@@ -78,7 +78,7 @@ namespace John {
 
         public const float DPI_SCALE_CONSTANT = 0.008f;
 
-        public const string PRESS_ANY_KEY_TEXT = "Press Any Key to Help";
+        public const string PRESS_E_TEXT = "Press Enter to Continue";
 
         public static readonly string[] START_SCREEN_TEXT = new[] {
             "John has splintered into an endless stream of facsimiles, each but a sliver of his true form. Now, unsure of his identity, John needs your help to regain his individuality.",

@@ -35,9 +35,9 @@ namespace TwelveEngine {
         public const string MusicVCAName = "MusicVCA";
         public const string SoundVCAName = "SoundVCA";
 
-        public const string DefaultFMODGameBank = "Content/FMOD/Audio.bank";
-        public const string DefaultFMODStringBank = "Content/FMOD/Master.string.bank";
-        public const string DefaultFMODMasterBank = "Content/FMOD/Master.bank";
+        public const string DefaultFMODGameBank = "FMOD/Game.bank";
+        public const string DefaultFMODStringBank = "FMOD/Master.strings.bank";
+        public const string DefaultFMODMasterBank = "FMOD/Master.bank";
 
         public const char ConfigValueOperand = '=';
         public const char ConfigArrayDelimiter = ',';

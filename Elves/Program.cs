@@ -96,17 +96,7 @@ namespace Elves {
             Save?.TrySave();
         }
 
-        private static void AddCursorState(
-            CursorState cursorState,Texture2D texture,int? originX = null,int? originY = null
-        ) {
-            MouseCursorData data = new(texture,MouseCursor.FromTexture2D(texture,originX ?? 0,originY ?? 0));
-            CustomCursor.Sources.Add(cursorState,data);
-        }
-
-        private static void AddCursorState(
-            CursorState cursorState,Texture2D texture,bool centered = false
-        )
-        {
+        private static void AddCursorState(CursorState cursorState,Texture2D texture,bool centered = false){
             int originX = centered ? texture.Width / 2 : 0;
             int originY = centered ? texture.Height / 2 : 0;
             MouseCursorData data = new(texture,MouseCursor.FromTexture2D(texture,originX,originY));

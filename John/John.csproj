@@ -8,15 +8,18 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>JohnIcon.ico</ApplicationIcon>
+    <Authors>Samuel Robinson</Authors>
+    <Company>Samuel Robinson</Company>
+    <Product>Where's John?</Product>
+    <Description>Help John find his true self.</Description>
+    <PackageIcon>128.png</PackageIcon>
+    <NeutralLanguage>en</NeutralLanguage>
+    <StartupObject>John.Program</StartupObject>
+    <Title>Where's John?</Title>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Icon.ico" />
-    <None Remove="Icon.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Icon.ico" />
-    <EmbeddedResource Include="Icon.bmp" />
+    <Content Include="JohnIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
@@ -31,6 +34,19 @@
   <ItemGroup>
     <None Update="clawmachinemap.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="FMOD\Game.bank">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FMOD\Master.bank">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FMOD\Master.strings.bank">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Icons\128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
     <None Update="john-collection.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
