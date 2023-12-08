@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using TwelveEngine;
 using TwelveEngine.Game2D.Entities;
 using TwelveEngine.Shell.UI;
 using TwelveEngine.Input;
+using TwelveEngine.Game2D;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
-namespace TwelveEngine.Game2D {
-    public sealed class TestGame2D:GameState2D {
+namespace TestPlatform {
+    public sealed class CameraDebugTest:GameState2D {
 
         private static class Constants {
             public const int INPUT_TILE_SIZE = 16;
@@ -23,23 +24,23 @@ namespace TwelveEngine.Game2D {
             public const float PLAYER_RESTITUTION = 0f;
             public const float PLAYER_IMPULSE_FORCE = 4f;
 
-            public const string TILEMAP_TEXTURE = "spritesheet";
+            public const string TILEMAP_TEXTURE = "spritesheet1";
             public const string MAP_CSV_FILE = "testmap1.csv";
 
             public const float PHYSICS_SIM_SCALE = 8f;
         }
 
-        public TestGame2D() {
+        public CameraDebugTest() {
             OnLoad.Add(LoadGame);
             OnUpdate.Add(FollowPlayerWithCamera);
             PhysicsScale = Constants.PHYSICS_SIM_SCALE;
-            Impulse.OnEvent += Impulse_OnEvent;
+            ImpulseHandler.OnEvent += Impulse_OnEvent;
         }
 
         private bool _cameraFollowActive = false;
 
         private void Impulse_OnEvent(ImpulseEvent impulseEvent) {
-            if(impulseEvent.Impulse == Input.Impulse.Accept && impulseEvent.Pressed) {
+            if(impulseEvent.Impulse == Impulse.Accept && impulseEvent.Pressed) {
                 _cameraFollowActive = !_cameraFollowActive;
             }
         }
@@ -57,14 +58,17 @@ namespace TwelveEngine.Game2D {
             SetCameraBounds();
             GenerateWorldCollision(tileValue => tileValue == 1);
 
-            TileDictionary.Add(1,new TileData() {
+            TileSet = new TileData[3];
+
+            TileSet[1] = new TileData() {
                 Color = Color.White,
                 Source = new Rectangle(16,0,16,16)
-            });
-            TileDictionary.Add(2,new TileData() {
+            };
+
+            TileSet[2] = new TileData() {
                 Color = Color.White,
                 Source = new Rectangle(32,0,16,16)
-            });
+            };
 
             _player = new TestPlayer(TileMapTexture,new TileData() {
                 Color = Color.White,

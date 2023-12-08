@@ -27,11 +27,11 @@ namespace Elves.Scenes.ModeSelectMenu {
         }
 
         protected override bool GetLeftMouseButtonIsCaptured() {
-            return _owner.Mouse.CapturingLeft;
+            return _owner.MouseHandler.CapturingLeft;
         }
 
         protected override bool GetRightMouseButtonIsCaptured() {
-            return _owner.Mouse.CapturingRight;
+            return _owner.MouseHandler.CapturingRight;
         }
     }
 }

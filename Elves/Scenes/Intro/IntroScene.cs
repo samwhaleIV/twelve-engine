@@ -26,7 +26,7 @@ namespace Elves.Scenes.Intro {
             ClearColor = Color.Black;
             OnUpdate.Add(Update);
             OnRender.Add(Render);
-            Impulse.Router.OnCancelDown += CancelDown;
+            ImpulseHandler.Router.OnCancelDown += CancelDown;
             OnLoad.Add(Load);
             OnUnload.Add(Unload);
         }

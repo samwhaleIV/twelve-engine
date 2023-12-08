@@ -4,8 +4,8 @@ using TwelveEngine.Input.Routing;
 namespace TwelveEngine.Shell {
     public class InputGameState:GameState {
 
-        public ImpulseEventHandler Impulse { get; private init; } = new();
-        public MouseEventHandler Mouse { get; private init; } = new();
+        public ImpulseEventHandler ImpulseHandler { get; private init; } = new();
+        public MouseEventHandler MouseHandler { get; private init; } = new();
 
         private static ImpulseEventHandler oldInputHandler;
         private static MouseEventHandler oldMouseHandler;
@@ -20,8 +20,8 @@ namespace TwelveEngine.Shell {
             OnRender.Add(RenderVirtualMouse,EventPriority.Last);
 
             if(Flags.Get(Constants.Flags.DebugInputEvents)) {
-                Impulse.OnEvent += DebugImpulseEvents;
-                Mouse.OnEvent += DebugMouseEvents;
+                ImpulseHandler.OnEvent += DebugImpulseEvents;
+                MouseHandler.OnEvent += DebugMouseEvents;
             }
         }
 
@@ -41,16 +41,16 @@ namespace TwelveEngine.Shell {
         }
 
         private void SetOldHandlers() {
-            oldInputHandler = Impulse;
-            oldMouseHandler = Mouse;
+            oldInputHandler = ImpulseHandler;
+            oldMouseHandler = MouseHandler;
         }
 
         private void ImportOldHandlers() {
             if(HasFlag(StateFlags.CarryKeyboardInput)) {
-                Impulse.Import(oldInputHandler);
+                ImpulseHandler.Import(oldInputHandler);
             }
             if(HasFlag(StateFlags.CarryMouseInput)) {
-                Mouse.Import(oldMouseHandler);
+                MouseHandler.Import(oldMouseHandler);
             }
             oldInputHandler = null;
             oldMouseHandler = null;
@@ -72,13 +72,13 @@ namespace TwelveEngine.Shell {
             bool eventsAreAllowed = GameIsActive && !IsTransitioning && _inputActivated;
 
             if(!eventsAreAllowed && _lastUpdateSentEvents) {
-                Impulse.Release();
-                Mouse.Release();
+                ImpulseHandler.Release();
+                MouseHandler.Release();
             }
             _lastUpdateSentEvents = eventsAreAllowed;
 
-            Mouse.Update(eventsAreAllowed);
-            Impulse.Update(eventsAreAllowed);
+            MouseHandler.Update(eventsAreAllowed);
+            ImpulseHandler.Update(eventsAreAllowed);
 
             VirtualMouseProvider.Update();
         }

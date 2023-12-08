@@ -53,7 +53,7 @@ namespace Elves.Scenes.SaveSelect {
         }
 
         private void UpdateTagDrawing() {
-            MouseEventHandler mouse = Scene.Mouse;
+            MouseEventHandler mouse = Scene.MouseHandler;
             DrawingFrame drawingFrame = tag.DrawingFrame;
             if(!mouse.Capturing) {
                 drawingFrame.ReleaseDraw();

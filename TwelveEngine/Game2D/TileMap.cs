@@ -10,6 +10,8 @@ namespace TwelveEngine.Game2D {
 
         public readonly int LayerCount { get; init; }
 
+        public Point Size => new Point(Width,Height);
+
         public bool InRange(int x,int y) {
             return !(x < 0 || y < 0 || x >= Width || y >= Height);
         }
@@ -27,7 +29,7 @@ namespace TwelveEngine.Game2D {
         }
 
         public bool TryGetValue(Point point,out short value,int layer = 0) {
-            if(!InRange(point)) {
+            if(layer >= LayerCount || !InRange(point)) {
                 value = 0;
                 return false;
             }

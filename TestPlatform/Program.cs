@@ -2,10 +2,6 @@
 using System.IO;
 using TwelveEngine.Shell;
 using TwelveEngine;
-using TwelveEngine.Game2D;
-using Microsoft.Xna.Framework.Graphics;
-using TwelveEngine.Game2D.Entities;
-using Microsoft.Xna.Framework;
 
 namespace TestPlatform {
     public sealed class Program:EntryPoint {
@@ -17,7 +13,7 @@ namespace TestPlatform {
         }
 
         private static GameState GetStartState() {
-            return new TestGame2D();
+            return new TileStressTest();
         }
 
         private void StartEngine(string[] args) {

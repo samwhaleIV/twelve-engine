@@ -27,11 +27,11 @@ namespace TwelveEngine.UI.Book {
         }
 
         protected override bool GetLeftMouseButtonIsCaptured() {
-            return owner?.Mouse.CapturingLeft ?? false;
+            return owner?.MouseHandler.CapturingLeft ?? false;
         }
 
         protected override bool GetRightMouseButtonIsCaptured() {
-            return owner?.Mouse.CapturingRight ?? false;
+            return owner?.MouseHandler.CapturingRight ?? false;
         }
 
         protected override TimeSpan GetCurrentTime() {

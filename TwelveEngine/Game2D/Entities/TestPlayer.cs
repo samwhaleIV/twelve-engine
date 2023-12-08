@@ -17,13 +17,13 @@
 
         private void Update() {
             Body.Enabled = false;
-            var delta = Owner.Impulse.GetDigitalDelta2DWithModifier();
+            var delta = Owner.ImpulseHandler.GetDigitalDelta2DWithModifier();
             delta *= 1;
             if(_wasDown && delta == Vector2.Zero) {
                 _wasDown = false;
                 return;
             }
-            if(_wasDown && !Owner.Impulse.IsImpulseDown(Input.Impulse.Focus)) {
+            if(_wasDown && !Owner.ImpulseHandler.IsImpulseDown(Input.Impulse.Focus)) {
                 return;
             }
             if(delta == Vector2.Zero) {

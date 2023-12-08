@@ -14,7 +14,7 @@ namespace Elves.Scenes.Test {
 
             OnLoad.Add(Load);
 
-            Impulse.Router.OnDirectionDown += Router_OnDirectionDown;
+            ImpulseHandler.Router.OnDirectionDown += Router_OnDirectionDown;
         }
 
         private void Router_OnDirectionDown(TwelveEngine.Direction direction) {

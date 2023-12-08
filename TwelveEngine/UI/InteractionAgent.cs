@@ -382,8 +382,8 @@ namespace TwelveEngine.UI {
         /// </summary>
         /// <param name="inputGameState">The state to obtain the input routers from.</param>
         public void BindInputEvents(InputGameState inputGameState) {
-            var mouse = inputGameState.Mouse.Router;
-            var impulse = inputGameState.Impulse.Router;
+            var mouse = inputGameState.MouseHandler.Router;
+            var impulse = inputGameState.ImpulseHandler.Router;
 
             mouse.OnPress += MouseDown;
             mouse.OnRelease += MouseUp;
@@ -398,8 +398,8 @@ namespace TwelveEngine.UI {
         }
 
         public void UnbindInputEvents(InputGameState inputGameState) {
-            var mouse = inputGameState.Mouse.Router;
-            var impulse = inputGameState.Impulse.Router;
+            var mouse = inputGameState.MouseHandler.Router;
+            var impulse = inputGameState.ImpulseHandler.Router;
 
             mouse.OnPress -= MouseDown;
             mouse.OnRelease -= MouseUp;

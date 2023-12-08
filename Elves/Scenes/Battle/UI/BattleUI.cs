@@ -64,11 +64,11 @@ namespace Elves.Scenes.Battle.UI {
         }
 
         protected override bool GetLeftMouseButtonIsCaptured() {
-            return owner.Mouse.CapturingLeft;
+            return owner.MouseHandler.CapturingLeft;
         }
 
         protected override bool GetRightMouseButtonIsCaptured() {
-            return owner.Mouse.CapturingRight;
+            return owner.MouseHandler.CapturingRight;
         }
 
         protected override bool GetContextTransitioning() {

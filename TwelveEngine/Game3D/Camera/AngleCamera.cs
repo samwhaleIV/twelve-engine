@@ -115,12 +115,12 @@ namespace TwelveEngine.Game3D {
             var timeDelta = (float)gameState.FrameDelta.TotalSeconds;
             lookSpeed *= timeDelta;
             moveSpeed *= timeDelta;
-            var mouseDelta = gameState.Mouse.Delta;
-            if(gameState.Mouse.Capturing && mouseDelta != Point.Zero) {
+            var mouseDelta = gameState.MouseHandler.Delta;
+            if(gameState.MouseHandler.Capturing && mouseDelta != Point.Zero) {
                 mouseDelta.Y = -mouseDelta.Y;
                 AddAngle(mouseDelta.ToVector2() * lookSpeed);
             }
-            var delta = gameState.Impulse.GetDelta3DDigital();
+            var delta = gameState.ImpulseHandler.GetDelta3DDigital();
             if(delta.X != 0) {
                 MoveLeftRight(delta.X * moveSpeed);
             }

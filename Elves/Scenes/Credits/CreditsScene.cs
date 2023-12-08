@@ -61,8 +61,8 @@ namespace Elves.Scenes.Credits {
             _duration = _endY / _lineHeight * Constants.AnimationTiming.CreditsRowDuration;
             OnRender.Add(RenderCredits);
             OnUpdate.Add(UpdateURLInteraction,EventPriority.Second);
-            Impulse.Router.OnAcceptDown += EndScene;
-            Impulse.Router.OnCancelDown += EndScene;
+            ImpulseHandler.Router.OnAcceptDown += EndScene;
+            ImpulseHandler.Router.OnCancelDown += EndScene;
         }
 
         public ExitDestination ExitDestination { get; init; } = ExitDestination.SplashScreen;
@@ -83,7 +83,7 @@ namespace Elves.Scenes.Credits {
 
         private void UpdateURLInteraction() {
             string selectedURL = null;
-            Point mousePosition = Mouse.Position;
+            Point mousePosition = MouseHandler.Position;
             foreach(var (Area, URL) in _urlBuffer) {
                 if(!Area.Contains(mousePosition)) {
                     continue;
@@ -91,7 +91,7 @@ namespace Elves.Scenes.Credits {
                 selectedURL = URL;
                 break;
             }
-            bool mousePressed = Mouse.CapturingLeft;
+            bool mousePressed = MouseHandler.CapturingLeft;
             bool wasPressingLastFrame = _mousePressed;
             _mousePressed = mousePressed;
             CustomCursor.State = selectedURL is null ? CursorState.Default : CursorState.Interact;
@@ -158,7 +158,7 @@ namespace Elves.Scenes.Credits {
                     continue;
                 }
                 _urlBuffer.Enqueue((area, TextItem.TextValue));
-                if(!area.Contains(Mouse.Position)) {
+                if(!area.Contains(MouseHandler.Position)) {
                     continue;
                 }
                 _font.DrawCenteredUnderline(area,_scale,color);

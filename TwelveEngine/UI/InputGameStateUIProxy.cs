@@ -13,7 +13,7 @@ namespace TwelveEngine.UI {
         private void SetCustomCursor() => CustomCursor.State = CursorState;
         protected override bool GetContextTransitioning() => State.IsTransitioning;
         protected override TimeSpan GetCurrentTime() => State.Now;
-        protected override bool GetLeftMouseButtonIsCaptured() => State.Mouse.CapturingLeft;
-        protected override bool GetRightMouseButtonIsCaptured() => State.Mouse.CapturingRight;
+        protected override bool GetLeftMouseButtonIsCaptured() => State.MouseHandler.CapturingLeft;
+        protected override bool GetRightMouseButtonIsCaptured() => State.MouseHandler.CapturingRight;
     }
 }

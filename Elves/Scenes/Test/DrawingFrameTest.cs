@@ -31,11 +31,11 @@ namespace Elves.Scenes.Test {
         }
 
         private void ProcessMouseDrawing() {
-            if(!Mouse.Capturing) {
+            if(!MouseHandler.Capturing) {
                 drawingFrame.ReleaseDraw();
                 return;
             }
-            Vector2 relativePosition = (Mouse.Position.ToVector2() - frameDestination.Location.ToVector2()) / frameDestination.Size.ToVector2();
+            Vector2 relativePosition = (MouseHandler.Position.ToVector2() - frameDestination.Location.ToVector2()) / frameDestination.Size.ToVector2();
             drawingFrame.Draw(this,relativePosition);
         }
 

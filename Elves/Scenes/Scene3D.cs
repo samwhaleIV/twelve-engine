@@ -23,7 +23,7 @@ namespace Elves.Scenes {
 
             OnWriteDebug.Add(WriteUIScale);
 
-            Mouse.Router.OnScroll += MouseScroll;
+            MouseHandler.Router.OnScroll += MouseScroll;
         }
 
         private void WriteUIScale(DebugWriter writer) {
@@ -31,7 +31,7 @@ namespace Elves.Scenes {
         }
 
         private void MouseScroll(Direction direction) {
-            if(!Impulse.Keyboard.IsKeyDown(Keys.LeftControl)) {
+            if(!ImpulseHandler.Keyboard.IsKeyDown(Keys.LeftControl)) {
                 return;
             }
             UIScaleModifier += (direction == Direction.Down ? -1 : 1) * 0.1f;

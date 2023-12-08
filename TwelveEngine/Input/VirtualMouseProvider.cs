@@ -19,7 +19,7 @@ namespace TwelveEngine.Input {
             }
             _virtualMouseEnabled = true;
             if(InputStateCache.LastInputEventWasFromMouse) {
-                VirtualMousePosition = _gameState.Mouse.Position.ToVector2();
+                VirtualMousePosition = _gameState.MouseHandler.Position.ToVector2();
                 RealMouseIsActive = true;
             } else {
                 VirtualMousePosition = defaultPosition;
@@ -50,7 +50,7 @@ namespace TwelveEngine.Input {
                     return;
                 }
                 /* Transition from real coordinate to software coordinate */
-                VirtualMousePosition = _gameState.Mouse.Position.ToVector2();
+                VirtualMousePosition = _gameState.MouseHandler.Position.ToVector2();
             }
         }
 
@@ -80,13 +80,13 @@ namespace TwelveEngine.Input {
         private bool _hiddenState = false;
 
         private void UpdateFromRealMouse() {
-            VirtualMousePosition = _gameState.Mouse.Position.ToVector2();
-            VirtualMouseIsPressed = _gameState.Mouse.CapturingLeft;
+            VirtualMousePosition = _gameState.MouseHandler.Position.ToVector2();
+            VirtualMouseIsPressed = _gameState.MouseHandler.CapturingLeft;
         }
 
         private void UpdateFromAlternateHardware() {
             VirtualMousePosition = GetVirtualPosition();
-            VirtualMouseIsPressed = _gameState.Impulse.IsImpulseDown(Impulse.Accept);
+            VirtualMouseIsPressed = _gameState.ImpulseHandler.IsImpulseDown(Impulse.Accept);
         }
 
         public void Update() {
@@ -152,7 +152,7 @@ namespace TwelveEngine.Input {
         public Rectangle? Bounds { get; set; } = null;
 
         private Vector2 GetVirtualPositionDelta() {
-            return _gameState.Impulse.GetDelta2DAnalog() * (float)_gameState.FrameDelta.TotalSeconds * PIXELS_PER_SECOND;
+            return _gameState.ImpulseHandler.GetDelta2DAnalog() * (float)_gameState.FrameDelta.TotalSeconds * PIXELS_PER_SECOND;
         }
 
         private Vector2 GetVirtualPosition() {

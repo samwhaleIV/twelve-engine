@@ -28,7 +28,7 @@ namespace Elves.Battle {
             if(!Flags.Get(Constants.Flags.QuickBattle)) {
                 return;
             }
-            Impulse.Router.OnDebugDown += () => {
+            ImpulseHandler.Router.OnDebugDown += () => {
                 Logger.WriteLine($"Restarting battle state for battle {elfID} ({elfName}).",LoggerLabel.Debug);
                 TransitionOut(new() { State = ElfGame.GetBattleScene(elfID),Duration = TimeSpan.Zero, Data = new() {
                     Flags = StateFlags.CarryInput

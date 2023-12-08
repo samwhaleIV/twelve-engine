@@ -77,7 +77,7 @@ namespace John {
             OnUpdate.Add(UpdateUI);
             OnRender.Add(RenderUI);
 
-            Impulse.OnEvent += Impulse_OnEvent;
+            ImpulseHandler.OnEvent += Impulse_OnEvent;
 
             PhysicsScale = PHYSICS_SIM_SCALE;
             JohnPool = new PoolOfJohns(this);
@@ -89,10 +89,10 @@ namespace John {
         Point _mouseCaptureStart = new Point(-1);
 
         private Point GetMouseDPadGridLocation() {
-            if(!UI.VirtualDPad.ComputedArea.Contains(Mouse.Position)) {
+            if(!UI.VirtualDPad.ComputedArea.Contains(MouseHandler.Position)) {
                 return new Point(-1);
             }
-            Vector2 relativeMouseLocation = (Mouse.Position.ToVector2() - UI.VirtualDPad.ComputedArea.Position) / UI.VirtualDPad.ComputedArea.Size;
+            Vector2 relativeMouseLocation = (MouseHandler.Position.ToVector2() - UI.VirtualDPad.ComputedArea.Position) / UI.VirtualDPad.ComputedArea.Size;
             relativeMouseLocation *= 3;
             return Vector2.Floor(relativeMouseLocation).ToPoint();
         }
@@ -102,14 +102,14 @@ namespace John {
                 return;
             }
 
-            VirtualDPad.Up = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Up);
-            VirtualDPad.Down = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Down);
-            VirtualDPad.Left = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Left);
-            VirtualDPad.Right = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Right);
-            VirtualDPad.Action = Impulse.IsImpulseDown(TwelveEngine.Input.Impulse.Accept);
+            VirtualDPad.Up = ImpulseHandler.IsImpulseDown(TwelveEngine.Input.Impulse.Up);
+            VirtualDPad.Down = ImpulseHandler.IsImpulseDown(TwelveEngine.Input.Impulse.Down);
+            VirtualDPad.Left = ImpulseHandler.IsImpulseDown(TwelveEngine.Input.Impulse.Left);
+            VirtualDPad.Right = ImpulseHandler.IsImpulseDown(TwelveEngine.Input.Impulse.Right);
+            VirtualDPad.Action = ImpulseHandler.IsImpulseDown(TwelveEngine.Input.Impulse.Accept);
 
             bool wasCapturing = _capturingMouse;
-            _capturingMouse = Mouse.CapturingLeft;
+            _capturingMouse = MouseHandler.CapturingLeft;
 
             if(!_capturingMouse) {
                 _mouseCaptureStart = new Point(-1);
@@ -201,7 +201,7 @@ namespace John {
             TileMap = TileMap.CreateFromJSON(MAP_FILE);
 
             GenerateWorldCollision(tileValue => !NON_COLLIDING_TILES.Contains(tileValue),SURFACE_FRICTION);
-            GenerateGenericTileDictionary();
+            GenerateGenericTileSet();
 
             PhysicsWorld.Gravity = new Vector2(0,GRAVITY);
 

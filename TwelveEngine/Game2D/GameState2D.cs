@@ -22,13 +22,23 @@ namespace TwelveEngine.Game2D {
             OnRender.Add(RenderEntities);
         }
 
-        public TileMap TileMap { get; set; } = new TileMap() { Width = 0, Height = 0, Data = null };
-        public Texture2D TileMapTexture { get; set; }
-        public readonly Dictionary<short,TileData> TileDictionary = new();
+        public TileMap TileMap { get; protected set; } = new TileMap() { Width = 0, Height = 0, Data = null };
+        public Texture2D TileMapTexture { get; protected set; }
+        public TileData[] TileSet { get; protected set; }
 
         private const float BACKGROUND_DEPTH = 0.5f, FOREGROUND_DEPTH = 0.75f;
 
         private const int BACKGROUND_LAYER = 0, FOREGROUND_LAYER = 1;
+
+        private bool TryGetTileData(Point tileIndex,int layer,out TileData tileData) {
+            var value = TileMap.GetValue(tileIndex,layer);
+            if(value < 0) {
+                tileData = TileData.None;
+                return false;
+            }
+            tileData = TileSet[value];
+            return true;
+        }
 
         private void RenderMapBackground() {
 
@@ -49,10 +59,10 @@ namespace TwelveEngine.Game2D {
                         renderOrigin.Y += tileSize;
                         continue;
                     }
-                    if(TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,BACKGROUND_LAYER),out TileData tileData)) {
+                    if(TryGetTileData(tileIndex,BACKGROUND_LAYER,out TileData tileData)) {
                         SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,0f,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,BACKGROUND_DEPTH);
                     }
-                    if(TileMap.LayerCount > 1 && TileDictionary.TryGetValue(TileMap.GetValue(tileIndex,FOREGROUND_LAYER),out tileData)) {
+                    if(TileMap.LayerCount > 1 && TryGetTileData(tileIndex,FOREGROUND_LAYER,out tileData)) {
                         SpriteBatch.Draw(TileMapTexture,renderOrigin,tileData.Source,tileData.Color,0f,Vector2.Zero,Camera.Scale,tileData.SpriteEffects,FOREGROUND_DEPTH);
                     }
                     renderOrigin.Y += tileSize;
@@ -121,23 +131,26 @@ namespace TwelveEngine.Game2D {
             }
         }
 
-        public void GenerateGenericTileDictionary(int tileSize,int spriteSheetColumns,int spriteSheetRows) {
+        public void GenerateGenericTileSet(int tileSize,int spriteSheetColumns,int spriteSheetRows) {
+            TileSet = new TileData[spriteSheetColumns * spriteSheetRows];
             for(int x = 0;x<spriteSheetColumns;x++) {
                 for(int y = 0;y<spriteSheetRows;y++) {
-                    TileDictionary.Add((short)(y * spriteSheetColumns + x),new TileData() {
+                    int index = y * spriteSheetColumns + x;
+                    var tileData = new TileData() {
                         Source = new Rectangle(x*tileSize,y*tileSize,tileSize,tileSize),
                         Color = Color.White,
                         SpriteEffects = SpriteEffects.None
-                    });
+                    };
+                    TileSet[index] = tileData;
                 }
             }
         }
 
-        public void GenerateGenericTileDictionary() {
+        public void GenerateGenericTileSet() {
             int tileSize = Camera.TileInputSize;
             int spriteSheetColumns = TileMapTexture.Width / tileSize;
             int spriteSheetRows = TileMapTexture.Height / tileSize;
-            GenerateGenericTileDictionary(tileSize,spriteSheetColumns,spriteSheetRows);
+            GenerateGenericTileSet(tileSize,spriteSheetColumns,spriteSheetRows);
         }
 
         public Fixture TestPoint(Vector2 point) {
